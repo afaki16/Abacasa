@@ -5,10 +5,10 @@
   "app": {
     "logo": {
       "src": "/images/logo.svg",
-      "alt": "Kickstart Logo"
+      "alt": "Abacasa Logo"
     },
     "brand": {
-      "text": "Kickstart"
+      "text": "Abacasa"
     }
   },
   "theme": {

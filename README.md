@@ -1,4 +1,4 @@
-# Kickstart - Clean Architecture .NET 10 + Nuxt 3 Template
+# Abacasa - Clean Architecture .NET 10 + Nuxt 3 Template
 
 .NET 10 Web API + Nuxt.js 3 fullstack proje template'i. İki farklı yöntemle yeni proje oluşturabilirsiniz.
 

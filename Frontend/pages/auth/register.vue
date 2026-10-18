@@ -178,9 +178,9 @@ onUnmounted(() => {
 
 // SEO
 useHead({
-  title: 'Hesap Oluştur - Kickstart',
+  title: 'Hesap Oluştur - Abacasa',
   meta: [
-    { name: 'description', content: 'Create your Kickstart account' }
+    { name: 'description', content: 'Create your Abacasa account' }
   ]
 })
 </script>

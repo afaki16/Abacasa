@@ -46,13 +46,13 @@
     "privacyPolicy": "Privacy Policy",
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign In",
-    "pageTitleRegister": "Create Account - Kickstart",
+    "pageTitleRegister": "Create Account - Abacasa",
     "strengthWeak": "Weak",
     "strengthFair": "Fair",
     "strengthGood": "Good",
     "strengthStrong": "Strong",
-    "pageTitleForgotPassword": "Forgot Password - Kickstart",
-    "pageTitleResetPassword": "Set New Password - Kickstart",
+    "pageTitleForgotPassword": "Forgot Password - Abacasa",
+    "pageTitleResetPassword": "Set New Password - Abacasa",
     "forgotPasswordSubtitle": "Enter your email address to receive a password reset link",
     "sendResetLink": "Send Link",
     "resetLinkSent": "If this email address is registered, we have sent a password reset link. Please check your inbox.",
@@ -116,7 +116,7 @@
       "sat": "Sat",
       "sun": "Sun"
     },
-    "pageTitle": "Dashboard - Kickstart"
+    "pageTitle": "Dashboard - Abacasa"
   },
   "validation": {
     "required": "This field is required",

@@ -23,13 +23,13 @@
 .DS_Store
 Thumbs.db
 
-Backend/Kickstart.API/Kickstart.API.csproj.lscache
+Backend/Abacasa.API/Abacasa.API.csproj.lscache
 
-Backend/Kickstart.Application/Kickstart.Application.csproj.lscache
+Backend/Abacasa.Application/Abacasa.Application.csproj.lscache
 
-Backend/Kickstart.Domain/Kickstart.Domain.csproj.lscache
+Backend/Abacasa.Domain/Abacasa.Domain.csproj.lscache
 
-Backend/Kickstart.Infrastructure/Kickstart.Infrastructure.csproj.lscache
+Backend/Abacasa.Infrastructure/Abacasa.Infrastructure.csproj.lscache
 
 # Sensitive config files
 **/appsettings.Development.json

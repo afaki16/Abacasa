@@ -4,15 +4,15 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'Backend/Kickstart.API/**'
-      - 'Backend/Kickstart.Application/**'
-      - 'Backend/Kickstart.Domain/**'
-      - 'Backend/Kickstart.Infrastructure/**'
-      - 'Backend/Kickstart.sln'
+      - 'Backend/Abacasa.API/**'
+      - 'Backend/Abacasa.Application/**'
+      - 'Backend/Abacasa.Domain/**'
+      - 'Backend/Abacasa.Infrastructure/**'
+      - 'Backend/Abacasa.sln'
       - '.github/workflows/deploy.yml'
 
 env:
-  IMAGE_NAME: ${{ github.repository_owner }}/kickstart-api
+  IMAGE_NAME: ${{ github.repository_owner }}/abacasa-api
 
 jobs:
   build-and-push:
@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
-          file: ./Backend/Kickstart.API/Dockerfile
+          file: ./Backend/Abacasa.API/Dockerfile
           push: true
           tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
 
@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
-          file: ./Backend/Kickstart.API/Dockerfile
+          file: ./Backend/Abacasa.API/Dockerfile
           push: true
           tags: ghcr.io/${{ env.IMAGE_NAME }}:dev
 

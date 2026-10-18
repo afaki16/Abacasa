@@ -1,4 +1,4 @@
-# Kickstart Backend — Yeni Entity Oluşturma Rehberi
+# Abacasa Backend — Yeni Entity Oluşturma Rehberi
 
 Bu rehber, projeye yeni bir entity (CRUD) eklerken **hangi dosyaları oluşturman**, **hangi mevcut dosyalara satır eklemen** gerektiğini sırasıyla gösterir. Örnekler **Tenant** ve **User** entity'lerinden alınmıştır; yeni entity'lerin de aynı pattern'i izlemesi gerekir.
 
@@ -9,10 +9,10 @@ Boyunca `Product` örnek entity adı olarak kullanılmıştır. Senin entity'nin
 ## Mimari
 
 ```
-Kickstart.Domain          → Entity, Repository Interface, Enum, Constant (dış bağımlılık yok)
-Kickstart.Application     → CQRS Command/Query/Handler, DTO, Validator, AutoMapper (Domain'e bağımlı)
-Kickstart.Infrastructure  → Repository implementasyonu, EF Configuration, DbContext (Application + Domain'e bağımlı)
-Kickstart.API             → Controller, Middleware (Application'a bağımlı)
+Abacasa.Domain          → Entity, Repository Interface, Enum, Constant (dış bağımlılık yok)
+Abacasa.Application     → CQRS Command/Query/Handler, DTO, Validator, AutoMapper (Domain'e bağımlı)
+Abacasa.Infrastructure  → Repository implementasyonu, EF Configuration, DbContext (Application + Domain'e bağımlı)
+Abacasa.API             → Controller, Middleware (Application'a bağımlı)
 ```
 
 **Temel kurallar:**
@@ -43,12 +43,12 @@ Kickstart.API             → Controller, Middleware (Application'a bağımlı)
 
 ### 1.1 Entity Sınıfı (YENİ DOSYA)
 
-**Dosya:** `Kickstart.Domain/Entities/Product.cs`
+**Dosya:** `Abacasa.Domain/Entities/Product.cs`
 
 ```csharp
 using System.Collections.Generic;
 
-namespace Kickstart.Domain.Entities;
+namespace Abacasa.Domain.Entities;
 
 public class Product : BaseAuditableEntity
 {
@@ -97,14 +97,14 @@ public class Product : BaseAuditableEntity
 
 ### 1.2 Repository Interface (YENİ DOSYA)
 
-**Dosya:** `Kickstart.Domain/Common/Interfaces/Repositories/IProductRepository.cs`
+**Dosya:** `Abacasa.Domain/Common/Interfaces/Repositories/IProductRepository.cs`
 
 ```csharp
-using Kickstart.Domain.Entities;
+using Abacasa.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Kickstart.Domain.Common.Interfaces.Repositories;
+namespace Abacasa.Domain.Common.Interfaces.Repositories;
 
 public interface IProductRepository : IRepository<Product, int>
 {
@@ -136,7 +136,7 @@ public interface IProductRepository : IRepository<Product, int>
 
 ### 1.3 IUnitOfWork — Property Ekle (MEVCUT DOSYAYA SATIR EKLE)
 
-**Dosya:** `Kickstart.Domain/Common/Interfaces/IUnitOfWork.cs`
+**Dosya:** `Abacasa.Domain/Common/Interfaces/IUnitOfWork.cs`
 
 Mevcut repository property'lerin yanına ekle:
 
@@ -149,7 +149,7 @@ IProductRepository Products { get; }   // ← BU SATIRI EKLE
 
 ### 1.4 Permissions Sabiti (MEVCUT DOSYAYA SATIR EKLE)
 
-**Dosya:** `Kickstart.Domain/Constants/Permissions.cs`
+**Dosya:** `Abacasa.Domain/Constants/Permissions.cs`
 
 Mevcut nested class'ların yanına yeni bir nested class ekle:
 
@@ -183,10 +183,10 @@ Bu çelişki değildir — `PermissionService.HasPermissionAsync` karşılaştı
 
 Eğer entity'nde status, type gibi enum alanlar varsa:
 
-**Dosya:** `Kickstart.Domain/Common/Enums/ProductStatus.cs`
+**Dosya:** `Abacasa.Domain/Common/Enums/ProductStatus.cs`
 
 ```csharp
-namespace Kickstart.Domain.Common.Enums;
+namespace Abacasa.Domain.Common.Enums;
 
 public enum ProductStatus
 {
@@ -205,14 +205,14 @@ public enum ProductStatus
 
 ### 2.1 EF Configuration (YENİ DOSYA)
 
-**Dosya:** `Kickstart.Infrastructure/Persistence/EntityConfigurations/ProductConfiguration.cs`
+**Dosya:** `Abacasa.Infrastructure/Persistence/EntityConfigurations/ProductConfiguration.cs`
 
 ```csharp
-using Kickstart.Domain.Entities;
+using Abacasa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Kickstart.Infrastructure.Persistence.EntityConfigurations;
+namespace Abacasa.Infrastructure.Persistence.EntityConfigurations;
 
 public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
@@ -298,18 +298,18 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
 ### 2.2 Repository Implementasyonu (YENİ DOSYA)
 
-**Dosya:** `Kickstart.Infrastructure/Repositories/ProductRepository.cs`
+**Dosya:** `Abacasa.Infrastructure/Repositories/ProductRepository.cs`
 
 ```csharp
-using Kickstart.Domain.Common.Interfaces.Repositories;
-using Kickstart.Domain.Entities;
-using Kickstart.Infrastructure.Persistence;
+using Abacasa.Domain.Common.Interfaces.Repositories;
+using Abacasa.Domain.Entities;
+using Abacasa.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Kickstart.Infrastructure.Repositories;
+namespace Abacasa.Infrastructure.Repositories;
 
 public class ProductRepository : RepositoryBase<Product, int>, IProductRepository
 {
@@ -392,7 +392,7 @@ public class ProductRepository : RepositoryBase<Product, int>, IProductRepositor
 
 ### 2.3 DbContext'e DbSet Ekle (MEVCUT DOSYAYA SATIR EKLE)
 
-**Dosya:** `Kickstart.Infrastructure/Persistence/ApplicationDbContext.cs`
+**Dosya:** `Abacasa.Infrastructure/Persistence/ApplicationDbContext.cs`
 
 Mevcut `DbSet` property'lerinin yanına ekle:
 
@@ -412,7 +412,7 @@ public DbSet<ProductTag> ProductTags { get; set; }
 
 ### 2.4 UnitOfWork'e Repository Kaydı (MEVCUT DOSYAYA 3 SATIR EKLE)
 
-**Dosya:** `Kickstart.Infrastructure/Persistence/UnitOfWork.cs`
+**Dosya:** `Abacasa.Infrastructure/Persistence/UnitOfWork.cs`
 
 3 yere ekleme yapılır:
 
@@ -442,11 +442,11 @@ public IProductRepository Products => _products.Value;   // ← EKLE
 ### 2.5 Migration
 
 ```bash
-# Backend/ klasöründen çalıştır (Kickstart.sln'in olduğu yer):
-dotnet ef migrations add AddProductTable --project Kickstart.Infrastructure --startup-project Kickstart.API
+# Backend/ klasöründen çalıştır (Abacasa.sln'in olduğu yer):
+dotnet ef migrations add AddProductTable --project Abacasa.Infrastructure --startup-project Abacasa.API
 
 # Uygulama (DB'ye uygulamak için):
-dotnet ef database update --project Kickstart.Infrastructure --startup-project Kickstart.API
+dotnet ef database update --project Abacasa.Infrastructure --startup-project Abacasa.API
 ```
 
 ---
@@ -458,7 +458,7 @@ dotnet ef database update --project Kickstart.Infrastructure --startup-project K
 Yeni entity için tüm bu klasörü oluşturursun:
 
 ```
-Kickstart.Application/Features/Products/
+Abacasa.Application/Features/Products/
 ├── Commands/
 │   ├── CreateProduct/
 │   │   ├── CreateProductCommand.cs
@@ -492,7 +492,7 @@ Kickstart.Application/Features/Products/
 **`Dtos/CreateProductDto.cs`** — Controller `[FromBody]` ile alır:
 
 ```csharp
-namespace Kickstart.Application.Features.Products.Dtos;
+namespace Abacasa.Application.Features.Products.Dtos;
 
 public class CreateProductDto
 {
@@ -508,7 +508,7 @@ public class CreateProductDto
 **`Dtos/UpdateProductDto.cs`:**
 
 ```csharp
-namespace Kickstart.Application.Features.Products.Dtos;
+namespace Abacasa.Application.Features.Products.Dtos;
 
 public class UpdateProductDto
 {
@@ -525,7 +525,7 @@ public class UpdateProductDto
 ```csharp
 using System;
 
-namespace Kickstart.Application.Features.Products.Dtos;
+namespace Abacasa.Application.Features.Products.Dtos;
 
 public class ProductListDto
 {
@@ -547,7 +547,7 @@ public class ProductListDto
 using System;
 using System.Collections.Generic;
 
-namespace Kickstart.Application.Features.Products.Dtos;
+namespace Abacasa.Application.Features.Products.Dtos;
 
 public class ProductDto
 {
@@ -574,11 +574,11 @@ public class ProductDto
 **`Commands/CreateProduct/CreateProductCommand.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.CreateProduct;
+namespace Abacasa.Application.Features.Products.Commands.CreateProduct;
 
 public class CreateProductCommand : IRequest<Result<ProductListDto>>
 {
@@ -594,17 +594,17 @@ public class CreateProductCommand : IRequest<Result<ProductListDto>>
 
 ```csharp
 using AutoMapper;
-using Kickstart.Application.Common.Localization;
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
-using Kickstart.Application.Interfaces;
-using Kickstart.Domain.Common.Enums;
-using Kickstart.Domain.Common.Interfaces;
-using Kickstart.Domain.Entities;
-using Kickstart.Domain.Models;
+using Abacasa.Application.Common.Localization;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
+using Abacasa.Application.Interfaces;
+using Abacasa.Domain.Common.Enums;
+using Abacasa.Domain.Common.Interfaces;
+using Abacasa.Domain.Entities;
+using Abacasa.Domain.Models;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.CreateProduct;
+namespace Abacasa.Application.Features.Products.Commands.CreateProduct;
 
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<ProductListDto>>
 {
@@ -689,9 +689,9 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
 ```csharp
 using FluentValidation;
-using Kickstart.Application.Common.Localization;
+using Abacasa.Application.Common.Localization;
 
-namespace Kickstart.Application.Features.Products.Commands.CreateProduct;
+namespace Abacasa.Application.Features.Products.Commands.CreateProduct;
 
 public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {
@@ -723,11 +723,11 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 **`Commands/UpdateProduct/UpdateProductCommand.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.UpdateProduct;
+namespace Abacasa.Application.Features.Products.Commands.UpdateProduct;
 
 public class UpdateProductCommand : IRequest<Result<ProductListDto>>
 {
@@ -744,16 +744,16 @@ public class UpdateProductCommand : IRequest<Result<ProductListDto>>
 
 ```csharp
 using AutoMapper;
-using Kickstart.Application.Common.Localization;
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
-using Kickstart.Application.Interfaces;
-using Kickstart.Domain.Common.Enums;
-using Kickstart.Domain.Common.Interfaces;
-using Kickstart.Domain.Models;
+using Abacasa.Application.Common.Localization;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
+using Abacasa.Application.Interfaces;
+using Abacasa.Domain.Common.Enums;
+using Abacasa.Domain.Common.Interfaces;
+using Abacasa.Domain.Models;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.UpdateProduct;
+namespace Abacasa.Application.Features.Products.Commands.UpdateProduct;
 
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result<ProductListDto>>
 {
@@ -825,9 +825,9 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
 
 ```csharp
 using FluentValidation;
-using Kickstart.Application.Common.Localization;
+using Abacasa.Application.Common.Localization;
 
-namespace Kickstart.Application.Features.Products.Commands.UpdateProduct;
+namespace Abacasa.Application.Features.Products.Commands.UpdateProduct;
 
 public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
 {
@@ -856,10 +856,10 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
 **`Commands/DeleteProduct/DeleteProductCommand.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Results;
+using Abacasa.Application.Common.Results;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.DeleteProduct;
+namespace Abacasa.Application.Features.Products.Commands.DeleteProduct;
 
 public class DeleteProductCommand : IRequest<Result<bool>>
 {
@@ -872,15 +872,15 @@ public class DeleteProductCommand : IRequest<Result<bool>>
 **`Commands/DeleteProduct/DeleteProductCommandHandler.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Localization;
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Interfaces;
-using Kickstart.Domain.Common.Enums;
-using Kickstart.Domain.Common.Interfaces;
-using Kickstart.Domain.Models;
+using Abacasa.Application.Common.Localization;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Interfaces;
+using Abacasa.Domain.Common.Enums;
+using Abacasa.Domain.Common.Interfaces;
+using Abacasa.Domain.Models;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Commands.DeleteProduct;
+namespace Abacasa.Application.Features.Products.Commands.DeleteProduct;
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Result<bool>>
 {
@@ -930,11 +930,11 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
 **`Queries/GetAllProducts/GetAllProductsQuery.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Queries.GetAllProducts;
+namespace Abacasa.Application.Features.Products.Queries.GetAllProducts;
 
 public class GetAllProductsQuery : IRequest<PagedResult<ProductListDto>>
 {
@@ -950,14 +950,14 @@ public class GetAllProductsQuery : IRequest<PagedResult<ProductListDto>>
 
 ```csharp
 using AutoMapper;
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
-using Kickstart.Application.Interfaces;
-using Kickstart.Domain.Common.Interfaces;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
+using Abacasa.Application.Interfaces;
+using Abacasa.Domain.Common.Interfaces;
 using MediatR;
 using System.Collections.Generic;
 
-namespace Kickstart.Application.Features.Products.Queries.GetAllProducts;
+namespace Abacasa.Application.Features.Products.Queries.GetAllProducts;
 
 public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PagedResult<ProductListDto>>
 {
@@ -995,11 +995,11 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, P
 **`Queries/GetProductById/GetProductByIdQuery.cs`:**
 
 ```csharp
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Queries.GetProductById;
+namespace Abacasa.Application.Features.Products.Queries.GetProductById;
 
 public class GetProductByIdQuery : IRequest<Result<ProductDto>>
 {
@@ -1011,16 +1011,16 @@ public class GetProductByIdQuery : IRequest<Result<ProductDto>>
 
 ```csharp
 using AutoMapper;
-using Kickstart.Application.Common.Localization;
-using Kickstart.Application.Common.Results;
-using Kickstart.Application.Features.Products.Dtos;
-using Kickstart.Application.Interfaces;
-using Kickstart.Domain.Common.Enums;
-using Kickstart.Domain.Common.Interfaces;
-using Kickstart.Domain.Models;
+using Abacasa.Application.Common.Localization;
+using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Products.Dtos;
+using Abacasa.Application.Interfaces;
+using Abacasa.Domain.Common.Enums;
+using Abacasa.Domain.Common.Interfaces;
+using Abacasa.Domain.Models;
 using MediatR;
 
-namespace Kickstart.Application.Features.Products.Queries.GetProductById;
+namespace Abacasa.Application.Features.Products.Queries.GetProductById;
 
 public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Result<ProductDto>>
 {
@@ -1066,7 +1066,7 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, R
 
 ### 3.7 AutoMapper Mapping (MEVCUT DOSYAYA SATIR EKLE)
 
-**Dosya:** `Kickstart.Application/Features/Mappings/MappingProfile.cs`
+**Dosya:** `Abacasa.Application/Features/Mappings/MappingProfile.cs`
 
 Constructor'ın sonuna ekle:
 
@@ -1097,20 +1097,20 @@ CreateMap<UpdateProductDto, UpdateProductCommand>();
 
 ### 4.1 Controller (YENİ DOSYA)
 
-**Dosya:** `Kickstart.API/Controllers/ProductsController.cs`
+**Dosya:** `Abacasa.API/Controllers/ProductsController.cs`
 
 ```csharp
-using Kickstart.Application.Features.Products.Commands.CreateProduct;
-using Kickstart.Application.Features.Products.Commands.UpdateProduct;
-using Kickstart.Application.Features.Products.Commands.DeleteProduct;
-using Kickstart.Application.Features.Products.Dtos;
-using Kickstart.Application.Features.Products.Queries.GetAllProducts;
-using Kickstart.Application.Features.Products.Queries.GetProductById;
+using Abacasa.Application.Features.Products.Commands.CreateProduct;
+using Abacasa.Application.Features.Products.Commands.UpdateProduct;
+using Abacasa.Application.Features.Products.Commands.DeleteProduct;
+using Abacasa.Application.Features.Products.Dtos;
+using Abacasa.Application.Features.Products.Queries.GetAllProducts;
+using Abacasa.Application.Features.Products.Queries.GetProductById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kickstart.API.Controllers;
+namespace Abacasa.API.Controllers;
 
 [Authorize]
 public class ProductsController : BaseController
@@ -1255,7 +1255,7 @@ public class ProductsController : BaseController
 
 ## ADIM 5 — Localization (MEVCUT DOSYALARA SATIR EKLE)
 
-**Dosyalar:** `Kickstart.Infrastructure/Resources/en.json` ve `Kickstart.Infrastructure/Resources/tr.json`
+**Dosyalar:** `Abacasa.Infrastructure/Resources/en.json` ve `Abacasa.Infrastructure/Resources/tr.json`
 
 İki dosyaya da entity için bir bölüm ekle:
 
@@ -1290,16 +1290,16 @@ public class ProductsController : BaseController
 ```bash
 # 1. Migration oluştur
 dotnet ef migrations add AddProductTable \
-  --project Kickstart.Infrastructure \
-  --startup-project Kickstart.API
+  --project Abacasa.Infrastructure \
+  --startup-project Abacasa.API
 
 # 2. DB'ye uygula
 dotnet ef database update \
-  --project Kickstart.Infrastructure \
-  --startup-project Kickstart.API
+  --project Abacasa.Infrastructure \
+  --startup-project Abacasa.API
 
 # 3. API'yi başlat
-dotnet run --project Kickstart.API
+dotnet run --project Abacasa.API
 
 # 4. Swagger'da test et
 # https://localhost:44333/swagger

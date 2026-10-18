@@ -46,13 +46,13 @@
     "privacyPolicy": "Gizlilik Politikası",
     "alreadyHaveAccount": "Zaten hesabınız var mı?",
     "signIn": "Giriş Yap",
-    "pageTitleRegister": "Hesap Oluştur - Kickstart",
+    "pageTitleRegister": "Hesap Oluştur - Abacasa",
     "strengthWeak": "Zayıf",
     "strengthFair": "Orta",
     "strengthGood": "İyi",
     "strengthStrong": "Güçlü",
-    "pageTitleForgotPassword": "Şifremi Unuttum - Kickstart",
-    "pageTitleResetPassword": "Yeni Şifre Belirle - Kickstart",
+    "pageTitleForgotPassword": "Şifremi Unuttum - Abacasa",
+    "pageTitleResetPassword": "Yeni Şifre Belirle - Abacasa",
     "forgotPasswordSubtitle": "Şifre sıfırlama bağlantısı için e-posta adresinizi girin",
     "sendResetLink": "Bağlantı Gönder",
     "resetLinkSent": "Bu e-posta adresi kayıtlıysa şifre sıfırlama bağlantısı gönderdik. Lütfen gelen kutunuzu kontrol edin.",
@@ -116,7 +116,7 @@
       "sat": "Cmt",
       "sun": "Paz"
     },
-    "pageTitle": "Anasayfa - Kickstart"
+    "pageTitle": "Anasayfa - Abacasa"
   },
   "validation": {
     "required": "Bu alan zorunludur",
