@@ -8,9 +8,11 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
 {
     public interface IUserRepository : IRepository<User,int>
     {
-        Task<User> GetByEmailAsync(string email, int? tenantId);
-        Task<IReadOnlyList<User>> GetUsersByEmailAsync(string email);
-        Task<IReadOnlyList<User>> GetUsersByEmailWithPermissionsAsync(string email);
+        // E-posta tüm sistemde benzersizdir (kimlik global); e-posta normalize (trim + küçük harf) verilir
+        Task<User> GetByEmailAsync(string email);
+
+        // Login için: sistem rolleriyle, tracking'li
+        Task<User> GetByEmailWithRolesAsync(string email);
         Task<User> GetUserWithRolesAsync(int userId);
 
         /// <summary>
@@ -20,9 +22,11 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
         /// </summary>
         Task<User> GetUserWithRolesReadOnlyAsync(int userId);
         Task<User> GetUserWithPermissionsAsync(int userId);
-        Task<bool> EmailExistsAsync(string email, int? tenantId);
         /// <param name="excludeUserId">If set, that user is ignored (for updates).</param>
-        Task<bool> PhoneExistsAsync(string phoneNumber, int? tenantId, int? excludeUserId = null);
+        Task<bool> EmailExistsAsync(string email, int? excludeUserId = null);
+        /// <param name="excludeUserId">If set, that user is ignored (for updates).</param>
+        // Telefon global: hane fark etmez (normalize edilmiş biçim beklenir)
+        Task<bool> PhoneExistsAsync(string phoneNumber, int? excludeUserId = null);
         Task<UserRole> GetUserRoleAsync(int userId, int roleId);
         Task AddUserRoleAsync(UserRole userRole);
         void RemoveUserRole(UserRole userRole);
@@ -31,10 +35,11 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
         Task<int> CountActiveSuperAdminsAsync();
 
         /// <summary>
-        /// Lightweight per-request session check. TenantOk is false when the user's tenant is
-        /// inactive or soft-deleted. Returns null when the user does not exist.
+        /// Lightweight per-request session check, tek sorgu. tenantId token'daki aktif hanedir:
+        /// TenantOk, tenantId yoksa true; varsa o hanede canlı üyelik olmalı ve hane aktif olmalı.
+        /// Returns null when the user does not exist.
         /// </summary>
-        Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, int? TenantId, bool TenantOk)?> GetSessionStateAsync(int userId);
+        Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk)?> GetSessionStateAsync(int userId, int? tenantId);
 
         Task<bool> TenantHasSuperAdminAsync(int tenantId);
 

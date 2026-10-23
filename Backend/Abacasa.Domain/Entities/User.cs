@@ -21,7 +21,13 @@ namespace Abacasa.Domain.Entities
         public bool EmailConfirmed { get; set; }
         public bool PhoneConfirmed { get; set; }
         public string? ProfileImageUrl { get; set; }
+
+        // Son aktif hane: login'de bu hanede canlı üyelik varsa o seçilir; hane değiştirmede güncellenir.
+        // Haneye erişim TenantMembership ile olur; bu kolon erişim vermez.
         public int? TenantId { get; set; }
+
+        // Davetsiz kayıtta istenen hane adı; e-posta doğrulanınca hane açılır ve temizlenir
+        public string? PendingHouseholdName { get; set; }
 
 
 

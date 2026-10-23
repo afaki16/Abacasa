@@ -12,6 +12,11 @@ using Abacasa.Application.Features.Auth.Commands.ForgotPassword;
 using Abacasa.Application.Features.Auth.Commands.ResetPassword;
 using Abacasa.Application.Features.Auth.Commands.VerifyEmail;
 using Abacasa.Application.Features.Auth.Commands.ResendVerificationEmail;
+using Abacasa.Application.Features.Auth.Commands.SwitchHousehold;
+using Abacasa.Application.Features.Auth.Commands.DeleteAccount;
+using Abacasa.Application.Features.Auth.Commands.AcceptConsents;
+using Abacasa.Application.Features.Legal.Dtos;
+using Abacasa.Application.Features.Auth.Queries.GetAccountDeletionPreview;
 using Abacasa.Application.Features.Auth.Queries.GetUserSessions;
 using Abacasa.Application.Features.Users.Queries.GetCurrentUser;
 using MediatR;
@@ -71,6 +76,40 @@ namespace Abacasa.API.Controllers
         }
 
         /// <summary>
+        /// Switch the session's active household. Requires a live membership in an active household (403 otherwise).
+        /// The current refresh token is rotated with the new household; the response has the login shape.
+        /// </summary>
+        [HttpPost("switch-household")]
+        [Authorize]
+        [ProducesResponseType(typeof(LoginResponseDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> SwitchHousehold([FromBody] SwitchHouseholdRequestDto request)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userId, out var userIdInt))
+                return Unauthorized();
+
+            var result = await _mediator.Send(new SwitchHouseholdCommand
+            {
+                UserId = userIdInt,
+                TenantId = request.TenantId,
+                RefreshToken = ReadRefreshToken(request.RefreshToken),
+                IpAddress = GetIpAddress(),
+                UserAgent = GetUserAgent()
+            });
+
+            // Rotate the cookie too so the new refresh token (with the new household) replaces the old one.
+            if (result.IsSuccess && result.Value is not null)
+            {
+                WriteRefreshTokenCookie(result.Value.RefreshToken, result.Value.ExpiresAt);
+            }
+
+            return HandleResult(result);
+        }
+
+        /// <summary>
         /// Register a new user account
         /// </summary>
         /// <param name="request">Registration information</param>
@@ -90,12 +129,16 @@ namespace Abacasa.API.Controllers
                 Password = request.Password,
                 ConfirmPassword = request.ConfirmPassword,
                 PhoneNumber = request.PhoneNumber,
+                HouseholdName = request.HouseholdName,
+                InviteToken = request.InviteToken,
+                AcceptTerms = request.AcceptTerms,
+                AcknowledgePrivacy = request.AcknowledgePrivacy,
                 IpAddress = GetIpAddress(),
                 UserAgent = GetUserAgent()
             };
 
             var result = await _mediator.Send(command);
-            
+
             if (result.IsSuccess)
                 return CreatedAtAction(nameof(Login), new { }, new { success = true, data = result.Value });
             
@@ -233,6 +276,52 @@ namespace Abacasa.API.Controllers
             var query = new GetCurrentUserQuery { UserId = userIdInt };
             var result = await _mediator.Send(query);
             
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Accept legal documents ("Terms" / "PrivacyNotice") with their current versions; returns the remaining pending consents
+        /// </summary>
+        [HttpPost("consents")]
+        [Authorize]
+        [ProducesResponseType(typeof(ConsentStatusDto), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> AcceptConsents([FromBody] AcceptConsentsRequestDto request)
+        {
+            return HandleResult(await _mediator.Send(new AcceptConsentsCommand { DocumentTypes = request.DocumentTypes }));
+        }
+
+        /// <summary>
+        /// Account deletion preview: households where the user is the last admin (blocked),
+        /// households where the user is the only member (deleted with the account), last SuperAdmin flag
+        /// </summary>
+        [HttpGet("account/deletion-preview")]
+        [Authorize]
+        [ProducesResponseType(typeof(AccountDeletionPlan), 200)]
+        public async Task<IActionResult> GetAccountDeletionPreview()
+        {
+            return HandleResult(await _mediator.Send(new GetAccountDeletionPreviewQuery()));
+        }
+
+        /// <summary>
+        /// Delete (anonymize) the signed-in user's account. Sole-member households are deleted only with
+        /// deleteSoleHouseholds = true. Clears the refresh token cookie.
+        /// </summary>
+        [HttpDelete("account")]
+        [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestDto request)
+        {
+            var result = await _mediator.Send(new DeleteAccountCommand
+            {
+                Password = request.Password,
+                DeleteSoleHouseholds = request.DeleteSoleHouseholds
+            });
+
+            if (result.IsSuccess)
+                ClearRefreshTokenCookie();
+
             return HandleResult(result);
         }
 

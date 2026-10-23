@@ -446,6 +446,13 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- ═══════════════ DELETE ACCOUNT ═══════════════ -->
+    <v-row class="mt-0">
+      <v-col cols="12" md="6">
+        <DeleteAccountSection />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -454,6 +461,7 @@ import { ref, computed, onMounted } from "vue";
 import type { Session } from "~/types";
 import { dateFormat, dateTimeFormat } from "~/utils/datesFormat";
 import BreadCrumb from "~/components/BreadCrumb.vue";
+import DeleteAccountSection from "~/components/Account/DeleteAccountSection.vue";
 import { useValidators } from "~/composables/useValidators";
 
 definePageMeta({

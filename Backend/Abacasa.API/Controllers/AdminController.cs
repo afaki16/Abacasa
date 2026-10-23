@@ -2,6 +2,7 @@ using Abacasa.Application.Features.Admin.Queries.GetActiveUserCount;
 using Abacasa.Application.Features.Admin.Queries.GetActiveUsersSnapshot;
 using Abacasa.Application.Features.Admin.Queries.GetRevokableUsers;
 using Abacasa.Application.Features.Admin.Commands.RevokeUserSessions;
+using Abacasa.Application.Features.Admin.Commands.RunDataRetention;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,6 +87,19 @@ namespace Abacasa.API.Controllers
             var command = new RevokeUserSessionsCommand { UserId = userId, Reason = reason };
             var result = await _mediator.Send(command);
             return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Run the data retention job now (SuperAdmin only). Returns deleted/anonymized row counts per table
+        /// (-1 means the table failed and was skipped).
+        /// </summary>
+        [HttpPost("data-retention/run")]
+        [Authorize(Policy = "RequireSuperAdminRole")]
+        [ProducesResponseType(typeof(IReadOnlyDictionary<string, int>), 200)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> RunDataRetention()
+        {
+            return HandleResult(await _mediator.Send(new RunDataRetentionCommand()));
         }
     }
 }

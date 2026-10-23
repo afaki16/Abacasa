@@ -24,15 +24,11 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            // Email unique per tenant; separate rule when TenantId is null (public / legacy rows).
-            // Soft-deleted rows are excluded so email/phone can be reused after delete.
-            builder.HasIndex(x => new { x.TenantId, x.Email })
-                .IsUnique()
-                .HasFilter("\"TenantId\" IS NOT NULL AND NOT \"IsDeleted\"");
-
+            // Kimlik globaldir: e-posta tüm sistemde benzersiz. E-posta normalize edilmiş (trim + küçük harf) saklanır.
+            // Soft-deleted rows are excluded so email can be reused after delete.
             builder.HasIndex(x => x.Email)
                 .IsUnique()
-                .HasFilter("\"TenantId\" IS NULL AND NOT \"IsDeleted\"");
+                .HasFilter("\"IsDeleted\" = false");
 
             builder.Property(x => x.PasswordHash)
                 .IsRequired()
@@ -41,13 +37,13 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
             builder.Property(x => x.PhoneNumber)
                 .HasMaxLength(20);
 
-            builder.HasIndex(x => new { x.TenantId, x.PhoneNumber })
-                .IsUnique()
-                .HasFilter("\"TenantId\" IS NOT NULL AND \"PhoneNumber\" IS NOT NULL AND NOT \"IsDeleted\"");
+            builder.Property(x => x.PendingHouseholdName)
+                .HasMaxLength(100);
 
+            // Telefon e-posta gibi global: hane değiştirmek (User.TenantId) hiçbir benzersizlik kuralına takılmaz
             builder.HasIndex(x => x.PhoneNumber)
                 .IsUnique()
-                .HasFilter("\"TenantId\" IS NULL AND \"PhoneNumber\" IS NOT NULL AND NOT \"IsDeleted\"");
+                .HasFilter("\"PhoneNumber\" IS NOT NULL AND \"PhoneNumber\" <> '' AND \"IsDeleted\" = false");
 
             builder.HasIndex(x => x.TenantId);
 

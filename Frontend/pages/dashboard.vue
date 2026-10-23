@@ -1,6 +1,18 @@
 <template>
+  <!-- Hanesiz kullanıcı: API çağrılmaz, hane oluşturma kartı -->
+  <template v-if="!hasHousehold">
+    <v-card variant="outlined" class="pa-6">
+      <div class="text-h6">Henüz bir haneniz yok</div>
+      <div class="text-body-2 text-medium-emphasis mt-1">
+        Kendi hanenizi oluşturabilir ya da size gelen davet e-postasındaki bağlantıyı kullanabilirsiniz.
+      </div>
+      <v-btn color="primary" prepend-icon="mdi-home-plus" class="mt-4" @click="createDialog = true">Hane oluştur</v-btn>
+    </v-card>
+    <CreateHouseholdDialog v-model="createDialog" />
+  </template>
+
   <!-- Dashboard.Read yoksa API çağrılmaz; kısa hoş geldin mesajı -->
-  <v-card v-if="!canRead" variant="outlined" class="pa-6">
+  <v-card v-else-if="!canRead" variant="outlined" class="pa-6">
     <div class="text-h6">{{ greeting }}</div>
     <div class="text-body-2 text-medium-emphasis mt-1">Abacasa'ya hoş geldiniz.</div>
   </v-card>
@@ -192,6 +204,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import type { Dashboard, PaymentMethod } from "~/types";
 import PeriodSelector from "~/components/Budget/PeriodSelector.vue";
+import CreateHouseholdDialog from "~/components/Household/CreateHouseholdDialog.vue";
 import { formatDisplayDate, monthRange, todayIso, type Period } from "~/utils/period";
 import { useAuthStore } from "~/stores/auth";
 
@@ -215,6 +228,8 @@ const { getTypeLabel: getObligationTypeLabel } = useVehicles();
 const { getDashboard } = useDashboard();
 //#endregion
 
+const hasHousehold = computed(() => !!authStore.user?.activeTenant);
+const createDialog = ref(false);
 const canRead = computed(() => hasPermission("Dashboard.Read"));
 const greeting = computed(() => (authStore.userFullName ? `Merhaba, ${authStore.userFullName}` : "Merhaba"));
 
@@ -260,7 +275,7 @@ const dueLabel = (dueDate: string) => {
 
 //#region Lifecycle
 onMounted(async () => {
-  if (!canRead.value) return;
+  if (!hasHousehold.value || !canRead.value) return;
 
   // Kart dönemi seçimi için ödeme araçları; izin yoksa yalnızca takvim ayı
   if (hasPermission("PaymentMethods.Read")) {

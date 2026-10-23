@@ -105,6 +105,12 @@
       icon: 'mdi-format-list-bulleted-type',
       children: [
         {
+          title: 'sidebar.menu.household',
+          icon: 'mdi-home-heart',
+          to: '/household',
+          permission: 'Household.Read'
+        },
+        {
           title: 'sidebar.menu.categories',
           icon: 'mdi-shape',
           to: '/categories',

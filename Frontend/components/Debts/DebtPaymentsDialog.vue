@@ -38,7 +38,7 @@
               <th class="text-right">Kur</th>
               <th class="text-right">TL karşılığı</th>
               <th>Not</th>
-              <th v-if="canUpdate" />
+              <th v-if="canUpdate || canDelete" />
             </tr>
           </thead>
           <tbody>
@@ -48,19 +48,19 @@
               <td class="text-right">{{ p.exchangeRate ?? '—' }}</td>
               <td class="text-right">{{ formatMoney(p.amountInTry) }}</td>
               <td>{{ p.note }}</td>
-              <td v-if="canUpdate" class="text-right text-no-wrap">
-                <v-btn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="editing = p" />
-                <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="paymentToDelete = p" />
+              <td v-if="canUpdate || canDelete" class="text-right text-no-wrap">
+                <v-btn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="editing = p" />
+                <v-btn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="paymentToDelete = p" />
               </td>
             </tr>
             <tr v-if="!payments.length">
-              <td :colspan="canUpdate ? 6 : 5" class="text-medium-emphasis">Ödeme yok</td>
+              <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-medium-emphasis">Ödeme yok</td>
             </tr>
           </tbody>
         </v-table>
 
         <!-- Ekleme ya da seçili ödemeyi düzenleme -->
-        <template v-if="canUpdate && (editing || debt.remaining > 0)">
+        <template v-if="editing ? canUpdate : canCreate && debt.remaining > 0">
           <div class="text-subtitle-2 mb-2">{{ editing ? 'Ödemeyi düzenle' : 'Ödeme ekle' }}</div>
           <DebtPaymentForm
             :currency="debt.currency"
@@ -120,8 +120,10 @@ const editing = ref<DebtPayment | null>(null)
 const paymentToDelete = ref<DebtPayment | null>(null)
 const isBusy = ref(false)
 
-// Ödeme ekleme, düzenleme ve silme Debts.Update ister
-const canUpdate = computed(() => hasPermission('Debts.Update'))
+// Ödeme ekleme, düzenleme ve silme DebtPayments izinlerine bağlı (pencereyi açmak Debts.Read)
+const canCreate = computed(() => hasPermission('DebtPayments.Create'))
+const canUpdate = computed(() => hasPermission('DebtPayments.Update'))
+const canDelete = computed(() => hasPermission('DebtPayments.Delete'))
 const isUsd = computed(() => debt.value?.currency === Currency.USD)
 const money = (amount: number) => formatMoney(amount, currencyCode(debt.value?.currency ?? Currency.TRY))
 

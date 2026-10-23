@@ -224,7 +224,7 @@ watch(period, () => {
 //#endregion
 
 //#region Öde
-const canPay = computed(() => hasPermission("RecurringPayments.Update"));
+const canPay = computed(() => hasPermission("RecurringPaymentPayments.Create"));
 const payDialog = ref(false);
 const payTarget = ref<RecurringPaymentOccurrence | null>(null);
 const isPaying = ref(false);

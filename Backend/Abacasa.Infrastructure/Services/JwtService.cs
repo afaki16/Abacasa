@@ -32,6 +32,8 @@ namespace Abacasa.Infrastructure.Services
         private readonly IBruteForceProtectionService _bruteForceService;
         private readonly IEmailService _emailService;
         private readonly IJsonStringLocalizer _localizer;
+        private readonly IPermissionService _permissionService;
+        private readonly ILegalVersions _legalVersions;
 
         // A rotated token presented again within this window is treated as a benign race
         // (parallel tabs/requests), not as theft.
@@ -44,8 +46,11 @@ namespace Abacasa.Infrastructure.Services
             ILogger<JwtService> logger,
             IBruteForceProtectionService bruteForceService,
             IEmailService emailService,
-            IJsonStringLocalizer localizer)
+            IJsonStringLocalizer localizer,
+            IPermissionService permissionService,
+            ILegalVersions legalVersions)
         {
+            _legalVersions = legalVersions;
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _passwordService = passwordService;
@@ -53,8 +58,26 @@ namespace Abacasa.Infrastructure.Services
             _bruteForceService = bruteForceService;
             _emailService = emailService;
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _permissionService = permissionService;
         }
 
+    /// <summary>
+    /// Oturumun aktif hanesini seçer: tercih edilen hanede (User.TenantId ya da oturumun hanesi) canlı üyelik ve
+    /// aktif hane varsa o; yoksa en eski canlı üyeliğin aktif hanesi; o da yoksa null. Pasif ya da silinmiş hane atlanır.
+    /// </summary>
+    private async Task<int?> SelectActiveTenantAsync(int userId, int? preferredTenantId)
+    {
+        var usable = (await _unitOfWork.TenantMemberships.GetByUserReadOnlyAsync(userId))
+            .Where(m => m.Tenant != null && m.Tenant.IsActive)
+            .ToList();
+
+        if (preferredTenantId.HasValue && usable.Any(m => m.TenantId == preferredTenantId.Value))
+            return preferredTenantId;
+
+        return usable.FirstOrDefault()?.TenantId;
+    }
+
+    // tenantId: kimlik global olduğu için yok sayılır (geriye uyumluluk için imzada kalır)
     public async Task<Result<LoginResponseDto>> LoginAsync(string email, string password, string ipAddress, string userAgent, string deviceId = null, string deviceName = null, bool rememberMe = false, int? tenantId = null)
     {
         var normalizedEmail = email?.Trim().ToLowerInvariant() ?? string.Empty;
@@ -76,30 +99,8 @@ namespace Abacasa.Infrastructure.Services
                     _localizer["auth.invalidCredentials"]));
             }
 
-            var candidates = await _unitOfWork.Users.GetUsersByEmailWithPermissionsAsync(normalizedEmail);
-
-            User user = null;
-            if (tenantId.HasValue && tenantId.Value > 0)
-            {
-                user = candidates.FirstOrDefault(u => u.TenantId == tenantId.Value);
-            }
-            else if (candidates.Count == 1)
-            {
-                user = candidates[0];
-            }
-            else if (candidates.Count > 1)
-            {
-                // Multiple tenants matched and caller did not disambiguate — dummy verify
-                // before responding so the timing matches a real login attempt.
-                _passwordService.VerifyPassword(password, SecurityConstants.DummyBCryptHash);
-
-                await _bruteForceService.RecordFailedAttemptAsync(
-                    normalizedEmail, safeIp, userAgent, LoginFailureReasons.MultipleTenants);
-
-                return Result<LoginResponseDto>.Failure(Error.Failure(
-                    ErrorCode.ValidationFailed,
-                    _localizer["auth.multipleAccountsFound"]));
-            }
+            // Kimlik global: e-posta tüm sistemde benzersiz, kullanıcı tek kayıt olarak bulunur
+            var user = await _unitOfWork.Users.GetByEmailWithRolesAsync(normalizedEmail);
 
             if (user == null)
             {
@@ -123,6 +124,18 @@ namespace Abacasa.Infrastructure.Services
                     _localizer["auth.invalidCredentials"]));
             }
 
+            // Parolası doğru ama e-postası doğrulanmamış (kayıt sonrası bekleyen) kullanıcı:
+            // genel hata yerine Active ama doğrulanmamış kullanıcıdakiyle aynı kod
+            if (user.Status == Domain.Common.Enums.UserStatus.PendingVerification)
+            {
+                await _bruteForceService.RecordFailedAttemptAsync(
+                    normalizedEmail, safeIp, userAgent, LoginFailureReasons.EmailNotConfirmed);
+
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.EmailNotConfirmed,
+                    _localizer["auth.emailNotConfirmed"]));
+            }
+
             if (user.Status != Domain.Common.Enums.UserStatus.Active)
             {
                 await _bruteForceService.RecordFailedAttemptAsync(
@@ -134,21 +147,6 @@ namespace Abacasa.Infrastructure.Services
 
                 // Generic response — do not leak account-status info to the caller.
                 // No email notification: the legitimate owner already knows the account is inactive.
-                return Result<LoginResponseDto>.Failure(Error.Failure(
-                    ErrorCode.Unauthorized,
-                    _localizer["auth.invalidCredentials"]));
-            }
-
-            // Inactive or soft-deleted tenant (the query filter returns a deleted tenant as null)
-            if (user.TenantId != null && (user.Tenant == null || !user.Tenant.IsActive))
-            {
-                await _bruteForceService.RecordFailedAttemptAsync(
-                    normalizedEmail, safeIp, userAgent, LoginFailureReasons.TenantInactive);
-
-                _logger.LogWarning(
-                    "Login attempt on inactive tenant. Email: {Email}, TenantId: {TenantId}, IP: {IpAddress}",
-                    normalizedEmail, user.TenantId, safeIp);
-
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.Unauthorized,
                     _localizer["auth.invalidCredentials"]));
@@ -168,13 +166,17 @@ namespace Abacasa.Infrastructure.Services
                     _localizer["auth.emailNotConfirmed"]));
             }
 
-            var accessTokenResult = await GenerateAccessTokenAsync(user);
+            // Aktif hane: son aktif hane (User.TenantId) canlıysa o, yoksa en eski canlı üyelik, o da yoksa null.
+            // Pasif hane seçimde atlanır; hanesiz kullanıcı da giriş yapabilir.
+            var activeTenantId = await SelectActiveTenantAsync(user.Id, user.TenantId);
+
+            var accessTokenResult = await GenerateAccessTokenAsync(user, activeTenantId);
             if (!accessTokenResult.IsSuccess)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.InternalError,
                     _localizer["auth.accessTokenGenerationFailed"]));
 
-            var refreshTokenResult = await GenerateRefreshTokenAsync(user, ipAddress, userAgent, deviceId, deviceName, rememberMe);
+            var refreshTokenResult = await GenerateRefreshTokenAsync(user, ipAddress, userAgent, deviceId, deviceName, rememberMe, tenantId: activeTenantId);
             if (!refreshTokenResult.IsSuccess)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.InternalError,
@@ -192,7 +194,7 @@ namespace Abacasa.Infrastructure.Services
                 user.Id, normalizedEmail, safeIp, deviceId ?? "unknown");
 
             return Result<LoginResponseDto>.Success(
-                BuildLoginResponse(user, accessTokenResult.Value, refreshTokenResult.Value));
+                await BuildLoginResponseAsync(user, activeTenantId, accessTokenResult.Value, refreshTokenResult.Value));
         }
         catch (Exception ex)
         {
@@ -235,7 +237,8 @@ namespace Abacasa.Infrastructure.Services
     }
 
   
-    public async Task<Result<string>> GenerateAccessTokenAsync(User user)
+    // tenantId: oturumun aktif hanesi (tenant_id claim'i); null ise claim eklenmez
+    public async Task<Result<string>> GenerateAccessTokenAsync(User user, int? tenantId)
         {
             try
             {
@@ -249,13 +252,16 @@ namespace Abacasa.Infrastructure.Services
                     new Claim("status", user.Status.ToString())
                 };
 
-                if (user.TenantId.HasValue)
+                if (tenantId.HasValue)
                 {
-                    claims.Add(new Claim("tenant_id", user.TenantId.Value.ToString()));
+                    claims.Add(new Claim("tenant_id", tenantId.Value.ToString()));
                 }
 
-                // Add role claims
-                var roles = user.UserRoles.Select(ur => ur.Role).ToList();
+                // Yalnızca sistem rolleri; hane rolü üyelikten gelir ve token'a girmez
+                var roles = user.UserRoles
+                    .Select(ur => ur.Role)
+                    .Where(r => r != null && !Application.Features.Users.Common.UserProfileBuilder.IsHouseholdRole(r.Name))
+                    .ToList();
                 foreach (var role in roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name));
@@ -288,7 +294,8 @@ namespace Abacasa.Infrastructure.Services
             }
     }
 
-        public async Task<Result<RefreshTokenIssueResult>> GenerateRefreshTokenAsync(User user, string ipAddress, string userAgent, string deviceId = null, string deviceName = null, bool rememberMe = false, DateTime? preserveExpiryDate = null)
+        // tenantId: oturumun aktif hanesi; refresh token kaydına yazılır, rotation'da yeni token'a aynen geçer
+        public async Task<Result<RefreshTokenIssueResult>> GenerateRefreshTokenAsync(User user, string ipAddress, string userAgent, string deviceId = null, string deviceName = null, bool rememberMe = false, DateTime? preserveExpiryDate = null, int? tenantId = null)
         {
             try
             {
@@ -328,7 +335,8 @@ namespace Abacasa.Infrastructure.Services
                     DeviceId = deviceId,
                     DeviceName = deviceName,
                     DeviceType = GetDeviceType(userAgent),
-                    Location = await GetLocationFromIpAsync(ipAddress)
+                    Location = await GetLocationFromIpAsync(ipAddress),
+                    TenantId = tenantId
                 };
 
                 await _unitOfWork.RefreshTokens.AddAsync(refreshToken);
@@ -453,25 +461,33 @@ namespace Abacasa.Infrastructure.Services
                     ErrorCode.InvalidRequest,
                     _localizer["auth.refreshTokenInactive"]));
 
-            var user = await _unitOfWork.Users.GetUserWithPermissionsAsync(userId);
+            var user = await _unitOfWork.Users.GetUserWithRolesReadOnlyAsync(userId);
             if (user == null)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.NotFound,
                     _localizer["auth.userNotFound"]));
 
-            // Inactive user or inactive/deleted tenant: refuse without revoking, so the session
-            // can continue if the account or tenant is re-activated.
-            if (user.Status != Domain.Common.Enums.UserStatus.Active ||
-                (user.TenantId != null && (user.Tenant == null || !user.Tenant.IsActive)))
+            // Inactive user: refuse without revoking, so the session can continue if the account is re-activated.
+            if (user.Status != Domain.Common.Enums.UserStatus.Active)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.InvalidRequest,
                     _localizer["auth.invalidRefreshToken"]));
+
+            // Oturumun hanesi: üyelik hâlâ canlı ve hane aktifse aynı hane; değilse login kuralıyla yeniden seçilir
+            int? activeTenantId = null;
+            if (storedRefreshToken.TenantId.HasValue)
+            {
+                var candidate = await SelectActiveTenantAsync(user.Id, storedRefreshToken.TenantId);
+                if (candidate == storedRefreshToken.TenantId)
+                    activeTenantId = candidate;
+            }
+            activeTenantId ??= await SelectActiveTenantAsync(user.Id, user.TenantId);
 
             storedRefreshToken.Revoke(ipAddress, userAgent, RefreshTokenReasons.Rotated);
             _unitOfWork.RefreshTokens.Update(storedRefreshToken);
             await _unitOfWork.SaveChangesAsync();
 
-            var newAccessTokenResult = await GenerateAccessTokenAsync(user);
+            var newAccessTokenResult = await GenerateAccessTokenAsync(user, activeTenantId);
             if (!newAccessTokenResult.IsSuccess)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.InternalError,
@@ -484,7 +500,8 @@ namespace Abacasa.Infrastructure.Services
                 storedRefreshToken.DeviceId,
                 storedRefreshToken.DeviceName,
                 rememberMe: false,
-                preserveExpiryDate: storedRefreshToken.ExpiryDate);
+                preserveExpiryDate: storedRefreshToken.ExpiryDate,
+                tenantId: activeTenantId);
             if (!newRefreshTokenResult.IsSuccess)
                 return Result<LoginResponseDto>.Failure(Error.Failure(
                     ErrorCode.InternalError,
@@ -495,7 +512,7 @@ namespace Abacasa.Infrastructure.Services
                 user.Id, ipAddress);
 
             return Result<LoginResponseDto>.Success(
-                BuildLoginResponse(user, newAccessTokenResult.Value, newRefreshTokenResult.Value));
+                await BuildLoginResponseAsync(user, activeTenantId, newAccessTokenResult.Value, newRefreshTokenResult.Value));
         }
         catch (Exception ex)
         {
@@ -505,48 +522,86 @@ namespace Abacasa.Infrastructure.Services
                 _localizer["auth.tokenRefreshUnexpectedError"]));
         }
     }
-    private static LoginResponseDto BuildLoginResponse(User user, string accessToken, RefreshTokenIssueResult refreshTokenResult)
+
+    /// <summary>
+    /// Oturumun aktif hanesini değiştirir: o hanede canlı üyelik ve aktif hane yoksa 403. Mevcut refresh token yeni hane ile
+    /// rotate edilir (bitiş tarihi korunur), User.TenantId (son aktif hane) güncellenir. Yanıt login yanıtıyla aynıdır.
+    /// </summary>
+    public async Task<Result<LoginResponseDto>> SwitchHouseholdAsync(int userId, int tenantId, string refreshToken, string ipAddress, string userAgent)
+    {
+        try
+        {
+            var membership = await _unitOfWork.TenantMemberships.GetActiveAsync(userId, tenantId);
+            if (membership == null || membership.Tenant == null || !membership.Tenant.IsActive)
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.Forbidden,
+                    _localizer["auth.householdForbidden"]));
+
+            var storedRefreshToken = string.IsNullOrEmpty(refreshToken)
+                ? null
+                : await _unitOfWork.RefreshTokens.GetByTokenAsync(refreshToken);
+            if (storedRefreshToken == null || storedRefreshToken.UserId != userId || !storedRefreshToken.IsActive)
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.Unauthorized,
+                    _localizer["auth.invalidRefreshToken"]));
+
+            var user = await _unitOfWork.Users.GetUserWithRolesAsync(userId);
+            if (user == null || user.Status != Domain.Common.Enums.UserStatus.Active)
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.Unauthorized,
+                    _localizer["auth.invalidRefreshToken"]));
+
+            storedRefreshToken.Revoke(ipAddress, userAgent, RefreshTokenReasons.Rotated);
+            _unitOfWork.RefreshTokens.Update(storedRefreshToken);
+
+            // Son aktif hane: sonraki login bu haneyle başlar
+            user.TenantId = tenantId;
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            var accessTokenResult = await GenerateAccessTokenAsync(user, tenantId);
+            if (!accessTokenResult.IsSuccess)
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.InternalError,
+                    _localizer["auth.accessTokenGenerationFailed"]));
+
+            var refreshTokenResult = await GenerateRefreshTokenAsync(
+                user,
+                ipAddress,
+                userAgent,
+                storedRefreshToken.DeviceId,
+                storedRefreshToken.DeviceName,
+                rememberMe: false,
+                preserveExpiryDate: storedRefreshToken.ExpiryDate,
+                tenantId: tenantId);
+            if (!refreshTokenResult.IsSuccess)
+                return Result<LoginResponseDto>.Failure(Error.Failure(
+                    ErrorCode.InternalError,
+                    _localizer["auth.refreshTokenGenerationFailed"]));
+
+            _logger.LogInformation("Household switched. UserId: {UserId}, TenantId: {TenantId}", userId, tenantId);
+
+            return Result<LoginResponseDto>.Success(
+                await BuildLoginResponseAsync(user, tenantId, accessTokenResult.Value, refreshTokenResult.Value));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Household switch failed for user {UserId}", userId);
+            return Result<LoginResponseDto>.Failure(Error.Failure(
+                ErrorCode.InternalError,
+                _localizer["auth.tokenRefreshUnexpectedError"]));
+        }
+    }
+
+    // Kullanıcı nesnesi /me ile aynı koddan (UserProfileBuilder): aktif hane, üyelikler, aktif haneye göre izinler, sistem rolleri
+    private async Task<LoginResponseDto> BuildLoginResponseAsync(User user, int? activeTenantId, string accessToken, RefreshTokenIssueResult refreshTokenResult)
     {
         return new LoginResponseDto
         {
             AccessToken = accessToken,
             RefreshToken = refreshTokenResult.PlainToken,
             ExpiresAt = refreshTokenResult.Stored.ExpiryDate,
-            User = new Application.Features.Users.Dtos.UserDto
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                FullName = user.FullName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                Status = user.Status,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneConfirmed = user.PhoneConfirmed,
-                ProfileImageUrl = user.ProfileImageUrl,
-                CreatedDate = user.CreatedDate,
-                TenantId = user.TenantId,
-                Roles = user.UserRoles.Select(ur => new Application.Features.Roles.Dtos.RoleDto
-                {
-                    Id = ur.Role.Id,
-                    Name = ur.Role.Name,
-                    Description = ur.Role.Description,
-                    IsSystemRole = ur.Role.IsSystemRole,
-                    CreatedDate = ur.Role.CreatedDate
-                }).ToList(),
-                Permissions = user.UserRoles
-                    .SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission))
-                    .Distinct()
-                    .Select(p => new Application.Features.Permissions.Dtos.PermissionDto
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Description = p.Description,
-                        Resource = p.Resource,
-                        Type = p.Type,
-                        FullPermission = p.FullPermission
-                    }).ToList()
-            }
+            User = await Application.Features.Users.Common.UserProfileBuilder.BuildAsync(_unitOfWork, _permissionService, _legalVersions, user, activeTenantId)
         };
     }
 

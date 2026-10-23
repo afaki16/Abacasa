@@ -1,6 +1,7 @@
 using Abacasa.Application.Common.Localization;
 using Abacasa.Application.Common.Results;
 using Abacasa.Application.Common.Security;
+using Abacasa.Application.Features.Households.Common;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 using Abacasa.Domain.Models;
@@ -46,16 +47,29 @@ namespace Abacasa.Application.Features.Auth.Commands.VerifyEmail
                     _localizer["auth.invalidOrExpiredVerificationLink"]));
             }
 
-            token.User.EmailConfirmed = true;
-            // Only activate accounts waiting for verification; never re-activate a deactivated or banned user
-            if (token.User.Status == UserStatus.PendingVerification)
-                token.User.Status = UserStatus.Active;
-            token.MarkAsUsed();
+            // Doğrulama ve (kayıtta istenen) hanenin açılışı tek transaction'da
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                var user = token.User;
+                user.EmailConfirmed = true;
+                // Only activate accounts waiting for verification; never re-activate a deactivated or banned user
+                if (user.Status == UserStatus.PendingVerification)
+                    user.Status = UserStatus.Active;
+                token.MarkAsUsed();
 
-            _unitOfWork.Users.Update(token.User);
-            _unitOfWork.UserVerificationTokens.Update(token);
+                // Kayıtta istenen hane: 11a'daki hane açılışıyla aynı kod (yönetici üyeliği, "Kendisi" kişisi, kategoriler)
+                if (!string.IsNullOrWhiteSpace(user.PendingHouseholdName))
+                {
+                    var tenant = await HouseholdSetup.CreateAsync(_unitOfWork, user, user.PendingHouseholdName);
+                    user.TenantId = tenant.Id;
+                    user.PendingHouseholdName = null;
+                }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                _unitOfWork.Users.Update(user);
+                _unitOfWork.UserVerificationTokens.Update(token);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }, cancellationToken);
 
             _logger.LogInformation(
                 "Email verified. UserId: {UserId}, Email: {Email}, IpAddress: {IpAddress}",

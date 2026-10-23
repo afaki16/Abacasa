@@ -1,3 +1,6 @@
+using Abacasa.Application.Common;
+using Abacasa.Application.Features.Households.Common;
+using Abacasa.Application.Features.Auth.Common;
 using Abacasa.Application.Interfaces;
 using AutoMapper;
 using Abacasa.Application.Features.Auth.Commands.Login;
@@ -41,6 +44,7 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
         private readonly IMapper _mapper;
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IJsonStringLocalizer _localizer;
+        private readonly ILegalVersions _legalVersions;
 
         public RegisterCommandHandler(
             IUnitOfWork unitOfWork,
@@ -49,8 +53,10 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
             IConfiguration configuration,
             IMapper mapper,
             ILogger<RegisterCommandHandler> logger,
-            IJsonStringLocalizer localizer)
+            IJsonStringLocalizer localizer,
+            ILegalVersions legalVersions)
         {
+            _legalVersions = legalVersions;
             _unitOfWork = unitOfWork;
             _passwordService = passwordService;
             _emailService = emailService;
@@ -64,14 +70,29 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
         {
             var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
 
-            // Public register: users without a tenant share one uniqueness scope (TenantId null)
-            if (await _unitOfWork.Users.EmailExistsAsync(normalizedEmail, tenantId: null))
+            // Davetli kayıt: davet geçerli (Pending) olmalı ve e-postası istekteki e-postayla aynı olmalı
+            HouseholdInvitation? invitation = null;
+            if (!string.IsNullOrWhiteSpace(request.InviteToken))
+            {
+                invitation = await _unitOfWork.HouseholdInvitations.GetByTokenHashAsync(HouseholdInvitations.HashToken(request.InviteToken));
+                if (invitation == null
+                    || invitation.GetStatus(DateTime.UtcNow) != HouseholdInvitationStatus.Pending
+                    || invitation.Email != normalizedEmail)
+                    return Result<UserDto>.Failure(Error.Failure(
+                        ErrorCode.ValidationFailed,
+                        _localizer["households.invitationInvalid"]));
+            }
+
+            // Kimlik global: e-posta tüm sistemde benzersiz
+            if (await _unitOfWork.Users.EmailExistsAsync(normalizedEmail))
              return Result<UserDto>.Failure(Error.Failure(
                   ErrorCode.AlreadyExists,
                   _localizer["users.emailExists"]));
 
-            if (!string.IsNullOrWhiteSpace(request.PhoneNumber) &&
-                await _unitOfWork.Users.PhoneExistsAsync(request.PhoneNumber, tenantId: null))
+            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
+            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            if (normalizedPhone != null &&
+                await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone))
                 return Result<UserDto>.Failure(Error.Failure(
                     ErrorCode.AlreadyExists,
                     _localizer["users.phoneExists"]));
@@ -95,20 +116,42 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
                 LastName = request.LastName,
                 Email = normalizedEmail,
                 PasswordHash = passwordResult.Value,
-                PhoneNumber = request.PhoneNumber,
-                Status = UserStatus.PendingVerification,
-                EmailConfirmed = false
+                PhoneNumber = normalizedPhone,
+                // Davetle kayıt e-postayı doğrulanmış sayar ve hane açmaz; davetsiz kayıtta hane doğrulamada açılır
+                Status = invitation != null ? UserStatus.Active : UserStatus.PendingVerification,
+                EmailConfirmed = invitation != null,
+                TenantId = invitation?.TenantId,
+                PendingHouseholdName = invitation == null ? request.HouseholdName?.Trim() : null
             };
 
-            // Assign default User role
-            var userRole = await _unitOfWork.Roles.GetByNameAsync(RoleNames.User);
-            if (userRole != null)
+            // Sistem rolü atanmaz: hane yetkisi üyelikten gelir (11a)
+
+            if (invitation != null)
             {
-                user.UserRoles.Add(new UserRole { RoleId = userRole.Id });
+                // Kullanıcı ve davet kabulü (üyelik, kişi, Accepted) tek transaction'da; doğrulama e-postası gönderilmez
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
+                {
+                    await _unitOfWork.Users.AddAsync(user);
+                    await _unitOfWork.SaveChangesAsync();
+                    await LegalConsents.AddAsync(_unitOfWork, _legalVersions, user.Id, LegalConsents.AllDocuments);
+                    await HouseholdInvitations.AcceptAsync(_unitOfWork, invitation, user);
+                });
+
+                _logger.LogInformation(
+                    "User registered by invitation. UserId: {UserId}, Email: {Email}, TenantId: {TenantId}",
+                    user.Id, normalizedEmail, user.TenantId);
+
+                return Result<UserDto>.Success(_mapper.Map<UserDto>(user));
             }
 
-            await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.SaveChangesAsync();
+            // Kullanıcı ve koşul/aydınlatma onayları tek transaction'da
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await _unitOfWork.Users.AddAsync(user);
+                await _unitOfWork.SaveChangesAsync();
+                await LegalConsents.AddAsync(_unitOfWork, _legalVersions, user.Id, LegalConsents.AllDocuments);
+                await _unitOfWork.SaveChangesAsync();
+            });
 
             _logger.LogInformation(
                 "User registered. UserId: {UserId}, Email: {Email}, TenantId: {TenantId}",

@@ -22,6 +22,9 @@ namespace Abacasa.Domain.Entities
         public TokenType Type { get; set; }
         public string? Reason { get; set; }
 
+        // Oturumun aktif hanesi (token'daki tenant_id); rotation'da yeni token'a aynen kopyalanır
+        public int? TenantId { get; set; }
+
         // Navigation properties
         public User User { get; set; }
 

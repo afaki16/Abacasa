@@ -1,3 +1,4 @@
+using Abacasa.Application.Common;
 using Abacasa.Application.Interfaces;
 using Abacasa.Application.Common.Authorization;
 using Abacasa.Application.Common.Localization;
@@ -47,29 +48,21 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
             if (!TenantAccess.HasTenantScope(_currentUserService))
                 return Result<UserListDto>.Failure(Error.Failure(ErrorCode.Forbidden, _localizer["users.noTenantScope"]));
 
-            // New user is created in current user's tenant. Only SuperAdmin can specify TenantId to create in another tenant.
-            int? tenantId;
-            if (request.TenantId.HasValue)
-            {
-                if (!_currentUserService.CanAccessAllTenants)
-                    return Result<UserListDto>.Failure(Error.Failure(ErrorCode.Forbidden, _localizer["users.onlySuperAdminCanSpecifyTenant"]));
-                tenantId = request.TenantId;
-            }
-            else
-            {
-                tenantId = _currentUserService.TenantId;
-            }
+            // Kullanıcı hanesiz oluşur ve üyelik açılmaz; haneye davetle girer (Seri 12). İstekteki TenantId yok sayılır.
+            int? tenantId = null;
 
             var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
 
-            // Check if email already exists within this tenant scope
-            if (await _unitOfWork.Users.EmailExistsAsync(normalizedEmail, tenantId))
+            // Kimlik global: e-posta tüm sistemde benzersiz
+            if (await _unitOfWork.Users.EmailExistsAsync(normalizedEmail))
                 return Result<UserListDto>.Failure(Error.Failure(
                     ErrorCode.AlreadyExists,
                     _localizer["users.emailExists"]));
 
-            if (!string.IsNullOrWhiteSpace(request.PhoneNumber) &&
-                await _unitOfWork.Users.PhoneExistsAsync(request.PhoneNumber, tenantId))
+            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
+            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            if (normalizedPhone != null &&
+                await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone))
                 return Result<UserListDto>.Failure(Error.Failure(
                     ErrorCode.AlreadyExists,
                     _localizer["users.phoneExists"]));
@@ -98,7 +91,7 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                 LastName = request.LastName,
                 Email = normalizedEmail,
                 PasswordHash = passwordResult.Value,
-                PhoneNumber = request.PhoneNumber,
+                PhoneNumber = normalizedPhone,
                 Status = request.Status,
                 EmailConfirmed = false,
                 TenantId = tenantId

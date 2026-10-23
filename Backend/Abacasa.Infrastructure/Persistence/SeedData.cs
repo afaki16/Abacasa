@@ -158,15 +158,18 @@ namespace Abacasa.Infrastructure.Persistence
                 await context.Permissions.AddRangeAsync(newPermissions);
                 await context.SaveChangesAsync();
 
-                // Yeni izinleri SuperAdmin ve Admin rollerine ata. İlk kurulumda roller henüz yoksa atlanır;
-                // SeedRolesAsync tüm izinleri zaten verir.
+                // Yeni sistem izinlerini yalnızca SuperAdmin'e ata. Hane izinleri sistem rollerine verilmez;
+                // hane rollerine SyncHouseholdRolesAsync atar. İlk kurulumda roller henüz yoksa atlanır.
                 var roles = await context.Roles
-                    .Where(r => r.Name == RoleNames.SuperAdmin || r.Name == RoleNames.Admin)
+                    .Where(r => r.Name == RoleNames.SuperAdmin)
                     .ToListAsync();
+                var newSystemPermissions = newPermissions
+                    .Where(p => !HouseholdPermissions.IsHouseholdPermission(p.Name))
+                    .ToList();
 
-                if (roles.Count > 0)
+                if (roles.Count > 0 && newSystemPermissions.Count > 0)
                 {
-                    var rolePermissions = roles.SelectMany(r => newPermissions.Select(p => new RolePermission
+                    var rolePermissions = roles.SelectMany(r => newSystemPermissions.Select(p => new RolePermission
                     {
                         RoleId = r.Id,
                         PermissionId = p.Id
@@ -175,6 +178,53 @@ namespace Abacasa.Infrastructure.Persistence
                     await context.RolePermissions.AddRangeAsync(rolePermissions);
                     await context.SaveChangesAsync();
                 }
+            }
+        }
+
+        // Hane rolleri (HouseholdAdmin/HouseholdMember) yoksa oluşturulur; izinleri her açılışta
+        // HouseholdPermissions'taki tanıma eşitlenir: eksikler eklenir, fazlalar silinir.
+        public static async Task SyncHouseholdRolesAsync(ApplicationDbContext context)
+        {
+            var permissionIds = await context.Permissions
+                .ToDictionaryAsync(p => p.Name, p => p.Id);
+
+            foreach (var roleName in new[] { RoleNames.HouseholdAdmin, RoleNames.HouseholdMember })
+            {
+                var role = await context.Roles
+                    .FirstOrDefaultAsync(r => r.Name == roleName && r.TenantId == null);
+                if (role == null)
+                {
+                    role = new Role
+                    {
+                        Name = roleName,
+                        Description = roleName == RoleNames.HouseholdAdmin ? "Hane yöneticisi" : "Hane üyesi",
+                        IsSystemRole = true,
+                        TenantId = null
+                    };
+                    await context.Roles.AddAsync(role);
+                    await context.SaveChangesAsync();
+                }
+
+                var wantedIds = HouseholdPermissions.PermissionsFor(roleName)
+                    .Where(permissionIds.ContainsKey)
+                    .Select(name => permissionIds[name])
+                    .ToHashSet();
+
+                var current = await context.RolePermissions
+                    .Where(rp => rp.RoleId == role.Id)
+                    .ToListAsync();
+
+                var extra = current.Where(rp => !wantedIds.Contains(rp.PermissionId)).ToList();
+                var missing = wantedIds.Except(current.Select(rp => rp.PermissionId))
+                    .Select(id => new RolePermission { RoleId = role.Id, PermissionId = id })
+                    .ToList();
+
+                if (extra.Count > 0)
+                    context.RolePermissions.RemoveRange(extra);
+                if (missing.Count > 0)
+                    await context.RolePermissions.AddRangeAsync(missing);
+                if (extra.Count > 0 || missing.Count > 0)
+                    await context.SaveChangesAsync();
             }
         }
 
@@ -356,15 +406,12 @@ namespace Abacasa.Infrastructure.Persistence
                 });
             }
 
-            // Assign admin role to admin user
-            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleNames.Admin);
-            if (adminRole != null)
+            // Hane erişimi üyelikle: superadmin ve admin varsayılan hanenin yöneticisi
+            if (defaultTenant != null)
             {
-                await context.UserRoles.AddAsync(new UserRole
-                {
-                    UserId = adminUser.Id,
-                    RoleId = adminRole.Id
-                });
+                await context.TenantMemberships.AddRangeAsync(
+                    new TenantMembership { UserId = superAdminUser.Id, TenantId = defaultTenant.Id, Role = HouseholdRole.Admin },
+                    new TenantMembership { UserId = adminUser.Id, TenantId = defaultTenant.Id, Role = HouseholdRole.Admin });
             }
 
             // Seed standard demo user only in Development
@@ -387,14 +434,10 @@ namespace Abacasa.Infrastructure.Persistence
                 await context.Users.AddAsync(standardUser);
                 await context.SaveChangesAsync();
 
-                var userRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleNames.User);
-                if (userRole != null)
+                if (defaultTenant != null)
                 {
-                    await context.UserRoles.AddAsync(new UserRole
-                    {
-                        UserId = standardUser.Id,
-                        RoleId = userRole.Id
-                    });
+                    await context.TenantMemberships.AddAsync(
+                        new TenantMembership { UserId = standardUser.Id, TenantId = defaultTenant.Id, Role = HouseholdRole.Member });
                 }
             }
 

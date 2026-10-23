@@ -34,22 +34,9 @@ namespace Abacasa.Application.Features.Auth.Commands.ForgotPassword
         {
             var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
 
-            // Mirror the login flow: look up across tenants, then narrow only when ambiguous.
-            // GetByEmailAsync(email, tenantId) misses TenantId=null users when request.TenantId == 0.
-            var users = await _unitOfWork.Users.GetUsersByEmailAsync(normalizedEmail);
-
-            User? targetUser = null;
-            if (users.Count == 1)
-            {
-                targetUser = users[0];
-            }
-            else if (users.Count > 1 && request.TenantId > 0)
-            {
-                targetUser = users.FirstOrDefault(u => u.TenantId == request.TenantId);
-            }
-            // users.Count == 0 OR (multiple users but no tenant disambiguator):
-            // fall through with targetUser == null. Returning Success either way avoids
-            // leaking whether the email exists / which tenant it belongs to.
+            // Kimlik global: e-posta tüm sistemde benzersiz. İstekteki TenantId kabul edilir ama yok sayılır.
+            User? targetUser = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
+            // Returning Success either way avoids leaking whether the email exists.
 
             if (targetUser is null)
             {

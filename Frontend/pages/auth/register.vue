@@ -39,9 +39,18 @@
           </div>
 
           <!-- Register Form Component -->
+          <!-- Davet modu: hane adı gizli, e-posta davetteki adres -->
+          <v-alert v-if="invite" type="info" variant="tonal" density="compact" class="mb-4">
+            {{ invite.householdName }} hanesine davet edildiniz. Kayıttan sonra doğrudan haneye katılırsınız.
+          </v-alert>
+          <v-alert v-if="inviteError" type="error" variant="tonal" density="compact" class="mb-4">
+            {{ inviteError }}
+          </v-alert>
+
           <AuthRegisterForm
             ref="registerFormRef"
-            :loading="authStore.isLoading"
+            :loading="authStore.isLoading || inviteBusy"
+            :invite-email="invite?.email ?? null"
             @submit="handleRegister"
           >
             <template #terms>
@@ -102,8 +111,11 @@
 </template>
 
 <script setup lang="ts">
-import type { RegisterRequest } from '~/types'
+import type { InvitationInfo, RegisterRequest } from '~/types'
 import AuthRegisterForm from '~/components/Auth/RegisterForm.vue'
+import { API_ENDPOINTS } from '~/utils/apiEndpoints'
+import { parseApiErrorMessages } from '~/utils/apiError'
+import { clearInviteToken, getStoredInviteToken, reloadToDashboard, storeInviteToken } from '~/composables/useHousehold'
 
 // Meta
 definePageMeta({
@@ -128,9 +140,59 @@ const { loadAppData, getBackgroundImages, getRegisterConfig } = useAppData()
 const backgroundImages = computed(() => getBackgroundImages.value || [])
 const registerConfig = computed(() => getRegisterConfig.value)
 
+//#region Davet modu
+// Token URL'deki inviteToken'dan ya da sekme oturumundan gelir; URL'den silinir
+const route = useRoute()
+const router = useRouter()
+const api = useApi()
+const { getInvitation } = useHousehold()
+const inviteToken = ref<string | null>(null)
+const invite = ref<InvitationInfo | null>(null)
+const inviteError = ref('')
+const inviteBusy = ref(false)
+
+const loadInvite = async () => {
+  const fromUrl = route.query.inviteToken as string | undefined
+  if (fromUrl) {
+    storeInviteToken(fromUrl)
+    await router.replace({ path: route.path, query: {} })
+  }
+  inviteToken.value = getStoredInviteToken()
+  if (!inviteToken.value) return
+
+  try {
+    const info = await getInvitation(inviteToken.value)
+    // Yalnızca bekleyen davet kayıt modunu değiştirir
+    if (info.status === 'Pending') invite.value = info
+  } catch {
+    invite.value = null
+  }
+}
+
+// Davetli kayıt: aynı bilgilerle giriş, davetin hanesi aktif (User.TenantId) → /dashboard'a tam yenileme
+const registerWithInvite = async (formData: RegisterRequest) => {
+  inviteBusy.value = true
+  inviteError.value = ''
+  try {
+    await api.post(API_ENDPOINTS.AUTH.REGISTER, { ...formData, householdName: undefined, inviteToken: inviteToken.value }, { silent: true })
+    clearInviteToken()
+    await auth.login({ email: formData.email, password: formData.password, rememberMe: false, deviceId: '', deviceName: '' })
+    reloadToDashboard()
+  } catch (error) {
+    inviteError.value = parseApiErrorMessages(error, 'Kayıt tamamlanamadı').join(' ')
+    inviteBusy.value = false
+  }
+}
+//#endregion
+
 // Methods
 const handleRegister = async (formData: RegisterRequest) => {
   if (!acceptTerms.value) return
+
+  if (invite.value) {
+    await registerWithInvite(formData)
+    return
+  }
 
   try {
     await auth.register(formData)
@@ -161,6 +223,8 @@ let imageInterval: NodeJS.Timeout
 
 // Lifecycle
 onMounted(async () => {
+  await loadInvite()
+
   // Load app data
   await loadAppData()
 

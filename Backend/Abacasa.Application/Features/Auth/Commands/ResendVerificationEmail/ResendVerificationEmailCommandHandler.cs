@@ -35,18 +35,8 @@ namespace Abacasa.Application.Features.Auth.Commands.ResendVerificationEmail
         {
             var normalizedEmail = request.Email?.Trim().ToLowerInvariant() ?? string.Empty;
 
-            // Mirror ForgotPassword: cross-tenant lookup, narrow only when ambiguous.
-            var users = await _unitOfWork.Users.GetUsersByEmailAsync(normalizedEmail);
-
-            User? targetUser = null;
-            if (users.Count == 1)
-            {
-                targetUser = users[0];
-            }
-            else if (users.Count > 1 && request.TenantId > 0)
-            {
-                targetUser = users.FirstOrDefault(u => u.TenantId == request.TenantId);
-            }
+            // Kimlik global: e-posta tüm sistemde benzersiz. İstekteki TenantId kabul edilir ama yok sayılır.
+            User? targetUser = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
 
             // Email enumeration protection: return Success regardless of whether the user
             // exists or is already verified.

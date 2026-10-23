@@ -6,8 +6,10 @@ import type {
   LoginResponse,
   User,
   Session,
+  AccountDeletionPreview,
 } from "~/types";
 import { API_ENDPOINTS } from "~/utils/apiEndpoints";
+import { safeRedirect } from "~/utils/safeRedirect";
 import { useAuthStore } from "~/stores/auth";
 import { useApi } from "./useApi";
 import { useToast } from "./useToast";
@@ -72,7 +74,8 @@ export const useAuth = () => {
     return "Unknown Device";
   };
 
-  const login = async (credentials: LoginRequest) => {
+  // redirectTo: yalnızca uygulama içi yol (safeRedirect ile süzülmüş); yoksa /dashboard
+  const login = async (credentials: LoginRequest, redirectTo?: string | null) => {
     try {
       authStore.setLoading(true);
 
@@ -97,7 +100,7 @@ export const useAuth = () => {
       const deviceId = credentials.deviceId || generateDeviceId();
       await authStore.setAuth(loginData, deviceId);
 
-      await router.push("/dashboard");
+      await router.push(safeRedirect(redirectTo) ?? "/dashboard");
       return loginData;
     } catch (error) {
       throw error;
@@ -197,8 +200,9 @@ export const useAuth = () => {
     }
   };
 
+  // Büyük/küçük harfe duyarsız; kural store'da
   const hasPermission = (permission: string): boolean => {
-    return authStore.permissions.includes(permission);
+    return authStore.hasPermission(permission);
   };
 
   const hasRole = (role: string): boolean => {
@@ -250,6 +254,21 @@ export const useAuth = () => {
     await router.push("/");
   };
 
+  // Hesap silme önizlemesi: son yönetici olunan haneler, birlikte silinecek haneler, son SuperAdmin
+  const getAccountDeletionPreview = async (): Promise<AccountDeletionPreview> => {
+    const response = await api.get<AccountDeletionPreview>(API_ENDPOINTS.AUTH.ACCOUNT_DELETION_PREVIEW);
+    return response.data as AccountDeletionPreview;
+  };
+
+  // Hesap silinir (anonimleşir); oturum yerelde de temizlenir ve giriş sayfasında mesaj gösterilir.
+  // Hatalar çağırana bırakılır (bölümde gösterilir)
+  const deleteAccount = async (password: string, deleteSoleHouseholds: boolean): Promise<void> => {
+    const { $api } = useNuxtApp();
+    await $api.delete(API_ENDPOINTS.AUTH.ACCOUNT, { data: { password, deleteSoleHouseholds } });
+    authStore.clearAuth();
+    await router.push({ path: "/", query: { accountDeleted: "1" } });
+  };
+
   const logoutAllDevices = async (): Promise<void> => {
     try {
       await api.post(API_ENDPOINTS.AUTH.LOGOUT_ALL, {});
@@ -279,5 +298,7 @@ export const useAuth = () => {
     logoutAllDevices,
     revokeSessionById,
     changePassword,
+    getAccountDeletionPreview,
+    deleteAccount,
   };
 };

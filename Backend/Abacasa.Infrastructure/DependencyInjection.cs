@@ -4,6 +4,7 @@ using Abacasa.Infrastructure.Localization;
 using Abacasa.Domain.Common.Interfaces;
 using Abacasa.Domain.Common.Interfaces.Repositories;
 using Abacasa.Infrastructure.Persistence;
+using Abacasa.Infrastructure.Persistence.Erasure;
 using Abacasa.Infrastructure.Identity;
 using Abacasa.Infrastructure.Repositories;
 using Abacasa.Infrastructure.Services;
@@ -53,8 +54,13 @@ namespace Abacasa.Infrastructure
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
-        // Periodic hard-delete of expired tokens and old login attempts
-        services.AddHostedService<DataCleanupService>();
+        // KVKK imha işi (süresi geçmiş soft-deleted veri, kullanıcı anonimleştirme, token ve giriş denemeleri),
+        // hane silme ve hesap anonimleştirme
+        services.AddScoped<IHouseholdEraser, HouseholdEraser>();
+        services.AddScoped<IUserAnonymizer, UserAnonymizer>();
+        services.AddSingleton<ILegalVersions, LegalVersions>();
+        services.AddScoped<IDataRetentionRunner, DataRetentionRunner>();
+        services.AddHostedService<DataRetentionService>();
 
         // Add JWT Authentication
         AddJwtAuthentication(services, configuration, environment);
@@ -117,8 +123,12 @@ namespace Abacasa.Infrastructure
                         }
 
                         var tokenIssuedAt = DateTimeOffset.FromUnixTimeSeconds(iatUnix).UtcDateTime;
+
+                        // Token'daki aktif hanede canlı üyelik olmalı; üyelik silinince bir sonraki istek 401 olur
+                        int? tenantId = int.TryParse(context.Principal?.FindFirst("tenant_id")?.Value, out var tid) ? tid : null;
+
                         var revokedSessionService = context.HttpContext.RequestServices.GetService<IRevokedSessionService>();
-                        if (revokedSessionService != null && await revokedSessionService.WasSessionRevokedAfterAsync(userId, tokenIssuedAt))
+                        if (revokedSessionService != null && await revokedSessionService.WasSessionRevokedAfterAsync(userId, tokenIssuedAt, tenantId))
                         {
                             context.Fail("Session has been revoked");
                         }

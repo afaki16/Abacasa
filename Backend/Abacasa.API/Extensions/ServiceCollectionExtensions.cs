@@ -85,7 +85,9 @@ namespace Abacasa.API.Extensions
                         policy.WithOrigins(allowedOrigins)
                               .AllowAnyMethod()
                               .AllowAnyHeader()
-                              .AllowCredentials();
+                              .AllowCredentials()
+                              // Excel indirmede dosya adı başlıktan okunur
+                              .WithExposedHeaders("Content-Disposition");
                     }
                 });
             });

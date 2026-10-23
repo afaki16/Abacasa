@@ -75,7 +75,7 @@
                 />
               </v-col>
               <v-col cols="12" sm="4">
-                <!-- Türe göre önerilir, düzeltilebilir -->
+                <!-- Türe göre önerilir, düzeltilebilir; elle değiştirilince öneri durur -->
                 <v-text-field
                   v-model="formData.validUntil"
                   label="Geçerlilik sonu"
@@ -85,6 +85,7 @@
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.required, validUntilRule]"
+                  @update:model-value="validUntilTouched = true"
                 />
               </v-col>
               <v-col cols="12" sm="4">
@@ -244,13 +245,19 @@ const deleteMessage = computed(() => {
   return toDelete.value.hasExpense ? `${base} Bağlı harcama da silinecek.` : base
 })
 
-// Türe ve tarihe göre geçerlilik sonu önerilir; kullanıcı sonradan düzeltebilir
+// Kullanıcı geçerlilik sonuna elle dokunduysa form kapanana (sıfırlanana) kadar öneri uygulanmaz.
+// @update:model-value yalnızca kullanıcı girişinde tetiklenir; koddan yapılan atamalar bayrağı değiştirmez.
+const validUntilTouched = ref(false)
+
+// Türe ve tarihe göre geçerlilik sonu önerilir; tür ya da tarih alanındaki kullanıcı değişikliğinde çağrılır
 const suggest = () => {
+  if (validUntilTouched.value) return
   formData.validUntil = suggestValidUntil(formData.type, formData.date)
 }
 
 const resetForm = () => {
   editing.value = null
+  validUntilTouched.value = false
   Object.assign(formData, {
     type: VehicleObligationType.TrafficInsurance,
     date: todayIso(),
@@ -263,8 +270,10 @@ const resetForm = () => {
   suggest()
 }
 
+// Düzenleme kayıtlı değerlerle açılır; öneri burada çağrılmaz, yalnızca kullanıcı tür ya da tarihi değiştirirse devreye girer
 const startEdit = (o: VehicleObligation) => {
   editing.value = o
+  validUntilTouched.value = false
   Object.assign(formData, {
     type: o.type,
     date: o.date,

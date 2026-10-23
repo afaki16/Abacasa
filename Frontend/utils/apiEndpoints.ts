@@ -15,7 +15,34 @@ export const API_ENDPOINTS = {
     LOGOUT_ALL: '/api/auth/logout-all',
     LOGOUT_DEVICE: (deviceId: string) => `/api/auth/logout-device/${deviceId}`,
     REVOKE_SESSION_BY_ID: (sessionId: number) => `/api/auth/sessions/${sessionId}/revoke`,
-    CHANGE_PASSWORD: '/api/auth/change-password'
+    CHANGE_PASSWORD: '/api/auth/change-password',
+    SWITCH_HOUSEHOLD: '/api/auth/switch-household',
+    ACCOUNT: '/api/auth/account',
+    ACCOUNT_DELETION_PREVIEW: '/api/auth/account/deletion-preview'
+  },
+
+  // Haneler (üyelik)
+  HOUSEHOLDS: {
+    CREATE: '/api/households'
+  },
+
+  // Aktif hane: bilgi, üyeler ve davetler
+  HOUSEHOLD: {
+    GET: '/api/household',
+    UPDATE: '/api/household',
+    DELETE: '/api/household',
+    MEMBERS: '/api/household/members',
+    MEMBER: (membershipId: number) => `/api/household/members/${membershipId}`,
+    LEAVE: '/api/household/leave',
+    INVITATIONS: '/api/household/invitations',
+    INVITATION: (id: number) => `/api/household/invitations/${id}`,
+    RESEND_INVITATION: (id: number) => `/api/household/invitations/${id}/resend`
+  },
+
+  // Davet (token sahibi)
+  INVITATIONS: {
+    GET_BY_TOKEN: (token: string) => `/api/invitations/${encodeURIComponent(token)}`,
+    ACCEPT: '/api/invitations/accept'
   },
 
   // User management endpoints

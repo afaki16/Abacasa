@@ -176,7 +176,7 @@ public class DebtsController : BaseController
     /// Add a payment to a debt
     /// </summary>
     [HttpPost("{id:int}/payments")]
-    [Authorize(Policy = "debts.update")]
+    [Authorize(Policy = "debtpayments.create")]
     [ProducesResponseType(typeof(DebtPaymentDto), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -203,7 +203,7 @@ public class DebtsController : BaseController
     /// Update a payment of a debt
     /// </summary>
     [HttpPut("{id:int}/payments/{paymentId:int}")]
-    [Authorize(Policy = "debts.update")]
+    [Authorize(Policy = "debtpayments.update")]
     [ProducesResponseType(typeof(DebtPaymentDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -227,7 +227,7 @@ public class DebtsController : BaseController
     /// Delete a payment of a debt (soft delete)
     /// </summary>
     [HttpDelete("{id:int}/payments/{paymentId:int}")]
-    [Authorize(Policy = "debts.update")]
+    [Authorize(Policy = "debtpayments.delete")]
     [ProducesResponseType(200)]
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]

@@ -47,6 +47,14 @@
           </p>
         </div>
 
+        <!-- Hesap silindikten sonra -->
+        <AlertBox
+          v-if="route.query.accountDeleted && !accountDeletedDismissed"
+          variant="success"
+          message="Hesabınız silindi."
+          @close="accountDeletedDismissed = true"
+        />
+
         <!-- Session Expired Alert -->
         <AlertBox
           v-if="route.query.expired && !sessionExpiredDismissed"
@@ -211,6 +219,7 @@ const showPassword = ref(false);
 const loginApiErrors = ref<string[]>([]);
 const emailNotConfirmed = ref(false);
 const sessionExpiredDismissed = ref(false);
+const accountDeletedDismissed = ref(false);
 const resending = ref(false);
 const currentImageIndex = ref(0);
 
@@ -244,7 +253,7 @@ const resendAlertMessage = computed(() => {
   if (resendState.value === "error") {
     return t("auth.resendEmailError");
   }
-  return loginApiErrors.value[0] || t("auth.emailNotConfirmed");
+  return t("auth.emailNotConfirmed");
 });
 
 const resendButtonDisabled = computed(
@@ -307,7 +316,8 @@ const handleLogin = async () => {
   resendState.value = "idle";
   resendCooldown.value = 0;
   try {
-    await useAuth().login(form);
+    // ?redirect= yalnızca uygulama içi yolsa kullanılır (login içinde süzülür)
+    await useAuth().login(form, route.query.redirect as string | undefined);
   } catch (error: any) {
     console.error("Login failed:", error);
     loginApiErrors.value = parseApiErrorMessages(error);

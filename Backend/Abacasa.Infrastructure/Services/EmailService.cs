@@ -123,6 +123,20 @@ namespace Abacasa.Infrastructure.Services
             return await SendEmailAsync(email, subject, EmailTemplates.Wrap(subject, content));
         }
 
+        public async Task<Result> SendHouseholdInvitationAsync(string email, string inviterName, string householdName, string roleLabel, string acceptLink)
+        {
+            var subject = $"{householdName} hanesine davet";
+
+            var content = $@"
+<h2 style=""color:#333;"">Haneye Davet</h2>
+<p><strong>{Esc(inviterName)}</strong> sizi <strong>{Esc(householdName)}</strong> hanesine <strong>{Esc(roleLabel)}</strong> olarak davet etti.</p>
+<p>Daveti kabul etmek icin asagidaki butona tiklayin.</p>
+{EmailTemplates.CtaButton("Daveti kabul et", Esc(acceptLink))}
+<p style=""color:#666;"">Bu davet <strong>7 gun</strong> gecerlidir. Beklemiyorsaniz dikkate almayin.</p>";
+
+            return await SendEmailAsync(email, subject, EmailTemplates.Wrap(Esc(subject), content));
+        }
+
         public async Task<Result> SendWelcomeEmailAsync(string email, string userName)
         {
             const string subject = "Hos Geldiniz!";

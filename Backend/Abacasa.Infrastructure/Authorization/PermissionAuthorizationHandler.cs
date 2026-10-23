@@ -30,7 +30,10 @@ namespace Abacasa.Infrastructure.Authorization
                 return;
             }
 
-            var result = await _permissionService.HasPermissionAsync(userId, requirement.Permission);
+            // Hane kaynaklarının izinleri token'daki aktif haneye (tenant_id) göre hesaplanır
+            int? tenantId = int.TryParse(context.User.FindFirst("tenant_id")?.Value, out var tid) ? tid : null;
+
+            var result = await _permissionService.HasPermissionAsync(userId, tenantId, requirement.Permission);
 
             if (result.IsSuccess && result.Value)
             {

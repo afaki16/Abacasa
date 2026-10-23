@@ -4,7 +4,7 @@
   <template v-else-if="!isLoading">
     <component
       :is="loginComponent"
-      :show-register="false"
+      :show-register="true"
     />
   </template>
 

@@ -38,6 +38,18 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
             RuleFor(x => x.PhoneNumber)
                 .MaximumLength(20).WithMessage(localizer["validation.maxLength", localizer["validation.fields.phoneNumber"], 20])
                 .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
+
+            // Davetli ya da davetsiz: kullanım koşulları kabulü ve aydınlatma metni onayı zorunlu
+            RuleFor(x => x.AcceptTerms)
+                .Equal(true).WithMessage(localizer["legal.acceptTermsRequired"]);
+            RuleFor(x => x.AcknowledgePrivacy)
+                .Equal(true).WithMessage(localizer["legal.acknowledgePrivacyRequired"]);
+
+            // Davetsiz kayıtta hane adı zorunlu; davetli kayıtta yok sayılır
+            RuleFor(x => x.HouseholdName)
+                .Must(n => !string.IsNullOrWhiteSpace(n)).WithMessage(localizer["validation.required", localizer["validation.fields.householdName"]])
+                .MaximumLength(100).WithMessage(localizer["validation.maxLength", localizer["validation.fields.householdName"], 100])
+                .When(x => string.IsNullOrWhiteSpace(x.InviteToken));
         }
     }
 }

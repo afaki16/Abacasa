@@ -114,7 +114,8 @@ import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
 definePageMeta({
   title: 'Roller',
   requiresAuth: true,
-  permissions: ['roles.read']
+  middleware: ['permission'],
+  permissions: ['Roles.Read']
 })
 
 useHead({

@@ -60,7 +60,7 @@ namespace Abacasa.Application.Features.Roles.Commands.DeleteRole
                         ErrorCode.Unauthorized,
                         _localizer["auth.userNotAuthenticated"]));
 
-                var permissionsResult = await _permissionService.GetUserPermissionsAsync(callerId);
+                var permissionsResult = await _permissionService.GetUserPermissionsAsync(callerId, _currentUserService.TenantId);
                 if (!permissionsResult.IsSuccess)
                     return Result.Failure(permissionsResult.Errors);
 

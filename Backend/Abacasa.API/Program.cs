@@ -144,11 +144,12 @@ using (var scope = app.Services.CreateScope())
 // Seed data only if database is empty
 await SeedData.SeedAsyncIfEmpty(app.Services);
 
-// Her başlatmada eksik permission'ları ekle
+// Her başlatmada eksik permission'ları ekle, hane rollerinin izinlerini koddaki tanıma eşitle
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<Abacasa.Infrastructure.Persistence.ApplicationDbContext>();
     await Abacasa.Infrastructure.Persistence.SeedData.SeedPermissionsAsync(context);
+    await Abacasa.Infrastructure.Persistence.SeedData.SyncHouseholdRolesAsync(context);
 }
 
 app.Run();

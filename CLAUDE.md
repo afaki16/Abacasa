@@ -7,6 +7,8 @@
 - Frontend değişikliğinden sonra Frontend klasöründe `npm run build` çalıştır.
 - Git işlemi (commit, branch, push, stash) yapma; bunları kullanıcı yönetiyor.
 - Demo hanesinde (demo-admin) kalıcı örnek veri var; testler ona dokunmaz, yalnızca 'Test' ile başlayan kayıtları kullanır ve siler.
+- Bütçe sayfalarında her işlem düğmesi kendi iznine bağlıdır; yeni düğme eklerken izin kontrolü zorunlu.
+- Yeni tablo ya da FK eklerken imha işinin (DataRetentionService) ve hane silme rutininin (HouseholdEraser) tablo listesini ve sırasını güncelle.
 
 ## Yapı
 - .NET 10 Clean Architecture (API / Application / Domain / Infrastructure), Nuxt 3 SPA (ssr: false), PostgreSQL.
@@ -25,6 +27,8 @@
 - Başka kayıtların bağlı olduğu bir tanım silinemez; 409 ve "kullanımda" mesajı döner. Ödeme aracı silinmek yerine pasif yapılabilir.
 - Bağışlar harcama özetine girmez; birleşik toplam Özet sayfasında.
 - Sabit ödemede ödenme durumu saklanmaz; (RecurringPaymentId, RecurringPaymentMonth) ile bağlı canlı harcama/bağış kaydından hesaplanır.
+- Davet 7 gün geçerli, tek kullanımlık; davetle kayıt e-postayı doğrulanmış sayar ve hane açmaz. Hanede her zaman en az bir yönetici kalır.
+- Hane erişimi TenantMembership ile; hane kaynaklarının izinleri yalnızca aktif hanedeki üyelik rolünden gelir (HouseholdAdmin/HouseholdMember, kodda tanımlı), sistem rolleri yalnızca sistem izinlerini verir. User.TenantId = son aktif hane.
 - Borç alma ve geri ödeme dönem harcamasına girmez. Döviz ödemede kur elle girilir. Açık dövizin TL karşılığı en son tarihli kurla hesaplanır.
 - Özet: dönem toplamı = gerçekleşen harcama + bağış + ödenmemiş sabit ödeme vadesi; yemek kartı ve borç hareketleri hariç.
 - Yıllık tablo: gelirler elle; gider tarafı otomatik (plan ödemeleri vade ayına, plan dışı harcama ve bağışlar kayıt tarihine göre), yemek kartı hariç.

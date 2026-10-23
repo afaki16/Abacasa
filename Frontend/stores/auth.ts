@@ -58,24 +58,24 @@ export const useAuthStore = defineStore("auth", {
       return `${state.user.firstName.charAt(0)}${state.user.lastName.charAt(0)}`.toUpperCase();
     },
 
+    // İzin adları büyük/küçük harfe duyarsız karşılaştırılır (Users.Read = users.read)
     hasPermission: (state) => (permission: string) => {
-      return state.permissions.includes(permission);
+      const wanted = permission.toLowerCase();
+      return state.permissions.some((p) => p.toLowerCase() === wanted);
     },
 
     hasRole: (state) => (role: string) => {
       return state.roles.includes(role);
     },
 
-    hasAnyPermission: (state) => (permissions: string[]) => {
-      return permissions.some((permission) =>
-        state.permissions.includes(permission),
-      );
+    hasAnyPermission(): (permissions: string[]) => boolean {
+      return (permissions: string[]) =>
+        permissions.some((permission) => this.hasPermission(permission));
     },
 
-    hasAllPermissions: (state) => (permissions: string[]) => {
-      return permissions.every((permission) =>
-        state.permissions.includes(permission),
-      );
+    hasAllPermissions(): (permissions: string[]) => boolean {
+      return (permissions: string[]) =>
+        permissions.every((permission) => this.hasPermission(permission));
     },
 
     isTokenExpired: (state) => {

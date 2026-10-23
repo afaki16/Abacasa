@@ -12,6 +12,10 @@ namespace Abacasa.Domain.Constants
         public const string User = "User";
         public const string Manager = "Manager";
 
-        public static readonly string[] Reserved = { SuperAdmin, Admin, User, Manager };
+        // Hane rolleri: TenantMembership.Role'e karşılık gelen ortak sistem rolleri (izin setleri HouseholdPermissions'ta)
+        public const string HouseholdAdmin = "HouseholdAdmin";
+        public const string HouseholdMember = "HouseholdMember";
+
+        public static readonly string[] Reserved = { SuperAdmin, Admin, User, Manager, HouseholdAdmin, HouseholdMember };
     }
 }

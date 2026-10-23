@@ -21,27 +21,19 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<User> GetByEmailAsync(string email, int? tenantId)
+    // E-posta tüm sistemde benzersiz (kimlik global)
+    public async Task<User> GetByEmailAsync(string email)
     {
         return await _context.Set<User>()
-            .FirstOrDefaultAsync(u => u.Email == email && u.TenantId == tenantId);
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<IReadOnlyList<User>> GetUsersByEmailAsync(string email)
-    {
-        return await _context.Set<User>().Where(u => u.Email == email).ToListAsync();
-    }
-
-    public async Task<IReadOnlyList<User>> GetUsersByEmailWithPermissionsAsync(string email)
+    public async Task<User> GetByEmailWithRolesAsync(string email)
     {
         return await _context.Set<User>()
-            .Include(u => u.Tenant)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-                    .ThenInclude(r => r.RolePermissions)
-                        .ThenInclude(rp => rp.Permission)
-            .Where(u => u.Email == email)
-            .ToListAsync();
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task<User> GetUserWithRolesAsync(int userId)
@@ -74,14 +66,17 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
-    public async Task<bool> EmailExistsAsync(string email, int? tenantId)
+    public async Task<bool> EmailExistsAsync(string email, int? excludeUserId = null)
     {
-        return await _context.Set<User>().AnyAsync(u => u.Email == email && u.TenantId == tenantId);
+        var query = _context.Set<User>().Where(u => u.Email == email);
+        if (excludeUserId.HasValue)
+            query = query.Where(u => u.Id != excludeUserId.Value);
+        return await query.AnyAsync();
     }
 
-    public async Task<bool> PhoneExistsAsync(string phoneNumber, int? tenantId, int? excludeUserId = null)
+    public async Task<bool> PhoneExistsAsync(string phoneNumber, int? excludeUserId = null)
     {
-        var query = _context.Set<User>().Where(u => u.PhoneNumber == phoneNumber && u.TenantId == tenantId);
+        var query = _context.Set<User>().Where(u => u.PhoneNumber == phoneNumber);
         if (excludeUserId.HasValue)
             query = query.Where(u => u.Id != excludeUserId.Value);
         return await query.AnyAsync();
@@ -155,9 +150,10 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
             .CountAsync();
     }
 
-    public async Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, int? TenantId, bool TenantOk)?> GetSessionStateAsync(int userId)
+    public async Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk)?> GetSessionStateAsync(int userId, int? tenantId)
     {
-        // A soft-deleted tenant is hidden by the query filter, so u.Tenant comes back null → TenantOk = false
+        // Tek sorgu: kullanıcı durumu + token'daki hanede canlı üyelik ve aktif hane.
+        // Soft-delete filtresi üyeliğe ve haneye uygulanır; silinmiş üyelik ya da hane TenantOk = false yapar.
         var state = await _context.Set<User>()
             .AsNoTracking()
             .Where(u => u.Id == userId)
@@ -165,15 +161,16 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
             {
                 u.LastSessionsRevokedAt,
                 u.Status,
-                u.TenantId,
-                TenantOk = u.TenantId == null || (u.Tenant != null && u.Tenant.IsActive)
+                TenantOk = tenantId == null ||
+                    (_context.Set<TenantMembership>().Any(m => m.UserId == u.Id && m.TenantId == tenantId) &&
+                     _context.Set<Tenant>().Any(t => t.Id == tenantId && t.IsActive))
             })
             .FirstOrDefaultAsync();
 
         if (state == null)
             return null;
 
-        return (state.LastSessionsRevokedAt, state.Status, state.TenantId, state.TenantOk);
+        return (state.LastSessionsRevokedAt, state.Status, state.TenantOk);
     }
 
     public async Task<bool> TenantHasSuperAdminAsync(int tenantId)

@@ -46,8 +46,11 @@ namespace Abacasa.Application.Features.Mappings;
             // User mappings
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role)))
-                .ForMember(dest => dest.Permissions, opt => opt.MapFrom(src => 
-                    src.UserRoles.SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission)).Distinct()));
+                .ForMember(dest => dest.Permissions, opt => opt.MapFrom(src =>
+                    src.UserRoles.SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission)).Distinct()))
+                // Aktif hane ve üyelikler yalnızca login/refresh/me yanıtında (UserProfileBuilder) doldurulur
+                .ForMember(dest => dest.ActiveTenant, opt => opt.Ignore())
+                .ForMember(dest => dest.Memberships, opt => opt.Ignore());
 
             // User list mapping (without permissions for performance)
             CreateMap<User, UserListDto>()

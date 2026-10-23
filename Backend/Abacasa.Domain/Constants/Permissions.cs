@@ -110,6 +110,42 @@ namespace Abacasa.Domain.Constants
         public const string Delete = "RecurringPayments.Delete";
     }
 
+    // Sabit ödeme vadesini ödeme (Pay)
+    public static class RecurringPaymentPayments
+    {
+        public const string Read = "RecurringPaymentPayments.Read";
+        public const string Create = "RecurringPaymentPayments.Create";
+        public const string Update = "RecurringPaymentPayments.Update";
+        public const string Delete = "RecurringPaymentPayments.Delete";
+    }
+
+    // Borç ödemeleri
+    public static class DebtPayments
+    {
+        public const string Read = "DebtPayments.Read";
+        public const string Create = "DebtPayments.Create";
+        public const string Update = "DebtPayments.Update";
+        public const string Delete = "DebtPayments.Delete";
+    }
+
+    // Hane bilgileri (Seri 12)
+    public static class Household
+    {
+        public const string Read = "Household.Read";
+        public const string Create = "Household.Create";
+        public const string Update = "Household.Update";
+        public const string Delete = "Household.Delete";
+    }
+
+    // Hane üyeleri (Seri 12)
+    public static class HouseholdMembers
+    {
+        public const string Read = "HouseholdMembers.Read";
+        public const string Create = "HouseholdMembers.Create";
+        public const string Update = "HouseholdMembers.Update";
+        public const string Delete = "HouseholdMembers.Delete";
+    }
+
     // Dashboard (Özet) permissions
     public static class Dashboard
     {

@@ -20,8 +20,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     await authStore.initializeAuth()
   }
 
-  // verify-email ve reset-password her zaman erişilebilir (email link tıklamasıyla gelinir)
-  if (to.path === '/auth/verify-email' || to.path === '/auth/reset-password') return
+  // verify-email, reset-password ve accept-invite her zaman erişilebilir (email link tıklamasıyla gelinir;
+  // davet sayfası oturum açık ya da kapalı çalışır)
+  if (to.path === '/auth/verify-email' || to.path === '/auth/reset-password' || to.path === '/auth/accept-invite') return
 
   const publicRoutes = ['/auth/register', '/auth/check-email', '/auth/forgot-password', '/']
 

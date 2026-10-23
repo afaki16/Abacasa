@@ -52,7 +52,8 @@ import BaseDataTable from '~/components/UI/BaseDataTable.vue'
 definePageMeta({
   title: 'İzin Yönetimi',
   requiresAuth: true,
-  permissions: ['permissions.read']
+  middleware: ['permission'],
+  permissions: ['Permissions.Read']
 })
 
 useHead({

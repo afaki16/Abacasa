@@ -18,7 +18,22 @@ namespace Abacasa.Infrastructure.Persistence
             _currentUserService = currentUserService;
         }
 
-        private int? CurrentTenantId => _currentUserService?.TenantId;
+        // Hane verisinin hanesi: normalde token'daki aktif hane (tenant_id). UseTenant kapsamında verilen hane geçerlidir;
+        // oturumun hanesinden farklı bir haneye kayıt açmak için (ör. yeni hane oluşturma). Filtre ve atama aynı değeri kullanır.
+        private int? _tenantOverride;
+        private int? CurrentTenantId => _tenantOverride ?? _currentUserService?.TenantId;
+
+        public IDisposable UseTenant(int tenantId)
+        {
+            var previous = _tenantOverride;
+            _tenantOverride = tenantId;
+            return new TenantOverrideScope(this, previous);
+        }
+
+        private sealed class TenantOverrideScope(ApplicationDbContext context, int? previous) : IDisposable
+        {
+            public void Dispose() => context._tenantOverride = previous;
+        }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -46,6 +61,9 @@ namespace Abacasa.Infrastructure.Persistence
         public DbSet<FundMovement> FundMovements { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehicleObligation> VehicleObligations { get; set; }
+        public DbSet<TenantMembership> TenantMemberships { get; set; }
+        public DbSet<HouseholdInvitation> HouseholdInvitations { get; set; }
+        public DbSet<ConsentRecord> ConsentRecords { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -129,10 +147,18 @@ namespace Abacasa.Infrastructure.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedDate = DateTime.UtcNow;
+                        if (entry.Entity.IsDeleted && entry.Entity.DeletedDate == null)
+                            entry.Entity.DeletedDate = DateTime.UtcNow;
                         break;
 
                     case EntityState.Modified:
                         entry.Entity.UpdatedDate = DateTime.UtcNow;
+                        // Silinme zamanı: soft delete'te atanır, geri alınınca temizlenir (imha süresi buna göre).
+                        // Duruma göre bakılır; izlenmeyen (Update ile eklenen) kayıtta orijinal değer güvenilir değildir.
+                        if (entry.Entity.IsDeleted && entry.Entity.DeletedDate == null)
+                            entry.Entity.DeletedDate = DateTime.UtcNow;
+                        else if (!entry.Entity.IsDeleted && entry.Entity.DeletedDate != null)
+                            entry.Entity.DeletedDate = null;
                         break;
                 }
             }

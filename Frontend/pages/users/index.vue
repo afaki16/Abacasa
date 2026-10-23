@@ -126,7 +126,8 @@ import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
 definePageMeta({
   title: 'Kullanıcılar',
   requiresAuth: true,
-  permissions: ['users.read']
+  middleware: ['permission'],
+  permissions: ['Users.Read']
 })
 
 useHead({

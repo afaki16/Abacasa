@@ -11,9 +11,29 @@ export interface User {
   phoneConfirmed: boolean
   profileImageUrl?: string
   createdDate: string
+  /** Son aktif hane; erişim vermez (erişim memberships'ten). */
   tenantId?: number
+  /** Oturumun aktif hanesi; üyelik yoksa null */
+  activeTenant?: UserActiveTenant | null
+  memberships?: UserMembership[]
+  /** Yalnızca sistem rolleri */
   roles: any[]
+  /** Sistem izinleri + aktif hanedeki üyelik rolünün hane izinleri */
   permissions: any[]
+}
+
+export type HouseholdRole = 'Admin' | 'Member'
+
+export interface UserActiveTenant {
+  id: number
+  name: string
+  role: HouseholdRole
+}
+
+export interface UserMembership {
+  tenantId: number
+  name: string
+  role: HouseholdRole
 }
 
 export interface CreateUserRequest {

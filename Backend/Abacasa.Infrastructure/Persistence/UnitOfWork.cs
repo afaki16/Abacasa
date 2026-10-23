@@ -40,6 +40,9 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     private readonly Lazy<IFundMovementRepository> _fundMovements;
     private readonly Lazy<IVehicleRepository> _vehicles;
     private readonly Lazy<IVehicleObligationRepository> _vehicleObligations;
+    private readonly Lazy<ITenantMembershipRepository> _tenantMemberships;
+    private readonly Lazy<IHouseholdInvitationRepository> _householdInvitations;
+    private readonly Lazy<IConsentRecordRepository> _consentRecords;
 
     public UnitOfWork(ApplicationDbContext context, IServiceProvider serviceProvider)
     {
@@ -71,6 +74,9 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
         _fundMovements = new Lazy<IFundMovementRepository>(() => _serviceProvider.GetRequiredService<IFundMovementRepository>());
         _vehicles = new Lazy<IVehicleRepository>(() => _serviceProvider.GetRequiredService<IVehicleRepository>());
         _vehicleObligations = new Lazy<IVehicleObligationRepository>(() => _serviceProvider.GetRequiredService<IVehicleObligationRepository>());
+        _tenantMemberships = new Lazy<ITenantMembershipRepository>(() => _serviceProvider.GetRequiredService<ITenantMembershipRepository>());
+        _householdInvitations = new Lazy<IHouseholdInvitationRepository>(() => _serviceProvider.GetRequiredService<IHouseholdInvitationRepository>());
+        _consentRecords = new Lazy<IConsentRecordRepository>(() => _serviceProvider.GetRequiredService<IConsentRecordRepository>());
 
     }
 
@@ -99,6 +105,11 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public IFundMovementRepository FundMovements => _fundMovements.Value;
     public IVehicleRepository Vehicles => _vehicles.Value;
     public IVehicleObligationRepository VehicleObligations => _vehicleObligations.Value;
+    public ITenantMembershipRepository TenantMemberships => _tenantMemberships.Value;
+    public IHouseholdInvitationRepository HouseholdInvitations => _householdInvitations.Value;
+    public IConsentRecordRepository ConsentRecords => _consentRecords.Value;
+
+    public IDisposable UseTenant(int tenantId) => _context.UseTenant(tenantId);
 
 
 

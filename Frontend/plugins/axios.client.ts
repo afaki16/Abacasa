@@ -49,6 +49,24 @@ export default defineNuxtPlugin(() => {
     config: InternalAxiosRequestConfig;
   }> = [];
 
+  // Hane değişikliğinde /dashboard'a tam yenileme; aynı değişiklik için yalnızca bir kez
+  // (sekme oturumunda saklanır), böylece yenileme döngüye girmez
+  let tenantReloadStarted = false;
+  const reloadForTenantChange = (from: number | null, to: number | null): boolean => {
+    if (tenantReloadStarted) return true;
+    const key = "abacasa.tenantReload";
+    const change = `${from ?? "none"}->${to ?? "none"}`;
+    try {
+      if (sessionStorage.getItem(key) === change) return false;
+      sessionStorage.setItem(key, change);
+    } catch {
+      // sessionStorage yoksa da bir kez yenilenir
+    }
+    tenantReloadStarted = true;
+    window.location.assign("/dashboard");
+    return true;
+  };
+
   const processQueue = (err: Error | null, token: string | null = null) => {
     failedQueue.forEach(({ resolve, reject, config }) => {
       if (err) {
@@ -151,6 +169,8 @@ export default defineNuxtPlugin(() => {
       isRefreshing = true;
 
       try {
+        const previousTenantId = authStore.user?.activeTenant?.id ?? null;
+
         // Store'daki tek refresh yolu: sekme içinde tekilleştirilmiş (inFlightSilentRefresh)
         // ve sekmeler arasında navigator.locks ile sıralanmış. Kendi isteği _skipAuthRefresh
         // taşıdığı için bu interceptor'a tekrar girmez.
@@ -159,6 +179,13 @@ export default defineNuxtPlugin(() => {
 
         if (!refreshed || !newToken) {
           throw new Error("Token refresh failed");
+        }
+
+        // Aktif hane değiştiyse ya da kalmadıysa (ör. haneden çıkarıldı) eski hanenin ekranında kalınmaz
+        const newTenantId = authStore.user?.activeTenant?.id ?? null;
+        if (newTenantId !== previousTenantId && reloadForTenantChange(previousTenantId, newTenantId)) {
+          processQueue(new Error("Active household changed"), null);
+          return new Promise(() => {});
         }
 
         // Kuyruğu işle

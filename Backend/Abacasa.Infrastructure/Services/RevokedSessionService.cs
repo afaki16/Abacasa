@@ -15,14 +15,15 @@ namespace Abacasa.Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        // Treats the session as revoked when the user no longer exists, is not Active, belongs to an
-        // inactive or deleted tenant, or had all sessions revoked after the token was issued.
-        public async Task<bool> WasSessionRevokedAfterAsync(int userId, DateTime tokenIssuedAtUtc)
+        // Treats the session as revoked when the user no longer exists, is not Active, had all sessions revoked
+        // after the token was issued, or has no live membership in the token's tenant (or that tenant is inactive/deleted).
+        // Kullanıcı ve hane kontrolleri tek sorguda yapılır.
+        public async Task<bool> WasSessionRevokedAfterAsync(int userId, DateTime tokenIssuedAtUtc, int? tenantId)
         {
-            var state = await _unitOfWork.Users.GetSessionStateAsync(userId);
+            var state = await _unitOfWork.Users.GetSessionStateAsync(userId, tenantId);
             if (state == null) return true; // User not found, treat as revoked
 
-            var (lastSessionsRevokedAt, status, _, tenantOk) = state.Value;
+            var (lastSessionsRevokedAt, status, tenantOk) = state.Value;
 
             if (status != UserStatus.Active || !tenantOk)
                 return true;

@@ -34,6 +34,20 @@
         prepend-inner-icon="mdi-email"
         :rules="[rules.required, rules.email]"
         required
+        :disabled="loading || !!inviteEmail"
+        :class="inputClass"
+      />
+    </div>
+    <!-- Davet modunda hane açılmaz; alan gizlenir -->
+    <div v-if="!inviteEmail" class="input-group">
+      <BaseTextBox
+        v-model="formData.householdName"
+        label="Hane adı"
+        placeholder="Örn. Fakı Hanesi"
+        type="text"
+        prepend-inner-icon="mdi-home"
+        :rules="[rules.required, householdNameMax]"
+        required
         :disabled="loading"
         :class="inputClass"
       />
@@ -129,6 +143,8 @@ const props = defineProps<{
   inputClass?: string
   submitButtonColor?: string
   submitButtonClass?: string
+  /** Davet modu: e-posta bu adrese kilitlenir, hane adı alanı gizlenir */
+  inviteEmail?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -149,8 +165,20 @@ const formData = reactive<RegisterRequest>({
   email: '',
   password: '',
   confirmPassword: '',
-  phoneNumber: ''
+  phoneNumber: '',
+  householdName: ''
 })
+
+const householdNameMax = (v: string) => (v ?? '').trim().length <= 100 || 'Hane adı en fazla 100 karakter olabilir'
+
+// Davet modunda e-posta davetteki adrestir
+watch(
+  () => props.inviteEmail,
+  (email) => {
+    if (email) formData.email = email
+  },
+  { immediate: true }
+)
 
 // Password strength computation
 const passwordStrength = computed(() => {
@@ -200,7 +228,8 @@ const reset = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    phoneNumber: ''
+    phoneNumber: '',
+    householdName: ''
   })
 }
 

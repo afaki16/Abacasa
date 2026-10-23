@@ -34,6 +34,15 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IFundMovementRepository FundMovements { get; }
     IVehicleRepository Vehicles { get; }
     IVehicleObligationRepository VehicleObligations { get; }
+    ITenantMembershipRepository TenantMemberships { get; }
+    IHouseholdInvitationRepository HouseholdInvitations { get; }
+    IConsentRecordRepository ConsentRecords { get; }
+
+    /// <summary>
+    /// Kapsam boyunca hane verisinin TenantId'si (atama ve filtre) oturumun hanesi yerine verilen hane olur.
+    /// Oturumun aktif hanesinden farklı bir haneye kayıt açmak için (ör. yeni hane oluşturma). Dispose edilince eski haline döner.
+    /// </summary>
+    IDisposable UseTenant(int tenantId);
     // Core operations
     /// <summary>
     /// Save all changes made in this unit of work

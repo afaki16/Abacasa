@@ -38,7 +38,7 @@ namespace Abacasa.Application.Common.Authorization
                 if (currentUserService.UserId is not int callerId)
                     return Error.Failure(ErrorCode.Unauthorized, localizer["auth.userNotAuthenticated"]);
 
-                var permissionsResult = await permissionService.GetUserPermissionsAsync(callerId);
+                var permissionsResult = await permissionService.GetUserPermissionsAsync(callerId, currentUserService.TenantId);
                 if (!permissionsResult.IsSuccess)
                     return permissionsResult.Errors[0];
 

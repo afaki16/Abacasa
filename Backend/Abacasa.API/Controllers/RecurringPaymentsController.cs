@@ -180,7 +180,7 @@ public class RecurringPaymentsController : BaseController
     /// Pay one month of a plan: creates a linked expense (or donation for donation plans)
     /// </summary>
     [HttpPost("{id:int}/pay")]
-    [Authorize(Policy = "recurringpayments.update")]
+    [Authorize(Policy = "recurringpaymentpayments.create")]
     [ProducesResponseType(typeof(RecurringPaymentPayResultDto), 201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]

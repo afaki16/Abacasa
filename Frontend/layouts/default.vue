@@ -114,6 +114,7 @@
             <!-- User Info (sadece açık sidebar'da) -->
             <div v-if="isSidebarOpen" class="flex-1 min-w-0 text-left">
               <p class="text-body-sm font-bold text-on-surface truncate">{{ userInfo.name }}</p>
+              <p class="text-label-sm text-on-surface-variant truncate">{{ userInfo.household }}</p>
               <p class="text-label-sm text-on-surface-variant truncate">{{ userInfo.email }}</p>
             </div>
 
@@ -150,6 +151,18 @@
               </NuxtLink>
 
               <NuxtLink
+                v-if="authStore.hasPermission('Household.Read')"
+                to="/household"
+                @click="closeUserDropdown"
+                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-outline-variant/20"
+              >
+                <Icon name="mdi:home-heart" class="w-5 h-5 text-on-surface-variant" />
+                <span class="text-body-sm font-medium">Hane ayarları</span>
+              </NuxtLink>
+
+              <!-- Backend'deki RequireAdminRole ile aynı: yalnızca SuperAdmin ya da Admin sistem rolü -->
+              <NuxtLink
+                v-if="canSeeSettings"
                 to="/settings"
                 @click="closeUserDropdown"
                 class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-outline-variant/20"
@@ -177,6 +190,9 @@
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Top Bar -->
       <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-outline-variant bg-surface flex-shrink-0">
+        <!-- Hane seçici -->
+        <HouseholdSwitcher />
+
         <!-- Language Switcher (mevcut component) -->
         <LanguageSwitcher v-if="showLanguageSwitcher" />
 
@@ -209,10 +225,12 @@ import { useAuth } from '~/composables/useAuth'
 import { useAppData } from '~/composables/useAppData'
 import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
+import HouseholdSwitcher from '~/components/Household/HouseholdSwitcher.vue'
 
 // Auth state
 const authStore = useAuthStore()
-const { permissions, roles } = storeToRefs(authStore)
+const { roles } = storeToRefs(authStore)
+const { activeTenant, getRoleLabel } = useHousehold()
 const authUtils = useAuth()
 const router = useRouter()
 const route = useRoute()
@@ -233,14 +251,17 @@ const showLanguageSwitcher = computed(() => true)
 // User info
 const userInfo = computed(() => ({
   name: authStore.userFullName || 'Kullanıcı',
-  email: authStore.user?.email || ''
+  email: authStore.user?.email || '',
+  household: activeTenant.value ? `${activeTenant.value.name} · ${getRoleLabel(activeTenant.value.role)}` : 'Hane yok'
 }))
 
-// Yetkiye göre menüleri filtrele
+const canSeeSettings = computed(() => authStore.hasRole('SuperAdmin') || authStore.hasRole('Admin'))
+
+// Yetkiye göre menüleri filtrele; öğesi kalmayan grup tamamen gizlenir
 const visibleMenus = computed(() =>
   filterNavigationByPermissions(
     navigationItems,
-    (p) => permissions.value.includes(p),
+    (p) => authStore.hasPermission(p),
     (r) => roles.value.includes(r)
   )
 )

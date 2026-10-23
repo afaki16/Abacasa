@@ -8,6 +8,8 @@ namespace Abacasa.Domain.Entities
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
+        // Soft delete zamanı (UTC); ApplicationDbContext.SaveChanges'te IsDeleted değişince atanır/temizlenir. İmha süresi buna göre.
+        public DateTime? DeletedDate { get; set; }
 
         protected BaseEntity()
         {

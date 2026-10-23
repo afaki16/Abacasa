@@ -1,3 +1,4 @@
+using Abacasa.Application.Common;
 using AutoMapper;
 using Abacasa.Application.Features.Users.Dtos;
 using Abacasa.Application.Features.Roles.Dtos;
@@ -80,15 +81,17 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
 
             var normalizedEmail = request.Email?.Trim().ToLowerInvariant();
 
-            // Check if email already exists for another user in the same tenant
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail, user.TenantId);
+            // Kimlik global: e-posta başka bir kullanıcıda olamaz
+            var existingUser = await _unitOfWork.Users.GetByEmailAsync(normalizedEmail);
             if (existingUser != null && existingUser.Id != request.Id)
             return Result<UserListDto>.Failure(Error.Failure(
                         ErrorCode.AlreadyExists,
                         _localizer["users.emailExists"]));
 
-            if (!string.IsNullOrWhiteSpace(request.PhoneNumber) &&
-                await _unitOfWork.Users.PhoneExistsAsync(request.PhoneNumber, user.TenantId, request.Id))
+            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
+            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            if (normalizedPhone != null &&
+                await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone, request.Id))
                 return Result<UserListDto>.Failure(Error.Failure(
                     ErrorCode.AlreadyExists,
                     _localizer["users.phoneExists"]));
@@ -101,7 +104,7 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.Email = normalizedEmail;
-            user.PhoneNumber = request.PhoneNumber;
+            user.PhoneNumber = normalizedPhone;
             user.Status = request.Status;
             user.ProfileImageUrl = request.ProfileImageUrl;
 

@@ -13,6 +13,10 @@ export interface RegisterRequest {
   password: string
   confirmPassword: string
   phoneNumber?: string
+  /** Davetsiz kayıtta zorunlu; e-posta doğrulanınca bu adla hane açılır */
+  householdName?: string
+  /** Davetli kayıt: hane açılmaz, davet kabul edilir */
+  inviteToken?: string
 }
 
 export interface ForgotPasswordRequest {

@@ -30,7 +30,10 @@ export interface LoginResponse {
 export type {
   User,
   CreateUserRequest,
-  UpdateUserRequest
+  UpdateUserRequest,
+  HouseholdRole,
+  UserActiveTenant,
+  UserMembership
 } from './user'
 
 export { UserStatus } from './user'
@@ -214,3 +217,17 @@ export type {
   MenuItem,
   UserPreferences
 } from './common'
+
+// Household Types
+export type {
+  InvitationStatus,
+  HouseholdDetail,
+  HouseholdMember,
+  HouseholdInvitation,
+  HouseholdInvitationSendResult,
+  InvitationInfo,
+  HouseholdRef,
+  AccountDeletionPreview
+} from './household'
+
+export { HouseholdRoleValue } from './household'
