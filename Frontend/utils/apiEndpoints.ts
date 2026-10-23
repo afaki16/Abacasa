@@ -39,6 +39,122 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/tenants/${id}`,
   },
 
+  // Category management endpoints
+  CATEGORIES: {
+    LIST: '/api/categories',
+    CREATE: '/api/categories',
+    GET_BY_ID: (id: string) => `/api/categories/${id}`,
+    UPDATE: (id: string) => `/api/categories/${id}`,
+    DELETE: (id: string) => `/api/categories/${id}`,
+  },
+
+  // Person management endpoints
+  PEOPLE: {
+    LIST: '/api/people',
+    CREATE: '/api/people',
+    GET_BY_ID: (id: string) => `/api/people/${id}`,
+    UPDATE: (id: string) => `/api/people/${id}`,
+    DELETE: (id: string) => `/api/people/${id}`,
+  },
+
+  // Payment method management endpoints (controller adı küçük harf: /api/paymentmethods)
+  PAYMENT_METHODS: {
+    LIST: '/api/paymentmethods',
+    CREATE: '/api/paymentmethods',
+    GET_BY_ID: (id: string) => `/api/paymentmethods/${id}`,
+    UPDATE: (id: string) => `/api/paymentmethods/${id}`,
+    DELETE: (id: string) => `/api/paymentmethods/${id}`,
+  },
+
+  // Expense management endpoints
+  EXPENSES: {
+    LIST: '/api/expenses',
+    SUMMARY: '/api/expenses/summary',
+    CREATE: '/api/expenses',
+    GET_BY_ID: (id: string) => `/api/expenses/${id}`,
+    UPDATE: (id: string) => `/api/expenses/${id}`,
+    DELETE: (id: string) => `/api/expenses/${id}`,
+  },
+
+  // Donation management endpoints
+  DONATIONS: {
+    LIST: '/api/donations',
+    SUMMARY: '/api/donations/summary',
+    CREATE: '/api/donations',
+    GET_BY_ID: (id: string) => `/api/donations/${id}`,
+    UPDATE: (id: string) => `/api/donations/${id}`,
+    DELETE: (id: string) => `/api/donations/${id}`,
+  },
+
+  // Recurring payment endpoints (controller adı küçük harf: /api/recurringpayments)
+  RECURRING_PAYMENTS: {
+    LIST: '/api/recurringpayments',
+    OCCURRENCES: '/api/recurringpayments/occurrences',
+    CREATE: '/api/recurringpayments',
+    GET_BY_ID: (id: string) => `/api/recurringpayments/${id}`,
+    UPDATE: (id: string) => `/api/recurringpayments/${id}`,
+    DELETE: (id: string) => `/api/recurringpayments/${id}`,
+    PAY: (id: string) => `/api/recurringpayments/${id}/pay`,
+  },
+
+  // Debt endpoints
+  DEBTS: {
+    LIST: '/api/debts',
+    SUMMARY: '/api/debts/summary',
+    CREATE: '/api/debts',
+    GET_BY_ID: (id: string) => `/api/debts/${id}`,
+    UPDATE: (id: string) => `/api/debts/${id}`,
+    DELETE: (id: string) => `/api/debts/${id}`,
+    PAYMENTS: (id: string) => `/api/debts/${id}/payments`,
+    PAYMENT: (id: string, paymentId: string) => `/api/debts/${id}/payments/${paymentId}`,
+  },
+
+  // Donation target endpoints
+  DONATION_TARGETS: {
+    LIST: '/api/donationtargets',
+    REPORT: (year: number) => `/api/donationtargets/year/${year}`,
+    CREATE: '/api/donationtargets',
+    UPDATE: (id: string) => `/api/donationtargets/${id}`,
+    DELETE: (id: string) => `/api/donationtargets/${id}`,
+  },
+
+  // Donation fund (emanet) endpoints
+  DONATION_FUNDS: {
+    LIST: '/api/donationfunds',
+    CREATE: '/api/donationfunds',
+    GET_BY_ID: (id: string) => `/api/donationfunds/${id}`,
+    UPDATE: (id: string) => `/api/donationfunds/${id}`,
+    DELETE: (id: string) => `/api/donationfunds/${id}`,
+    MOVEMENTS: (id: string) => `/api/donationfunds/${id}/movements`,
+    MOVEMENT: (id: string, movementId: string) => `/api/donationfunds/${id}/movements/${movementId}`,
+  },
+
+  // Vehicle endpoints
+  VEHICLES: {
+    LIST: '/api/vehicles',
+    UPCOMING: '/api/vehicles/upcoming',
+    CREATE: '/api/vehicles',
+    UPDATE: (id: string) => `/api/vehicles/${id}`,
+    DELETE: (id: string) => `/api/vehicles/${id}`,
+    OBLIGATIONS: (id: string) => `/api/vehicles/${id}/obligations`,
+    OBLIGATION: (id: string, obligationId: string) => `/api/vehicles/${id}/obligations/${obligationId}`,
+  },
+
+  // Ledger (yıllık tablo) endpoints
+  LEDGER: {
+    ITEMS: '/api/ledger/items',
+    ITEM: (id: string) => `/api/ledger/items/${id}`,
+    AMOUNT: (id: string, year: number, month: number) => `/api/ledger/items/${id}/amounts/${year}/${month}`,
+    YEAR: (year: number) => `/api/ledger/year/${year}`,
+  },
+
+  // Exchange rate endpoints
+  EXCHANGE_RATES: {
+    LIST: '/api/exchangerates',
+    SAVE: '/api/exchangerates',
+    DELETE: (id: string) => `/api/exchangerates/${id}`,
+  },
+
   // Role management endpoints
   ROLES: {
     LIST: '/api/roles',
@@ -68,6 +184,8 @@ export const API_ENDPOINTS = {
 
   // Dashboard endpoints
   DASHBOARD: {
+    // Özet
+    GET: '/api/dashboard',
     STATS: '/api/dashboard/stats',
     RECENT_ACTIVITIES: '/api/dashboard/recent-activities',
     USER_GROWTH: '/api/dashboard/user-growth'

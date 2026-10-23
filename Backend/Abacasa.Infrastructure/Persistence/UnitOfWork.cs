@@ -24,6 +24,22 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     private readonly Lazy<IUserVerificationTokenRepository> _userVerificationTokens;
     private readonly Lazy<ITenantRepository> _tenants;
     private readonly Lazy<ILoginAttemptRepository> _loginAttempts;
+    private readonly Lazy<ICategoryRepository> _categories;
+    private readonly Lazy<IPersonRepository> _people;
+    private readonly Lazy<IPaymentMethodRepository> _paymentMethods;
+    private readonly Lazy<IExpenseRepository> _expenses;
+    private readonly Lazy<IDonationRepository> _donations;
+    private readonly Lazy<IRecurringPaymentRepository> _recurringPayments;
+    private readonly Lazy<IDebtRepository> _debts;
+    private readonly Lazy<IDebtPaymentRepository> _debtPayments;
+    private readonly Lazy<IExchangeRateRepository> _exchangeRates;
+    private readonly Lazy<ILedgerItemRepository> _ledgerItems;
+    private readonly Lazy<IMonthlyAmountRepository> _monthlyAmounts;
+    private readonly Lazy<IDonationTargetRepository> _donationTargets;
+    private readonly Lazy<IDonationFundRepository> _donationFunds;
+    private readonly Lazy<IFundMovementRepository> _fundMovements;
+    private readonly Lazy<IVehicleRepository> _vehicles;
+    private readonly Lazy<IVehicleObligationRepository> _vehicleObligations;
 
     public UnitOfWork(ApplicationDbContext context, IServiceProvider serviceProvider)
     {
@@ -39,6 +55,22 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
         _userVerificationTokens = new Lazy<IUserVerificationTokenRepository>(() => _serviceProvider.GetRequiredService<IUserVerificationTokenRepository>());
         _tenants = new Lazy<ITenantRepository>(() => _serviceProvider.GetRequiredService<ITenantRepository>());
         _loginAttempts = new Lazy<ILoginAttemptRepository>(() => _serviceProvider.GetRequiredService<ILoginAttemptRepository>());
+        _categories = new Lazy<ICategoryRepository>(() => _serviceProvider.GetRequiredService<ICategoryRepository>());
+        _people = new Lazy<IPersonRepository>(() => _serviceProvider.GetRequiredService<IPersonRepository>());
+        _paymentMethods = new Lazy<IPaymentMethodRepository>(() => _serviceProvider.GetRequiredService<IPaymentMethodRepository>());
+        _expenses = new Lazy<IExpenseRepository>(() => _serviceProvider.GetRequiredService<IExpenseRepository>());
+        _donations = new Lazy<IDonationRepository>(() => _serviceProvider.GetRequiredService<IDonationRepository>());
+        _recurringPayments = new Lazy<IRecurringPaymentRepository>(() => _serviceProvider.GetRequiredService<IRecurringPaymentRepository>());
+        _debts = new Lazy<IDebtRepository>(() => _serviceProvider.GetRequiredService<IDebtRepository>());
+        _debtPayments = new Lazy<IDebtPaymentRepository>(() => _serviceProvider.GetRequiredService<IDebtPaymentRepository>());
+        _exchangeRates = new Lazy<IExchangeRateRepository>(() => _serviceProvider.GetRequiredService<IExchangeRateRepository>());
+        _ledgerItems = new Lazy<ILedgerItemRepository>(() => _serviceProvider.GetRequiredService<ILedgerItemRepository>());
+        _monthlyAmounts = new Lazy<IMonthlyAmountRepository>(() => _serviceProvider.GetRequiredService<IMonthlyAmountRepository>());
+        _donationTargets = new Lazy<IDonationTargetRepository>(() => _serviceProvider.GetRequiredService<IDonationTargetRepository>());
+        _donationFunds = new Lazy<IDonationFundRepository>(() => _serviceProvider.GetRequiredService<IDonationFundRepository>());
+        _fundMovements = new Lazy<IFundMovementRepository>(() => _serviceProvider.GetRequiredService<IFundMovementRepository>());
+        _vehicles = new Lazy<IVehicleRepository>(() => _serviceProvider.GetRequiredService<IVehicleRepository>());
+        _vehicleObligations = new Lazy<IVehicleObligationRepository>(() => _serviceProvider.GetRequiredService<IVehicleObligationRepository>());
 
     }
 
@@ -51,6 +83,22 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public IUserVerificationTokenRepository UserVerificationTokens => _userVerificationTokens.Value;
     public ITenantRepository Tenants => _tenants.Value;
     public ILoginAttemptRepository LoginAttempts => _loginAttempts.Value;
+    public ICategoryRepository Categories => _categories.Value;
+    public IPersonRepository People => _people.Value;
+    public IPaymentMethodRepository PaymentMethods => _paymentMethods.Value;
+    public IExpenseRepository Expenses => _expenses.Value;
+    public IDonationRepository Donations => _donations.Value;
+    public IRecurringPaymentRepository RecurringPayments => _recurringPayments.Value;
+    public IDebtRepository Debts => _debts.Value;
+    public IDebtPaymentRepository DebtPayments => _debtPayments.Value;
+    public IExchangeRateRepository ExchangeRates => _exchangeRates.Value;
+    public ILedgerItemRepository LedgerItems => _ledgerItems.Value;
+    public IMonthlyAmountRepository MonthlyAmounts => _monthlyAmounts.Value;
+    public IDonationTargetRepository DonationTargets => _donationTargets.Value;
+    public IDonationFundRepository DonationFunds => _donationFunds.Value;
+    public IFundMovementRepository FundMovements => _fundMovements.Value;
+    public IVehicleRepository Vehicles => _vehicles.Value;
+    public IVehicleObligationRepository VehicleObligations => _vehicleObligations.Value;
 
 
 

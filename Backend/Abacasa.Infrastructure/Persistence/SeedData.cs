@@ -157,6 +157,24 @@ namespace Abacasa.Infrastructure.Persistence
             {
                 await context.Permissions.AddRangeAsync(newPermissions);
                 await context.SaveChangesAsync();
+
+                // Yeni izinleri SuperAdmin ve Admin rollerine ata. İlk kurulumda roller henüz yoksa atlanır;
+                // SeedRolesAsync tüm izinleri zaten verir.
+                var roles = await context.Roles
+                    .Where(r => r.Name == RoleNames.SuperAdmin || r.Name == RoleNames.Admin)
+                    .ToListAsync();
+
+                if (roles.Count > 0)
+                {
+                    var rolePermissions = roles.SelectMany(r => newPermissions.Select(p => new RolePermission
+                    {
+                        RoleId = r.Id,
+                        PermissionId = p.Id
+                    }));
+
+                    await context.RolePermissions.AddRangeAsync(rolePermissions);
+                    await context.SaveChangesAsync();
+                }
             }
         }
 

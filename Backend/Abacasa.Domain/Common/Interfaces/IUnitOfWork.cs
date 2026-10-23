@@ -18,6 +18,22 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IUserVerificationTokenRepository UserVerificationTokens { get; }
     ITenantRepository Tenants { get; }
     ILoginAttemptRepository LoginAttempts { get; }
+    ICategoryRepository Categories { get; }
+    IPersonRepository People { get; }
+    IPaymentMethodRepository PaymentMethods { get; }
+    IExpenseRepository Expenses { get; }
+    IDonationRepository Donations { get; }
+    IRecurringPaymentRepository RecurringPayments { get; }
+    IDebtRepository Debts { get; }
+    IDebtPaymentRepository DebtPayments { get; }
+    IExchangeRateRepository ExchangeRates { get; }
+    ILedgerItemRepository LedgerItems { get; }
+    IMonthlyAmountRepository MonthlyAmounts { get; }
+    IDonationTargetRepository DonationTargets { get; }
+    IDonationFundRepository DonationFunds { get; }
+    IFundMovementRepository FundMovements { get; }
+    IVehicleRepository Vehicles { get; }
+    IVehicleObligationRepository VehicleObligations { get; }
     // Core operations
     /// <summary>
     /// Save all changes made in this unit of work

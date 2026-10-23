@@ -1,220 +1,279 @@
 <template>
-  <div class="space-y-md">
-    <!-- 1. Welcome Header -->
-    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
-      <div class="flex items-center justify-between flex-wrap gap-md">
-        <div>
-          <h1 class="text-headline-md font-headline-md text-on-surface">
-            {{ greeting }}
-          </h1>
-          <p class="text-body-md text-on-surface-variant mt-1">
-            {{ t('dashboard.subtitle') }}
-          </p>
-        </div>
-        <div
-          class="flex items-center gap-2 text-primary bg-primary/10 px-3 py-1.5 rounded-full"
-        >
-          <Icon name="mdi:calendar-check" class="w-4 h-4" />
-          <span class="text-body-sm font-bold">{{ t('dashboard.todayLabel') }} {{ todayDate }}</span>
-        </div>
-      </div>
-    </div>
+  <!-- Dashboard.Read yoksa API çağrılmaz; kısa hoş geldin mesajı -->
+  <v-card v-if="!canRead" variant="outlined" class="pa-6">
+    <div class="text-h6">{{ greeting }}</div>
+    <div class="text-body-2 text-medium-emphasis mt-1">Abacasa'ya hoş geldiniz.</div>
+  </v-card>
 
-    <!-- 2. Stats Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
-      <StatCard
-        v-for="stat in statsCards"
-        :key="stat.label"
-        :label="stat.label"
-        :value="stat.value"
-        :trend-percent="stat.trendPercent"
-        :trend-subtitle="stat.trendSubtitle"
-        :icon="stat.icon"
-        :color="stat.color"
-        :sparkline="stat.sparkline"
-      />
-    </div>
+  <template v-else>
+    <!-- Dönem seçici -->
+    <PeriodSelector
+      ref="periodSelectorRef"
+      v-model="period"
+      storage-key="abacasa.dashboard.period"
+      :payment-methods="paymentMethods"
+    />
 
-    <!-- 3. İki kolonlu içerik alanı: Chart (sol) + Profile Card (sağ) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-md">
-      <!-- Sol: Haftalık Gelir Analizi (mevcut içerik — korunuyor) -->
-      <div
-        v-if="isAdminOrSuperAdmin"
-        class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden"
-      >
-        <div class="flex items-center gap-2 px-md py-4 border-b border-outline-variant">
-          <Icon name="mdi:chart-line" class="w-5 h-5 text-primary" />
-          <h2 class="text-body-md font-bold text-on-surface">
-            {{ t('dashboard.weeklyRevenueAnalysis') }}
-          </h2>
-        </div>
-        <div class="p-md">
-          <div class="h-[360px]">
-            <canvas ref="revenueChart"></canvas>
-          </div>
-        </div>
-      </div>
+    <!-- Kartlar -->
+    <v-row class="mb-2">
+      <v-col cols="12" sm="6" md="3">
+        <v-card variant="tonal" color="primary" class="fill-height">
+          <v-card-text>
+            <div class="text-caption">Dönem toplamı (yemek kartı hariç)</div>
+            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.outflowTotal ?? 0) }}</div>
+            <div class="text-caption">
+              Harcama {{ formatMoney(data?.spent.expenses ?? 0) }} · Bağış {{ formatMoney(data?.spent.donations ?? 0) }} ·
+              Bekleyen {{ formatMoney(data?.pending.total ?? 0) }}
+            </div>
+            <div v-if="(data?.pending.unknownCount ?? 0) > 0" class="text-caption">
+              {{ data?.pending.unknownCount }} kalemin tutarı belli değil
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="6" md="3">
+        <v-card variant="tonal" color="info" class="fill-height">
+          <v-card-text>
+            <div class="text-caption">Sabit ödemeler</div>
+            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.recurring.total ?? 0) }}</div>
+            <div class="text-caption">
+              Ödenen {{ formatMoney(data?.recurring.paidTotal ?? 0) }} · Bekleyen {{ formatMoney(data?.recurring.pendingTotal ?? 0) }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="6" md="3">
+        <!-- Borçlar sayfasındaki kartla aynı kurallar -->
+        <v-card variant="tonal" color="warning" class="fill-height">
+          <v-card-text>
+            <div class="text-caption">Açık borç (TL karşılığı)</div>
+            <div class="text-h5 font-weight-bold">
+              {{ usdRateMissing ? "—" : formatMoney(data?.debts.openTotalInTry ?? 0) }}
+            </div>
+            <div class="text-caption">
+              {{ formatMoney(data?.debts.openTry ?? 0) }} · {{ formatMoney(data?.debts.openUsd ?? 0, "USD") }}
+              <template v-if="data?.debts.usdRate"> · Kur {{ formatDisplayDate(data.debts.usdRate.date) }}</template>
+            </div>
+            <div v-if="usdRateMissing" class="text-caption">Kur girilmemiş</div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="6" md="3">
+        <v-card variant="tonal" color="secondary" class="fill-height">
+          <v-card-text>
+            <div class="text-caption">Yemek kartı</div>
+            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.mealCard.total ?? 0) }}</div>
+            <div class="text-caption">
+              Harcanan {{ formatMoney(data?.mealCard.spent ?? 0) }} · Bekleyen {{ formatMoney(data?.mealCard.pending ?? 0) }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
 
-      <!-- Sağ: User Profile Card (yeni) -->
-      <div class="lg:col-span-4">
-        <UserProfileCard />
-      </div>
-    </div>
-  </div>
+    <!-- Ödeme aracına ve kişiye göre -->
+    <v-row class="mb-2">
+      <v-col cols="12" md="6">
+        <v-card variant="outlined" class="fill-height">
+          <v-card-title class="text-subtitle-1">Ödeme aracına göre</v-card-title>
+          <v-table density="compact">
+            <thead>
+              <tr>
+                <th>Ad</th>
+                <th>Tür</th>
+                <th class="text-right">Gerçekleşen</th>
+                <th class="text-right">Bekleyen</th>
+                <th class="text-right">Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in data?.byPaymentMethod ?? []" :key="row.id">
+                <td>{{ row.name }}</td>
+                <td>{{ getTypeLabel(row.type) }}</td>
+                <td class="text-right">{{ formatMoney(row.spent) }}</td>
+                <td class="text-right">{{ formatMoney(row.pending) }}</td>
+                <td class="text-right font-weight-medium">{{ formatMoney(row.total) }}</td>
+              </tr>
+              <tr v-if="!data?.byPaymentMethod?.length">
+                <td colspan="5" class="text-medium-emphasis">Kayıt yok</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-card variant="outlined" class="fill-height">
+          <v-card-title class="text-subtitle-1">Kişiye göre</v-card-title>
+          <v-table density="compact">
+            <thead>
+              <tr>
+                <th>Ad</th>
+                <th class="text-right">Gerçekleşen</th>
+                <th class="text-right">Bekleyen</th>
+                <th class="text-right">Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in data?.byPerson ?? []" :key="row.personId ?? 'household'">
+                <td>{{ row.name ?? "Hane" }}</td>
+                <td class="text-right">{{ formatMoney(row.spent) }}</td>
+                <td class="text-right">{{ formatMoney(row.pending) }}</td>
+                <td class="text-right font-weight-medium">{{ formatMoney(row.total) }}</td>
+              </tr>
+              <tr v-if="!data?.byPerson?.length">
+                <td colspan="4" class="text-medium-emphasis">Kayıt yok</td>
+              </tr>
+            </tbody>
+            <tfoot v-if="data?.byPerson?.length">
+              <tr class="font-weight-bold">
+                <td>Toplam</td>
+                <td class="text-right">{{ formatMoney(personTotals.spent) }}</td>
+                <td class="text-right">{{ formatMoney(personTotals.pending) }}</td>
+                <td class="text-right">{{ formatMoney(personTotals.total) }}</td>
+              </tr>
+            </tfoot>
+          </v-table>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Yaklaşan ödemeler -->
+    <v-card variant="outlined">
+      <v-card-title class="d-flex align-center text-subtitle-1">
+        Yaklaşan ödemeler
+        <v-spacer />
+        <NuxtLink to="/recurring-payments" class="text-body-2 text-primary">Sabit ödemeler'e git</NuxtLink>
+      </v-card-title>
+      <v-table density="compact">
+        <thead>
+          <tr>
+            <th>Vade</th>
+            <th>Ad</th>
+            <th>Tür</th>
+            <th>Ödeme aracı</th>
+            <th class="text-right">Tutar</th>
+            <th>Durum</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in data?.upcoming ?? []"
+            :key="`${item.source}-${item.recurringPaymentId ?? item.vehicleId}-${item.obligationType ?? ''}-${item.dueDate}`"
+          >
+            <td>{{ formatDisplayDate(item.dueDate) }}</td>
+            <!-- Araç satırı Araçlar sayfasına bağlanır -->
+            <td>
+              <NuxtLink v-if="item.source === 'vehicle'" to="/vehicles" class="text-primary">{{ item.name }}</NuxtLink>
+              <template v-else>{{ item.name }}</template>
+            </td>
+            <td>
+              {{ item.source === 'vehicle' && item.obligationType ? getObligationTypeLabel(item.obligationType) : item.kind ? getKindLabel(item.kind) : '' }}
+            </td>
+            <td>{{ item.source === 'vehicle' ? '—' : item.paymentMethodName }}</td>
+            <td class="text-right">
+              {{ formatMoney(item.amount) }}
+              <v-chip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</v-chip>
+            </td>
+            <td>
+              <v-chip v-if="item.isOverdue" size="small" color="error" variant="tonal">Gecikti</v-chip>
+              <span v-else>{{ dueLabel(item.dueDate) }}</span>
+            </td>
+          </tr>
+          <tr v-if="!data?.upcoming?.length">
+            <td colspan="6" class="text-medium-emphasis">Yaklaşan ödeme yok</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-card>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import { Chart, registerables } from "chart.js";
-import { useAuth } from "~/composables/useAuth";
+import { ref, computed, watch, onMounted } from "vue";
+import type { Dashboard, PaymentMethod } from "~/types";
+import PeriodSelector from "~/components/Budget/PeriodSelector.vue";
+import { formatDisplayDate, monthRange, todayIso, type Period } from "~/utils/period";
 import { useAuthStore } from "~/stores/auth";
-import StatCard from "~/components/Dashboard/StatCard.vue";
-import UserProfileCard from "~/components/Dashboard/UserProfileCard.vue";
 
-Chart.register(...registerables);
-
+// Permission middleware yok: izni olmayan kullanıcı hoş geldin mesajını görür
 definePageMeta({
-  middleware: ["permission"],
-});
-
-const authStore = useAuthStore();
-const { hasRole } = useAuth();
-const { t, locale } = useI18n();
-
-const isAdminOrSuperAdmin = computed(() => {
-  return hasRole("Admin") || hasRole("SuperAdmin");
-});
-
-const revenueChart = ref<HTMLCanvasElement>();
-
-// Saate göre selamlama + kullanıcı adı
-const greeting = computed(() => {
-  const hour = new Date().getHours();
-  const period = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
-  const prefix = t(`dashboard.greeting.${period}`);
-  const name = authStore.userFullName;
-  return name ? `${prefix}, ${name}` : prefix;
-});
-
-const todayDate = computed(() => {
-  const localeMap: Record<string, string> = {
-    tr: "tr-TR",
-    en: "en-US",
-  };
-  const dateLocale = localeMap[locale.value] || "tr-TR";
-  return new Date().toLocaleDateString(dateLocale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-});
-
-/**
- * MOCK DATA — Aşama 2A için.
- * Backend bağlantısı 2A sonrası bağımsız bir adımda yapılacak.
- *
- * Sparkline değerleri son 7 gün simülasyonu — gerçek API'den günlük sayılar gelecek.
- * Etiketler i18n'den geldiği için computed; locale değişince başlıklar güncellenir.
- */
-const statsCards = computed(() => [
-  {
-    label: t("dashboard.stats.totalUsers"),
-    value: 1247,
-    trendPercent: 12,
-    trendSubtitle: t("dashboard.trendVsLast7Days"),
-    icon: "mdi:account-multiple",
-    color: "primary" as const,
-    sparkline: [1180, 1190, 1205, 1220, 1230, 1240, 1247],
-  },
-  {
-    label: t("dashboard.stats.activeUsers"),
-    value: 892,
-    trendPercent: 5,
-    trendSubtitle: t("dashboard.trendVsLast7Days"),
-    icon: "mdi:account-check",
-    color: "info" as const,
-    sparkline: [840, 850, 865, 870, 880, 885, 892],
-  },
-  {
-    label: t("dashboard.stats.totalRoles"),
-    value: 14,
-    trendPercent: 0,
-    trendSubtitle: t("dashboard.trendNoChange"),
-    icon: "mdi:shield-account",
-    color: "tertiary" as const,
-    sparkline: [14, 14, 14, 14, 14, 14, 14],
-  },
-  {
-    label: t("dashboard.stats.totalPermissions"),
-    value: 47,
-    trendPercent: 4,
-    trendSubtitle: t("dashboard.stats.newPermissions"),
-    icon: "mdi:key",
-    color: "secondary" as const,
-    sparkline: [45, 45, 45, 46, 47, 47, 47],
-  },
-]);
-
-const initRevenueChart = () => {
-  if (!revenueChart.value) return;
-
-  new Chart(revenueChart.value, {
-    type: "line",
-    data: {
-      labels: [
-        t("dashboard.days.mon"),
-        t("dashboard.days.tue"),
-        t("dashboard.days.wed"),
-        t("dashboard.days.thu"),
-        t("dashboard.days.fri"),
-        t("dashboard.days.sat"),
-        t("dashboard.days.sun"),
-      ],
-      datasets: [
-        {
-          label: t("dashboard.revenueLabel"),
-          data: [12500, 19800, 15200, 21300, 18900, 25400, 22100],
-          borderColor:
-            getComputedStyle(document.documentElement)
-              .getPropertyValue("--theme-primary")
-              .trim() || "#2563eb",
-          backgroundColor: `rgba(${getComputedStyle(document.documentElement).getPropertyValue("--theme-primary-rgb").trim() || "37, 99, 235"}, 0.1)`,
-          tension: 0.4,
-          fill: true,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false,
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function (value) {
-              return "₺" + value.toLocaleString();
-            },
-          },
-        },
-      },
-    },
-  });
-};
-
-onMounted(() => {
-  if (isAdminOrSuperAdmin.value) {
-    setTimeout(() => {
-      initRevenueChart();
-    }, 100);
-  }
+  title: "Özet",
+  requiresAuth: true,
 });
 
 useHead({
-  title: () => t("dashboard.pageTitle"),
+  title: "Özet",
 });
+
+//#region Composables
+const authStore = useAuthStore();
+const { hasPermission } = useAuth();
+const { formatMoney } = useMoney();
+const { getTypeLabel, getPaymentMethods } = usePaymentMethods();
+const { getKindLabel } = useRecurringPayments();
+const { getTypeLabel: getObligationTypeLabel } = useVehicles();
+const { getDashboard } = useDashboard();
+//#endregion
+
+const canRead = computed(() => hasPermission("Dashboard.Read"));
+const greeting = computed(() => (authStore.userFullName ? `Merhaba, ${authStore.userFullName}` : "Merhaba"));
+
+//#region Dönem ve veri
+const paymentMethods = ref<PaymentMethod[]>([]);
+const periodSelectorRef = ref<InstanceType<typeof PeriodSelector> | null>(null);
+const today = todayIso();
+const [todayYear, todayMonth] = today.split("-").map(Number);
+const period = ref<Period>(monthRange(todayYear, todayMonth));
+const data = ref<Dashboard | null>(null);
+
+const load = async () => {
+  try {
+    data.value = await getDashboard(period.value.start, period.value.end, today);
+  } catch {
+    data.value = null;
+  }
+};
+
+let ready = false;
+watch(period, () => {
+  if (ready) load();
+});
+//#endregion
+
+// Borçlar sayfasındaki kural: TL karşılığı yalnızca açık dolar varken kur yoksa hesaplanamaz
+const usdRateMissing = computed(() => !!data.value && data.value.debts.openUsd > 0 && !data.value.debts.usdRate);
+
+const personTotals = computed(() => {
+  const rows = data.value?.byPerson ?? [];
+  return {
+    spent: rows.reduce((sum, r) => sum + r.spent, 0),
+    pending: rows.reduce((sum, r) => sum + r.pending, 0),
+    total: rows.reduce((sum, r) => sum + r.total, 0),
+  };
+});
+
+// Vadeye kalan gün; tarihler 'YYYY-MM-DD', saat dilimi etkisi olmasın diye UTC'de karşılaştırılır
+const dueLabel = (dueDate: string) => {
+  const days = Math.round((Date.parse(`${dueDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
+  return days === 0 ? "Bugün" : `${days} gün kaldı`;
+};
+
+//#region Lifecycle
+onMounted(async () => {
+  if (!canRead.value) return;
+
+  // Kart dönemi seçimi için ödeme araçları; izin yoksa yalnızca takvim ayı
+  if (hasPermission("PaymentMethods.Read")) {
+    const paymentMethodRes = await getPaymentMethods(1, 1000, "");
+    paymentMethods.value = paymentMethodRes?.data?.items || [];
+  }
+
+  // Son seçimi geri yükle; kart artık yoksa takvim ayına dön
+  await periodSelectorRef.value?.restore();
+
+  // İlk yükleme; watcher bu sırada tetiklenirse ikinci kez yüklemesin
+  await load();
+  ready = true;
+});
+//#endregion
 </script>

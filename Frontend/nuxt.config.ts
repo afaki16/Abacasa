@@ -136,7 +136,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || "http://localhost:5156",
+      apiBase: process.env.API_BASE_URL || "http://localhost:5166",
       appName: "Abacasa",
       appVersion: "1.0.0",
       defaultLayout: process.env.NUXT_PUBLIC_DEFAULT_LAYOUT || "default",
@@ -165,7 +165,7 @@ export default defineNuxtConfig({
       "/**": {
         headers: {
           "Content-Security-Policy": buildCsp(
-            process.env.API_BASE_URL || "http://localhost:5156",
+            process.env.API_BASE_URL || "http://localhost:5166",
           ),
           // Clickjacking koruması (CSP frame-ancestors zaten kapsıyor,
           // ama eski tarayıcılar için defense-in-depth)

@@ -125,7 +125,7 @@ cd YOUR_PROJECT
 | Source | appsettings.Development.json | env vars + appsettings.Staging.json | env vars + appsettings.Production.json |
 | JWT Secret | hardcoded (local only) | env var: `JWT_SECRET_*_TEST` | env var: `JWT_SECRET_*_PROD` |
 | DB Connection | hardcoded localhost | env var | env var |
-| CORS Origins | localhost:3000 | empty (set in Staging.json) | empty (set in Production.json) |
+| CORS Origins | localhost:3010 | empty (set in Staging.json) | empty (set in Production.json) |
 
 > **Önemli:** Production/Staging'de tüm secret'lar environment variable olarak inject edilir.
 
@@ -165,7 +165,7 @@ INITIAL_ADMIN_PASSWORD_YOURPROJECT_TEST=<min 8 chars>
 |----------|---------|
 | `INITIAL_SUPERADMIN_PASSWORD_*` | Initial superadmin password for first deploy. Min 8 chars. Generate with `openssl rand -base64 16`. Remove from .env after first successful deploy. |
 | `INITIAL_ADMIN_PASSWORD_*` | Initial admin password. Same rules. |
-| `API_BASE_URL` (Frontend) | Frontend'in çağırdığı API adresi; production build/run ortamında verilmeli (ör. `https://api.yourdomain.com`). Verilmezse yerel geliştirme varsayılanı `http://localhost:5156` kullanılır. CSP `connect-src` de bu değerden üretilir. |
+| `API_BASE_URL` (Frontend) | Frontend'in çağırdığı API adresi; production build/run ortamında verilmeli (ör. `https://api.yourdomain.com`). Verilmezse yerel geliştirme varsayılanı `http://localhost:5166` kullanılır. CSP `connect-src` de bu değerden üretilir. |
 
 ### Required GitHub Secrets (Repo → Settings → Secrets → Actions)
 

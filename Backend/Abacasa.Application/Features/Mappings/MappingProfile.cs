@@ -2,6 +2,19 @@ using AutoMapper;
 using Abacasa.Application.Features.Users.Dtos;
 using Abacasa.Application.Features.Roles.Dtos;
 using Abacasa.Application.Features.Tenants.Dtos;
+using Abacasa.Application.Features.Categories.Dtos;
+using Abacasa.Application.Features.People.Dtos;
+using Abacasa.Application.Features.PaymentMethods.Dtos;
+using Abacasa.Application.Features.Expenses.Dtos;
+using Abacasa.Application.Features.Donations.Dtos;
+using Abacasa.Application.Features.RecurringPayments.Dtos;
+using Abacasa.Application.Features.Debts.Common;
+using Abacasa.Application.Features.Debts.Dtos;
+using Abacasa.Application.Features.ExchangeRates.Dtos;
+using Abacasa.Application.Features.Ledger.Dtos;
+using Abacasa.Application.Features.DonationTargets.Dtos;
+using Abacasa.Application.Features.DonationFunds.Dtos;
+using Abacasa.Application.Features.Vehicles.Dtos;
 using Abacasa.Application.Features.Permissions.Dtos;
 using Abacasa.Application.Features.Auth.Dtos;
 using Abacasa.Application.Features.Auth.Commands.Login;
@@ -135,6 +148,134 @@ namespace Abacasa.Application.Features.Mappings;
         // DTO -> Command mappings (Controller'da kullan�l�r)
         CreateMap<CreateTenantDto, CreateTenantCommand>();
         CreateMap<UpdateTenantDto, UpdateTenantCommand>();
+
+        // Category mappings
+        CreateMap<Category, CategoryListDto>();
+        CreateMap<Category, CategoryDto>();
+
+        // Person mappings
+        CreateMap<Person, PersonListDto>();
+        CreateMap<Person, PersonDto>();
+
+        // PaymentMethod mappings
+        CreateMap<PaymentMethod, PaymentMethodListDto>()
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+        CreateMap<PaymentMethod, PaymentMethodDto>()
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+
+        // Expense mappings
+        CreateMap<Expense, ExpenseListDto>()
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.PaymentMethodType,
+                opt => opt.MapFrom(src => src.PaymentMethod.Type))
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+        CreateMap<Expense, ExpenseDto>()
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.PaymentMethodType,
+                opt => opt.MapFrom(src => src.PaymentMethod.Type))
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+
+        // Donation mappings
+        CreateMap<Donation, DonationListDto>()
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.PaymentMethodType,
+                opt => opt.MapFrom(src => src.PaymentMethod.Type))
+            .ForMember(dest => dest.GiverPersonName,
+                opt => opt.MapFrom(src => src.GiverPerson != null ? src.GiverPerson.Name : null))
+            .ForMember(dest => dest.FundLabel, opt => opt.Ignore());
+        CreateMap<Donation, DonationDto>()
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.PaymentMethodType,
+                opt => opt.MapFrom(src => src.PaymentMethod.Type))
+            .ForMember(dest => dest.GiverPersonName,
+                opt => opt.MapFrom(src => src.GiverPerson != null ? src.GiverPerson.Name : null))
+            .ForMember(dest => dest.FundLabel, opt => opt.Ignore());
+
+        // RecurringPayment mappings (HasPayments handler'da doldurulur)
+        CreateMap<RecurringPayment, RecurringPaymentListDto>()
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null))
+            .ForMember(dest => dest.HasPayments, opt => opt.Ignore());
+        CreateMap<RecurringPayment, RecurringPaymentDto>()
+            .ForMember(dest => dest.PaymentMethodName,
+                opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.OwnerPersonName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null))
+            .ForMember(dest => dest.HasPayments, opt => opt.Ignore());
+
+        // Debt mappings (ödenen/kalan alanları DebtAmounts.Fill ile handler'da doldurulur)
+        CreateMap<Debt, DebtListDto>()
+            .ForMember(dest => dest.CreditorName,
+                opt => opt.MapFrom(src => src.CreditorPerson != null ? src.CreditorPerson.Name : null))
+            .ForMember(dest => dest.DebtorName,
+                opt => opt.MapFrom(src => src.DebtorPerson != null ? src.DebtorPerson.Name : null))
+            .ForMember(dest => dest.PaidAmount, opt => opt.Ignore())
+            .ForMember(dest => dest.Remaining, opt => opt.Ignore())
+            .ForMember(dest => dest.IsClosed, opt => opt.Ignore())
+            .ForMember(dest => dest.PaidInTry, opt => opt.Ignore())
+            .ForMember(dest => dest.RemainingInTry, opt => opt.Ignore())
+            .ForMember(dest => dest.PaymentCount, opt => opt.Ignore())
+            .ForMember(dest => dest.HasPayments, opt => opt.Ignore());
+        CreateMap<Debt, DebtDto>()
+            .IncludeBase<Debt, DebtListDto>();
+        CreateMap<DebtPayment, DebtPaymentDto>()
+            .ForMember(dest => dest.AmountInTry,
+                opt => opt.MapFrom(src => DebtAmounts.PaymentInTry(src)));
+
+        // ExchangeRate mappings
+        CreateMap<ExchangeRate, ExchangeRateDto>();
+
+        // LedgerItem mappings (HasAmounts handler'da doldurulur)
+        CreateMap<LedgerItem, LedgerItemListDto>()
+            .ForMember(dest => dest.OwnerName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null))
+            .ForMember(dest => dest.HasAmounts, opt => opt.Ignore());
+        CreateMap<LedgerItem, LedgerItemDto>()
+            .IncludeBase<LedgerItem, LedgerItemListDto>();
+
+        // DonationTarget mappings
+        CreateMap<DonationTarget, DonationTargetDto>()
+            .ForMember(dest => dest.OwnerName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+
+        // DonationFund mappings (dağıtılan/kullanımda/kalan/elde FundBalance.Fill ile handler'da doldurulur)
+        CreateMap<DonationFund, DonationFundDto>()
+            .ForMember(dest => dest.FromPersonName,
+                opt => opt.MapFrom(src => src.FromPerson != null ? src.FromPerson.Name : null))
+            .ForMember(dest => dest.Distributed, opt => opt.Ignore())
+            .ForMember(dest => dest.InUse, opt => opt.Ignore())
+            .ForMember(dest => dest.Remaining, opt => opt.Ignore())
+            .ForMember(dest => dest.OnHand, opt => opt.Ignore())
+            .ForMember(dest => dest.IsClosed, opt => opt.Ignore())
+            .ForMember(dest => dest.DistributionCount, opt => opt.Ignore())
+            .ForMember(dest => dest.MovementCount, opt => opt.Ignore());
+        CreateMap<FundMovement, FundMovementDto>();
+
+        // Vehicle mappings (Current ve HasExpense handler'da doldurulur)
+        CreateMap<Vehicle, VehicleDto>()
+            .ForMember(dest => dest.OwnerName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null))
+            .ForMember(dest => dest.Current, opt => opt.Ignore());
+        CreateMap<VehicleObligation, VehicleObligationDto>()
+            .ForMember(dest => dest.HasExpense, opt => opt.Ignore());
     }
     }
 

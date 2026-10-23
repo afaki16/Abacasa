@@ -46,6 +46,86 @@
     },
 
     {
+      title: 'sidebar.menu.budget',
+      icon: 'mdi-wallet',
+      children: [
+        {
+          title: 'sidebar.menu.expenses',
+          icon: 'mdi-cash-minus',
+          to: '/expenses',
+          permission: 'Expenses.Read'
+        },
+        {
+          title: 'sidebar.menu.donations',
+          icon: 'mdi-hand-heart',
+          to: '/donations',
+          permission: 'Donations.Read'
+        },
+        {
+          title: 'sidebar.menu.donationTargets',
+          icon: 'mdi-target',
+          to: '/donation-targets',
+          permission: 'DonationTargets.Read'
+        },
+        {
+          title: 'sidebar.menu.donationFunds',
+          icon: 'mdi-safe',
+          to: '/donation-funds',
+          permission: 'DonationFunds.Read'
+        },
+        {
+          title: 'sidebar.menu.recurringPayments',
+          icon: 'mdi-calendar-sync',
+          to: '/recurring-payments',
+          permission: 'RecurringPayments.Read'
+        },
+        {
+          title: 'sidebar.menu.debts',
+          icon: 'mdi-hand-coin',
+          to: '/debts',
+          permission: 'Debts.Read'
+        },
+        {
+          title: 'sidebar.menu.ledger',
+          icon: 'mdi-table-large',
+          to: '/ledger',
+          permission: 'Ledger.Read'
+        },
+        {
+          title: 'sidebar.menu.vehicles',
+          icon: 'mdi-car',
+          to: '/vehicles',
+          permission: 'Vehicles.Read'
+        }
+      ]
+    },
+
+    {
+      title: 'sidebar.menu.definitions',
+      icon: 'mdi-format-list-bulleted-type',
+      children: [
+        {
+          title: 'sidebar.menu.categories',
+          icon: 'mdi-shape',
+          to: '/categories',
+          permission: 'Categories.Read'
+        },
+        {
+          title: 'sidebar.menu.people',
+          icon: 'mdi-account-heart',
+          to: '/people',
+          permission: 'People.Read'
+        },
+        {
+          title: 'sidebar.menu.paymentMethods',
+          icon: 'mdi-credit-card-multiple',
+          to: '/payment-methods',
+          permission: 'PaymentMethods.Read'
+        }
+      ]
+    },
+
+    {
       title: 'sidebar.menu.settings',
       icon: 'mdi-cog',
       to: '/settings',

@@ -76,6 +76,19 @@
       "tenants": "Kiracılar",
       "roles": "Roller",
       "permissions": "İzinler",
+      "budget": "Bütçe",
+      "expenses": "Harcamalar",
+      "donations": "Bağışlar",
+      "donationTargets": "Bağış hedefleri",
+      "donationFunds": "Emanetler",
+      "recurringPayments": "Sabit ödemeler",
+      "debts": "Borçlar",
+      "ledger": "Yıllık tablo",
+      "vehicles": "Araçlar",
+      "definitions": "Tanımlar",
+      "categories": "Kategoriler",
+      "people": "Kişiler",
+      "paymentMethods": "Ödeme araçları",
       "settings": "Ayarlar",
       "profile": "Profil"
     },
@@ -117,6 +130,29 @@
       "sun": "Paz"
     },
     "pageTitle": "Anasayfa - Abacasa"
+  },
+  "paymentMethodTypes": {
+    "cash": "Nakit",
+    "bankAccount": "Banka hesabı",
+    "creditCard": "Kredi kartı",
+    "mealCard": "Yemek kartı"
+  },
+  "donationKinds": {
+    "donation": "Bağış",
+    "zakat": "Zekat",
+    "scholarship": "Burs"
+  },
+  "recurringPaymentKinds": {
+    "subscription": "Abonelik",
+    "bill": "Fatura",
+    "installment": "Taksit",
+    "donation": "Bağış"
+  },
+  "vehicleObligationTypes": {
+    "trafficInsurance": "Trafik sigortası",
+    "kasko": "Kasko",
+    "inspection": "Muayene",
+    "mtv": "MTV"
   },
   "validation": {
     "required": "Bu alan zorunludur",

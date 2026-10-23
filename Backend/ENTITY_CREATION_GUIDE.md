@@ -1305,11 +1305,13 @@ dotnet run --project Abacasa.API
 # https://localhost:44333/swagger
 ```
 
-> İlk başlangıçta `SeedPermissionsAsync()` yeni eklediğin `Products.Read/Create/Update/Delete` permission'larını otomatik olarak `Permissions` tablosuna ekler. SuperAdmin rolü tüm permission'ları otomatik alır.
+> İlk başlangıçta `SeedPermissionsAsync()` yeni eklediğin `Products.Read/Create/Update/Delete` permission'larını otomatik olarak `Permissions` tablosuna ekler. Yeni izinler SeedPermissionsAsync tarafından SuperAdmin ve Admin rollerine atanır (Abacasa).
 
 ---
 
 ## Standart Tenant Kontrolü Pattern'i
+
+> Abacasa: Hane verisi (ITenantScoped) için bu kalıp uygulanmaz. Tenant filtresi ve TenantId ataması ApplicationDbContext'te otomatiktir; bkz. CLAUDE.md.
 
 Tüm command/query handler'larda tekrar eden tenant izolasyon mantığı:
 

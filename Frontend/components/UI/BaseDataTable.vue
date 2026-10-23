@@ -565,7 +565,10 @@ const getResourceFromRoute = () => {
 
 const getPermissionName = (action) => {
   const resource = getResourceFromRoute()
-  const resourceName = resource.charAt(0).toUpperCase() + resource.slice(1)
+  const resourceName = resource
+    .split('-')
+    .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+    .join('')
   return `${resourceName}.${action}`
 }
 

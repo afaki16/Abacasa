@@ -13,6 +13,7 @@ namespace Abacasa.Infrastructure.Persistence
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Abacasa.API", "appsettings.json"))
+                .AddJsonFile(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Abacasa.API", "appsettings.Development.json"), optional: true)
                 .Build();
 
             // Get the connection string

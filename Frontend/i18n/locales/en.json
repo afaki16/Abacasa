@@ -76,6 +76,19 @@
       "tenants": "Tenants",
       "roles": "Roles",
       "permissions": "Permissions",
+      "budget": "Budget",
+      "expenses": "Expenses",
+      "donations": "Donations",
+      "donationTargets": "Donation targets",
+      "donationFunds": "Funds",
+      "recurringPayments": "Recurring payments",
+      "debts": "Debts",
+      "ledger": "Annual table",
+      "vehicles": "Vehicles",
+      "definitions": "Definitions",
+      "categories": "Categories",
+      "people": "People",
+      "paymentMethods": "Payment methods",
       "settings": "Settings",
       "profile": "Profile"
     },
@@ -117,6 +130,29 @@
       "sun": "Sun"
     },
     "pageTitle": "Dashboard - Abacasa"
+  },
+  "paymentMethodTypes": {
+    "cash": "Cash",
+    "bankAccount": "Bank account",
+    "creditCard": "Credit card",
+    "mealCard": "Meal card"
+  },
+  "donationKinds": {
+    "donation": "Donation",
+    "zakat": "Zakat",
+    "scholarship": "Scholarship"
+  },
+  "recurringPaymentKinds": {
+    "subscription": "Subscription",
+    "bill": "Bill",
+    "installment": "Installment",
+    "donation": "Donation"
+  },
+  "vehicleObligationTypes": {
+    "trafficInsurance": "Traffic insurance",
+    "kasko": "Comprehensive insurance",
+    "inspection": "Inspection",
+    "mtv": "Motor vehicle tax"
   },
   "validation": {
     "required": "This field is required",
