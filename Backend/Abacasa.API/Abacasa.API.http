@@ -1,62 +1,24 @@
 @Abacasa.API_HostAddress = http://localhost:5166
+# Hesap bilgileri yer tutucu: {{email}} ve {{password}} değişkenleri ortam dosyasından
+# (http-client.env.json) ya da çalıştırırken verilir. Buraya gerçek parola yazma.
 
-### Login to get access token
-POST {{Abacasa.API_HostAddress}}/api/v1/auth/login
+### Giriş: yanıttaki data.accessToken'ı auth_token'a koy
+# @name login
+POST {{Abacasa.API_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@baseauth.com",
-  "password": "Admin123!"
+  "email": "{{email}}",
+  "password": "{{password}}"
 }
 
-### Create Role with Permissions - Test 1 (Simple)
-POST {{Abacasa.API_HostAddress}}/api/v1/roles
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
+###
+@auth_token = {{login.response.body.$.data.accessToken}}
 
-{
-  "name": "Test Role 1",
-  "description": "Test role with read permissions",
-  "permissionIds": [1, 6, 13]
-}
-
-### Create Role with Permissions - Test 2 (Multiple)
-POST {{Abacasa.API_HostAddress}}/api/v1/roles
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "name": "Test Role 2",
-  "description": "Test role with multiple permissions",
-  "permissionIds": [1, 2, 3, 6, 7, 8, 13, 14]
-}
-
-### Create Role with Permissions - Test 3 (Single)
-POST {{Abacasa.API_HostAddress}}/api/v1/roles
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "name": "Test Role 3",
-  "description": "Test role with single permission",
-  "permissionIds": [1]
-}
-
-### Create Role with Permissions - Test 4 (Empty)
-POST {{Abacasa.API_HostAddress}}/api/v1/roles
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "name": "Test Role 4",
-  "description": "Test role without permissions",
-  "permissionIds": []
-}
-
-### Get All Roles
-GET {{Abacasa.API_HostAddress}}/api/v1/roles
+### Oturumdaki kullanıcı (aktif hane, üyelikler, izinler)
+GET {{Abacasa.API_HostAddress}}/api/auth/me
 Authorization: Bearer {{auth_token}}
 
-### Get All Permissions
-GET {{Abacasa.API_HostAddress}}/api/v1/permissions
+### Özet (dönem başı ve sonu, bugünün tarihi)
+GET {{Abacasa.API_HostAddress}}/api/dashboard?startDate=2026-10-01&endDate=2026-10-31&today=2026-10-24
 Authorization: Bearer {{auth_token}}

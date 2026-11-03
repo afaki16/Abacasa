@@ -1,8 +1,8 @@
 import type { DonationKind } from './donation'
 
 export enum FundMovementType {
-  Use = 1,
-  Return = 2
+  Use = 'Use',
+  Return = 'Return'
 }
 
 export interface DonationFund {

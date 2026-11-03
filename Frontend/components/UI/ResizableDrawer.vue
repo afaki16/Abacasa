@@ -28,27 +28,27 @@
           <template v-if="variant === 'default'">
             <div class="drawer-header">
               <h2 class="drawer-title">
-                <v-icon v-if="icon" size="24" class="mr-2">{{ icon }}</v-icon>
+                <UiIcon :icon="icon" v-if="icon" :size="24" class="mr-2" />
                 {{ title }}
               </h2>
               <div class="drawer-actions">
-                <v-btn
+                <UiBtn
                   :icon="isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'"
                   variant="text"
                   size="small"
                   @click="toggleFullscreen"
                   class="mr-2"
-                ></v-btn>
-                <v-btn
+                ></UiBtn>
+                <UiBtn
                   icon="mdi-close"
                   variant="text"
                   size="small"
                   @click="$emit('update:modelValue', false)"
-                ></v-btn>
+                ></UiBtn>
               </div>
             </div>
 
-            <v-divider></v-divider>
+            <hr class="ui-divider" />
           </template>
 
           <!-- MODERN VARIANT -->
@@ -61,7 +61,7 @@
                 <!-- Sol: Avatar/Icon Badge -->
                 <div v-if="icon" class="drawer-header-modern__avatar">
                   <div class="drawer-header-modern__avatar-ring" aria-hidden="true"></div>
-                  <v-icon :icon="icon" size="28" />
+                  <UiIcon :icon="icon" :size="28" />
                 </div>
 
                 <!-- Orta: Title + Subtitle -->
@@ -77,14 +77,14 @@
                     :title="isFullscreen ? 'Tam ekranı kapat' : 'Tam ekran'"
                     @click="toggleFullscreen"
                   >
-                    <v-icon :icon="isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'" size="18" />
+                    <UiIcon :icon="isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'" :size="18" />
                   </button>
                   <button
                     class="drawer-header-modern__action-btn"
                     title="Kapat"
                     @click="$emit('update:modelValue', false)"
                   >
-                    <v-icon icon="mdi-close" size="18" />
+                    <UiIcon icon="mdi-close" :size="18" />
                   </button>
                 </div>
               </div>

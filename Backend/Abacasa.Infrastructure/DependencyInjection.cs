@@ -8,6 +8,8 @@ using Abacasa.Infrastructure.Persistence.Erasure;
 using Abacasa.Infrastructure.Identity;
 using Abacasa.Infrastructure.Repositories;
 using Abacasa.Infrastructure.Services;
+using Abacasa.Infrastructure.Services.Storage;
+using Abacasa.Infrastructure.Configuration;
 using Abacasa.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -48,6 +50,26 @@ namespace Abacasa.Infrastructure
         services.AddScoped<IAuthService, JwtService>();
         services.AddScoped<IRevokedSessionService, RevokedSessionService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IOtpService, OtpService>();
+        services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
+        services.AddScoped<IAccountInvitationService, AccountInvitationService>();
+
+        // File storage: Storage:Provider = "Local" (default, server disk) or "S3" (any S3-compatible service)
+        var storageSettings = configuration.GetSection("Storage").Get<StorageSettings>() ?? new StorageSettings();
+        if (storageSettings.IsS3)
+        {
+            services.AddSingleton<IFileStorage>(_ => new S3FileStorage(storageSettings.S3));
+        }
+        else if (string.Equals(storageSettings.Provider, StorageSettings.LocalProvider, StringComparison.OrdinalIgnoreCase))
+        {
+            var localRoot = Path.Combine(environment.ContentRootPath, storageSettings.Local.Path);
+            services.AddSingleton<IFileStorage>(_ => new LocalFileStorage(localRoot, storageSettings.Local));
+        }
+        else
+        {
+            throw new InvalidOperationException($"Unknown Storage:Provider {storageSettings.Provider}. Use Local or S3.");
+        }
+        services.AddSingleton<IImageProcessor, ImageProcessor>();
         services.AddScoped<IBruteForceProtectionService, BruteForceProtectionService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IPermissionService, PermissionService>();
@@ -59,6 +81,11 @@ namespace Abacasa.Infrastructure
         services.AddScoped<IHouseholdEraser, HouseholdEraser>();
         services.AddScoped<IUserAnonymizer, UserAnonymizer>();
         services.AddSingleton<ILegalVersions, LegalVersions>();
+        services.AddScoped<IDataExportService, DataExportService>();
+
+        // TCMB döviz satış kurları (global MarketRates)
+        services.AddScoped<IMarketRateFetcher, TcmbRateFetcher>();
+        services.AddHostedService<TcmbRateService>();
         services.AddScoped<IDataRetentionRunner, DataRetentionRunner>();
         services.AddHostedService<DataRetentionService>();
 
@@ -128,9 +155,24 @@ namespace Abacasa.Infrastructure
                         int? tenantId = int.TryParse(context.Principal?.FindFirst("tenant_id")?.Value, out var tid) ? tid : null;
 
                         var revokedSessionService = context.HttpContext.RequestServices.GetService<IRevokedSessionService>();
-                        if (revokedSessionService != null && await revokedSessionService.WasSessionRevokedAfterAsync(userId, tokenIssuedAt, tenantId))
+                        if (revokedSessionService == null)
+                        {
+                            return;
+                        }
+
+                        var session = await revokedSessionService.CheckSessionAsync(userId, tokenIssuedAt, tenantId);
+                        if (session.IsRevoked)
                         {
                             context.Fail("Session has been revoked");
+                            return;
+                        }
+
+                        // Enforced by PasswordChangeRequiredMiddleware in the API project.
+                        if (session.MustChangePassword
+                            && context.Principal?.Identity is System.Security.Claims.ClaimsIdentity identity)
+                        {
+                            identity.AddClaim(new System.Security.Claims.Claim(
+                                Abacasa.Domain.Constants.AuthClaimTypes.MustChangePassword, "true"));
                         }
                     },
                     OnChallenge = context =>

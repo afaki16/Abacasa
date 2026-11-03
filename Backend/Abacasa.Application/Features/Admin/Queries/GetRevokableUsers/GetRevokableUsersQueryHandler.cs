@@ -31,6 +31,9 @@ namespace Abacasa.Application.Features.Admin.Queries.GetRevokableUsers
                     Domain.Models.Error.Failure(Domain.Common.Enums.ErrorCode.Forbidden, "You can only view users in your own tenant"));
 
             int? tenantId = request.TenantId;
+            // SuperAdmin: istekte hane yoksa üst barda seçilen hane (o hanede canlı üyeliği olanlar); seçim yoksa tümü.
+            // Diğer rollerde SelectedTenantId her zaman null.
+            int? memberOfTenantId = tenantId.HasValue ? null : _currentUserService.SelectedTenantId;
             if (!_currentUserService.CanAccessAllTenants)
             {
                 if (tenantId.HasValue && tenantId != _currentUserService.TenantId)
@@ -40,7 +43,7 @@ namespace Abacasa.Application.Features.Admin.Queries.GetRevokableUsers
             }
 
             var excludeSuperAdmins = !_currentUserService.CanAccessAllTenants;
-            var activeUserIds = (await _unitOfWork.RefreshTokens.GetActiveUserIdsAsync(tenantId, excludeSuperAdmins)).ToList();
+            var activeUserIds = (await _unitOfWork.RefreshTokens.GetActiveUserIdsAsync(tenantId, excludeSuperAdmins, memberOfTenantId)).ToList();
             if (activeUserIds.Count == 0)
                 return Result<IEnumerable<RevokableUserDto>>.Success(new List<RevokableUserDto>());
 

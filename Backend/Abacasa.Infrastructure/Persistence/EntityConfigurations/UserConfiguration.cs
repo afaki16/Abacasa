@@ -51,7 +51,7 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
                 .IsRequired()
                 .HasConversion<int>();
 
-            builder.Property(x => x.ProfileImageUrl)
+            builder.Property(x => x.ProfileImageKey)
                 .HasMaxLength(500);
 
         builder.Property(x => x.TenantId)

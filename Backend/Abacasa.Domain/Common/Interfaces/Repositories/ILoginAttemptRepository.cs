@@ -29,7 +29,5 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
             string email,
             DateTime since,
             CancellationToken cancellationToken = default);
-
-        Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default);
     }
 }

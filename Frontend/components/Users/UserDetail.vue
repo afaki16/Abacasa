@@ -2,26 +2,22 @@
   <div class="user-detail-container">
     <!-- Header with Avatar -->
     <div class="detail-header">
-      <v-avatar size="80" color="primary" class="detail-avatar">
-        <v-img 
-          v-if="user?.profileImageUrl" 
-          :src="user.profileImageUrl" 
-          alt="Profile"
-        />
-        <span v-else class="text-h4">
-          {{ getInitials(user?.firstName, user?.lastName) }}
-        </span>
-      </v-avatar>
+      <UserAvatar
+        :src="user?.profileImageUrl"
+        :initials="getInitials(user?.firstName, user?.lastName)"
+        :size="80"
+        class="detail-avatar"
+      />
       <div class="header-info">
         <h2 class="user-name">{{ user?.firstName }} {{ user?.lastName }}</h2>
         <div class="user-meta">
           <v-chip
-            :color="user?.status === 1 ? 'success' : 'error'"
+            :color="user?.status === UserStatus.Active ? 'success' : 'error'"
             size="small"
             variant="tonal"
             prepend-icon="mdi-circle"
           >
-            {{ user?.status === 1 ? 'Aktif' : 'Pasif' }}
+            {{ user?.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
           </v-chip>
           <v-chip
             v-if="user?.emailConfirmed"
@@ -221,6 +217,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { User } from '~/types'
+import { UserStatus } from '~/types'
 import { dateTimeFormatLong } from '~/utils/datesFormat'
 
 defineProps<{

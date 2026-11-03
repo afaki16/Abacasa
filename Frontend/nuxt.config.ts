@@ -45,8 +45,9 @@ function buildCsp(apiBase: string): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 
     // Image: kendi domain, data URI (inline SVG/base64),
-    // ve unsplash (login arka plan carousel'ı için data.json'da tanımlı)
-    "img-src 'self' data: https://images.unsplash.com",
+    // unsplash (login arka plan carousel'ı için data.json'da tanımlı),
+    // API origin'i (Storage:Provider=Local → /uploads) ve S3 kullanılıyorsa dosya origin'i
+    ["img-src 'self' data: https://images.unsplash.com", apiOrigin, FILES_ORIGIN].filter(Boolean).join(" "),
 
     // Font: kendi domain, data URI (MDI icon font),
     // Google Fonts woff/woff2 dosyaları fonts.gstatic.com'dan
@@ -75,6 +76,21 @@ function buildCsp(apiBase: string): string {
   return directives.join("; ");
 }
 
+/**
+ * Storage:Provider=S3 ise yüklenen dosyaların sunulduğu origin (Storage:S3:PublicBaseUrl'in
+ * origin'i, örn. https://files.example.com). CSP img-src'ye eklenir; Local'de boş bırakılır.
+ */
+const FILES_ORIGIN = (() => {
+  try {
+    return process.env.FILES_PUBLIC_URL ? new URL(process.env.FILES_PUBLIC_URL).origin : "";
+  } catch {
+    return "";
+  }
+})();
+
+/** Tek kaynak — dev proxy, CSP ve runtimeConfig aynı origin kullanmalı. */
+const API_BASE = (process.env.API_BASE_URL || "http://localhost:5166").replace(/\/$/, "");
+
 export default defineNuxtConfig({
   devtools: { enabled: false },
   compatibilityDate: "2025-07-26",
@@ -88,6 +104,7 @@ export default defineNuxtConfig({
   // CSS Framework
   css: [
     "~/assets/css/theme.css",
+    "~/assets/css/reset-compat.css",
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",
     "~/assets/scss/main.scss",
@@ -136,7 +153,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || "http://localhost:5166",
+      apiBase: API_BASE,
       appName: "Abacasa",
       appVersion: "1.0.0",
       defaultLayout: process.env.NUXT_PUBLIC_DEFAULT_LAYOUT || "default",
@@ -164,9 +181,7 @@ export default defineNuxtConfig({
     routeRules: {
       "/**": {
         headers: {
-          "Content-Security-Policy": buildCsp(
-            process.env.API_BASE_URL || "http://localhost:5166",
-          ),
+          "Content-Security-Policy": buildCsp(API_BASE),
           // Clickjacking koruması (CSP frame-ancestors zaten kapsıyor,
           // ama eski tarayıcılar için defense-in-depth)
           "X-Frame-Options": "DENY",
@@ -201,6 +216,25 @@ export default defineNuxtConfig({
     server: {
       hmr: {
         overlay: false,
+      },
+      // Dev-only API proxy: tarayıcı localhost:3010/api/* çağırır, Vite bunu
+      // backend'e iletir. Same-origin olduğu için CORS ön kontrolü (OPTIONS)
+      // gitmez ve uygulama LAN IP'siyle (telefondan) açıldığında da çalışır.
+      // SPA modunda (ssr:false) nitro.devProxy güvenilir tetiklenmediği için
+      // Vite seviyesinde tanımlı. Production build'inde bu proxy yok;
+      // axios baseURL = apiBase devreye girer.
+      proxy: {
+        "/api": {
+          target: API_BASE,
+          changeOrigin: true,
+          secure: false, // backend dev self-signed cert için
+        },
+        // Storage:Provider=Local ile yüklenen dosyalar (profil fotoğrafı vb.)
+        "/uploads": {
+          target: API_BASE,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
   },

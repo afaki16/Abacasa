@@ -25,6 +25,26 @@ public class TenantMembershipRepository : RepositoryBase<TenantMembership, int>,
             .ToListAsync();
     }
 
+    public async Task<Dictionary<int, List<string>>> GetHouseholdNamesByUsersAsync(IEnumerable<int> userIds)
+    {
+        var ids = userIds.Distinct().ToList();
+        if (ids.Count == 0)
+            return new Dictionary<int, List<string>>();
+
+        // Join: soft-delete filtresi hem üyeliğe hem haneye uygulanır
+        var rows = await (
+            from m in _context.Set<TenantMembership>().AsNoTracking()
+            join t in _context.Set<Tenant>().AsNoTracking() on m.TenantId equals t.Id
+            where ids.Contains(m.UserId)
+            orderby m.CreatedDate, m.Id
+            select new { m.UserId, t.Name })
+            .ToListAsync();
+
+        return rows
+            .GroupBy(r => r.UserId)
+            .ToDictionary(g => g.Key, g => g.Select(r => r.Name).ToList());
+    }
+
     public async Task<TenantMembership?> GetActiveAsync(int userId, int tenantId)
     {
         return await _context.Set<TenantMembership>()

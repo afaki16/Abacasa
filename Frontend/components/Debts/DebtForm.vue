@@ -75,16 +75,16 @@
         <v-col cols="12" sm="6">
           <v-text-field
             v-model.number="formData.amount"
-            label="Tutar"
+            :label="isGold ? 'Adet' : 'Tutar'"
             type="number"
             min="0"
-            step="0.01"
+            :step="isGold ? 1 : 0.01"
             variant="outlined"
             :disabled="loading"
-            :prepend-inner-icon="formData.currency === Currency.USD ? 'mdi-currency-usd' : 'mdi-currency-try'"
+            :prepend-inner-icon="amountIcon"
             density="comfortable"
             hide-details="auto"
-            :rules="[rules.required, amountRule]"
+            :rules="[rules.required, amountRule, wholeRule]"
             class="modern-input"
           />
         </v-col>
@@ -164,6 +164,18 @@ const formData = reactive({
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
 const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+
+// Çeyrek altın adettir: etiket "Adet", yalnızca tam sayı
+const isGold = computed(() => formData.currency === Currency.QuarterGold)
+const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || 'Çeyrek altın tam sayı olmalı.'
+const amountIcon = computed(() =>
+  ({
+    [Currency.TRY]: 'mdi-currency-try',
+    [Currency.USD]: 'mdi-currency-usd',
+    [Currency.EUR]: 'mdi-currency-eur',
+    [Currency.QuarterGold]: 'mdi-gold',
+  })[formData.currency]
+)
 
 const debtorOptions = computed(() => [
   { id: HOUSEHOLD, name: 'Hane' },

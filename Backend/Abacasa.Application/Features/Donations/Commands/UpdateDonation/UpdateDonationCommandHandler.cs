@@ -4,6 +4,8 @@ using Abacasa.Application.Common.Results;
 using Abacasa.Application.Features.DonationFunds.Common;
 using Abacasa.Application.Features.Donations.Common;
 using Abacasa.Application.Features.Donations.Dtos;
+using Abacasa.Application.Features.Households.Common;
+using Abacasa.Application.Interfaces;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 using Abacasa.Domain.Entities;
@@ -18,8 +20,11 @@ public class UpdateDonationCommandHandler : IRequestHandler<UpdateDonationComman
     private readonly IMapper _mapper;
     private readonly IJsonStringLocalizer _localizer;
 
-    public UpdateDonationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IJsonStringLocalizer localizer)
+    private readonly ICurrentUserService _currentUserService;
+
+    public UpdateDonationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IJsonStringLocalizer localizer, ICurrentUserService currentUserService)
     {
+        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _localizer = localizer;
@@ -62,6 +67,11 @@ public class UpdateDonationCommandHandler : IRequestHandler<UpdateDonationComman
         DonationFund? fund = null;
         if (request.FundId.HasValue)
         {
+            // Emanet, bağış hedefleri ve emanetler modülüne bağlı: kapalıysa 403. Bağlantı aynı kalıyorsa
+            // (eski dağıtımın diğer alanları düzenleniyor) modül kapalı olsa da izin verilir
+            if (request.FundId != donation.FundId && !await HouseholdModules.IsDonationExtrasEnabledAsync(_unitOfWork, _currentUserService))
+                return Result<DonationListDto>.Failure(HouseholdModules.DisabledError(_localizer));
+
             var (checkedFund, error) = await FundDistributionCheck.CheckAsync(
                 _unitOfWork, _localizer, request.FundId.Value, request.Kind, request.Amount, donation.Id);
             if (error != null)
@@ -71,6 +81,10 @@ public class UpdateDonationCommandHandler : IRequestHandler<UpdateDonationComman
 
         if (donation.FundId.HasValue && donation.FundId != request.FundId)
         {
+            // Emanetten ayırma da modüle bağlı
+            if (!await HouseholdModules.IsDonationExtrasEnabledAsync(_unitOfWork, _currentUserService))
+                return Result<DonationListDto>.Failure(HouseholdModules.DisabledError(_localizer));
+
             var error = await FundDistributionCheck.CheckReleasedAsync(_unitOfWork, _localizer, donation.FundId.Value, donation.Id);
             if (error != null)
                 return Result<DonationListDto>.Failure(Error.Failure(ErrorCode.ValidationFailed, error));

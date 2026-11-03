@@ -9,7 +9,10 @@ public class ErrorResponse
     [JsonPropertyName("status")]
     public int Status { get; set; } = 400;
 
+    // Global JsonStringEnumConverter'a rağmen sayı: frontend kodları sayıyla karşılaştırır
+    // ve middleware'lerin elle yazdığı hatalar da sayı döner — tek biçim kalsın.
     [JsonPropertyName("code")]
+    [JsonConverter(typeof(JsonNumberEnumConverter<ErrorCode>))]
     public ErrorCode Code { get; set; }
 
     [JsonPropertyName("errors")]

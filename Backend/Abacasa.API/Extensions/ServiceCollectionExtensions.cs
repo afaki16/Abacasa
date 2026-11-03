@@ -183,6 +183,21 @@ namespace Abacasa.API.Extensions
                             QueueLimit = 0
                         }));
 
+                // Register-form availability checks: same rate as "sensitive" (so they add no extra
+                // email-enumeration capacity beyond register itself) but a separate bucket, so field
+                // checks never use up the quota of the register submit.
+                options.AddPolicy("availability", httpContext =>
+                    RateLimitPartition.GetSlidingWindowLimiter(
+                        partitionKey: GetClientIp(httpContext),
+                        factory: _ => new SlidingWindowRateLimiterOptions
+                        {
+                            PermitLimit = sensitiveLimit,
+                            Window = TimeSpan.FromMinutes(1),
+                            SegmentsPerWindow = 6,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 0
+                        }));
+
                 // Global default fallback applied to every request
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
                     httpContext => RateLimitPartition.GetSlidingWindowLimiter(
@@ -223,9 +238,6 @@ namespace Abacasa.API.Extensions
 
                 // Role-based policies
                 AddRoleBasedPolicies(options);
-
-                // Custom policies
-                AddCustomPolicies(options);
             });
         }
 
@@ -238,40 +250,6 @@ namespace Abacasa.API.Extensions
             
             options.AddPolicy("RequireSuperAdminRole", policy =>
                 policy.RequireRole(RoleNames.SuperAdmin));
-            
-            options.AddPolicy("RequireManagerRole", policy =>
-                policy.RequireRole(RoleNames.Manager, RoleNames.Admin, RoleNames.SuperAdmin));
-            
-            options.AddPolicy("RequireUserRole", policy =>
-                policy.RequireRole(RoleNames.User, RoleNames.Manager, RoleNames.Admin, RoleNames.SuperAdmin));
-        }
-
-        private static void AddCustomPolicies(AuthorizationOptions options)
-        {
-            // Custom business logic policies
-            options.AddPolicy("RequireActiveUser", policy =>
-                policy.RequireAssertion(context =>
-                {
-                    var user = context.User;
-                    var isActive = user.HasClaim(c => c.Type == "status" && c.Value == "Active");
-                    return isActive;
-                }));
-
-            options.AddPolicy("RequireEmailVerified", policy =>
-                policy.RequireAssertion(context =>
-                {
-                    var user = context.User;
-                    var emailVerified = user.HasClaim(c => c.Type == "email_verified" && c.Value == "true");
-                    return emailVerified;
-                }));
-
-            // Time-based policies
-            options.AddPolicy("RequireBusinessHours", policy =>
-                policy.RequireAssertion(context =>
-                {
-                    var currentHour = DateTime.UtcNow.Hour;
-                    return currentHour >= 9 && currentHour <= 17; // 9 AM - 5 PM UTC
-                }));
         }
     }
 } 

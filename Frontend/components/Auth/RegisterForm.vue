@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValid" @submit.prevent="$emit('submit', formData)" :class="formClass">
+  <UiForm ref="form" v-model="isValid" @submit="$emit('submit', formData)" :class="formClass">
       <div class="input-group">
         <BaseTextBox
           v-model="formData.firstName"
@@ -36,7 +36,9 @@
         required
         :disabled="loading || !!inviteEmail"
         :class="inputClass"
+        @focusout="checkAvailability('email')"
       />
+      <p v-if="takenMessage.email" class="availability-error">{{ takenMessage.email }}</p>
     </div>
     <!-- Davet modunda hane açılmaz; alan gizlenir -->
     <div v-if="!inviteEmail" class="input-group">
@@ -61,9 +63,11 @@
         prepend-inner-icon="mdi-phone"
         :rules="[rules.phone]"
         :disabled="loading"
-        hint="Format: +1234567890"
+        hint="0555 111 22 33"
         :class="inputClass"
+        @focusout="checkAvailability('phoneNumber')"
       />
+      <p v-if="takenMessage.phoneNumber" class="availability-error">{{ takenMessage.phoneNumber }}</p>
     </div>
 
     <div class="input-group">
@@ -105,10 +109,10 @@
           {{ passwordStrengthText }}
         </span>
       </div>
-      <v-progress-linear
+      <UiProgressLinear
         :model-value="passwordStrength"
         :color="passwordStrengthColor"
-        height="4"
+        :height="4"
         rounded
         class="strength-bar"
       />
@@ -116,7 +120,7 @@
 
     <slot name="terms" />
 
-    <v-btn
+    <UiBtn
       type="submit"
       :color="submitButtonColor"
       size="large"
@@ -124,11 +128,11 @@
       :loading="loading"
       :disabled="!isValid"
       :class="submitButtonClass"
-      elevation="8"
+      :elevation="8"
     >
       <slot name="submit-text">{{ t('auth.createAccountTitle') }}</slot>
-    </v-btn>
-  </v-form>
+    </UiBtn>
+  </UiForm>
 </template>
 
 <script setup lang="ts">
@@ -179,6 +183,41 @@ watch(
   },
   { immediate: true }
 )
+
+// Alan terk edilince e-posta/telefonun daha önce kayıtlı olup olmadığı kontrol edilir.
+// Yalnızca bilgilendirme: rate limit'e takılınca veya hata olursa sessizce geçilir,
+// kayıt gönderildiğinde backend aynı kontrolü yine yapar.
+type AvailabilityField = 'email' | 'phoneNumber'
+const { checkRegisterAvailability } = useAuth()
+const takenMessage = reactive<Record<AvailabilityField, string>>({ email: '', phoneNumber: '' })
+const lastChecked: Record<AvailabilityField, string> = { email: '', phoneNumber: '' }
+
+const checkAvailability = async (field: AvailabilityField) => {
+  // Davet modunda e-posta davetteki adrese kilitli; kontrol gereksiz
+  if (field === 'email' && props.inviteEmail) return
+  const value = (formData[field] ?? '').trim()
+  const formatRule = field === 'email' ? rules.email : rules.phone
+  if (!value || formatRule(value) !== true || value === lastChecked[field]) return
+
+  lastChecked[field] = value
+  try {
+    const result = await checkRegisterAvailability({ [field]: value })
+    // Kullanıcı istek sürerken değeri değiştirdiyse eski cevabı gösterme
+    if ((formData[field] ?? '').trim() !== value) return
+    const availability = result?.data?.[field]
+    takenMessage[field] = availability && !availability.isAvailable ? (availability.reason ?? '') : ''
+  } catch {
+    lastChecked[field] = ''
+  }
+}
+
+// Değer değişince eski "kayıtlı" uyarısını kaldır
+watch(() => formData.email, (value) => {
+  if ((value ?? '').trim() !== lastChecked.email) takenMessage.email = ''
+})
+watch(() => formData.phoneNumber, (value) => {
+  if ((value ?? '').trim() !== lastChecked.phoneNumber) takenMessage.phoneNumber = ''
+})
 
 // Password strength computation
 const passwordStrength = computed(() => {
@@ -257,22 +296,39 @@ defineExpose({
   margin-bottom: 20px;
 }
 
-.input-group :deep(.v-field) {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 12px !important;
+.availability-error {
+  margin: 4px 0 0 12px;
+  font-size: 0.8rem;
+  color: #fecaca;
 }
 
-.input-group :deep(.v-field__input) {
-  color: white !important;
+/* Koyu arka plan üzerinde yarı saydam alanlar */
+.input-group :deep(.ui-field) {
+  --ui-on: 255 255 255;
+  --ui-field-bg: rgba(255, 255, 255, 0.1);
+  --ui-field-border: rgba(255, 255, 255, 0.2);
+  --ui-field-border-hover: rgba(255, 255, 255, 0.45);
+  --ui-field-accent: #fff;
+  --ui-field-radius: 12px;
 }
 
-.input-group :deep(.v-field__label) {
-  color: rgba(255, 255, 255, 0.8) !important;
+.input-group :deep(.ui-field__input) {
+  color: white;
 }
 
-.input-group :deep(.v-icon) {
-  color: rgba(255, 255, 255, 0.8) !important;
+.input-group :deep(.ui-field__label) {
+  color: rgba(255, 255, 255, 0.8);
+  opacity: 1;
+}
+
+.input-group :deep(.ui-field--error .ui-field__label) {
+  color: rgb(var(--color-error));
+}
+
+/* Temizle ikonu kendi göster/gizle davranışını korur */
+.input-group :deep(.ui-field__icon:not(.ui-field__clear)) {
+  color: rgba(255, 255, 255, 0.8);
+  opacity: 1;
 }
 
 .password-strength {

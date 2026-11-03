@@ -44,6 +44,10 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
             builder.Property(x => x.RequestIpAddress)
                 .HasMaxLength(45);
 
+            builder.Property(x => x.FailedAttempts)
+                .IsRequired()
+                .HasDefaultValue(0);
+
             builder.Property(x => x.CreatedDate)
                 .IsRequired();
 

@@ -19,8 +19,15 @@
     "sessionsLoadFailed": "An error occurred while loading sessions. Please try again.",
     "userNotAuthenticated": "User not authenticated",
     "currentPasswordIncorrect": "Current password is incorrect",
+    "passwordChangeRequired": "You must change your password before continuing.",
     "invalidOrExpiredResetLink": "Invalid or expired reset link",
-    "invalidOrExpiredVerificationLink": "Invalid or expired verification link"
+    "invalidOrExpiredVerificationLink": "Invalid or expired verification link",
+    "emailChangeSameAddress": "The new email address is the same as your current one.",
+    "emailChangeSendFailed": "The confirmation email could not be sent. Please try again later.",
+    "otpInvalidOrExpired": "The verification code is wrong or has expired.",
+    "otpTooManyAttempts": "Too many wrong attempts. Please request a new code.",
+    "otpResendCooldown": "Please wait {0} seconds before requesting a new code.",
+    "otpSendFailed": "The verification code could not be sent. Please try again later."
   },
   "users": {
     "notFound": "User not found",
@@ -34,7 +41,15 @@
     "noAccessToDelete": "You do not have access to delete this user",
     "cannotDeleteSelf": "You cannot delete your own account",
     "cannotDeleteLastSuperAdmin": "Cannot delete the last SuperAdmin in the system",
-    "cannotChangeOwnStatus": "You cannot change the status of your own account."
+    "cannotChangeOwnStatus": "You cannot change the status of your own account.",
+    "cannotChangeOwnMustChangePassword": "You cannot require a password change for your own account.",
+    "accountInvitationNotPending": "This user has already signed in. They can use \"Forgot password\" instead."
+  },
+  "files": {
+    "missing": "No file was selected.",
+    "tooLarge": "The file can be at most {0} MB.",
+    "invalidImage": "Only JPEG, PNG or WEBP images can be uploaded.",
+    "uploadFailed": "The file could not be uploaded, please try again."
   },
   "roles": {
     "notFound": "Role not found",
@@ -105,6 +120,7 @@
     "rangeTooLong": "The date range can be at most {0} days"
   },
   "debts": {
+    "quarterGoldWhole": "Quarter gold must be a whole number.",
     "notFound": "Debt not found",
     "creditorNotFound": "Creditor not found",
     "debtorNotFound": "Debtor not found",
@@ -119,8 +135,9 @@
     "paymentExceedsDebt": "Total payments cannot exceed the debt amount (remaining {0})"
   },
   "exchangeRates": {
-    "notFound": "Exchange rate not found",
-    "onlyUsd": "Only USD rates can be entered for now"
+    "foreignOnly": "Rates can only be entered for Dollar, Euro and Quarter gold",
+    "marketFetchFailed": "TCMB rates could not be fetched",
+    "notFound": "Exchange rate not found"
   },
   "dashboard": {
     "invalidRange": "Start date cannot be after end date",
@@ -154,6 +171,7 @@
     "scholarship": "Scholarship"
   },
   "households": {
+    "moduleDisabled": "This feature is turned off for the household. You can turn it on in the household settings.",
     "adminLimit": "You can be the admin of at most {0} households",
     "notFound": "Household not found",
     "noActiveHousehold": "You have no active household",
@@ -172,6 +190,11 @@
     "cannotRemoveSelf": "You cannot remove yourself this way; leave the household instead",
     "confirmNameMismatch": "The household name does not match",
     "cannotDelete": "This household cannot be deleted."
+  },
+  "legal": {
+    "acceptTermsRequired": "You must accept the terms of use",
+    "acknowledgePrivacyRequired": "You must confirm that you have read the privacy notice",
+    "invalidDocumentType": "Invalid document type"
   },
   "account": {
     "lastSuperAdmin": "You are the last super admin in the system; your account cannot be deleted.",
@@ -205,6 +228,7 @@
     "verifyFailed": "Failed to verify password"
   },
   "common": {
+    "concurrentConflict": "This record was created by another operation at the same time. Refresh the page and try again.",
     "unexpectedError": "An unexpected error occurred. Please try again or contact support if the problem persists."
   },
   "validation": {
@@ -291,6 +315,8 @@
     "maxLength": "{0} cannot exceed {1} characters",
     "minLength": "{0} must be at least {1} characters long",
     "emailFormat": "Please enter a valid email address",
+    "phoneInvalid": "Please enter a valid phone number",
+    "tcKimlikInvalid": "Please enter a valid Turkish ID number",
     "domainFormat": "Invalid domain format",
     "invalidEnum": "Invalid value for {0}",
     "greaterThan": "{0} must be greater than {1}",

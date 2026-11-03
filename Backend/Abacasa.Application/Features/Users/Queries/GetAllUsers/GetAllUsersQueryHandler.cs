@@ -43,9 +43,20 @@ namespace Abacasa.Application.Features.Users.Queries.GetAllUsers
             // SuperAdmin sees all tenants' users, Admin/User see only their tenant's users
             int? tenantId = _currentUserService.CanAccessAllTenants ? null : _currentUserService.TenantId;
             var excludeSuperAdmins = !_currentUserService.CanAccessAllTenants;
+            // SuperAdmin'in üst barda seçtiği hane: o hanede canlı üyeliği olanlar (User.TenantId son aktif hanedir, ölçüt değil)
+            var selectedTenantId = _currentUserService.SelectedTenantId;
 
-            var (users, totalCount) = await _unitOfWork.Users.GetUsersPagedAsync(request.Page, request.PageSize, request.SearchTerm, tenantId, excludeSuperAdmins);
-            var userDtos = _mapper.Map<IEnumerable<UserListDto>>(users);
+            var (users, totalCount) = await _unitOfWork.Users.GetUsersPagedAsync(request.Page, request.PageSize, request.SearchTerm, tenantId, excludeSuperAdmins, selectedTenantId, request.Status);
+            var userDtos = _mapper.Map<List<UserListDto>>(users);
+
+            // Hane sütunu yalnızca SuperAdmin platform görünümünde: diğer roller kullanıcının başka hanelerini görmez
+            if (_currentUserService.CanAccessAllTenants && selectedTenantId == null && userDtos.Count > 0)
+            {
+                var names = await _unitOfWork.TenantMemberships.GetHouseholdNamesByUsersAsync(userDtos.Select(u => u.Id));
+                foreach (var dto in userDtos)
+                    dto.HouseholdNames = names.TryGetValue(dto.Id, out var list) ? list : new List<string>();
+            }
+
             var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
             return PagedResult<UserListDto>.Success(userDtos, request.Page, totalPages, totalCount);
         }

@@ -63,6 +63,7 @@ namespace Abacasa.Application.Features.Auth.Commands.ChangePassword
 
             user.PasswordHash = hashResult.Value;
             user.LastSessionsRevokedAt = DateTime.UtcNow;
+            user.MustChangePassword = false;
             _unitOfWork.Users.Update(user);
 
             await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(

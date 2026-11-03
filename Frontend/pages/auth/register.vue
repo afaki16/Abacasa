@@ -32,7 +32,7 @@
         <div class="card-content">
           <div class="logo-section">
             <div class="logo-icon">
-              <v-icon size="64" color="white">mdi-account-plus</v-icon>
+              <UiIcon icon="mdi-account-plus" :size="64" color="white" />
             </div>
             <h1 class="welcome-text">{{ t('auth.createAccountTitle') }}</h1>
             <p class="subtitle-text">{{ t('auth.createAccountSubtitle') }}</p>
@@ -40,12 +40,12 @@
 
           <!-- Register Form Component -->
           <!-- Davet modu: hane adı gizli, e-posta davetteki adres -->
-          <v-alert v-if="invite" type="info" variant="tonal" density="compact" class="mb-4">
+          <UiAlert v-if="invite" type="info" variant="tonal" density="compact" class="mb-4">
             {{ invite.householdName }} hanesine davet edildiniz. Kayıttan sonra doğrudan haneye katılırsınız.
-          </v-alert>
-          <v-alert v-if="inviteError" type="error" variant="tonal" density="compact" class="mb-4">
+          </UiAlert>
+          <UiAlert v-if="inviteError" type="error" variant="tonal" density="compact" class="mb-4">
             {{ inviteError }}
-          </v-alert>
+          </UiAlert>
 
           <AuthRegisterForm
             ref="registerFormRef"
@@ -54,24 +54,37 @@
             @submit="handleRegister"
           >
             <template #terms>
-              <!-- Terms and conditions -->
+              <!-- Zorunlu iki onay (davet modunda da): ConsentRecord olarak kaydedilir -->
               <div class="terms-section mb-4">
-                <v-checkbox
+                <UiCheckbox
                   v-model="acceptTerms"
-                  :rules="[v => !!v || 'You must accept the terms and conditions']"
+                  :rules="[v => !!v || 'Kullanım koşullarını kabul etmelisiniz']"
                   density="compact"
                   color="white"
-                  hide-details
+                  hide-details="auto"
                 >
                   <template #label>
                     <span class="terms-text">
-                      {{ t('auth.agreeTo') }}
-                      <a href="/terms" target="_blank" class="terms-link">{{ t('auth.termsOfService') }}</a>
-                      {{ t('auth.and') }}
-                      <a href="/privacy" target="_blank" class="terms-link">{{ t('auth.privacyPolicy') }}</a>
+                      <a :href="LEGAL_ROUTES.terms" target="_blank" rel="noopener" class="terms-link" @click.stop>Kullanım koşullarını</a>
+                      okudum ve kabul ediyorum.
                     </span>
                   </template>
-                </v-checkbox>
+                </UiCheckbox>
+                <UiCheckbox
+                  v-model="acknowledgePrivacy"
+                  :rules="[v => !!v || 'Aydınlatma metnini okuduğunuzu onaylamalısınız']"
+                  density="compact"
+                  color="white"
+                  hide-details="auto"
+                >
+                  <template #label>
+                    <span class="terms-text">
+                      Kişisel verilerimin işlenmesine ilişkin
+                      <a :href="LEGAL_ROUTES.privacy" target="_blank" rel="noopener" class="terms-link" @click.stop>Aydınlatma Metni'ni</a>
+                      okudum.
+                    </span>
+                  </template>
+                </UiCheckbox>
               </div>
             </template>
 
@@ -90,14 +103,20 @@
             <p class="login-text">
               {{ t('auth.alreadyHaveAccount') }}
             </p>
-            <v-btn
+            <UiBtn
               variant="outlined"
               color="white"
               @click="$router.push('/')"
               class="login-btn"
             >
               {{ t('auth.signIn') }}
-            </v-btn>
+            </UiBtn>
+          </div>
+
+          <div class="legal-links">
+            <NuxtLink :to="LEGAL_ROUTES.privacy" class="terms-link">Aydınlatma metni</NuxtLink>
+            <span>·</span>
+            <NuxtLink :to="LEGAL_ROUTES.terms" class="terms-link">Kullanım koşulları</NuxtLink>
           </div>
         </div>
       </div>
@@ -114,6 +133,7 @@
 import type { InvitationInfo, RegisterRequest } from '~/types'
 import AuthRegisterForm from '~/components/Auth/RegisterForm.vue'
 import { API_ENDPOINTS } from '~/utils/apiEndpoints'
+import { LEGAL_ROUTES } from '~/utils/legal'
 import { parseApiErrorMessages } from '~/utils/apiError'
 import { clearInviteToken, getStoredInviteToken, reloadToDashboard, storeInviteToken } from '~/composables/useHousehold'
 
@@ -131,6 +151,9 @@ const auth = useAuth()
 // Reactive data
 const registerFormRef = ref()
 const acceptTerms = ref(false)
+const acknowledgePrivacy = ref(false)
+// Onaylar kayıt isteğine eklenir; backend ikisini de zorunlu tutar
+const consentFields = () => ({ acceptTerms: acceptTerms.value, acknowledgePrivacy: acknowledgePrivacy.value })
 const currentImageIndex = ref(0)
 
 // App data
@@ -174,7 +197,7 @@ const registerWithInvite = async (formData: RegisterRequest) => {
   inviteBusy.value = true
   inviteError.value = ''
   try {
-    await api.post(API_ENDPOINTS.AUTH.REGISTER, { ...formData, householdName: undefined, inviteToken: inviteToken.value }, { silent: true })
+    await api.post(API_ENDPOINTS.AUTH.REGISTER, { ...formData, ...consentFields(), householdName: undefined, inviteToken: inviteToken.value }, { silent: true })
     clearInviteToken()
     await auth.login({ email: formData.email, password: formData.password, rememberMe: false, deviceId: '', deviceName: '' })
     reloadToDashboard()
@@ -187,7 +210,7 @@ const registerWithInvite = async (formData: RegisterRequest) => {
 
 // Methods
 const handleRegister = async (formData: RegisterRequest) => {
-  if (!acceptTerms.value) return
+  if (!acceptTerms.value || !acknowledgePrivacy.value) return
 
   if (invite.value) {
     await registerWithInvite(formData)
@@ -195,7 +218,7 @@ const handleRegister = async (formData: RegisterRequest) => {
   }
 
   try {
-    await auth.register(formData)
+    await auth.register({ ...formData, ...consentFields() })
   } catch (error) {
     console.error('Registration failed:', error)
   }
@@ -339,7 +362,7 @@ useHead({
   text-align: left;
 }
 
-.terms-section :deep(.v-checkbox) {
+.terms-section :deep(.ui-check) {
   color: white;
 }
 
@@ -347,6 +370,15 @@ useHead({
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
   line-height: 1.4;
+}
+
+.legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
 }
 
 .terms-link {

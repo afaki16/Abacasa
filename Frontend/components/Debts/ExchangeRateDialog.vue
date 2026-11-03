@@ -2,8 +2,8 @@
   <v-dialog :model-value="modelValue" max-width="520" @update:model-value="$emit('update:modelValue', $event)">
     <v-card>
       <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-currency-usd</v-icon>
-        Dolar kuru
+        <v-icon class="mr-2">mdi-swap-horizontal</v-icon>
+        Kurlar (elle)
         <v-spacer />
         <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
       </v-card-title>
@@ -12,10 +12,23 @@
         <!-- Aynı tarih için kayıt varsa backend onu günceller -->
         <v-form ref="formRef" @submit.prevent="save">
           <v-row dense>
+            <v-col cols="12">
+              <v-select
+                v-model="formData.currency"
+                :items="rateCurrencyOptions"
+                item-title="title"
+                item-value="value"
+                label="Birim"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                :disabled="isBusy"
+              />
+            </v-col>
             <v-col cols="12" sm="5">
               <v-text-field
                 v-model.number="formData.rate"
-                label="Kur (₺)"
+                :label="formData.currency === Currency.QuarterGold ? 'Çeyrek fiyatı (₺)' : 'Kur (₺)'"
                 type="number"
                 min="0"
                 step="0.0001"
@@ -47,7 +60,7 @@
         <div class="text-subtitle-2 mt-4 mb-1">Son kayıtlar</div>
         <v-list density="compact">
           <v-list-item v-for="r in rates" :key="r.id">
-            <template #title>{{ formatDisplayDate(r.date) }}</template>
+            <template #title>{{ formatDisplayDate(r.date) }} · {{ currencyLabel(r.currency) }}</template>
             <template #append>
               <span class="mr-2">{{ formatMoney(r.rate) }}</span>
               <v-btn
@@ -100,13 +113,13 @@ const emit = defineEmits<{
 }>()
 
 const { validationRules: rules } = useValidators()
-const { formatMoney } = useMoney()
+const { formatMoney, currencyLabel } = useMoney()
 const { hasPermission } = useAuth()
-const { getExchangeRates, saveExchangeRate, deleteExchangeRate } = useDebts()
+const { rateCurrencyOptions, getExchangeRates, saveExchangeRate, deleteExchangeRate } = useDebts()
 const toastStore = useToastStore()
 
 const formRef = ref()
-const formData = reactive({ rate: null as number | null, date: todayIso() })
+const formData = reactive({ currency: Currency.USD as Currency, rate: null as number | null, date: todayIso() })
 const rates = ref<ExchangeRate[]>([])
 const rateToDelete = ref<ExchangeRate | null>(null)
 const isBusy = ref(false)
@@ -116,14 +129,15 @@ const canDelete = computed(() => hasPermission('ExchangeRates.Delete'))
 const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Kur 0\'dan büyük olmalıdır'
 
 const load = async () => {
-  rates.value = (await getExchangeRates(Currency.USD)) ?? []
+  // Bütün birimlerin elle girilen kurları (geçmiş listesinde birim sütunu)
+  rates.value = (await getExchangeRates()) ?? []
 }
 
 watch(
   () => props.modelValue,
   async (open) => {
     if (!open) return
-    Object.assign(formData, { rate: null, date: todayIso() })
+    Object.assign(formData, { currency: Currency.USD, rate: null, date: todayIso() })
     await load()
   },
   { immediate: true }
@@ -135,7 +149,7 @@ const save = async () => {
   if (!valid) return
   isBusy.value = true
   try {
-    await saveExchangeRate({ currency: Currency.USD, rate: Number(formData.rate), date: formData.date })
+    await saveExchangeRate({ currency: formData.currency, rate: Number(formData.rate), date: formData.date })
     toastStore.add('success', 'Kur kaydedildi')
     formData.rate = null
     await load()

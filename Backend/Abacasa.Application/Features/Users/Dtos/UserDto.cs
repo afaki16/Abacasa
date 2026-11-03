@@ -22,6 +22,7 @@ namespace Abacasa.Application.Features.Users.Dtos
         public DateTime CreatedDate { get; set; }
         // Son aktif hane (User.TenantId); erişim üyelikle olur
         public int? TenantId { get; set; }
+        public bool MustChangePassword { get; set; }
         // Yalnızca sistem rolleri (login/refresh/me yanıtında)
         public List<RoleDto> Roles { get; set; } = new List<RoleDto>();
         // Login/refresh/me yanıtında aktif haneye göre hesaplanmış izinler
@@ -40,6 +41,14 @@ namespace Abacasa.Application.Features.Users.Dtos
         public string Name { get; set; }
         /// HouseholdRole adı: Admin | Member
         public string Role { get; set; }
+        /// Aktif hanenin açık/kapalı modülleri
+        public HouseholdModulesDto Modules { get; set; } = new HouseholdModulesDto();
+    }
+
+    public class HouseholdModulesDto
+    {
+        /// Bağış hedefleri ve emanetler
+        public bool DonationExtras { get; set; }
     }
 
     public class UserMembershipDto

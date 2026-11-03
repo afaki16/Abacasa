@@ -60,13 +60,13 @@
           <v-card-text>
             <div class="text-caption">Açık borç (TL karşılığı)</div>
             <div class="text-h5 font-weight-bold">
-              {{ usdRateMissing ? "—" : formatMoney(data?.debts.openTotalInTry ?? 0) }}
+              {{ formatMoney(data?.debts.openTotalInTry) }}
             </div>
+            <!-- TL ve yabancı birimler tek satırda -->
             <div class="text-caption">
-              {{ formatMoney(data?.debts.openTry ?? 0) }} · {{ formatMoney(data?.debts.openUsd ?? 0, "USD") }}
-              <template v-if="data?.debts.usdRate"> · Kur {{ formatDisplayDate(data.debts.usdRate.date) }}</template>
+              {{ formatOpenLine(data?.debts.openTry ?? 0, data?.debts.foreign ?? []) }}
             </div>
-            <div v-if="usdRateMissing" class="text-caption">Kur girilmemiş</div>
+            <div v-if="missingRateLabels.length" class="text-caption">{{ missingRateLabels.join(", ") }} kuru girilmemiş</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -221,7 +221,7 @@ useHead({
 //#region Composables
 const authStore = useAuthStore();
 const { hasPermission } = useAuth();
-const { formatMoney } = useMoney();
+const { formatMoney, currencyLabel, formatOpenLine } = useMoney();
 const { getTypeLabel, getPaymentMethods } = usePaymentMethods();
 const { getKindLabel } = useRecurringPayments();
 const { getTypeLabel: getObligationTypeLabel } = useVehicles();
@@ -255,8 +255,10 @@ watch(period, () => {
 });
 //#endregion
 
-// Borçlar sayfasındaki kural: TL karşılığı yalnızca açık dolar varken kur yoksa hesaplanamaz
-const usdRateMissing = computed(() => !!data.value && data.value.debts.openUsd > 0 && !data.value.debts.usdRate);
+// Açığı olup kuru olmayan birimler (Borçlar sayfasındaki kural)
+const missingRateLabels = computed(() =>
+  (data.value?.debts.foreign ?? []).filter((f) => f.openInTry === null).map((f) => currencyLabel(f.currency))
+);
 
 const personTotals = computed(() => {
   const rows = data.value?.byPerson ?? [];

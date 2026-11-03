@@ -10,6 +10,18 @@ import { jwtDecode } from "jwt-decode";
 let inFlightSilentRefresh: Promise<boolean> | null = null;
 
 /**
+ * Sayfa yüklemesi başına bir kez "refresh denendi ve başarısız oldu" hatırası.
+ * Korumalı bir sayfayı yenileyip refresh fail olunca middleware navigateTo('/')
+ * yapar; '/' rotasında auth.global.ts tekrar koşar ve initializeAuth gene
+ * fırlardı — bu da ikinci 400 isteğini doğururdu. Bu sentinel sayesinde
+ * aynı sayfa yüklemesinde ikinci deneme yapılmaz.
+ *
+ * Başarılı setAuth ya da clearAuth tetiklendiğinde resetlenir; bir sonraki
+ * tarayıcı refresh'inde modül yeniden yüklendiği için zaten sıfırdan başlar.
+ */
+let silentRefreshAttempted = false;
+
+/**
  * Auth store — güvenlik notları:
  *
  * 1) Access token SADECE memory'de (bu store'da) tutulur.
@@ -68,6 +80,11 @@ export const useAuthStore = defineStore("auth", {
       return state.roles.includes(role);
     },
 
+    // Aktif hanede modül açık mı (hanesiz kullanıcıda false)
+    hasModule: (state) => (module: 'donationExtras') => {
+      return state.user?.activeTenant?.modules?.[module] === true;
+    },
+
     hasAnyPermission(): (permissions: string[]) => boolean {
       return (permissions: string[]) =>
         permissions.some((permission) => this.hasPermission(permission));
@@ -99,11 +116,14 @@ export const useAuthStore = defineStore("auth", {
       this.user = authData.user;
       this.accessToken = authData.accessToken;
       this.isAuthenticated = true;
+      // Başarılı kimlik bilgisi var — bir sonraki initializeAuth çağrısı
+      // bu turdaki başarısızlıkla engellenmesin.
+      silentRefreshAttempted = false;
 
       this.permissions = (authData.user?.permissions ?? [])
         .map(
           (p: { fullPermission?: string; name?: string }) =>
-            p?.fullPermission ?? p?.name,
+            p?.name ?? p?.fullPermission,
         )
         .filter(Boolean) as string[];
 
@@ -127,7 +147,7 @@ export const useAuthStore = defineStore("auth", {
       this.permissions = (user?.permissions ?? [])
         .map(
           (p: { fullPermission?: string; name?: string }) =>
-            p?.fullPermission ?? p?.name,
+            p?.name ?? p?.fullPermission,
         )
         .filter(Boolean) as string[];
       this.roles = user?.roles?.map((r) => r.name) ?? [];
@@ -140,6 +160,8 @@ export const useAuthStore = defineStore("auth", {
       this.isAuthenticated = false;
       this.permissions = [];
       this.roles = [];
+      // Yeni bir login denemesinde initializeAuth'ın tekrar refresh atmasına izin ver
+      silentRefreshAttempted = false;
 
       // deviceId cookie'sini de temizle (logout = cihaz unutma)
       if (import.meta.client) {
@@ -197,6 +219,14 @@ export const useAuthStore = defineStore("auth", {
         return;
       }
 
+      // Bu sayfa yüklemesinde refresh zaten denenip başarısız olduysa
+      // tekrar deneme (middleware redirect zinciri ikinci 400'ü tetikliyordu)
+      if (silentRefreshAttempted) {
+        this.isAuthenticated = false;
+        this.accessToken = null;
+        return;
+      }
+
       // device_id cookie'si bu cihazda önceden login olunduğunu işaret eder.
       // Yoksa: ya hiç login olmamış ya da logout edilmiş — refresh anlamsız.
       // Varsa: refresh_token HttpOnly cookie de büyük ihtimal mevcut (remember me).
@@ -209,10 +239,12 @@ export const useAuthStore = defineStore("auth", {
       }
 
       try {
-        await this.silentRefresh();
+        const ok = await this.silentRefresh();
+        if (!ok) silentRefreshAttempted = true;
       } catch {
         // Refresh başarısız — kullanıcı authenticate olmadı,
         // ama bu normal bir durum (refresh_token expired, revoked vb.)
+        silentRefreshAttempted = true;
         this.isAuthenticated = false;
         this.accessToken = null;
       }

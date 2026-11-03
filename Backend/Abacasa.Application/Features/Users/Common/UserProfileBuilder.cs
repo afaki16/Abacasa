@@ -20,6 +20,7 @@ public static class UserProfileBuilder
     /// <param name="user">UserRoles.Role yüklenmiş kullanıcı</param>
     /// <param name="activeTenantId">Oturumun aktif hanesi (token'daki tenant_id)</param>
     public static async Task<UserDto> BuildAsync(IUnitOfWork unitOfWork, IPermissionService permissionService, ILegalVersions legalVersions,
+        IFileStorage fileStorage,
         User user, int? activeTenantId)
     {
         var memberships = await unitOfWork.TenantMemberships.GetByUserReadOnlyAsync(user.Id);
@@ -54,9 +55,10 @@ public static class UserProfileBuilder
             LastLoginDate = user.LastLoginDate,
             EmailConfirmed = user.EmailConfirmed,
             PhoneConfirmed = user.PhoneConfirmed,
-            ProfileImageUrl = user.ProfileImageUrl,
+            ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImageKey) ? null : fileStorage.GetPublicUrl(user.ProfileImageKey),
             CreatedDate = user.CreatedDate,
             TenantId = user.TenantId,
+            MustChangePassword = user.MustChangePassword,
             // Hane rolleri UserRole üzerinden verilmez; yalnızca sistem rolleri döner
             Roles = user.UserRoles
                 .Where(ur => ur.Role != null && !IsHouseholdRole(ur.Role.Name))
@@ -75,7 +77,8 @@ public static class UserProfileBuilder
             {
                 Id = active.TenantId,
                 Name = active.Tenant.Name,
-                Role = active.Role.ToString()
+                Role = active.Role.ToString(),
+                Modules = new HouseholdModulesDto { DonationExtras = active.Tenant.DonationExtrasEnabled }
             },
             Memberships = memberships
                 .Select(m => new UserMembershipDto { TenantId = m.TenantId, Name = m.Tenant.Name, Role = m.Role.ToString() })

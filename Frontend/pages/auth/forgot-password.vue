@@ -1,21 +1,20 @@
 <template>
   <div class="auth-container" :style="{ background: 'var(--theme-gradient-sidebar)' }">
     <div class="auth-card">
-      <v-icon size="72" color="white" class="auth-icon">mdi-lock-question</v-icon>
+      <UiIcon icon="mdi-lock-question" :size="72" color="white" class="auth-icon" />
 
       <h1 class="title">{{ t('auth.forgotPassword') }}</h1>
 
       <template v-if="!submitted">
         <p class="subtitle">{{ t('auth.forgotPasswordSubtitle') }}</p>
 
-        <v-form ref="formRef" v-model="isValid" class="auth-form" @submit.prevent="onSubmit">
-          <v-text-field
+        <UiForm ref="formRef" v-model="isValid" class="auth-form" @submit="onSubmit">
+          <UiTextField
             v-model="email"
             :label="t('auth.email')"
             :placeholder="t('auth.emailPlaceholder')"
             type="email"
             prepend-inner-icon="mdi-email"
-            variant="outlined"
             bg-color="white"
             rounded="lg"
             autocomplete="email"
@@ -23,11 +22,11 @@
             :disabled="loading"
           />
 
-          <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mb-4 text-left">
+          <UiAlert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mb-4 text-left">
             {{ errorMessage }}
-          </v-alert>
+          </UiAlert>
 
-          <v-btn
+          <UiBtn
             type="submit"
             color="white"
             variant="outlined"
@@ -36,19 +35,19 @@
             :loading="loading"
             :disabled="!isValid"
             block
+            prepend-icon="mdi-email-fast-outline"
           >
-            <v-icon start>mdi-email-fast-outline</v-icon>
             {{ t('auth.sendResetLink') }}
-          </v-btn>
-        </v-form>
+          </UiBtn>
+        </UiForm>
       </template>
 
       <p v-else class="subtitle">{{ t('auth.resetLinkSent') }}</p>
 
       <div class="actions">
-        <v-btn variant="text" color="white" class="link-btn" @click="goToLogin">
+        <UiBtn variant="text" color="white" class="link-btn" @click="goToLogin">
           {{ t('auth.backToLogin') }}
-        </v-btn>
+        </UiBtn>
       </div>
     </div>
   </div>

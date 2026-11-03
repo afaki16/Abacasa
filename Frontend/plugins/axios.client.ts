@@ -1,4 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
+import { ErrorCode } from "~/utils/errorCodes";
+import { FORCE_CHANGE_PASSWORD_PATH, markSessionExpired } from "~/utils/authRoutes";
+import { SUPERADMIN_TENANT_COOKIE } from "~/composables/useTenantContext";
 
 /**
  * Axios plugin — güvenlik notları:
@@ -31,8 +34,11 @@ export default defineNuxtPlugin(() => {
   const router = useRouter();
   const authStore = useAuthStore();
 
+  // Dev'de Vite proxy'si (/api → backend, bkz. nuxt.config.ts) sayesinde same-origin
+  // çalışıyoruz; baseURL boşken istekler frontend origin'ine gidip proxy'den geçer.
+  // Prod'da apiBase ile gerçek API origin'ine bağlanılır.
   const api = axios.create({
-    baseURL: config.public.apiBase,
+    baseURL: import.meta.dev ? "" : config.public.apiBase,
     timeout: 30000,
     withCredentials: true,
     headers: {
@@ -101,6 +107,19 @@ export default defineNuxtPlugin(() => {
         reqConfig.headers["Accept-Language"] = "tr";
       }
 
+      // SuperAdmin'in üst bardan seçtiği hane (bkz. useTenantContext). Backend header'ı yalnızca SuperAdmin için
+      // ve yalnızca sistem listelerinde dikkate alır; diğer rollerde hiç gönderilmez.
+      if (authStore.hasRole("SuperAdmin")) {
+        try {
+          const tenantCookie = useCookie<number | null>(SUPERADMIN_TENANT_COOKIE);
+          if (tenantCookie.value) {
+            reqConfig.headers["X-Tenant-Id"] = String(tenantCookie.value);
+          }
+        } catch {
+          // Seçim okunamazsa platform görünümüyle devam edilir
+        }
+      }
+
       return reqConfig;
     },
     (error) => Promise.reject(error),
@@ -113,6 +132,17 @@ export default defineNuxtPlugin(() => {
       const originalRequest = error.config as
         | InternalAxiosRequestConfig
         | undefined;
+
+      // Backend kilidi: kullanıcının şifre değiştirmesi gerekiyor (admin bayrağı oturum
+      // sırasında açmış olabilir). Bayrağı store'a yaz ve kullanıcıyı kilit sayfasına götür.
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.error?.code === ErrorCode.PasswordChangeRequired
+      ) {
+        if (authStore.user) authStore.user.mustChangePassword = true;
+        await navigateTo(FORCE_CHANGE_PASSWORD_PATH);
+        return Promise.reject(error);
+      }
 
       if (error.response?.status !== 401 || !originalRequest) {
         return Promise.reject(error);
@@ -146,7 +176,8 @@ export default defineNuxtPlugin(() => {
         // kendisi handle etsin (örn. "email/şifre hatalı" mesajı göstersin).
         if (originalRequest.url?.includes("/auth/refresh-token")) {
           authStore.clearAuth();
-          await router.push("/?expired=true");
+          markSessionExpired();
+          await router.push("/");
         }
         return Promise.reject(error);
       }
@@ -154,7 +185,8 @@ export default defineNuxtPlugin(() => {
       // Zaten retry edilmiş bir istek tekrar 401 dönerse vazgeç
       if (originalRequest._retry) {
         authStore.clearAuth();
-        await router.push("/?expired=true");
+        markSessionExpired();
+        await router.push("/");
         return Promise.reject(error);
       }
 
@@ -197,7 +229,8 @@ export default defineNuxtPlugin(() => {
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
         authStore.clearAuth();
-        await router.push("/?expired=true");
+        markSessionExpired();
+        await router.push("/");
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

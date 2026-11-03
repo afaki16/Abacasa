@@ -10,6 +10,7 @@ import type {
 } from "~/types";
 import { API_ENDPOINTS } from "~/utils/apiEndpoints";
 import { safeRedirect } from "~/utils/safeRedirect";
+import { FORCE_CHANGE_PASSWORD_PATH, clearSessionExpired } from "~/utils/authRoutes";
 import { useAuthStore } from "~/stores/auth";
 import { useApi } from "./useApi";
 import { useToast } from "./useToast";
@@ -100,7 +101,12 @@ export const useAuth = () => {
       const deviceId = credentials.deviceId || generateDeviceId();
       await authStore.setAuth(loginData, deviceId);
 
-      await router.push(safeRedirect(redirectTo) ?? "/dashboard");
+      // Zorunlu şifre değişimi bekleyen kullanıcı yalnızca kilit sayfasına gider (redirect yok sayılır)
+      await router.push(
+        loginData.user?.mustChangePassword
+          ? FORCE_CHANGE_PASSWORD_PATH
+          : (safeRedirect(redirectTo) ?? "/dashboard"),
+      );
       return loginData;
     } catch (error) {
       throw error;
@@ -128,6 +134,14 @@ export const useAuth = () => {
     } finally {
       authStore.setLoading(false);
     }
+  };
+
+  /** Kayıt formu için: e-posta/telefon daha önce kayıtlı mı? (toast göstermez) */
+  const checkRegisterAvailability = async (fields: { email?: string; phoneNumber?: string }) => {
+    return await api.post<{
+      email?: { isAvailable: boolean; reason?: string };
+      phoneNumber?: { isAvailable: boolean; reason?: string };
+    }>(API_ENDPOINTS.AUTH.CHECK_AVAILABILITY, fields, { silent: true });
   };
 
   const verifyEmail = async (email: string, token: string) => {
@@ -172,6 +186,8 @@ export const useAuth = () => {
     } catch {
       // Logout her zaman client tarafında temizlik yapılmalı
     } finally {
+      // Kullanıcı kasten çıktı; logout isteği 401 alıp işaret koyduysa bile "süre doldu" gösterilmesin
+      clearSessionExpired();
       authStore.clearAuth();
       await router.push("/");
     }
@@ -254,6 +270,40 @@ export const useAuth = () => {
     await router.push("/");
   };
 
+  /**
+   * Zorunlu şifre değişimi (MustChangePassword). Normal changePassword'dan farkı:
+   * kullanıcı oturumdan atılmaz. Backend tüm oturumları kapatır (diğer cihazlar dahil),
+   * ardından yeni şifreyle bu cihaz için otomatik olarak yeniden giriş yapılır.
+   */
+  const completeForcedPasswordChange = async (
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> => {
+    const user = authStore.user;
+    if (!user) throw new Error("Not authenticated");
+
+    await api.post(
+      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+      { currentPassword, newPassword },
+      { silent: true },
+    );
+
+    // Backend oturum iptalini (LastSessionsRevokedAt) milisaniye hassasiyetiyle,
+    // JWT "iat" değerini ise saniye hassasiyetiyle tutar. Aynı saniye içinde alınan yeni
+    // token iptal edilmiş sayılır; bu yüzden bir sonraki saniyeye geçilmesi beklenir.
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+
+    authStore.clearAuth();
+    try {
+      // Kimlik global; login hane seçmez (son aktif hane backend'de seçilir)
+      await login({ email: user.email, password: newPassword });
+      toast.success("Şifreniz değiştirildi.");
+    } catch {
+      toast.success("Şifreniz değiştirildi. Lütfen yeni şifrenizle giriş yapın.");
+      await router.push("/");
+    }
+  };
+
   // Hesap silme önizlemesi: son yönetici olunan haneler, birlikte silinecek haneler, son SuperAdmin
   const getAccountDeletionPreview = async (): Promise<AccountDeletionPreview> => {
     const response = await api.get<AccountDeletionPreview>(API_ENDPOINTS.AUTH.ACCOUNT_DELETION_PREVIEW);
@@ -273,13 +323,49 @@ export const useAuth = () => {
     try {
       await api.post(API_ENDPOINTS.AUTH.LOGOUT_ALL, {});
     } finally {
+      clearSessionExpired();
       authStore.clearAuth();
       await router.push("/");
     }
   };
 
+  /** Mevcut şifresini hatırlamayan (giriş yapmış) kullanıcıya 6 haneli kod gönderir. */
+  const sendPasswordChangeCode = async () => {
+    await api.post(API_ENDPOINTS.AUTH.PASSWORD_CHANGE_CODE, {}, { silent: true });
+  };
+
+  /** Kodla şifre değiştirir. Backend tüm oturumları kapattığı için changePassword gibi login'e döner. */
+  const changePasswordWithCode = async (code: string, newPassword: string): Promise<void> => {
+    await api.post(API_ENDPOINTS.AUTH.PASSWORD_CHANGE_CONFIRM, { code, newPassword });
+    toast.success("Şifreniz değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.");
+    authStore.clearAuth();
+    await router.push("/");
+  };
+
+  /** Kendi ad/soyad/telefonunu günceller; ardından store'daki kullanıcı tazelenir. */
+  const updateProfile = async (data: { firstName: string; lastName: string; phoneNumber?: string }) => {
+    await api.put(API_ENDPOINTS.AUTH.PROFILE, data, { silent: true });
+    await authStore.fetchUserFromApi(false);
+  };
+
+  /** Yeni adrese onay linki gönderir; e-posta link tıklanana kadar değişmez. */
+  const requestEmailChange = async (newEmail: string, currentPassword: string) => {
+    await api.put(API_ENDPOINTS.AUTH.PROFILE_EMAIL, { newEmail, currentPassword }, { silent: true });
+  };
+
+  /** Onay linkindeki token'la e-postayı değiştirir. Backend tüm oturumları kapatır. */
+  const confirmEmailChange = async (email: string, token: string) => {
+    await api.post(API_ENDPOINTS.AUTH.CONFIRM_EMAIL_CHANGE, { email, token }, { silent: true });
+  };
+
   return {
     login,
+    checkRegisterAvailability,
+    sendPasswordChangeCode,
+    changePasswordWithCode,
+    updateProfile,
+    requestEmailChange,
+    confirmEmailChange,
     register,
     logout,
     refreshToken,
@@ -298,6 +384,7 @@ export const useAuth = () => {
     logoutAllDevices,
     revokeSessionById,
     changePassword,
+    completeForcedPasswordChange,
     getAccountDeletionPreview,
     deleteAccount,
   };

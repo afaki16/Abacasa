@@ -66,9 +66,28 @@
     "resetPasswordSuccess": "Your password has been updated. Please sign in with your new password.",
     "resetPasswordFailed": "Your password could not be updated. Please try again.",
     "invalidResetLink": "This link is invalid or incomplete.",
-    "requestNewLink": "Request New Link"
+    "requestNewLink": "Request New Link",
+    "accountInvitationTitle": "Create Your Account",
+    "accountInvitationSubtitle": "Set a password for your account to sign in",
+    "accountInvitationButton": "Set Password",
+    "accountInvitationSuccess": "Your password has been set. You can now sign in.",
+    "accountInvitationExpiredHint": "If your invitation link has expired, ask your administrator to resend it.",
+    "pageTitleForceChangePassword": "Change Password - Abacasa",
+    "forceChangePasswordTitle": "Change Your Password",
+    "forceChangePasswordSubtitle": "You need to set a new password for your account before continuing",
+    "currentPasswordLabel": "Current Password",
+    "newPasswordMustDiffer": "The new password must be different from the current one"
   },
   "sidebar": {
+    "context": {
+      "activeTenant": "Household filter:"
+    },
+    "tenantSelector": {
+      "placeholder": "Select household",
+      "platform": "Platform (all households)",
+      "loading": "Loading…",
+      "empty": "No household found"
+    },
     "menu": {
       "dashboard": "Dashboard",
       "userManagement": "User Management",
@@ -166,6 +185,13 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "minLength": "Must be at least {min} characters",
     "maxLength": "Must be no more than {max} characters",
-    "phoneFormat": "Please enter a valid phone number"
+    "phoneFormat": "Please enter a valid phone number",
+    "tcKimlikInvalid": "Please enter a valid Turkish ID number"
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
   }
 }

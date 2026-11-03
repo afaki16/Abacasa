@@ -56,6 +56,13 @@ namespace Abacasa.Application.Features.Auth.Commands.ResetPassword
 
             resetToken.User.PasswordHash = hashResult.Value;
             resetToken.User.LastSessionsRevokedAt = DateTime.UtcNow;
+            // The user chose a new password themselves, so a pending forced change is satisfied.
+            resetToken.User.MustChangePassword = false;
+            // The link was delivered to this address, so using it proves ownership (this also completes account
+            // invitations). A self-registered user still waiting for verification is left alone: their household is
+            // opened and the account activated only by verify-email, so confirming here would strand them.
+            if (resetToken.User.Status != UserStatus.PendingVerification)
+                resetToken.User.EmailConfirmed = true;
             resetToken.MarkAsUsed();
 
             _unitOfWork.Users.Update(resetToken.User);

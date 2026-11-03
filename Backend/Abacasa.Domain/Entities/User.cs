@@ -20,7 +20,8 @@ namespace Abacasa.Domain.Entities
         public DateTime? LastSessionsRevokedAt { get; set; }
         public bool EmailConfirmed { get; set; }
         public bool PhoneConfirmed { get; set; }
-        public string? ProfileImageUrl { get; set; }
+        /// <summary>Storage key of the profile photo (IFileStorage, "users/{id}/avatar-….webp"); DTOs expose it as ProfileImageUrl.</summary>
+        public string? ProfileImageKey { get; set; }
 
         // Son aktif hane: login'de bu hanede canlı üyelik varsa o seçilir; hane değiştirmede güncellenir.
         // Haneye erişim TenantMembership ile olur; bu kolon erişim vermez.
@@ -28,6 +29,12 @@ namespace Abacasa.Domain.Entities
 
         // Davetsiz kayıtta istenen hane adı; e-posta doğrulanınca hane açılır ve temizlenir
         public string? PendingHouseholdName { get; set; }
+
+        /// <summary>
+        /// When true, the user must change their password before using the application.
+        /// Cleared automatically on change-password and reset-password.
+        /// </summary>
+        public bool MustChangePassword { get; set; }
 
 
 

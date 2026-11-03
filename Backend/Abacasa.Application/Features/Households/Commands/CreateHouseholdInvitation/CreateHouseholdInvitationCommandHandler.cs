@@ -57,6 +57,17 @@ public class CreateHouseholdInvitationCommandHandler : IRequestHandler<CreateHou
                 return Result<HouseholdInvitationSendResultDto>.Failure(personError);
         }
 
+        // Süresi dolmuş açık davet iptal edilir: hanede e-posta başına tek açık davet (benzersiz index).
+        // Yeni davetten önce ayrı kaydedilir; aynı SaveChanges'te INSERT önce çalışırsa index'e takılırdı.
+        var expiredOpen = await _unitOfWork.HouseholdInvitations.GetExpiredOpenForEmailAsync(email, now);
+        foreach (var expired in expiredOpen)
+        {
+            expired.RevokedAt = now;
+            _unitOfWork.HouseholdInvitations.Update(expired);
+        }
+        if (expiredOpen.Count > 0)
+            await _unitOfWork.SaveChangesAsync();
+
         var (plainToken, tokenHash) = HouseholdInvitations.NewToken();
         var invitation = new HouseholdInvitation
         {

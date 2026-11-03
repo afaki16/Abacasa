@@ -65,6 +65,47 @@ namespace Abacasa.Infrastructure.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
+            modelBuilder.Entity("Abacasa.Domain.Entities.ConsentRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "DocumentType");
+
+                    b.ToTable("ConsentRecords", (string)null);
+                });
+
             modelBuilder.Entity("Abacasa.Domain.Entities.Debt", b =>
                 {
                     b.Property<int>("Id")
@@ -610,7 +651,9 @@ namespace Abacasa.Infrastructure.Migrations
                     b.HasIndex("TokenHash")
                         .IsUnique();
 
-                    b.HasIndex("TenantId", "Email");
+                    b.HasIndex("TenantId", "Email")
+                        .IsUnique()
+                        .HasFilter("\"AcceptedAt\" IS NULL AND \"RevokedAt\" IS NULL AND \"IsDeleted\" = false");
 
                     b.ToTable("HouseholdInvitations", (string)null);
                 });
@@ -725,6 +768,53 @@ namespace Abacasa.Infrastructure.Migrations
                         .HasDatabaseName("IX_LoginAttempts_Email_IpAddress_AttemptedAt");
 
                     b.ToTable("LoginAttempts", (string)null);
+                });
+
+            modelBuilder.Entity("Abacasa.Domain.Entities.MarketRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FetchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Currency", "Date")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.ToTable("MarketRates", (string)null);
                 });
 
             modelBuilder.Entity("Abacasa.Domain.Entities.MonthlyAmount", b =>
@@ -929,9 +1019,6 @@ namespace Abacasa.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("Resource", "Type")
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
@@ -1292,6 +1379,9 @@ namespace Abacasa.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("DonationExtrasEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1421,6 +1511,9 @@ namespace Abacasa.Infrastructure.Migrations
                     b.Property<DateTime?>("LastSessionsRevokedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1439,7 +1532,7 @@ namespace Abacasa.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<string>("ProfileImageUrl")
+                    b.Property<string>("ProfileImageKey")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -1533,6 +1626,11 @@ namespace Abacasa.Infrastructure.Migrations
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FailedAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1702,6 +1800,17 @@ namespace Abacasa.Infrastructure.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Abacasa.Domain.Entities.ConsentRecord", b =>
+                {
+                    b.HasOne("Abacasa.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Abacasa.Domain.Entities.Debt", b =>

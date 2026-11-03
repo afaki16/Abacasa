@@ -1,4 +1,5 @@
 using Abacasa.Application.Features.Debts.Dtos;
+using Abacasa.Application.Features.ExchangeRates.Dtos;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Entities;
 using System;
@@ -21,8 +22,8 @@ public static class DebtAmounts
 
     public static decimal Remaining(Debt debt) => debt.Amount - Paid(debt);
 
-    // usdRate güncel USD kurudur; yoksa USD borcun kalan TL karşılığı null olur
-    public static void Fill(DebtListDto dto, Debt debt, decimal? usdRate)
+    // rates: yabancı birimlerin güncel kurları (CurrentRates); borcun biriminin kuru yoksa kalan TL karşılığı null olur
+    public static void Fill(DebtListDto dto, Debt debt, IReadOnlyDictionary<Currency, CurrentRateDto> rates)
     {
         dto.PaidAmount = Paid(debt);
         dto.Remaining = debt.Amount - dto.PaidAmount;
@@ -30,7 +31,7 @@ public static class DebtAmounts
         dto.PaidInTry = debt.Payments.Sum(PaymentInTry);
         dto.RemainingInTry = debt.Currency == Currency.TRY
             ? dto.Remaining
-            : usdRate.HasValue ? ToTry(dto.Remaining, usdRate.Value) : null;
+            : rates.TryGetValue(debt.Currency, out var rate) ? ToTry(dto.Remaining, rate.Rate) : null;
         dto.PaymentCount = debt.Payments.Count;
         dto.HasPayments = dto.PaymentCount > 0;
     }

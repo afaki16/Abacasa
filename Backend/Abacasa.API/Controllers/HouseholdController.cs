@@ -1,5 +1,7 @@
 using Abacasa.Application.Features.Households.Commands.CreateHouseholdInvitation;
 using Abacasa.Application.Features.Households.Commands.DeleteHousehold;
+using Abacasa.Application.Features.Households.Commands.UpdateHouseholdModules;
+using Abacasa.Application.Features.Users.Dtos;
 using Abacasa.Application.Features.Households.Commands.LeaveHousehold;
 using Abacasa.Application.Features.Households.Commands.RemoveHouseholdMember;
 using Abacasa.Application.Features.Households.Commands.ResendHouseholdInvitation;
@@ -7,7 +9,9 @@ using Abacasa.Application.Features.Households.Commands.RevokeHouseholdInvitation
 using Abacasa.Application.Features.Households.Commands.UpdateHousehold;
 using Abacasa.Application.Features.Households.Commands.UpdateHouseholdMember;
 using Abacasa.Application.Features.Households.Dtos;
+using Abacasa.Application.Features.Households.Queries.ExportHousehold;
 using Abacasa.Application.Features.Households.Queries.GetHousehold;
+using Abacasa.Application.Interfaces;
 using Abacasa.Application.Features.Households.Queries.GetHouseholdInvitations;
 using Abacasa.Application.Features.Households.Queries.GetHouseholdMembers;
 using MediatR;
@@ -64,6 +68,33 @@ public class HouseholdController : BaseController
     public async Task<IActionResult> DeleteHousehold([FromBody] DeleteHouseholdDto dto)
     {
         return HandleResult(await _mediator.Send(new DeleteHouseholdCommand { Password = dto.Password, ConfirmName = dto.ConfirmName }));
+    }
+
+    /// <summary>
+    /// Export the active household's live records as an Excel file (admins only: Household.Update)
+    /// </summary>
+    [HttpGet("export")]
+    [Authorize(Policy = "household.update")]
+    [ProducesResponseType(typeof(FileContentResult), 200)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> Export()
+    {
+        var result = await _mediator.Send(new ExportHouseholdQuery());
+        if (!result.IsSuccess)
+            return HandleResult(result);
+
+        return File(result.Value.Content, ExportFile.XlsxContentType, result.Value.FileName);
+    }
+
+    /// <summary>
+    /// Turn household modules on or off (donation targets and funds). Turning off keeps the data.
+    /// </summary>
+    [HttpPut("modules")]
+    [Authorize(Policy = "household.update")]
+    [ProducesResponseType(typeof(HouseholdModulesDto), 200)]
+    public async Task<IActionResult> UpdateModules([FromBody] HouseholdModulesDto dto)
+    {
+        return HandleResult(await _mediator.Send(new UpdateHouseholdModulesCommand { DonationExtras = dto.DonationExtras }));
     }
 
     /// <summary>

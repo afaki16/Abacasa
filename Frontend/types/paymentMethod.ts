@@ -1,8 +1,8 @@
 export enum PaymentMethodType {
-  Cash = 1,
-  BankAccount = 2,
-  CreditCard = 3,
-  MealCard = 4
+  Cash = 'Cash',
+  BankAccount = 'BankAccount',
+  CreditCard = 'CreditCard',
+  MealCard = 'MealCard'
 }
 
 export interface PaymentMethod {

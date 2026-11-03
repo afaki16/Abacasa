@@ -9,7 +9,7 @@
   </template>
 
   <div v-else class="login-loading">
-    <v-progress-circular indeterminate color="primary" size="48" />
+    <UiProgressCircular indeterminate color="primary" :size="48" />
   </div>
 </template>
 

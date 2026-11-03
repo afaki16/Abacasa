@@ -12,10 +12,16 @@ export interface Permission {
   createdDate?: string
 }
 
+/**
+ * Backend JsonStringEnumConverter ile isim olarak gönderir (Domain/Common/Enums/PermissionType.cs).
+ * Backend'de [Flags]; birleşik değerler "Read, Create" gibi virgüllü gelebilir.
+ */
 export enum PermissionType {
-  Create = 1,
-  Read = 2,
-  Update = 3,
-  Delete = 4,
-  Manage = 5
+  None = 'None',
+  Create = 'Create',
+  Read = 'Read',
+  Update = 'Update',
+  Delete = 'Delete',
+  ReadWrite = 'ReadWrite',
+  FullAccess = 'FullAccess'
 }

@@ -34,35 +34,55 @@
       @edit="openEditDialog"
       @delete="openDeleteDialog"
       @search="handleSearch"
+      @filter="handleFilter"
       @page-change="handlePageChange"
       @page-size-change="handlePageSizeChange"
       @refresh="refreshData"
     >
     <!-- For FullName -->
  <template #cell-fullName="{ item, value }">
-  <v-chip
-    color="primary"
-    variant="tonal"
-    size="default"
-    prepend-icon="mdi-account"
-  >
-    {{ value }}
-    <span v-if="item.username" class="ml-1 opacity-75 text-xs">
-      (@{{ item.username }})
-    </span>
-  </v-chip>
+  <div class="flex items-center gap-2">
+    <UserAvatar
+      :src="item.profileImageUrl"
+      :initials="`${item.firstName?.charAt(0) ?? ''}${item.lastName?.charAt(0) ?? ''}`.toUpperCase()"
+      :size="32"
+    />
+    <span class="font-medium">{{ value }}</span>
+    <span v-if="item.username" class="opacity-75 text-xs">(@{{ item.username }})</span>
+  </div>
 </template>
 
 <!-- For Status -->
   <template #cell-status="{ value }">
   <v-chip
-    :color="value == 1 ? 'success' : 'error'"
+    :color="getStatusBadge(value).color"
     size="small"
     variant="tonal"
   >
-    {{ value == 1 ? 'Aktif' : 'Pasif' }}
+    {{ getStatusBadge(value).label }}
   </v-chip>
 </template>
+
+<!-- Haneler (yalnızca SuperAdmin, platform görünümü): kullanıcının canlı üyeliklerinin hane adları -->
+  <template #cell-householdNames="{ value }">
+    <div v-if="value?.length" class="household-pills">
+      <span v-for="name in value" :key="name" class="household-pill">{{ name }}</span>
+    </div>
+    <span v-else class="text-on-surface-variant">—</span>
+  </template>
+
+  <!-- Henüz hiç giriş yapmamış kullanıcıya hesap davetini (şifre belirleme linki) yeniden gönder -->
+  <template #row-actions="{ item }">
+    <button
+      v-if="canResendAccountInvitation(item)"
+      class="action-button invite-button"
+      title="Daveti tekrar gönder"
+      :disabled="resendingId === item.id"
+      @click.stop="openResendDialog(item)"
+    >
+      <v-icon :icon="resendingId === item.id ? 'mdi-loading mdi-spin' : 'mdi-email-arrow-right-outline'" size="18" />
+    </button>
+  </template>
   </BaseDataTable>
 
   <!-- Create/Edit Drawer -->
@@ -80,6 +100,7 @@
       :loading="isLoading"
       @submit="handleSubmit"
       @cancel="closeCreateDialog"
+      @photo-changed="refreshData"
     />
   </ResizableDrawer>
 
@@ -111,10 +132,23 @@
     @cancel="closeDeleteDialog"
   />
 
+  <!-- Confirm Resend Account Invitation Dialog -->
+  <ConfirmDialog
+    v-model="resendDialog"
+    title="Daveti Tekrar Gönder"
+    :message="`'${itemToResend?.email}' adresine yeni bir şifre belirleme linki gönderilecek. Önceki link geçersiz olur.`"
+    type="info"
+    confirm-text="Gönder"
+    :loading="!!resendingId"
+    @confirm="confirmResend"
+    @cancel="resendDialog = false"
+  />
+
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { UserStatus } from '~/types'
 import { dateTimeFormatLong } from '~/utils/datesFormat.ts'
 import BaseDataTable from '~/components/UI/BaseDataTable.vue'
 import ResizableDrawer from '~/components/UI/ResizableDrawer.vue'
@@ -137,6 +171,23 @@ useHead({
 
 //#region DataTable Columns
 const authStore = useAuthStore()
+const { selectedTenantId } = useTenantContext()
+
+const statusFilterOptions = [
+  { value: UserStatus.Active, title: 'Aktif' },
+  { value: UserStatus.Inactive, title: 'Pasif' },
+  { value: UserStatus.Banned, title: 'Yasaklı' },
+  { value: UserStatus.PendingVerification, title: 'Doğrulanmamış' }
+]
+
+const statusBadge = {
+  [UserStatus.Active]: { color: 'success', label: 'Aktif' },
+  [UserStatus.Inactive]: { color: 'grey', label: 'Pasif' },
+  [UserStatus.Banned]: { color: 'error', label: 'Yasaklı' },
+  [UserStatus.PendingVerification]: { color: 'warning', label: 'Doğrulanmamış' }
+}
+const getStatusBadge = (status) => statusBadge[status] ?? { color: 'grey', label: 'Bilinmiyor' }
+
 const tableColumns = computed(() => {
   const base = [
     {
@@ -161,6 +212,8 @@ const tableColumns = computed(() => {
       sortable: true,
       filterable: true,
       filterType: 'select',
+      // Filtre backend'de uygulanır (?status=); seçenekler sabit, sayfadaki değerlerden türetilmez
+      filterOptions: statusFilterOptions,
       width: '300px'
     },
     {
@@ -172,14 +225,15 @@ const tableColumns = computed(() => {
       formatter: dateTimeFormatLong
     }
   ]
-  if (authStore.hasRole('SuperAdmin')) {
+  // Platform görünümünde SuperAdmin kullanıcının üye olduğu haneleri görür; üst bardan bir hane
+  // seçiliyse liste zaten o hanenin üyeleri olduğundan sütun gizlenir.
+  if (authStore.hasRole('SuperAdmin') && !selectedTenantId.value) {
     base.splice(2, 0, {
-      label: 'Tenant ID',
-      key: 'tenantId',
-      sortable: true,
-      filterable: true,
-      filterType: 'text',
-      width: '100px'
+      label: 'Haneler',
+      key: 'householdNames',
+      sortable: false,
+      filterable: false,
+      width: '220px'
     })
   }
   return base
@@ -187,7 +241,7 @@ const tableColumns = computed(() => {
 //#endregion
 
 //#region Composables
-const { getUsers, createUser, updateUser, deleteUser } = useUsers()
+const { getUsers, createUser, updateUser, deleteUser, resendAccountInvitation } = useUsers()
 const { getRoles } = useRoles()
 
 // SSR: İlk sayfa verisi sunucuda yüklenir
@@ -218,6 +272,7 @@ const {
   handleSubmit,
   confirmDelete,
   handleSearch,
+  handleFilter,
   handlePageChange,
   handlePageSizeChange,
   refreshData,
@@ -252,6 +307,34 @@ const handleEditFromDetail = (user) => {
   closeViewDialog()
   openEditDialog(user)
 }
+
+// Backend ile aynı kural: hiç giriş yapmamış ve e-postasını doğrulamamış kullanıcı; düğme users.update iznine bağlı
+const canResendAccountInvitation = (user) =>
+  authStore.hasPermission('Users.Update') && !user.lastLoginDate && !user.emailConfirmed
+
+const toast = useToast()
+const resendDialog = ref(false)
+const itemToResend = ref(null)
+const resendingId = ref(null)
+
+const openResendDialog = (user) => {
+  itemToResend.value = user
+  resendDialog.value = true
+}
+
+const confirmResend = async () => {
+  if (!itemToResend.value) return
+  resendingId.value = itemToResend.value.id
+  try {
+    await resendAccountInvitation(String(itemToResend.value.id))
+    toast.success('Davet e-postası gönderildi.')
+    resendDialog.value = false
+  } catch (error) {
+    toast.showApiError(error, 'Davet gönderilemedi.')
+  } finally {
+    resendingId.value = null
+  }
+}
 //#endregion
 
 //#region Lifecycle
@@ -264,3 +347,41 @@ onMounted(async () => {
 })
 //#endregion
 </script>
+
+<style scoped>
+.household-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.household-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: rgb(var(--color-primary) / 0.08);
+  color: rgb(var(--color-primary));
+}
+
+/* Slot içeriği bu sayfanın scope'unda render edilir; BaseDataTable'ın buton stilleri uygulanmaz */
+.invite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  color: rgb(var(--color-primary));
+  transition: all 0.2s ease;
+}
+.invite-button:hover:not(:disabled) {
+  background: rgb(var(--color-primary) / 0.06);
+  transform: translateY(-1px);
+}
+.invite-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+</style>

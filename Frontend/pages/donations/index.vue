@@ -32,8 +32,8 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <!-- Emanetten dağıtılanlar dönem toplamına girmez; ayrı gösterilir -->
-    <v-col cols="12" md="4">
+    <!-- Emanetten dağıtılanlar dönem toplamına girmez; ayrı gösterilir. Modül kapalıysa kart hiç görünmez -->
+    <v-col v-if="donationExtras" cols="12" md="4">
       <v-card variant="tonal" color="secondary">
         <v-card-text>
           <div class="text-caption">Emanetten dağıtılan</div>
@@ -161,6 +161,7 @@
       :payment-methods="paymentMethods"
       :people="people"
       :funds="funds"
+      :show-fund="donationExtras"
       :loading="isLoading"
       @submit="handleSubmit"
       @cancel="closeCreateDialog"
@@ -220,6 +221,7 @@ const { formatMoney } = useMoney();
 const { getPaymentMethods } = usePaymentMethods();
 const { getPeople } = usePeople();
 const { hasPermission } = useAuth();
+const authStore = useAuthStore();
 const { getFunds } = useDonationFunds();
 const {
   getKindLabel,
@@ -238,8 +240,11 @@ const people = ref<{ id: number; name: string }[]>([]);
 const funds = ref<DonationFund[]>([]);
 
 // Formdaki "Emanetten" seçenekleri için; elde tutarları her kayıttan sonra değişir
+// Bağış hedefleri ve emanetler modülü (kapalıysa emanet alanı ve kartı yok)
+const donationExtras = computed(() => authStore.hasModule("donationExtras"));
+
 const loadFunds = async () => {
-  if (!hasPermission("DonationFunds.Read")) return;
+  if (!donationExtras.value || !hasPermission("DonationFunds.Read")) return;
   try {
     funds.value = (await getFunds(1, 1000, ""))?.data?.items || [];
   } catch {

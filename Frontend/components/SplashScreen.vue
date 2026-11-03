@@ -2,14 +2,13 @@
   <Transition name="splash-fade">
     <div v-if="showSplash" class="splash-screen">
       <div class="splash-bg-gears">
-         <v-icon class="bg-gear bg-gear-1" size="500">mdi-cog-outline</v-icon>
-         <v-icon class="bg-gear bg-gear-2" size="600">mdi-cog-outline</v-icon>
+         <UiIcon icon="mdi-cog-outline" class="bg-gear bg-gear-1" :size="500" />
+         <UiIcon icon="mdi-cog-outline" class="bg-gear bg-gear-2" :size="600" />
       </div>
 
       <div class="splash-content" :class="{ 'splash-animate': splashReady }">
         <div class="splash-logo-wrapper modern-scan-effect">
-          <v-icon class="splash-logo-pulse-gear" icon="mdi-cog"></v-icon>
-          
+          <UiIcon icon="mdi-cog" class="splash-logo-pulse-gear" :size="700" />
           <img
             :src="appData?.app?.logo?.src || '/images/logo.png'"
             :alt="appData?.app?.logo?.alt || 'Logo'"
@@ -17,7 +16,6 @@
           />
         </div>
       </div>
-      
       <div class="splash-particles-container">
         <div v-for="i in 40" :key="'sp'+i" class="splash-particle" :style="getSplashParticleStyle(i)"></div>
       </div>

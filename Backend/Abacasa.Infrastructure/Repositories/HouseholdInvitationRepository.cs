@@ -43,6 +43,13 @@ public class HouseholdInvitationRepository : RepositoryBase<HouseholdInvitation,
             .AnyAsync(i => i.Email == email && i.AcceptedAt == null && i.RevokedAt == null && i.ExpiresAt > utcNow);
     }
 
+    public async Task<List<HouseholdInvitation>> GetExpiredOpenForEmailAsync(string email, DateTime utcNow)
+    {
+        return await _context.Set<HouseholdInvitation>()
+            .Where(i => i.Email == email && i.AcceptedAt == null && i.RevokedAt == null && i.ExpiresAt <= utcNow)
+            .ToListAsync();
+    }
+
     public async Task<bool> IsPersonInPendingInvitationAsync(int personId, DateTime utcNow, int? excludeInvitationId = null)
     {
         return await _context.Set<HouseholdInvitation>()

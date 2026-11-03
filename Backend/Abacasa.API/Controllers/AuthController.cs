@@ -1,4 +1,5 @@
 using Abacasa.API.Controllers;
+using Abacasa.API.Filters;
 using Abacasa.Application.Features.Auth.Dtos;
 using Abacasa.Application.Features.Auth.Commands.Login;
 using Abacasa.Application.Features.Auth.Commands.Logout;
@@ -11,14 +12,21 @@ using Abacasa.Application.Features.Auth.Commands.ChangePassword;
 using Abacasa.Application.Features.Auth.Commands.ForgotPassword;
 using Abacasa.Application.Features.Auth.Commands.ResetPassword;
 using Abacasa.Application.Features.Auth.Commands.VerifyEmail;
+using Abacasa.Application.Features.Auth.Commands.UpdateProfile;
+using Abacasa.Application.Features.Auth.Commands.RequestEmailChange;
+using Abacasa.Application.Features.Auth.Commands.ConfirmEmailChange;
+using Abacasa.Application.Features.Auth.Commands.PasswordCodes;
 using Abacasa.Application.Features.Auth.Commands.ResendVerificationEmail;
 using Abacasa.Application.Features.Auth.Commands.SwitchHousehold;
 using Abacasa.Application.Features.Auth.Commands.DeleteAccount;
 using Abacasa.Application.Features.Auth.Commands.AcceptConsents;
+using Abacasa.Application.Features.Auth.Queries.ExportAccount;
 using Abacasa.Application.Features.Legal.Dtos;
 using Abacasa.Application.Features.Auth.Queries.GetAccountDeletionPreview;
 using Abacasa.Application.Features.Auth.Queries.GetUserSessions;
+using Abacasa.Application.Features.Auth.Queries.CheckRegisterAvailability;
 using Abacasa.Application.Features.Users.Queries.GetCurrentUser;
+using Abacasa.Application.Features.Users.Commands.UserPhoto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -110,6 +118,24 @@ namespace Abacasa.API.Controllers
         }
 
         /// <summary>
+        /// Live email/phone availability check for the public register form
+        /// </summary>
+        [HttpPost("check-availability")]
+        [AllowAnonymous]
+        [EnableRateLimiting("availability")]
+        [ProducesResponseType(typeof(CheckAvailabilityDto), 200)]
+        [ProducesResponseType(429)]
+        public async Task<IActionResult> CheckAvailability([FromBody] CheckRegisterAvailabilityQuery request)
+        {
+            var result = await _mediator.Send(new CheckRegisterAvailabilityQuery
+            {
+                Email = request?.Email,
+                PhoneNumber = request?.PhoneNumber
+            });
+            return HandleResult(result);
+        }
+
+        /// <summary>
         /// Register a new user account
         /// </summary>
         /// <param name="request">Registration information</param>
@@ -188,6 +214,7 @@ namespace Abacasa.API.Controllers
         /// <returns>Success message</returns>
         [HttpPost("logout")]
         [Authorize]
+        [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
@@ -219,6 +246,7 @@ namespace Abacasa.API.Controllers
         /// <returns>Success message</returns>
         [HttpPost("logout-all")]
         [Authorize]
+        [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> LogoutAll()
@@ -264,6 +292,7 @@ namespace Abacasa.API.Controllers
         /// <returns>Current user details including roles and permissions</returns>
         [HttpGet("me")]
         [Authorize]
+        [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(typeof(Application.Features.Users.Dtos.UserDto), 200)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> GetCurrentUser()
@@ -280,10 +309,26 @@ namespace Abacasa.API.Controllers
         }
 
         /// <summary>
+        /// Export the signed-in user's personal data as an Excel file (no token values)
+        /// </summary>
+        [HttpGet("account/export")]
+        [Authorize]
+        [ProducesResponseType(typeof(FileContentResult), 200)]
+        public async Task<IActionResult> ExportAccount()
+        {
+            var result = await _mediator.Send(new ExportAccountQuery());
+            if (!result.IsSuccess)
+                return HandleResult(result);
+
+            return File(result.Value.Content, Application.Interfaces.ExportFile.XlsxContentType, result.Value.FileName);
+        }
+
+        /// <summary>
         /// Accept legal documents ("Terms" / "PrivacyNotice") with their current versions; returns the remaining pending consents
         /// </summary>
         [HttpPost("consents")]
         [Authorize]
+        [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(typeof(ConsentStatusDto), 200)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> AcceptConsents([FromBody] AcceptConsentsRequestDto request)
@@ -380,6 +425,7 @@ namespace Abacasa.API.Controllers
         /// <returns>Success message</returns>
         [HttpPost("change-password")]
         [Authorize]
+        [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
@@ -440,6 +486,178 @@ namespace Abacasa.API.Controllers
                 NewPassword = request.NewPassword,
                 IpAddress = GetIpAddress(),
                 UserAgent = GetUserAgent()
+            };
+
+            var result = await _mediator.Send(command);
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Forgot password with a 6-digit code (mobile-friendly alternative to the link). Always returns 200.
+        /// Identity is global, so only the email is used (a tenantId in the body is ignored).
+        /// </summary>
+        [HttpPost("forgot-password/code")]
+        [AllowAnonymous]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> SendPasswordResetCode([FromBody] ForgotPasswordRequestDto request)
+        {
+            var result = await _mediator.Send(new SendPasswordResetCodeCommand
+            {
+                Email = request.Email,
+                IpAddress = GetIpAddress()
+            });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Set a new password with the code from forgot-password/code
+        /// </summary>
+        [HttpPost("reset-password/code")]
+        [AllowAnonymous]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ResetPasswordWithCode([FromBody] ResetPasswordWithCodeRequestDto request)
+        {
+            var result = await _mediator.Send(new ResetPasswordWithCodeCommand
+            {
+                Email = request.Email,
+                Code = request.Code,
+                NewPassword = request.NewPassword,
+                IpAddress = GetIpAddress()
+            });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Signed in but forgot the current password: email a code for changing it.
+        /// Also reachable while a password change is required (MustChangePassword).
+        /// </summary>
+        [HttpPost("password-change/code")]
+        [Authorize]
+        [AllowWhenPasswordChangeRequired]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> SendPasswordChangeCode()
+        {
+            var result = await _mediator.Send(new SendPasswordChangeCodeCommand { IpAddress = GetIpAddress() });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Change the password with the emailed code instead of the current password. Signs out everywhere.
+        /// </summary>
+        [HttpPost("password-change/confirm")]
+        [Authorize]
+        [AllowWhenPasswordChangeRequired]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> ChangePasswordWithCode([FromBody] ChangePasswordWithCodeRequestDto request)
+        {
+            var result = await _mediator.Send(new ChangePasswordWithCodeCommand
+            {
+                Code = request.Code,
+                NewPassword = request.NewPassword
+            });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Update the signed-in user's own name and phone number
+        /// </summary>
+        [HttpPut("profile")]
+        [Authorize]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDto request)
+        {
+            var command = new UpdateProfileCommand
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber
+            };
+
+            var result = await _mediator.Send(command);
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Upload or replace the signed-in user's profile photo (multipart field "file";
+        /// JPEG, PNG or WEBP up to 10 MB). Stored as a 512 px WEBP without metadata.
+        /// </summary>
+        [HttpPost("profile/photo")]
+        [Authorize]
+        // Slightly above SetUserPhotoCommand.MaxBytes so oversized files get a readable error
+        [RequestSizeLimit(11 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 11 * 1024 * 1024)]
+        [ProducesResponseType(typeof(UserPhotoDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UploadProfilePhoto(IFormFile? file)
+        {
+            await using var content = file?.OpenReadStream() ?? Stream.Null;
+            var result = await _mediator.Send(new SetUserPhotoCommand { Content = content, Length = file?.Length ?? 0 });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Remove the signed-in user's profile photo
+        /// </summary>
+        [HttpDelete("profile/photo")]
+        [Authorize]
+        [ProducesResponseType(typeof(UserPhotoDto), 200)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> RemoveProfilePhoto()
+        {
+            var result = await _mediator.Send(new RemoveUserPhotoCommand());
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Start an email change: verifies the current password and emails a confirmation link to the new
+        /// address. The account email does not change until that link is used.
+        /// </summary>
+        [HttpPut("profile/email")]
+        [Authorize]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> RequestEmailChange([FromBody] RequestEmailChangeRequestDto request)
+        {
+            var command = new RequestEmailChangeCommand
+            {
+                NewEmail = request.NewEmail,
+                CurrentPassword = request.CurrentPassword,
+                IpAddress = GetIpAddress()
+            };
+
+            var result = await _mediator.Send(command);
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Apply a pending email change from the link sent to the new address. Signs the user out everywhere.
+        /// </summary>
+        [HttpPost("confirm-email-change")]
+        [AllowAnonymous]
+        [EnableRateLimiting("sensitive")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfirmEmailChange([FromBody] VerifyEmailRequestDto request)
+        {
+            var command = new ConfirmEmailChangeCommand
+            {
+                Email = request.Email,
+                Token = request.Token,
+                IpAddress = GetIpAddress()
             };
 
             var result = await _mediator.Send(command);

@@ -1,3 +1,4 @@
+using Abacasa.API.Filters;
 using Abacasa.Application.Features.DonationFunds.Commands.CreateDonationFund;
 using Abacasa.Application.Features.DonationFunds.Commands.CreateFundMovement;
 using Abacasa.Application.Features.DonationFunds.Commands.DeleteDonationFund;
@@ -15,6 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Abacasa.API.Controllers;
 
 [Authorize]
+// Bağış hedefleri ve emanetler modülü kapalıysa bütün uçlar 403
+[RequireDonationExtras]
 public class DonationFundsController : BaseController
 {
     private readonly IMediator _mediator;

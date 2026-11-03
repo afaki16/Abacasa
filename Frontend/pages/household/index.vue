@@ -6,6 +6,17 @@
     <v-btn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openRename" />
     <v-spacer />
     <span v-if="household" class="text-caption text-medium-emphasis">{{ household.memberCount }} üye</span>
+    <v-btn
+      v-if="canUpdateHousehold"
+      size="small"
+      variant="tonal"
+      prepend-icon="mdi-microsoft-excel"
+      :loading="exporting"
+      :disabled="exporting"
+      @click="exportHousehold"
+    >
+      Hane verisini indir (Excel)
+    </v-btn>
   </div>
 
   <!-- Üyeler -->
@@ -53,6 +64,24 @@
         </tr>
       </tbody>
     </v-table>
+  </v-card>
+
+  <!-- Modüller (yalnızca yönetici: Household.Update) -->
+  <v-card v-if="canUpdateHousehold" variant="outlined" class="mb-6">
+    <v-card-title class="text-subtitle-1 font-weight-bold">Modüller</v-card-title>
+    <v-card-text>
+      <v-switch
+        :model-value="donationExtras"
+        color="primary"
+        hide-details
+        inset
+        :loading="savingModules"
+        :disabled="savingModules"
+        label="Bağış hedefleri ve emanetler"
+        @update:model-value="toggleDonationExtras"
+      />
+      <div class="text-body-2 text-medium-emphasis">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</div>
+    </v-card-text>
   </v-card>
 
   <!-- Davetler -->
@@ -275,6 +304,7 @@ import { HouseholdRoleValue } from '~/types'
 import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
 import { formatDisplayDate } from '~/utils/period'
 import { parseApiErrorMessages } from '~/utils/apiError'
+import { API_ENDPOINTS } from '~/utils/apiEndpoints'
 
 definePageMeta({
   title: 'Hane ve üyeler',
@@ -291,7 +321,7 @@ const toast = useToast()
 const { getPeople } = usePeople()
 const {
   getRoleLabel, getHousehold, updateHousehold, getMembers, updateMember, removeMember, leaveHousehold,
-  getInvitations, createInvitation, resendInvitation, revokeInvitation, invitationStatusLabel, deleteHousehold
+  getInvitations, createInvitation, resendInvitation, revokeInvitation, invitationStatusLabel, deleteHousehold, updateModules
 } = useHousehold()
 //#endregion
 
@@ -488,6 +518,38 @@ const revokeSelected = async () => {
     // hata toast'ı useApi'de
   } finally {
     busy.value = false
+  }
+}
+//#endregion
+
+//#region Modüller: değişince istek, ardından /me (menü ve sayfalar store'dan güncellenir)
+const authStore = useAuthStore()
+const donationExtras = computed(() => authStore.hasModule('donationExtras'))
+const savingModules = ref(false)
+const toggleDonationExtras = async (value: boolean | null) => {
+  savingModules.value = true
+  try {
+    await updateModules({ donationExtras: !!value })
+    toast.success(value ? 'Bağış hedefleri ve emanetler açıldı' : 'Bağış hedefleri ve emanetler kapatıldı')
+  } catch {
+    // hata toast'ı useApi'de; anahtar store'daki değere döner
+  } finally {
+    savingModules.value = false
+  }
+}
+//#endregion
+
+//#region Excel indirme (yalnızca yönetici: Household.Update); sürerken düğme kilitli
+const { download } = useDownload()
+const exporting = ref(false)
+const exportHousehold = async () => {
+  exporting.value = true
+  try {
+    await download(API_ENDPOINTS.HOUSEHOLD.EXPORT, 'abacasa-hane.xlsx')
+  } catch {
+    toast.error('Hane verisi indirilemedi')
+  } finally {
+    exporting.value = false
   }
 }
 //#endregion

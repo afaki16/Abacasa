@@ -1,73 +1,46 @@
 <template>
   <div class="error-page">
-    <v-container>
-      <v-row justify="center" align="center" style="min-height: 100vh;">
-        <v-col cols="12" md="6" class="text-center">
-          <v-icon 
-            :size="120" 
-            :color="errorColor" 
-            class="mb-4"
-          >
-            {{ errorIcon }}
-          </v-icon>
-          
-          <h1 class="text-h2 font-weight-bold mb-4" :class="errorColor + '--text'">
+    <div class="ui-container">
+      <div class="ui-row justify-center items-center" style="min-height: 100vh;">
+        <div class="ui-col ui-col-12 ui-col-md-6 text-center">
+          <UiIcon :icon="errorIcon" :size="120" :color="errorColor" class="mb-4" />
+
+          <h1 class="error-code font-bold mb-4">
             {{ error.statusCode }}
           </h1>
-          
-          <h2 class="text-h4 mb-4">
+
+          <h2 class="error-title mb-4">
             {{ errorTitle }}
           </h2>
-          
-          <p class="text-body-1 text-grey-600 mb-6">
+
+          <p class="text-base mb-6">
             {{ errorMessage }}
           </p>
-          
-          <div class="d-flex justify-center gap-4 flex-wrap">
-            <v-btn
-              color="primary"
-              size="large"
-              @click="handleError"
-            >
-              <v-icon start>mdi-refresh</v-icon>
+
+          <div class="flex justify-center gap-4 flex-wrap">
+            <UiBtn color="primary" size="large" prepend-icon="mdi-refresh" @click="handleError">
               Try Again
-            </v-btn>
-            
-            <v-btn
-              variant="outlined"
-              color="primary"
-              size="large"
-              @click="$router.push('/')"
-            >
-              <v-icon start>mdi-home</v-icon>
+            </UiBtn>
+
+            <UiBtn variant="outlined" color="primary" size="large" prepend-icon="mdi-home" @click="$router.push('/')">
               Go Home
-            </v-btn>
+            </UiBtn>
           </div>
-          
+
           <!-- Additional help for 403 errors -->
           <div v-if="error.statusCode === 403" class="mt-6">
-            <v-alert
-              type="info"
-              variant="tonal"
-              class="text-left"
-            >
-              <v-alert-title>Need Access?</v-alert-title>
+            <UiAlert type="info" variant="tonal" title="Need Access?" class="text-left">
               <p class="mb-2">
                 If you believe you should have access to this resource, please contact your administrator.
               </p>
-              <v-btn
-                variant="text"
-                size="small"
-                color="info"
-                @click="contactSupport"
-              >
+              <UiBtn variant="text" size="small" color="info" @click="contactSupport">
                 Contact Support
-              </v-btn>
-            </v-alert>
+              </UiBtn>
+            </UiAlert>
           </div>
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -140,7 +113,16 @@ const contactSupport = () => {
   min-height: 100vh;
 }
 
-.gap-4 {
-  gap: 1rem;
+/* Vuetify text-h2 / text-h4 ölçüleri */
+.error-code {
+  font-size: 3.75rem;
+  line-height: 3.75rem;
+  letter-spacing: -0.0083333333em;
+}
+
+.error-title {
+  font-size: 2.125rem;
+  line-height: 2.5rem;
+  letter-spacing: 0.0073529412em;
 }
 </style> 

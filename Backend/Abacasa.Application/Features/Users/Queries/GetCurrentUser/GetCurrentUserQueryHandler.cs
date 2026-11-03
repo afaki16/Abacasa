@@ -17,11 +17,13 @@ namespace Abacasa.Application.Features.Users.Queries.GetCurrentUser
         private readonly IPermissionService _permissionService;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILegalVersions _legalVersions;
+        private readonly IFileStorage _fileStorage;
 
         public GetCurrentUserQueryHandler(IUnitOfWork unitOfWork, IPermissionService permissionService, ICurrentUserService currentUserService,
-            ILegalVersions legalVersions)
+            ILegalVersions legalVersions, IFileStorage fileStorage)
         {
             _legalVersions = legalVersions;
+            _fileStorage = fileStorage;
             _unitOfWork = unitOfWork;
             _permissionService = permissionService;
             _currentUserService = currentUserService;
@@ -36,7 +38,7 @@ namespace Abacasa.Application.Features.Users.Queries.GetCurrentUser
                     ErrorCode.NotFound,
                     "User not found"));
 
-            var userDto = await UserProfileBuilder.BuildAsync(_unitOfWork, _permissionService, _legalVersions, user, _currentUserService.TenantId);
+            var userDto = await UserProfileBuilder.BuildAsync(_unitOfWork, _permissionService, _legalVersions, _fileStorage, user, _currentUserService.TenantId);
             return Result<UserDto>.Success(userDto);
         }
     }

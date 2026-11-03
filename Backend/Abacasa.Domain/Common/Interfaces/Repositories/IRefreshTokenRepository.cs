@@ -16,18 +16,18 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
         /// <summary>
         /// Count distinct users with at least one active refresh token.
         /// When tenantId is null, counts across all tenants (SuperAdmin). Otherwise scoped to tenant.
+        /// memberOfTenantId: yalnızca o hanede canlı üyeliği olanlar (SuperAdmin hane seçicisi).
         /// </summary>
-        Task<int> GetActiveUserCountAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false);
+        Task<int> GetActiveUserCountAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null);
 
         /// <summary>
         /// Get user IDs that have at least one active refresh token.
         /// </summary>
-        Task<IEnumerable<int>> GetActiveUserIdsAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false);
+        Task<IEnumerable<int>> GetActiveUserIdsAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null);
         Task RevokeAllUserTokensAsync(int userId, string ipAddress = null, string userAgent = null, string reason = "User logout");
         Task RevokeTokenAsync(string token, string ipAddress = null, string userAgent = null, string reason = "Token revoked");
         Task RevokeTokensByDeviceAsync(int userId, string deviceId, string ipAddress = null, string userAgent = null, string reason = "Device logout");
         Task RevokeTokensByIpAsync(string ipAddress, string reason = "Suspicious activity");
-        Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default);
         Task<IEnumerable<RefreshToken>> GetExpiringSoonTokensAsync(int minutesThreshold = 30);
     }
 } 

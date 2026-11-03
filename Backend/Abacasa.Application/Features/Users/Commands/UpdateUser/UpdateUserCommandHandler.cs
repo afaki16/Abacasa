@@ -1,4 +1,3 @@
-using Abacasa.Application.Common;
 using AutoMapper;
 using Abacasa.Application.Features.Users.Dtos;
 using Abacasa.Application.Features.Roles.Dtos;
@@ -31,9 +30,11 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
         private readonly ICurrentUserService _currentUserService;
         private readonly IPermissionService _permissionService;
         private readonly IJsonStringLocalizer _localizer;
+        private readonly IPhoneNumberService _phoneNumberService;
 
-        public UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService, IPermissionService permissionService, IJsonStringLocalizer localizer)
+        public UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService, IPermissionService permissionService, IJsonStringLocalizer localizer, IPhoneNumberService phoneNumberService)
         {
+            _phoneNumberService = phoneNumberService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _currentUserService = currentUserService;
@@ -66,6 +67,13 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
                     ErrorCode.Forbidden,
                     _localizer["users.cannotChangeOwnStatus"]));
 
+            if (request.Id == _currentUserService.UserId
+                && request.MustChangePassword.HasValue
+                && request.MustChangePassword.Value != user.MustChangePassword)
+                return Result<UserListDto>.Failure(Error.Failure(
+                    ErrorCode.Forbidden,
+                    _localizer["users.cannotChangeOwnMustChangePassword"]));
+
             // Caller cannot manage a user whose roles exceed the caller's own permissions
             var targetRoleError = await RoleAssignmentGuard.ValidateAsync(
                 user.UserRoles.Select(ur => ur.RoleId), user.TenantId, _unitOfWork, _currentUserService, _permissionService, _localizer);
@@ -88,8 +96,11 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
                         ErrorCode.AlreadyExists,
                         _localizer["users.emailExists"]));
 
-            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
-            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            // Telefon da global: E.164 biçimiyle kontrol edilir ve saklanır; geçersiz numara 400
+            var phoneResult = _phoneNumberService.Normalize(request.PhoneNumber);
+            if (!phoneResult.IsSuccess)
+                return Result<UserListDto>.Failure(phoneResult.Errors);
+            var normalizedPhone = phoneResult.Value;
             if (normalizedPhone != null &&
                 await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone, request.Id))
                 return Result<UserListDto>.Failure(Error.Failure(
@@ -104,9 +115,15 @@ namespace Abacasa.Application.Features.Users.Commands.UpdateUser
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.Email = normalizedEmail;
-            user.PhoneNumber = normalizedPhone;
+            if (normalizedPhone != user.PhoneNumber)
+            {
+                user.PhoneNumber = normalizedPhone;
+                // A new number has not been verified yet
+                user.PhoneConfirmed = false;
+            }
             user.Status = request.Status;
-            user.ProfileImageUrl = request.ProfileImageUrl;
+            if (request.MustChangePassword.HasValue)
+                user.MustChangePassword = request.MustChangePassword.Value;
 
             // Clear existing roles using already-loaded navigation property
             foreach (var userRole in user.UserRoles.ToList())

@@ -60,7 +60,8 @@
   flex-shrink: 0;
 }
 
-.tab-icon-wrapper .v-icon {
+.tab-icon-wrapper .v-icon,
+.tab-icon-wrapper .ui-icon {
   font-size: 22px;
 }
 
@@ -172,6 +173,14 @@
   border-radius: 12px !important;
   background: #f8fafc !important;
 }
+
+/* Modern input — UI kiti (UiTextField / UiSelect). Görünüm UiTextField'in üstte etiketli
+   varsayılanından gelir; burada yalnızca etiket rengi. (Yukarıdaki .v-field kuralları
+   Vuetify kaldırılana kadar henüz çevrilmemiş sayfalar için duruyor.) */
+.modern-input .ui-field .ui-field__label,
+.modern-input.ui-field .ui-field__label { color: rgb(var(--color-on-surface-variant)); opacity: 1; }
+.modern-input .ui-field.ui-field--error .ui-field__label,
+.modern-input.ui-field.ui-field--error .ui-field__label { color: rgb(var(--color-error)); }
 
 /* ========================================
    QUICK ACTIONS
@@ -301,7 +310,8 @@
   flex-shrink: 0;
 }
 
-.tabs-container.modern-tabs .tab-item .tab-icon-wrapper .v-icon {
+.tabs-container.modern-tabs .tab-item .tab-icon-wrapper .v-icon,
+.tabs-container.modern-tabs .tab-item .tab-icon-wrapper .ui-icon {
   font-size: 18px;
 }
 
@@ -322,3 +332,165 @@
     0 4px 18px rgb(var(--color-primary) / 0.45),
     0 0 0 1px rgb(var(--color-primary) / 0.5);
 }
+
+/* v-icon start / end karşılığı (UiIcon start/end); çip içinde Vuetify'ın çip formülü */
+.ui-icon.ui-icon--start { margin-inline-end: 8px; }
+.ui-icon.ui-icon--end { margin-inline-start: 8px; }
+.ui-chip .ui-icon.ui-icon--start { margin-inline-start: calc(var(--ui-chip-h) / -5.2); margin-inline-end: calc(var(--ui-chip-h) / 5.2); }
+.ui-chip .ui-icon.ui-icon--end { margin-inline-start: calc(var(--ui-chip-h) / 5.2); margin-inline-end: calc(var(--ui-chip-h) / -5.2); }
+
+/* v-divider karşılığı */
+hr.ui-divider {
+  display: block;
+  height: 0;
+  margin: 0;
+  border: 0;
+  /* Vuetify v-divider: kenarlık alfası 0.12 + öğe opaklığı 0.12 → çok soluk çizgi */
+  border-top: 1px solid rgb(var(--color-on-surface) / 0.12);
+  opacity: 0.2;
+}
+
+/* ── v-container / v-row / v-col karşılığı (Vuetify ızgarası ve kırılma noktaları) ── */
+.ui-container { width: 100%; padding: 16px; margin-right: auto; margin-left: auto; }
+@media (min-width: 960px) { .ui-container:not(.ui-container--fluid) { max-width: 900px; } }
+@media (min-width: 1280px) { .ui-container:not(.ui-container--fluid) { max-width: 1200px; } }
+@media (min-width: 1920px) { .ui-container:not(.ui-container--fluid) { max-width: 1800px; } }
+@media (min-width: 2560px) { .ui-container:not(.ui-container--fluid) { max-width: 2400px; } }
+.ui-row { display: flex; flex-wrap: wrap; flex: 1 1 auto; margin: -12px; }
+.ui-row + .ui-row { margin-top: 12px; }
+.ui-row--dense { margin: -4px; }
+.ui-row--dense + .ui-row--dense { margin-top: 4px; }
+.ui-col { width: 100%; padding: 12px; flex-basis: 0; flex-grow: 1; max-width: 100%; }
+.ui-row--dense > .ui-col { padding: 4px; }
+.ui-col-1 { flex: 0 0 8.3333%; max-width: 8.3333%; }
+.ui-col-2 { flex: 0 0 16.6667%; max-width: 16.6667%; }
+.ui-col-3 { flex: 0 0 25%; max-width: 25%; }
+.ui-col-4 { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.ui-col-5 { flex: 0 0 41.6667%; max-width: 41.6667%; }
+.ui-col-6 { flex: 0 0 50%; max-width: 50%; }
+.ui-col-7 { flex: 0 0 58.3333%; max-width: 58.3333%; }
+.ui-col-8 { flex: 0 0 66.6667%; max-width: 66.6667%; }
+.ui-col-9 { flex: 0 0 75%; max-width: 75%; }
+.ui-col-10 { flex: 0 0 83.3333%; max-width: 83.3333%; }
+.ui-col-11 { flex: 0 0 91.6667%; max-width: 91.6667%; }
+.ui-col-12 { flex: 0 0 100%; max-width: 100%; }
+@media (min-width: 600px) {
+.ui-col-sm-1 { flex: 0 0 8.3333%; max-width: 8.3333%; }
+.ui-col-sm-2 { flex: 0 0 16.6667%; max-width: 16.6667%; }
+.ui-col-sm-3 { flex: 0 0 25%; max-width: 25%; }
+.ui-col-sm-4 { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.ui-col-sm-5 { flex: 0 0 41.6667%; max-width: 41.6667%; }
+.ui-col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+.ui-col-sm-7 { flex: 0 0 58.3333%; max-width: 58.3333%; }
+.ui-col-sm-8 { flex: 0 0 66.6667%; max-width: 66.6667%; }
+.ui-col-sm-9 { flex: 0 0 75%; max-width: 75%; }
+.ui-col-sm-10 { flex: 0 0 83.3333%; max-width: 83.3333%; }
+.ui-col-sm-11 { flex: 0 0 91.6667%; max-width: 91.6667%; }
+.ui-col-sm-12 { flex: 0 0 100%; max-width: 100%; }
+}
+@media (min-width: 960px) {
+.ui-col-md-1 { flex: 0 0 8.3333%; max-width: 8.3333%; }
+.ui-col-md-2 { flex: 0 0 16.6667%; max-width: 16.6667%; }
+.ui-col-md-3 { flex: 0 0 25%; max-width: 25%; }
+.ui-col-md-4 { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.ui-col-md-5 { flex: 0 0 41.6667%; max-width: 41.6667%; }
+.ui-col-md-6 { flex: 0 0 50%; max-width: 50%; }
+.ui-col-md-7 { flex: 0 0 58.3333%; max-width: 58.3333%; }
+.ui-col-md-8 { flex: 0 0 66.6667%; max-width: 66.6667%; }
+.ui-col-md-9 { flex: 0 0 75%; max-width: 75%; }
+.ui-col-md-10 { flex: 0 0 83.3333%; max-width: 83.3333%; }
+.ui-col-md-11 { flex: 0 0 91.6667%; max-width: 91.6667%; }
+.ui-col-md-12 { flex: 0 0 100%; max-width: 100%; }
+}
+@media (min-width: 1280px) {
+.ui-col-lg-1 { flex: 0 0 8.3333%; max-width: 8.3333%; }
+.ui-col-lg-2 { flex: 0 0 16.6667%; max-width: 16.6667%; }
+.ui-col-lg-3 { flex: 0 0 25%; max-width: 25%; }
+.ui-col-lg-4 { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.ui-col-lg-5 { flex: 0 0 41.6667%; max-width: 41.6667%; }
+.ui-col-lg-6 { flex: 0 0 50%; max-width: 50%; }
+.ui-col-lg-7 { flex: 0 0 58.3333%; max-width: 58.3333%; }
+.ui-col-lg-8 { flex: 0 0 66.6667%; max-width: 66.6667%; }
+.ui-col-lg-9 { flex: 0 0 75%; max-width: 75%; }
+.ui-col-lg-10 { flex: 0 0 83.3333%; max-width: 83.3333%; }
+.ui-col-lg-11 { flex: 0 0 91.6667%; max-width: 91.6667%; }
+.ui-col-lg-12 { flex: 0 0 100%; max-width: 100%; }
+}
+@media (min-width: 1920px) {
+.ui-col-xl-1 { flex: 0 0 8.3333%; max-width: 8.3333%; }
+.ui-col-xl-2 { flex: 0 0 16.6667%; max-width: 16.6667%; }
+.ui-col-xl-3 { flex: 0 0 25%; max-width: 25%; }
+.ui-col-xl-4 { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.ui-col-xl-5 { flex: 0 0 41.6667%; max-width: 41.6667%; }
+.ui-col-xl-6 { flex: 0 0 50%; max-width: 50%; }
+.ui-col-xl-7 { flex: 0 0 58.3333%; max-width: 58.3333%; }
+.ui-col-xl-8 { flex: 0 0 66.6667%; max-width: 66.6667%; }
+.ui-col-xl-9 { flex: 0 0 75%; max-width: 75%; }
+.ui-col-xl-10 { flex: 0 0 83.3333%; max-width: 83.3333%; }
+.ui-col-xl-11 { flex: 0 0 91.6667%; max-width: 91.6667%; }
+.ui-col-xl-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* ── v-card alt parçaları (UiCard ile birlikte) ── */
+.ui-card-title { display: block; padding: 0.5rem 1rem; font-size: 1.25rem; font-weight: 500; line-height: 2rem; letter-spacing: 0.0125em; word-break: normal; overflow-wrap: normal; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.ui-card-text { padding: 1rem; font-size: 0.875rem; font-weight: 400; line-height: 1.425; letter-spacing: 0.0178571429em; flex: 1 1 auto; }
+.ui-card-actions { display: flex; align-items: center; gap: 0.5rem; min-height: 52px; padding: 0.5rem; }
+.ui-card-actions .ui-btn.ui-btn { padding: 0 8px; }
+/* Pencere içindeki kart metni (Vuetify v-dialog > v-card > v-card-text) */
+.ui-dialog__panel > .ui-card > .ui-card-text { font-size: inherit; line-height: inherit; letter-spacing: 0.03125em; padding: 16px 24px 24px; }
+
+/* ── v-table karşılığı: <table class="ui-table ui-table--comfortable"> ── */
+.ui-table { width: 100%; border-collapse: collapse; border-spacing: 0; font-size: 0.875rem; background: rgb(var(--color-surface)); color: rgb(var(--color-on-surface)); }
+.ui-table th, .ui-table td { height: 52px; padding: 0 16px; text-align: left; border-bottom: 1px solid rgb(var(--color-on-surface) / 0.12); }
+.ui-table th { height: 56px; }
+.ui-table th { font-weight: 500; color: rgb(var(--color-on-surface) / 0.87); user-select: none; }
+.ui-table tbody tr:last-child td { border-bottom: 0; }
+.ui-table--comfortable td { height: 44px; }
+.ui-table--comfortable th { height: 48px; }
+.ui-table--compact td { height: 36px; }
+.ui-table--compact th { height: 40px; }
+
+/* ── v-list-item başlık/alt başlık (UiSelect #item şablonlarında) ── */
+.ui-list-title { font-size: 1rem; font-weight: 400; line-height: 1.5rem; letter-spacing: 0.009375em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ui-list-subtitle { font-size: 0.875rem; line-height: 1rem; letter-spacing: 0.0178em; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Izgara ekleri: v-col cols="auto" / md="auto", v-row align="center" ── */
+.ui-row--align-center { align-items: center; }
+.ui-col-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
+@media (min-width: 600px) { .ui-col-sm-auto { flex: 0 0 auto; width: auto; max-width: 100%; } }
+@media (min-width: 960px) { .ui-col-md-auto { flex: 0 0 auto; width: auto; max-width: 100%; } }
+@media (min-width: 1280px) { .ui-col-lg-auto { flex: 0 0 auto; width: auto; max-width: 100%; } }
+@media (min-width: 1920px) { .ui-col-xl-auto { flex: 0 0 auto; width: auto; max-width: 100%; } }
+
+/* ── v-list / v-list-item karşılığı (UiMenu içeriği, kart içi listeler) ──
+   <ul class="ui-list ui-list--compact">
+     <li class="ui-list-item">            (tıklanabilir: <button class="ui-list-item ui-list-item--link">)
+       <span class="ui-list-item__prepend">…</span>
+       <div class="ui-list-item__content"><div class="ui-list-title">…</div><div class="ui-list-subtitle">…</div></div>
+       <span class="ui-list-item__append">…</span>
+     </li>
+   </ul>
+   Seçili: .ui-list-item--active · pasif: .ui-list-item--disabled (veya button:disabled) */
+.ui-list { display: block; margin: 0; padding: 8px 0; list-style: none; }
+.ui-menu > .ui-list { padding: 6px; }
+.ui-list-item {
+  display: flex; align-items: center; gap: 0; width: 100%;
+  min-height: 48px; padding: 4px 16px;
+  text-align: left; font: inherit; color: inherit;
+  background: transparent; border: 0; border-radius: 0;
+}
+.ui-menu .ui-list-item { border-radius: 8px; }
+.ui-list--compact .ui-list-item { min-height: 40px; }
+.ui-list-item:has(.ui-list-subtitle) { min-height: 64px; }
+.ui-list--compact .ui-list-item:has(.ui-list-subtitle) { min-height: 56px; }
+.ui-list-item--link { cursor: pointer; transition: background-color 0.15s ease; }
+.ui-list-item--link:hover { background: rgb(var(--color-on-surface) / 0.06); }
+.ui-list-item--link:focus-visible { outline: 2px solid rgb(var(--color-brand)); outline-offset: -2px; }
+.ui-list-item--active { background: rgb(var(--color-brand) / 0.12); color: rgb(var(--color-brand)); }
+.ui-list-item--active.ui-list-item--link:hover { background: rgb(var(--color-brand) / 0.16); }
+.ui-list-item--disabled, .ui-list-item:disabled { opacity: 0.6; pointer-events: none; }
+.ui-list-item__prepend { display: inline-flex; align-items: center; flex-shrink: 0; margin-right: 16px; }
+.ui-list-item__prepend > .ui-icon { opacity: 0.75; }
+.ui-list-item__content { flex: 1 1 auto; min-width: 0; }
+.ui-list-item__append { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 16px; }
+.ui-list-item--active .ui-list-subtitle { color: rgb(var(--color-on-surface)); }

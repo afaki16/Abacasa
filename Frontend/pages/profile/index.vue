@@ -19,9 +19,12 @@
         <div class="hero-top">
           <!-- Avatar -->
           <div class="avatar-wrap">
-            <v-avatar size="108" color="primary" class="profile-avatar">
-              <span class="avatar-initials">{{ initials }}</span>
-            </v-avatar>
+            <ProfilePhotoEditor
+              :url="user?.profileImageUrl"
+              :initials="initials"
+              :size="108"
+              class="profile-avatar"
+            />
             <span class="online-dot" />
           </div>
 
@@ -101,6 +104,16 @@
               <v-icon size="16">mdi-account-circle-outline</v-icon>
             </v-avatar>
             Hesap Bilgileri
+            <v-spacer />
+            <v-btn
+              size="small"
+              variant="text"
+              color="primary"
+              prepend-icon="mdi-pencil-outline"
+              @click="openProfileDialog"
+            >
+              Düzenle
+            </v-btn>
           </v-card-title>
           <v-divider />
 
@@ -138,6 +151,15 @@
                       </v-icon>
                     </template>
                   </v-tooltip>
+                  <v-btn
+                    size="x-small"
+                    variant="text"
+                    color="primary"
+                    class="ml-auto"
+                    @click="openEmailDialog"
+                  >
+                    Değiştir
+                  </v-btn>
                 </div>
               </div>
 
@@ -217,6 +239,18 @@
               @click="loadSessions"
             >
               Yenile
+            </v-btn>
+            <v-btn
+              v-if="activeSessions.length"
+              size="small"
+              variant="tonal"
+              color="error"
+              prepend-icon="mdi-logout-variant"
+              class="ml-2"
+              :loading="loggingOutAll"
+              @click="confirmLogoutAll = true"
+            >
+              Tümünden Çık
             </v-btn>
           </v-card-title>
           <v-divider />
@@ -400,17 +434,56 @@
               ref="passwordFormRef"
               @submit.prevent="submitChangePassword"
             >
-              <v-text-field
-                v-model="currentPassword"
-                label="Mevcut Şifre"
-                :type="showCurrent ? 'text' : 'password'"
-                :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
-                :rules="[validationRules.required]"
-                variant="outlined"
-                density="comfortable"
-                class="mb-3"
-                @click:append-inner="showCurrent = !showCurrent"
-              />
+              <template v-if="!useCode">
+                <v-text-field
+                  v-model="currentPassword"
+                  label="Mevcut Şifre"
+                  :type="showCurrent ? 'text' : 'password'"
+                  :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
+                  :rules="[validationRules.required]"
+                  variant="outlined"
+                  density="comfortable"
+                  class="mb-1"
+                  @click:append-inner="showCurrent = !showCurrent"
+                />
+                <div class="d-flex justify-end mb-3">
+                  <v-btn size="small" variant="text" color="primary" @click="switchToCode">
+                    Mevcut şifremi hatırlamıyorum
+                  </v-btn>
+                </div>
+              </template>
+
+              <!-- Mevcut şifre yerine e-postaya gelen 6 haneli kod -->
+              <template v-else>
+                <p class="text-body-2 text-medium-emphasis mb-3">
+                  <strong>{{ user?.email }}</strong> adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.
+                </p>
+                <div class="d-flex ga-2 align-start mb-1">
+                  <v-text-field
+                    v-model="passwordCode"
+                    label="Doğrulama Kodu"
+                    inputmode="numeric"
+                    maxlength="6"
+                    autocomplete="one-time-code"
+                    :rules="[validationRules.required]"
+                    variant="outlined"
+                    density="comfortable"
+                  />
+                  <v-btn
+                    variant="tonal"
+                    color="primary"
+                    height="48"
+                    :loading="sendingCode"
+                    :disabled="codeCooldown > 0"
+                    @click="sendCode"
+                  >
+                    {{ codeCooldown > 0 ? `${codeCooldown} sn` : codeSent ? "Tekrar Gönder" : "Kod Gönder" }}
+                  </v-btn>
+                </div>
+                <div class="d-flex justify-end mb-3">
+                  <v-btn size="small" variant="text" @click="useCode = false">Mevcut şifremle değiştir</v-btn>
+                </div>
+              </template>
               <v-text-field
                 v-model="newPassword"
                 label="Yeni Şifre"
@@ -447,21 +520,156 @@
       </v-col>
     </v-row>
 
-    <!-- ═══════════════ DELETE ACCOUNT ═══════════════ -->
+    <!-- ═══════════════ VERİLERİM / DELETE ACCOUNT ═══════════════ -->
     <v-row class="mt-0">
       <v-col cols="12" md="6">
+        <v-card rounded="xl" elevation="0" border class="mb-6">
+          <v-card-title class="section-title pa-5">
+            <v-avatar color="primary" variant="tonal" size="32" rounded="lg" class="mr-3">
+              <v-icon size="16">mdi-microsoft-excel</v-icon>
+            </v-avatar>
+            Verilerim
+          </v-card-title>
+          <v-divider />
+          <v-card-text class="pa-5">
+            <p class="mb-4">Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.</p>
+            <v-btn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
+              Verilerimi indir (Excel)
+            </v-btn>
+          </v-card-text>
+        </v-card>
         <DeleteAccountSection />
       </v-col>
     </v-row>
+
+    <!-- Bilgilerimi düzenle -->
+    <v-dialog v-model="profileDialog" max-width="460">
+      <v-card rounded="xl">
+        <v-card-title class="pt-5 px-5">Bilgilerimi Düzenle</v-card-title>
+        <v-card-text class="px-5">
+          <v-form ref="profileFormRef" @submit.prevent="saveProfile">
+            <v-text-field
+              v-model="profileForm.firstName"
+              label="Ad"
+              variant="outlined"
+              density="comfortable"
+              :rules="[validationRules.required]"
+              :disabled="savingProfile"
+              class="mb-2"
+            />
+            <v-text-field
+              v-model="profileForm.lastName"
+              label="Soyad"
+              variant="outlined"
+              density="comfortable"
+              :rules="[validationRules.required]"
+              :disabled="savingProfile"
+              class="mb-2"
+            />
+            <v-text-field
+              v-model="profileForm.phoneNumber"
+              label="Telefon"
+              variant="outlined"
+              density="comfortable"
+              type="tel"
+              :rules="[validationRules.phone]"
+              :disabled="savingProfile"
+            />
+            <v-alert v-if="profileError" type="error" variant="tonal" density="compact" class="mt-2">
+              {{ profileError }}
+            </v-alert>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="px-5 pb-5">
+          <v-spacer />
+          <v-btn variant="text" :disabled="savingProfile" @click="profileDialog = false">İptal</v-btn>
+          <v-btn color="primary" variant="flat" :loading="savingProfile" @click="saveProfile">Kaydet</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- E-posta değiştir: değişiklik yeni adrese giden link onaylanınca uygulanır -->
+    <v-dialog v-model="emailDialog" max-width="460">
+      <v-card rounded="xl">
+        <v-card-title class="pt-5 px-5">E-posta Adresini Değiştir</v-card-title>
+        <v-card-text class="px-5">
+          <template v-if="emailSentTo">
+            <v-alert type="success" variant="tonal" class="mb-2">
+              <strong>{{ emailSentTo }}</strong> adresine bir onay bağlantısı gönderdik. Bağlantıya
+              tıklayana kadar mevcut adresinizle giriş yapmaya devam edersiniz.
+            </v-alert>
+          </template>
+          <v-form v-else ref="emailFormRef" @submit.prevent="submitEmailChange">
+            <p class="text-body-2 text-medium-emphasis mb-4">
+              Yeni adrese bir onay bağlantısı gönderilir. E-postanız bu bağlantı onaylandığında değişir
+              ve tüm oturumlarınız kapatılır.
+            </p>
+            <v-text-field
+              v-model="emailForm.newEmail"
+              label="Yeni e-posta"
+              variant="outlined"
+              density="comfortable"
+              type="email"
+              autocomplete="email"
+              :rules="[validationRules.required, validationRules.email]"
+              :disabled="sendingEmailChange"
+              class="mb-2"
+            />
+            <v-text-field
+              v-model="emailForm.currentPassword"
+              label="Mevcut şifre"
+              variant="outlined"
+              density="comfortable"
+              :type="showEmailPassword ? 'text' : 'password'"
+              :append-inner-icon="showEmailPassword ? 'mdi-eye-off' : 'mdi-eye'"
+              autocomplete="current-password"
+              :rules="[validationRules.required]"
+              :disabled="sendingEmailChange"
+              @click:append-inner="showEmailPassword = !showEmailPassword"
+            />
+            <v-alert v-if="emailError" type="error" variant="tonal" density="compact" class="mt-2">
+              {{ emailError }}
+            </v-alert>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="px-5 pb-5">
+          <v-spacer />
+          <template v-if="emailSentTo">
+            <v-btn color="primary" variant="flat" @click="emailDialog = false">Tamam</v-btn>
+          </template>
+          <template v-else>
+            <v-btn variant="text" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</v-btn>
+            <v-btn color="primary" variant="flat" :loading="sendingEmailChange" @click="submitEmailChange">
+              Onay Bağlantısı Gönder
+            </v-btn>
+          </template>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <ConfirmDialog
+      v-model="confirmLogoutAll"
+      title="Tüm cihazlardan çıkış"
+      message="Tüm cihazlardaki oturumlarınız kapatılacak, bu cihaz dahil. Devam etmek istiyor musunuz?"
+      type="error"
+      confirm-text="Evet, çıkış yap"
+      :loading="loggingOutAll"
+      @confirm="doLogoutAll"
+      @cancel="confirmLogoutAll = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
+import { parseApiErrorMessages } from "~/utils/apiError";
 import type { Session } from "~/types";
+import { UserStatus } from "~/types";
+import { API_ENDPOINTS } from "~/utils/apiEndpoints";
 import { dateFormat, dateTimeFormat } from "~/utils/datesFormat";
 import BreadCrumb from "~/components/BreadCrumb.vue";
 import DeleteAccountSection from "~/components/Account/DeleteAccountSection.vue";
+import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
 import { useValidators } from "~/composables/useValidators";
 
 definePageMeta({
@@ -472,8 +680,85 @@ definePageMeta({
 useHead({ title: "Profilim - Abacasa" });
 
 const authStore = useAuthStore();
-const { getUserSessions, changePassword } = useAuth();
+const {
+  getUserSessions,
+  changePassword,
+  updateProfile,
+  requestEmailChange,
+  sendPasswordChangeCode,
+  changePasswordWithCode,
+  logoutAllDevices,
+} = useAuth();
 const { validationRules } = useValidators();
+
+// Bilgilerimi düzenle
+const profileDialog = ref(false);
+const profileFormRef = ref();
+const savingProfile = ref(false);
+const profileError = ref("");
+const profileForm = reactive({ firstName: "", lastName: "", phoneNumber: "" });
+
+const openProfileDialog = () => {
+  profileForm.firstName = authStore.user?.firstName ?? "";
+  profileForm.lastName = authStore.user?.lastName ?? "";
+  profileForm.phoneNumber = authStore.user?.phoneNumber ?? "";
+  profileError.value = "";
+  profileDialog.value = true;
+};
+
+const saveProfile = async () => {
+  const { valid } = await profileFormRef.value?.validate();
+  if (!valid) return;
+  savingProfile.value = true;
+  profileError.value = "";
+  try {
+    await updateProfile({
+      firstName: profileForm.firstName.trim(),
+      lastName: profileForm.lastName.trim(),
+      phoneNumber: profileForm.phoneNumber.trim() || undefined,
+    });
+    toast.success("Bilgileriniz güncellendi.");
+    profileDialog.value = false;
+  } catch (error) {
+    profileError.value = parseApiErrorMessages(error)[0] || "Bilgiler güncellenemedi.";
+  } finally {
+    savingProfile.value = false;
+  }
+};
+
+// E-posta değiştir
+const emailDialog = ref(false);
+const emailFormRef = ref();
+const sendingEmailChange = ref(false);
+const showEmailPassword = ref(false);
+const emailError = ref("");
+const emailSentTo = ref("");
+const emailForm = reactive({ newEmail: "", currentPassword: "" });
+
+const openEmailDialog = () => {
+  emailForm.newEmail = "";
+  emailForm.currentPassword = "";
+  emailError.value = "";
+  emailSentTo.value = "";
+  emailDialog.value = true;
+};
+
+const submitEmailChange = async () => {
+  const { valid } = await emailFormRef.value?.validate();
+  if (!valid) return;
+  sendingEmailChange.value = true;
+  emailError.value = "";
+  try {
+    const newEmail = emailForm.newEmail.trim().toLowerCase();
+    await requestEmailChange(newEmail, emailForm.currentPassword);
+    emailSentTo.value = newEmail;
+  } catch (error) {
+    emailError.value = parseApiErrorMessages(error)[0] || "İstek gönderilemedi.";
+  } finally {
+    sendingEmailChange.value = false;
+    emailForm.currentPassword = "";
+  }
+};
 
 const user = computed(() => authStore.user);
 
@@ -483,14 +768,32 @@ const initials = computed(() => {
   return `${u.firstName?.charAt(0) ?? ""}${u.lastName?.charAt(0) ?? ""}`.toUpperCase();
 });
 
+// Kişisel veri indirme; sürerken düğme kilitli
+const { download } = useDownload();
+const toast = useToast();
+const exporting = ref(false);
+const exportMyData = async () => {
+  exporting.value = true;
+  try {
+    await download(API_ENDPOINTS.AUTH.ACCOUNT_EXPORT, "abacasa-hesabim.xlsx");
+  } catch {
+    toast.error("Veriler indirilemedi");
+  } finally {
+    exporting.value = false;
+  }
+};
+
+// Değerler backend UserStatus ile aynı (isim olarak gelir: Inactive, Active, Banned, PendingVerification)
 const statusColor = computed(() => {
   switch (authStore.user?.status) {
-    case 1:
+    case UserStatus.Active:
       return "success";
-    case 2:
+    case UserStatus.Inactive:
       return "warning";
-    case 3:
+    case UserStatus.Banned:
       return "error";
+    case UserStatus.PendingVerification:
+      return "info";
     default:
       return "grey";
   }
@@ -498,12 +801,14 @@ const statusColor = computed(() => {
 
 const statusLabel = computed(() => {
   switch (authStore.user?.status) {
-    case 1:
+    case UserStatus.Active:
       return "Aktif";
-    case 2:
+    case UserStatus.Inactive:
       return "Pasif";
-    case 3:
+    case UserStatus.Banned:
       return "Yasaklı";
+    case UserStatus.PendingVerification:
+      return "Doğrulama bekliyor";
     default:
       return "Bilinmiyor";
   }
@@ -538,6 +843,20 @@ const activeSessions = computed(() =>
 const inactiveSessions = computed(() =>
   sessions.value.filter((s: Session) => !s.isActive),
 );
+
+const loggingOutAll = ref(false);
+const confirmLogoutAll = ref(false);
+
+// Backend tüm refresh token'ları iptal eder; useAuth ana sayfaya yönlendirir
+const doLogoutAll = async () => {
+  loggingOutAll.value = true;
+  try {
+    await logoutAllDevices();
+  } finally {
+    loggingOutAll.value = false;
+    confirmLogoutAll.value = false;
+  }
+};
 
 const loadSessions = async () => {
   loadingSessions.value = true;
@@ -590,11 +909,60 @@ const showNew = ref(false);
 const showConfirm = ref(false);
 const isChangingPassword = ref(false);
 
+// Mevcut şifre yerine e-posta kodu (backend: password-change/code + /confirm)
+const useCode = ref(false);
+const passwordCode = ref("");
+const sendingCode = ref(false);
+const codeSent = ref(false);
+const codeCooldown = ref(0);
+let cooldownTimer: ReturnType<typeof setInterval> | null = null;
+
+const startCooldown = (seconds: number) => {
+  codeCooldown.value = seconds;
+  if (cooldownTimer) clearInterval(cooldownTimer);
+  cooldownTimer = setInterval(() => {
+    codeCooldown.value = Math.max(0, codeCooldown.value - 1);
+    if (codeCooldown.value === 0 && cooldownTimer) clearInterval(cooldownTimer);
+  }, 1000);
+};
+
+const switchToCode = () => {
+  useCode.value = true;
+  currentPassword.value = "";
+};
+
+const sendCode = async () => {
+  sendingCode.value = true;
+  try {
+    await sendPasswordChangeCode();
+    codeSent.value = true;
+    toast.success("Doğrulama kodu e-posta adresinize gönderildi.");
+    startCooldown(60);
+  } catch (error) {
+    const message = parseApiErrorMessages(error)[0] || "Kod gönderilemedi.";
+    toast.error(message);
+    // Backend bekleme süresini mesajda bildirir ("... 42 saniye bekleyin")
+    const seconds = Number(message.match(/\d+/)?.[0]);
+    if (seconds > 0) startCooldown(seconds);
+  } finally {
+    sendingCode.value = false;
+  }
+};
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer);
+});
+
 const submitChangePassword = async () => {
   const { valid } = await passwordFormRef.value.validate();
   if (!valid) return;
   isChangingPassword.value = true;
   try {
+    if (useCode.value) {
+      // Başarıda backend tüm oturumları kapatır; useAuth login sayfasına yönlendirir
+      await changePasswordWithCode(passwordCode.value.trim(), newPassword.value);
+      return;
+    }
     await changePassword(currentPassword.value, newPassword.value);
     passwordFormRef.value.reset();
     currentPassword.value = "";
@@ -675,7 +1043,7 @@ onMounted(loadSessions);
   flex-shrink: 0;
 }
 
-.profile-avatar {
+.profile-avatar :deep(.user-avatar) {
   border: 4px solid white !important;
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3) !important;
 }

@@ -25,7 +25,8 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                 .MinimumLength(6).WithMessage(localizer["validation.minLength", localizer["validation.fields.password"], 6])
                 .MaximumLength(100).WithMessage(localizer["validation.maxLength", localizer["validation.fields.password"], 100])
                 .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)")
-                .WithMessage(localizer["validation.passwordComplexity"]);
+                .WithMessage(localizer["validation.passwordComplexity"])
+                .When(x => !x.SendAccountInvitation);
 
             RuleFor(x => x.PhoneNumber)
                 .MaximumLength(20).WithMessage(localizer["validation.maxLength", localizer["validation.fields.phoneNumber"], 20])

@@ -34,12 +34,20 @@ namespace Abacasa.Infrastructure.Services
                 r => new RolePermissions(r.Name, r.RolePermissions
                     .SelectMany(rp =>
                     {
-                        var perms = new List<string> { rp.Permission.FullPermission };
-                        foreach (var permType in rp.Permission.GetIndividualPermissions())
-                            perms.Add($"{rp.Permission.Resource}.{permType}");
+                        var permission = rp.Permission;
+                        // Politika adı Name'dir ("Users.Export"). FullPermission Resource.Type'tır; CRUD dışı
+                        // eylemin PermissionType karşılığı yok (Read yazılır), onu kullanmak "Users.Read" verirdi.
+                        var perms = new List<string> { permission.Name };
+
+                        // Type'tan türetilen adlar yalnızca adı Resource.Type biçiminde olan (CRUD) izinler için
+                        if (string.Equals(permission.Name, permission.FullPermission, StringComparison.OrdinalIgnoreCase))
+                        {
+                            foreach (var permType in permission.GetIndividualPermissions())
+                                perms.Add($"{permission.Resource}.{permType}");
+                        }
                         return perms;
                     })
-                    .Distinct()
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList())
             );
 

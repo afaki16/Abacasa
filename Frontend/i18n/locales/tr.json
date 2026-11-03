@@ -66,9 +66,28 @@
     "resetPasswordSuccess": "Şifreniz güncellendi. Lütfen yeni şifrenizle giriş yapın.",
     "resetPasswordFailed": "Şifreniz güncellenemedi. Lütfen tekrar deneyin.",
     "invalidResetLink": "Bu bağlantı geçersiz veya eksik.",
-    "requestNewLink": "Yeni Bağlantı İste"
+    "requestNewLink": "Yeni Bağlantı İste",
+    "accountInvitationTitle": "Hesabınızı Oluşturun",
+    "accountInvitationSubtitle": "Giriş yapabilmek için hesabınıza bir şifre belirleyin",
+    "accountInvitationButton": "Şifreyi Belirle",
+    "accountInvitationSuccess": "Şifreniz belirlendi. Artık giriş yapabilirsiniz.",
+    "accountInvitationExpiredHint": "Davet linkinin süresi dolduysa yöneticinizden daveti tekrar göndermesini isteyin.",
+    "pageTitleForceChangePassword": "Şifre Değiştir - Abacasa",
+    "forceChangePasswordTitle": "Şifrenizi Değiştirin",
+    "forceChangePasswordSubtitle": "Devam etmeden önce hesabınız için yeni bir şifre belirlemeniz gerekiyor",
+    "currentPasswordLabel": "Mevcut Şifre",
+    "newPasswordMustDiffer": "Yeni şifre mevcut şifreden farklı olmalıdır"
   },
   "sidebar": {
+    "context": {
+      "activeTenant": "Hane filtresi:"
+    },
+    "tenantSelector": {
+      "placeholder": "Hane seçiniz",
+      "platform": "Platform (tüm haneler)",
+      "loading": "Yükleniyor…",
+      "empty": "Hane bulunamadı"
+    },
     "menu": {
       "dashboard": "Anasayfa",
       "userManagement": "Kullanıcı Yönetimi",
@@ -166,6 +185,13 @@
     "passwordsDoNotMatch": "Şifreler eşleşmiyor",
     "minLength": "En az {min} karakter girilmelidir",
     "maxLength": "En fazla {max} karakter girilebilir",
-    "phoneFormat": "Geçerli bir telefon numarası girin"
+    "phoneFormat": "Geçerli bir telefon numarası girin",
+    "tcKimlikInvalid": "Geçerli bir T.C. Kimlik No girin"
+  },
+  "toast": {
+    "success": "Başarılı",
+    "error": "Hata",
+    "warning": "Uyarı",
+    "info": "Bilgi"
   }
 }

@@ -18,9 +18,9 @@ export const usePaymentMethods = () => {
   const getTypeLabel = (type: PaymentMethodType) => (typeLabelKeys[type] ? t(typeLabelKeys[type]) : String(type))
 
   const typeOptions = computed(() =>
-    (Object.keys(typeLabelKeys) as unknown as PaymentMethodType[]).map((key) => ({
-      value: Number(key) as PaymentMethodType,
-      title: getTypeLabel(Number(key) as PaymentMethodType),
+    (Object.keys(typeLabelKeys) as PaymentMethodType[]).map((key) => ({
+      value: key,
+      title: getTypeLabel(key),
     }))
   )
 

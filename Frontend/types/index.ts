@@ -33,7 +33,11 @@ export type {
   UpdateUserRequest,
   HouseholdRole,
   UserActiveTenant,
-  UserMembership
+  UserMembership,
+  ConsentDocument,
+  LegalVersions,
+  HouseholdModules,
+  HouseholdModuleName
 } from './user'
 
 export { UserStatus } from './user'
@@ -144,7 +148,8 @@ export type {
   DebtPayment,
   SaveDebtPaymentRequest,
   ExchangeRate,
-  SaveExchangeRateRequest
+  SaveExchangeRateRequest,
+  CurrentRate
 } from './debt'
 
 export { Currency } from './debt'

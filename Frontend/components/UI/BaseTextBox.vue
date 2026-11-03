@@ -1,19 +1,19 @@
 <template>
   <div :style="`width: ${width}px`">
-    <v-text-field
+    <UiTextField
       v-bind="computedAttrs"
       :type="(type === 'password' && (isPasswordVisible || showPassword)) ? 'text' : type"
       :label="label"
       :counter="counter ? maxLength : counter"
       :clearable="clearable"
       :readonly="readonly"
+      :disabled="disabled"
       :active="true"
       :hint="type == 'password' && hint == null ? passwordHint : hint"
       :persistent-hint="persistentHint"
       rounded="true"
       v-model="model"
       :rules="computedRules"
-      variant="outlined"
       :required="required"
       :placeholder="placeholder"
       hide-spin-buttons
@@ -21,47 +21,42 @@
       :step="step"
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
+      class="base-text-box"
       @click:prepend-inner="emit('click:prepend-inner')"
       @click:append-inner="emit('click:append-inner')"
     >
-      <template v-slot:message="{ message }">
-        <div v-if="type != 'password'" class="d-flex align-center">
-          <v-icon class="text-jet opacity-50 me-1"
-            >mdi-information-outline</v-icon
-          >
-          <span class="text-jet">{{ message }}</span>
+      <template #message="{ message }">
+        <div v-if="type != 'password'" class="flex items-center">
+          <UiIcon icon="mdi-information-outline" :size="16" class="opacity-50 mr-1" />
+          <span>{{ message }}</span>
         </div>
         <div v-else v-for="(msg, index) in messageArray(message)" :key="index">
-          <div class="d-flex align-center">
-            <v-icon class="text-jet opacity-50 me-1"
-              >mdi-information-outline</v-icon
-            >
-            <span :class="checkIfStepValid(msg) ? 'text-success' : 'text-jet'">
+          <div class="flex items-center">
+            <UiIcon icon="mdi-information-outline" :size="16" class="opacity-50 mr-1" />
+            <span :class="{ 'base-text-box__step--valid': checkIfStepValid(msg) }">
               {{ msg }}
             </span>
           </div>
         </div>
       </template>
       <template v-if="type == 'password' && !appendInnerIcon" #append-inner>
-        <v-btn
-          :flat="true"
+        <UiBtn
           variant="plain"
-          :ripple="false"
           :icon="(isPasswordVisible || showPassword) ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
           @click.prevent="togglePssword"
-        ></v-btn>
+        />
       </template>
-      <template v-if="appendImg" v-slot:append-inner>
-        <v-fade-transition leave-absolute>
-          <v-img :src="appendImg" :class="appendClass" />
-        </v-fade-transition>
+      <template v-if="appendImg" #append-inner>
+        <Transition name="fade" mode="out-in">
+          <img :key="appendImg" :src="appendImg" :class="appendClass" alt="" />
+        </Transition>
       </template>
-      <template v-if="prependImg" v-slot:prepend-inner>
-        <v-fade-transition leave-absolute>
-          <v-img :src="prependImg" :class="prependClass" />
-        </v-fade-transition>
+      <template v-if="prependImg" #prepend-inner>
+        <Transition name="fade" mode="out-in">
+          <img :key="prependImg" :src="prependImg" :class="prependClass" alt="" />
+        </Transition>
       </template>
-    </v-text-field>
+    </UiTextField>
   </div>
 </template>
 <script setup lang="ts">
@@ -74,6 +69,7 @@ const props = defineProps({
   isLengthMustMatch: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   readonly: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
   hint: { type: [String], default: null },
   required: { type: Boolean, default: false },
   persistentHint: { default: false },
@@ -379,43 +375,16 @@ function checkIfStepValid(step: string) {
   return false
 }
 </script>
-<style lang="scss" scoped>
-.v-input {
-  :deep & {
-    &__details {
-      padding: 0 !important;
-      min-height: unset !important;
-      transform: translateY(4px);
-    }
-
-    .v-messages {
-      opacity: 1;
-      min-height: unset !important;
-    }
-  }
-
-  .v-field {
-    :deep & {
-      &__field {
-        input {
-          font-size: 14px;
-
-          &:focus {
-            outline: 0;
-            border: 0;
-            box-shadow: none;
-          }
-        }
-      }
-
-      // &__clearable {
-      //     width: 24px !important;
-      // }
-
-      &-label--floating {
-        font-weight: 500;
-      }
-    }
-  }
+<style scoped>
+/* Mesaj alanı alana yakın, şifre adımları her zaman görünür (eski Vuetify ayarları) */
+.base-text-box :deep(.ui-field__details) {
+  padding: 0;
+  min-height: 2px;
+  transform: translateY(4px);
 }
+.base-text-box :deep(.ui-field__input) { font-size: 14px; }
+.base-text-box :deep(.ui-field__label) { font-weight: 500; }
+.base-text-box__step--valid { color: rgb(var(--color-primary)); }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

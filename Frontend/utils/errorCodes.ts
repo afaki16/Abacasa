@@ -4,6 +4,7 @@
  */
 export const ErrorCode = {
   EmailNotConfirmed: 1013,
+  PasswordChangeRequired: 1014,
 } as const
 
 export type ErrorCodeValue = typeof ErrorCode[keyof typeof ErrorCode]

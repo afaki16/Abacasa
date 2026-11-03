@@ -25,7 +25,9 @@ public static class HouseholdSetup
             Description = string.Empty,
             ContactEmail = string.Empty,
             ContactPhone = string.Empty,
-            IsActive = true
+            IsActive = true,
+            // Bağış hedefleri ve emanetler modülü yeni hanede kapalı
+            DonationExtrasEnabled = false
         };
         await unitOfWork.Tenants.AddAsync(tenant);
         await unitOfWork.SaveChangesAsync();

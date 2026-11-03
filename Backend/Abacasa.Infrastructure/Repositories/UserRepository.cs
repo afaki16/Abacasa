@@ -98,9 +98,9 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
         _context.UserRoles.Remove(userRole);
     }
 
-    public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersPagedAsync(int page, int pageSize, string searchTerm = null, int? tenantId = null, bool excludeUsersWithSuperAdminRole = false)
+    public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersPagedAsync(int page, int pageSize, string searchTerm = null, int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null, UserStatus? status = null)
     {
-        var baseQuery = BuildUsersQuery(searchTerm, tenantId, excludeUsersWithSuperAdminRole).AsNoTracking();
+        var baseQuery = BuildUsersQuery(searchTerm, tenantId, excludeUsersWithSuperAdminRole, memberOfTenantId, status).AsNoTracking();
         var totalCount = await baseQuery.CountAsync();
 
         var users = await baseQuery
@@ -113,12 +113,19 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
         return (users, totalCount);
     }
 
-    private IQueryable<User> BuildUsersQuery(string searchTerm, int? tenantId, bool excludeUsersWithSuperAdminRole)
+    private IQueryable<User> BuildUsersQuery(string searchTerm, int? tenantId, bool excludeUsersWithSuperAdminRole, int? memberOfTenantId, UserStatus? status)
     {
         var query = _context.Set<User>().AsQueryable();
 
         if (tenantId.HasValue)
             query = query.Where(u => u.TenantId == tenantId.Value);
+
+        // Hanede canlı üyelik (soft-delete filtresi üyeliğe uygulanır)
+        if (memberOfTenantId.HasValue)
+            query = query.Where(u => _context.Set<TenantMembership>().Any(m => m.UserId == u.Id && m.TenantId == memberOfTenantId.Value));
+
+        if (status.HasValue)
+            query = query.Where(u => u.Status == status.Value);
 
         if (excludeUsersWithSuperAdminRole)
             query = query.Where(u => !u.UserRoles.Any(ur => ur.Role.Name == RoleNames.SuperAdmin));
@@ -150,7 +157,7 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
             .CountAsync();
     }
 
-    public async Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk)?> GetSessionStateAsync(int userId, int? tenantId)
+    public async Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk, bool MustChangePassword)?> GetSessionStateAsync(int userId, int? tenantId)
     {
         // Tek sorgu: kullanıcı durumu + token'daki hanede canlı üyelik ve aktif hane.
         // Soft-delete filtresi üyeliğe ve haneye uygulanır; silinmiş üyelik ya da hane TenantOk = false yapar.
@@ -163,14 +170,15 @@ public class UserRepository : RepositoryBase<User, int>, IUserRepository
                 u.Status,
                 TenantOk = tenantId == null ||
                     (_context.Set<TenantMembership>().Any(m => m.UserId == u.Id && m.TenantId == tenantId) &&
-                     _context.Set<Tenant>().Any(t => t.Id == tenantId && t.IsActive))
+                     _context.Set<Tenant>().Any(t => t.Id == tenantId && t.IsActive)),
+                u.MustChangePassword
             })
             .FirstOrDefaultAsync();
 
         if (state == null)
             return null;
 
-        return (state.LastSessionsRevokedAt, state.Status, state.TenantOk);
+        return (state.LastSessionsRevokedAt, state.Status, state.TenantOk, state.MustChangePassword);
     }
 
     public async Task<bool> TenantHasSuperAdminAsync(int tenantId)

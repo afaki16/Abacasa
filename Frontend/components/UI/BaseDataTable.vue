@@ -8,7 +8,7 @@
           <div class="title-section">
             <div class="title-wrapper">
               <div class="title-icon modern-icon">
-                <v-icon :icon="toolbarIcon" size="28" />
+                <UiIcon :icon="toolbarIcon" :size="28" />
               </div>
               <div class="title-content">
                 <h2 class="page-title modern-title">{{ title }}</h2>
@@ -117,12 +117,11 @@
             class="filter-item"
           >
             <!-- Text Filter -->
-            <v-text-field
+            <UiTextField
               :label="column.label"
               v-if="column.filterType === 'text' || !column.filterType"
               v-model="columnFilters[column.key]"
               :placeholder="`${column.label} filtrele...`"
-              variant="outlined"
               density="compact"
               hide-details
               clearable
@@ -131,14 +130,13 @@
             />
             
             <!-- Select Filter -->
-            <v-select
+            <UiSelect
               :label="column.label"
               v-else-if="column.filterType === 'select'"
               v-model="columnFilters[column.key]"
               :items="getColumnSelectOptions(column.key)"
               item-title="title"
               item-value="value"
-              variant="outlined"
               density="compact"
               hide-details
               clearable
@@ -149,11 +147,10 @@
             
             <!-- Single Date Filter -->
             <div v-else-if="column.filterType === 'date' || column.filterType === 'single-date'" class="date-filter-wrapper">
-              <v-text-field
+              <UiTextField
                 :label="column.label"
                 v-model="columnFilters[column.key]"
                 type="date"
-                variant="outlined"
                 density="compact"
                 hide-details
                 clearable
@@ -302,6 +299,8 @@
                   <div class="action-buttons">
                     <slot name="actions" :item="item">
                       <div class="actions-inline">
+                        <!-- Sayfaya özgü ek aksiyonlar; varsayılan butonları ezmeden eklenir (izin kontrolü sayfada) -->
+                        <slot name="row-actions" :item="item" />
                         <button
                           v-if="canRead"
                           @click.stop="handleViewClick(item)"
@@ -736,6 +735,12 @@ const formatCellValue = (value, column) => {
 }
 
 const getColumnSelectOptions = (columnKey) => {
+  // Server-side listelerde sayfadaki değerler tüm seçenekleri içermez; kolon sabit liste verebilir
+  const column = props.columns.find(col => col.key === columnKey)
+  if (column?.filterOptions?.length) {
+    return column.filterOptions
+  }
+
   const values = props.items
     .map(item => getNestedValue(item, columnKey))
     .filter(val => val !== null && val !== undefined && val !== '')
@@ -744,9 +749,10 @@ const getColumnSelectOptions = (columnKey) => {
   return uniqueValues.map(value => {
     let displayText = value.toString()
     
-    if (value === 0 || value === '0') {
+    // Enum'lar API'den isim olarak gelir (UserStatus: 'Active' / 'Inactive')
+    if (value === 0 || value === '0' || value === 'Inactive') {
       displayText = 'Pasif'
-    } else if (value === 1 || value === '1') {
+    } else if (value === 1 || value === '1' || value === 'Active') {
       displayText = 'Aktif'
     }
     
@@ -1140,24 +1146,8 @@ watch(() => props.itemsPerPage, (newValue) => {
   @apply flex flex-col mb-4;
 }
 
-.filter-input :deep(.v-field),
-.filter-select :deep(.v-field) {
-  @apply bg-surface-container-lowest border border-outline-variant/40 rounded-lg transition-colors;
-}
-
-.compact-filter :deep(.v-field) {
-  min-height: 40px !important;
-}
-
-.compact-filter :deep(.v-field__input) {
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
-  font-size: 14px !important;
-}
-
-.compact-filter :deep(.v-field__prepend-inner),
-.compact-filter :deep(.v-field__append-inner) {
-  padding-top: 4px !important;
+.compact-filter :deep(.ui-field__input) {
+  font-size: 14px;
 }
 
 /* Date Filter */
@@ -1168,29 +1158,6 @@ watch(() => props.itemsPerPage, (newValue) => {
 .professional-date-filter {
   border-radius: 8px;
   transition: all 0.3s ease;
-}
-
-.professional-date-filter .v-field {
-  background: rgb(var(--color-surface-container-lowest));
-  border: 1px solid rgb(var(--color-outline-variant) / 0.4);
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.professional-date-filter .v-field:hover {
-  border-color: rgb(var(--color-primary));
-  box-shadow: 0 2px 6px rgb(var(--color-primary) / 0.15);
-}
-
-.professional-date-filter .v-field--focused {
-  border-color: rgb(var(--color-primary)) !important;
-  box-shadow: 0 0 0 3px rgb(var(--color-primary) / 0.1) !important;
-}
-
-.professional-date-filter .v-field__input {
-  color: rgb(var(--color-on-surface));
-  font-weight: 500;
 }
 
 /* Empty State */

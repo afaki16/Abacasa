@@ -2,10 +2,10 @@ import type { PaymentMethodType } from './paymentMethod'
 import type { DonationKind } from './donation'
 
 export enum RecurringPaymentKind {
-  Subscription = 1,
-  Bill = 2,
-  Installment = 3,
-  Donation = 4
+  Subscription = 'Subscription',
+  Bill = 'Bill',
+  Installment = 'Installment',
+  Donation = 'Donation'
 }
 
 export interface RecurringPayment {

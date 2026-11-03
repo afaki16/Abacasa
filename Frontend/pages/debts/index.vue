@@ -12,9 +12,11 @@
       <v-card variant="tonal" color="primary" class="fill-height">
         <v-card-text>
           <div class="text-caption">Açık borç (TL karşılığı)</div>
-          <div class="text-h5 font-weight-bold">{{ usdRateMissing ? "—" : formatMoney(summary?.openTotalInTry ?? 0) }}</div>
-          <!-- Yalnızca açık dolar borcu varken kur girilmemişse TL karşılığı hesaplanamaz -->
-          <div v-if="usdRateMissing" class="text-caption">Kur girilmemiş</div>
+          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.openTotalInTry) }}</div>
+          <!-- Açığı olan bir birimin kuru yoksa TL karşılığı hesaplanamaz -->
+          <div v-if="missingRateLabels.length" class="text-caption">
+            {{ missingRateLabels.join(", ") }} kuru girilmemiş
+          </div>
           <div v-else class="text-caption">{{ summary?.openCount ?? 0 }} açık borç</div>
         </v-card-text>
       </v-card>
@@ -27,12 +29,13 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="12" sm="6" md="3">
+    <!-- Açığı olan her yabancı birim için bir kart -->
+    <v-col v-for="f in summary?.foreign ?? []" :key="f.currency" cols="12" sm="6" md="3">
       <v-card variant="tonal" color="info" class="fill-height">
         <v-card-text>
-          <div class="text-caption">Dolar borç</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.openUsd ?? 0, "USD") }}</div>
-          <div class="text-caption">≈ {{ usdRateMissing ? "—" : formatMoney(summary?.openUsdInTry ?? 0) }}</div>
+          <div class="text-caption">{{ foreignCardTitle(f.currency) }}</div>
+          <div class="text-h5 font-weight-bold">{{ formatAmount(f.open, f.currency) }}</div>
+          <div class="text-caption">≈ {{ formatMoney(f.openInTry) }}</div>
         </v-card-text>
       </v-card>
     </v-col>
@@ -40,7 +43,7 @@
       <v-card variant="tonal" color="secondary" class="fill-height">
         <v-card-text>
           <div class="d-flex align-center">
-            <div class="text-caption">Güncel kur</div>
+            <div class="text-caption">Kurlar</div>
             <v-spacer />
             <v-btn
               v-if="canEditRate"
@@ -51,12 +54,13 @@
               Güncelle
             </v-btn>
           </div>
-          <div class="text-h5 font-weight-bold">
-            {{ summary?.usdRate ? formatMoney(summary.usdRate.rate) : "—" }}
+          <div v-for="r in summary?.rates ?? []" :key="r.currency" class="d-flex align-center ga-2 mt-1 text-body-2">
+            <span class="font-weight-medium">{{ currencyLabel(r.currency) }}</span>
+            <span>{{ formatMoney(r.rate) }}</span>
+            <span class="text-caption text-medium-emphasis">{{ formatDisplayDate(r.date) }}</span>
+            <v-chip size="x-small" :color="r.source === 'TCMB' ? 'primary' : undefined" variant="tonal">{{ r.source }}</v-chip>
           </div>
-          <div class="text-caption">
-            {{ summary?.usdRate ? formatDisplayDate(summary.usdRate.date) : "Kur girilmemiş" }}
-          </div>
+          <div v-if="!summary?.rates?.length" class="text-caption mt-1">Kur yok</div>
         </v-card-text>
       </v-card>
     </v-col>
@@ -71,20 +75,19 @@
           <thead>
             <tr>
               <th>Alacaklı</th>
-              <th class="text-right">TL açık</th>
-              <th class="text-right">USD açık</th>
+              <th class="text-right">Açık</th>
               <th class="text-right">Toplam TL</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in summary?.byCreditor ?? []" :key="row.personId">
               <td>{{ row.name }}</td>
-              <td class="text-right">{{ formatMoney(row.openTry) }}</td>
-              <td class="text-right">{{ formatMoney(row.openUsd, "USD") }}</td>
+              <!-- TL ve yabancı birimler tek satırda -->
+              <td class="text-right">{{ formatOpenLine(row.openTry, row.foreign) }}</td>
               <td class="text-right font-weight-medium">{{ formatMoney(row.totalInTry) }}</td>
             </tr>
             <tr v-if="!summary?.byCreditor?.length">
-              <td colspan="4" class="text-medium-emphasis">Açık borç yok</td>
+              <td colspan="3" class="text-medium-emphasis">Açık borç yok</td>
             </tr>
           </tbody>
         </v-table>
@@ -181,7 +184,7 @@
 
     <template #cell-remaining="{ item }">
       <span class="font-weight-medium">{{ money(item.remaining, item) }}</span>
-      <span v-if="item.currency === Currency.USD && item.remainingInTry !== null" class="text-medium-emphasis">
+      <span v-if="item.currency !== Currency.TRY && item.remainingInTry !== null" class="text-medium-emphasis">
         ≈ {{ formatMoney(item.remainingInTry) }}
       </span>
     </template>
@@ -239,7 +242,7 @@
   <DebtPaymentsDialog
     v-model="paymentsDialog"
     :debt-id="paymentsDebtId"
-    :current-rate="summary?.usdRate?.rate ?? null"
+    :rates="summary?.rates ?? []"
     @changed="refreshAll"
   />
 
@@ -298,19 +301,26 @@ const tableColumns = [
 //#endregion
 
 //#region Composables
-const { formatMoney } = useMoney();
+const { formatMoney, formatAmount, currencyLabel, formatOpenLine } = useMoney();
 const { hasPermission } = useAuth();
 const { getPeople } = usePeople();
-const { currencyOptions, currencyCode, getDebts, getDebtSummary, createDebt, updateDebt, deleteDebt } = useDebts();
+const { currencyOptions, getDebts, getDebtSummary, createDebt, updateDebt, deleteDebt } = useDebts();
 //#endregion
 
 const canUpdate = computed(() => hasPermission("Debts.Update"));
 const canDelete = computed(() => hasPermission("Debts.Delete"));
 const canEditRate = computed(() => hasPermission("ExchangeRates.Create"));
-const usdRateMissing = computed(() => !!summary.value && summary.value.openUsd > 0 && !summary.value.usdRate);
 
-// Tutar borcun kendi para biriminde gösterilir
-const money = (amount: number, debt: Debt) => formatMoney(amount, currencyCode(debt.currency));
+// Açığı olup kuru olmayan birimler (TL karşılığı hesaplanamaz)
+const missingRateLabels = computed(() =>
+  (summary.value?.foreign ?? []).filter((f) => f.openInTry === null).map((f) => currencyLabel(f.currency))
+);
+
+const foreignCardTitle = (currency: Currency) =>
+  currency === Currency.QuarterGold ? "Altın borç" : `${currencyLabel(currency)} borç`;
+
+// Tutar borcun kendi biriminde gösterilir (çeyrek altın adet)
+const money = (amount: number, debt: Debt) => formatAmount(amount, debt.currency);
 
 //#region Kişiler (form ve filtre için)
 const people = ref<{ id: number; name: string }[]>([]);

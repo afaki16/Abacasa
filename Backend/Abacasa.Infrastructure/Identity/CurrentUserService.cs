@@ -36,6 +36,23 @@ namespace Abacasa.Infrastructure.Identity
             }
         }
 
+        public const string TenantHeaderName = "X-Tenant-Id";
+
+        // TenantId bilerek değişmez: ApplicationDbContext'in hane filtresi ve TenantId ataması TenantId'yi kullanır;
+        // seçim oraya karışsaydı SuperAdmin seçtiği hanenin bütçe verisini okuyup yazabilirdi.
+        public int? SelectedTenantId
+        {
+            get
+            {
+                // Header yalnızca SuperAdmin için dikkate alınır; diğer roller başka haneye geçemez.
+                if (!CanAccessAllTenants)
+                    return null;
+
+                var header = _httpContextAccessor.HttpContext?.Request.Headers[TenantHeaderName].FirstOrDefault();
+                return int.TryParse(header, out var tenantId) && tenantId > 0 ? tenantId : null;
+            }
+        }
+
         public string Email => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
 
         public string FullName => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;

@@ -1,39 +1,63 @@
 <template>
-  <v-menu offset="8" location="bottom end">
-    <template #activator="{ props }">
-      <button
-        v-bind="props"
-        class="lang-switcher-btn"
-        type="button"
-        :aria-label="t('common.changeLanguage')"
-      >
-        <span :class="`fi fi-${currentFlag}`" class="lang-flag"></span>
-        <span class="lang-code">{{ locale.toUpperCase() }}</span>
-        <v-icon size="x-small" class="lang-chevron">mdi-chevron-down</v-icon>
-      </button>
-    </template>
+  <div ref="rootRef" class="lang-switcher" @keydown.esc="isOpen = false">
+    <button
+      class="lang-switcher-btn"
+      type="button"
+      :aria-label="t('common.changeLanguage')"
+      aria-haspopup="listbox"
+      :aria-expanded="isOpen"
+      @click="isOpen = !isOpen"
+    >
+      <span :class="`fi fi-${currentFlag}`" class="lang-flag"></span>
+      <span class="lang-code">{{ locale.toUpperCase() }}</span>
+      <Icon
+        name="mdi:chevron-down"
+        class="lang-chevron"
+        :class="{ 'lang-chevron--open': isOpen }"
+      />
+    </button>
 
-    <v-list density="compact" class="lang-list" min-width="160">
-      <v-list-item
-        v-for="loc in availableLocales"
-        :key="loc.code"
-        :active="loc.code === locale"
-        @click="switchLocale(loc.code)"
+    <Transition name="lang-menu">
+      <ul
+        v-if="isOpen"
+        class="lang-list bg-surface-container-lowest text-on-surface border border-solid border-outline-variant/[0.12]"
+        role="listbox"
       >
-        <template #prepend>
+        <li
+          v-for="loc in availableLocales"
+          :key="loc.code"
+          role="option"
+          :aria-selected="loc.code === locale"
+          class="lang-list-item hover:bg-surface-container"
+          :class="{ 'bg-surface-container-low': loc.code === locale }"
+          tabindex="0"
+          @click="switchLocale(loc.code)"
+          @keydown.enter.prevent="switchLocale(loc.code)"
+        >
           <span :class="`fi fi-${getFlagCode(loc.code)}`" class="lang-flag-list"></span>
-        </template>
-        <v-list-item-title class="lang-list-title">{{ loc.name }}</v-list-item-title>
-        <template #append>
-          <v-icon v-if="loc.code === locale" size="small" color="success">mdi-check</v-icon>
-        </template>
-      </v-list-item>
-    </v-list>
-  </v-menu>
+          <span class="lang-list-title">{{ loc.name }}</span>
+          <Icon
+            v-if="loc.code === locale"
+            name="mdi:check"
+            class="lang-check"
+          />
+        </li>
+      </ul>
+    </Transition>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { onClickOutside } from '@vueuse/core'
+
 const { locale, locales, setLocale, t } = useI18n()
+
+const rootRef = ref<HTMLElement | null>(null)
+const isOpen = ref(false)
+
+onClickOutside(rootRef, () => {
+  isOpen.value = false
+})
 
 const availableLocales = computed(() => {
   return (locales.value as Array<{ code: string; name: string }>)
@@ -47,11 +71,17 @@ const getFlagCode = (code: string) => {
 const currentFlag = computed(() => getFlagCode(locale.value))
 
 const switchLocale = async (code: string) => {
+  isOpen.value = false
   await setLocale(code as any)
 }
 </script>
 
 <style scoped>
+.lang-switcher {
+  position: relative;
+  display: inline-block;
+}
+
 .lang-switcher-btn {
   display: inline-flex;
   align-items: center;
@@ -84,7 +114,7 @@ const switchLocale = async (code: string) => {
   height: 18px;
   border-radius: 2px;
   display: inline-block;
-  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .lang-code {
@@ -92,16 +122,64 @@ const switchLocale = async (code: string) => {
 }
 
 .lang-chevron {
+  width: 14px;
+  height: 14px;
   opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.lang-chevron--open {
+  transform: rotate(180deg);
 }
 
 .lang-list {
-  border-radius: 12px;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  min-width: 160px;
+  margin: 0;
   padding: 6px;
+  list-style: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.lang-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.lang-list-item:focus-visible {
+  outline: 2px solid rgb(var(--color-primary));
+  outline-offset: -2px;
 }
 
 .lang-list-title {
+  flex: 1;
   font-size: 0.875rem;
   font-weight: 500;
+}
+
+.lang-check {
+  width: 18px;
+  height: 18px;
+  color: #22c55e;
+}
+
+.lang-menu-enter-active,
+.lang-menu-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.lang-menu-enter-from,
+.lang-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>

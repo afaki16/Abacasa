@@ -8,7 +8,8 @@ public interface IHouseholdEraser
 }
 
 // Hesap anonimleştirme (hesap silme ve imha işi ortak): üyelikler, e-postasına bekleyen davetler, token'lar, roller ve
-// giriş denemeleri silinir; kişisel alanlar anonimleşir, kullanıcı soft delete olur. Transaction çağırana aittir.
+// giriş denemeleri silinir; kişisel alanlar anonimleşir, profil fotoğrafı dosyası silinir, kullanıcı soft delete olur.
+// Transaction çağırana aittir.
 public interface IUserAnonymizer
 {
     Task AnonymizeAsync(int userId, CancellationToken cancellationToken = default);

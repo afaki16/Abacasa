@@ -1,37 +1,43 @@
 <template>
-  <v-menu offset="8" location="bottom end">
+  <UiMenu :offset="8" location="bottom end" min-width="240">
     <template #activator="{ props: menuProps }">
       <button v-bind="menuProps" class="household-btn" type="button" :disabled="isBusy" aria-label="Hane seç">
-        <v-icon size="small">mdi-home-outline</v-icon>
+        <UiIcon icon="mdi-home-outline" :size="20" />
         <span class="household-name">{{ activeTenant?.name ?? 'Hane yok' }}</span>
-        <v-chip v-if="activeTenant" size="x-small" :color="activeTenant.role === 'Admin' ? 'primary' : undefined" variant="tonal">
+        <UiChip v-if="activeTenant" size="x-small" :color="activeTenant.role === 'Admin' ? 'primary' : undefined" variant="tonal">
           {{ getRoleLabel(activeTenant.role) }}
-        </v-chip>
-        <v-icon size="x-small" class="household-chevron">mdi-chevron-down</v-icon>
+        </UiChip>
+        <UiIcon icon="mdi-chevron-down" :size="16" class="household-chevron" />
       </button>
     </template>
 
-    <v-list density="compact" class="household-list" min-width="240">
-      <v-list-item
+    <div class="ui-list ui-list--compact household-list">
+      <button
         v-for="m in memberships"
         :key="m.tenantId"
-        :active="m.tenantId === activeTenant?.id"
+        type="button"
+        role="menuitem"
+        class="ui-list-item ui-list-item--link"
+        :class="{ 'ui-list-item--active': m.tenantId === activeTenant?.id }"
         @click="select(m.tenantId)"
       >
-        <v-list-item-title class="household-list-title">{{ m.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ getRoleLabel(m.role) }}</v-list-item-subtitle>
-        <template #append>
-          <v-icon v-if="m.tenantId === activeTenant?.id" size="small" color="success">mdi-check</v-icon>
-        </template>
-      </v-list-item>
+        <span class="ui-list-item__content">
+          <span class="ui-list-title household-list-title block">{{ m.name }}</span>
+          <span class="ui-list-subtitle block">{{ getRoleLabel(m.role) }}</span>
+        </span>
+        <span v-if="m.tenantId === activeTenant?.id" class="ui-list-item__append">
+          <UiIcon icon="mdi-check" :size="20" color="success" />
+        </span>
+      </button>
 
-      <v-divider v-if="memberships.length" class="my-1" />
+      <hr v-if="memberships.length" class="ui-divider my-1" />
 
-      <v-list-item prepend-icon="mdi-plus" @click="createDialog = true">
-        <v-list-item-title class="household-list-title">Yeni hane oluştur</v-list-item-title>
-      </v-list-item>
-    </v-list>
-  </v-menu>
+      <button type="button" role="menuitem" class="ui-list-item ui-list-item--link" @click="createDialog = true">
+        <span class="ui-list-item__prepend"><UiIcon icon="mdi-plus" :size="24" /></span>
+        <span class="ui-list-item__content ui-list-title household-list-title">Yeni hane oluştur</span>
+      </button>
+    </div>
+  </UiMenu>
 
   <CreateHouseholdDialog v-model="createDialog" />
 </template>

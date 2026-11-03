@@ -1,4 +1,6 @@
 using Abacasa.Application.Features.Debts.Dtos;
+using Abacasa.Application.Features.ExchangeRates.Common;
+using Abacasa.Application.Features.ExchangeRates.Dtos;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 using System.Linq;
@@ -7,14 +9,13 @@ using System.Threading.Tasks;
 namespace Abacasa.Application.Features.Debts.Common;
 
 // Borç özeti; Borçlar sayfası ve Özet aynı kodu kullanır.
-// Açık borç toplamları canlı ödemelerden hesaplanır; açık dövizin TL karşılığı en son tarihli kurla.
+// Açık borç toplamları canlı ödemelerden hesaplanır; yabancı birimin TL karşılığı güncel kurla (CurrentRates).
 public static class DebtSummaryCalculator
 {
     public static async Task<DebtSummaryDto> CalculateAsync(IUnitOfWork unitOfWork)
     {
         var debts = await unitOfWork.Debts.GetAllWithPaymentsReadOnlyAsync();
-        var latest = await unitOfWork.ExchangeRates.GetLatestAsync(Currency.USD);
-        decimal? rate = latest?.Rate;
+        var rates = await CurrentRates.GetAllAsync(unitOfWork);
 
         var open = debts
             .Select(d => new { Debt = d, Remaining = DebtAmounts.Remaining(d) })
@@ -22,31 +23,43 @@ public static class DebtSummaryCalculator
             .ToList();
 
         var openTry = open.Where(x => x.Debt.Currency == Currency.TRY).Sum(x => x.Remaining);
-        var openUsd = open.Where(x => x.Debt.Currency == Currency.USD).Sum(x => x.Remaining);
-        var openUsdInTry = UsdInTry(openUsd, rate);
+
+        var foreign = CurrentRates.ForeignCurrencies
+            .Select(c => new { Currency = c, Open = open.Where(x => x.Debt.Currency == c).Sum(x => x.Remaining) })
+            .Where(x => x.Open > 0)
+            .Select(x => new DebtForeignOpenDto
+            {
+                Currency = x.Currency,
+                Open = x.Open,
+                Rate = rates.TryGetValue(x.Currency, out var r) ? new DebtRateDto { Rate = r.Rate, Date = r.Date, Source = r.Source } : null,
+                OpenInTry = InTry(x.Open, x.Currency, rates)
+            })
+            .ToList();
 
         var byCreditor = open
             .GroupBy(x => new { x.Debt.CreditorPersonId, x.Debt.CreditorPerson.Name })
             .Select(g =>
             {
                 var creditorTry = g.Where(x => x.Debt.Currency == Currency.TRY).Sum(x => x.Remaining);
-                var creditorUsd = g.Where(x => x.Debt.Currency == Currency.USD).Sum(x => x.Remaining);
-                var creditorUsdInTry = UsdInTry(creditorUsd, rate);
+                var creditorForeign = CurrentRates.ForeignCurrencies
+                    .Select(c => new { Currency = c, Open = g.Where(x => x.Debt.Currency == c).Sum(x => x.Remaining) })
+                    .Where(x => x.Open > 0)
+                    .Select(x => new DebtCreditorForeignDto { Currency = x.Currency, Open = x.Open, OpenInTry = InTry(x.Open, x.Currency, rates) })
+                    .ToList();
 
                 return new DebtCreditorTotalDto
                 {
                     PersonId = g.Key.CreditorPersonId,
                     Name = g.Key.Name,
                     OpenTry = creditorTry,
-                    OpenUsd = creditorUsd,
-                    OpenUsdInTry = creditorUsdInTry,
-                    TotalInTry = creditorTry + creditorUsdInTry
+                    Foreign = creditorForeign,
+                    TotalInTry = Total(creditorTry, creditorForeign.Select(f => f.OpenInTry))
                 };
             })
             .ToList();
 
-        // Kur varsa TL karşılığı toplamına, yoksa TL açığa göre sıralanır
-        byCreditor = (rate.HasValue
+        // Bütün TL karşılıkları biliniyorsa toplam TL'ye, değilse TL açığa göre sıralanır
+        byCreditor = (byCreditor.All(x => x.TotalInTry.HasValue)
                 ? byCreditor.OrderByDescending(x => x.TotalInTry)
                 : byCreditor.OrderByDescending(x => x.OpenTry))
             .ThenBy(x => x.Name)
@@ -55,17 +68,23 @@ public static class DebtSummaryCalculator
         return new DebtSummaryDto
         {
             OpenTry = openTry,
-            OpenUsd = openUsd,
-            UsdRate = latest == null ? null : new DebtRateDto { Rate = latest.Rate, Date = latest.Date },
-            OpenUsdInTry = openUsdInTry,
-            OpenTotalInTry = openTry + openUsdInTry,
+            Foreign = foreign,
+            OpenTotalInTry = Total(openTry, foreign.Select(f => f.OpenInTry)),
             PaidTotalInTry = debts.SelectMany(d => d.Payments).Sum(DebtAmounts.PaymentInTry),
             OpenCount = open.Count,
+            Rates = CurrentRates.ForeignCurrencies.Where(rates.ContainsKey).Select(c => rates[c]).ToList(),
             ByCreditor = byCreditor
         };
     }
 
-    // Açık dolar yoksa TL karşılığı 0'dır; null yalnızca açık dolar varken kur girilmemişse döner
-    private static decimal? UsdInTry(decimal openUsd, decimal? rate) =>
-        openUsd == 0 ? 0 : rate.HasValue ? DebtAmounts.ToTry(openUsd, rate.Value) : null;
+    // Kuru olmayan birimde null
+    private static decimal? InTry(decimal amount, Currency currency, IReadOnlyDictionary<Currency, CurrentRateDto> rates) =>
+        rates.TryGetValue(currency, out var rate) ? DebtAmounts.ToTry(amount, rate.Rate) : null;
+
+    // Bir birimin TL karşılığı bilinmiyorsa toplam da bilinmez
+    private static decimal? Total(decimal openTry, IEnumerable<decimal?> foreignInTry)
+    {
+        var parts = foreignInTry.ToList();
+        return parts.Any(p => !p.HasValue) ? null : openTry + parts.Sum(p => p!.Value);
+    }
 }

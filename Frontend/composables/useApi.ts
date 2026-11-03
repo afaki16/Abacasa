@@ -17,12 +17,14 @@ export const useApi = () => {
     throw error
   }
 
-  const get = async <T>(url: string): Promise<ApiResponse<T>> => {
+  const get = async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     try {
       const response = await $api.get(url)
       return response.data
     } catch (error) {
-      handleApiError(error)
+      if (!options?.silent) {
+        handleApiError(error)
+      }
       throw error
     }
   }
@@ -39,22 +41,26 @@ export const useApi = () => {
     }
   }
 
-  const put = async <T>(url: string, data?: any): Promise<ApiResponse<T>> => {
+  const put = async <T>(url: string, data?: any, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     try {
       const response = await $api.put(url, data)
       return response.data
     } catch (error) {
-      handleApiError(error)
+      if (!options?.silent) {
+        handleApiError(error)
+      }
       throw error
     }
   }
 
-  const del = async <T>(url: string): Promise<ApiResponse<T>> => {
+  const del = async <T>(url: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> => {
     try {
       const response = await $api.delete(url)
       return response.data
     } catch (error) {
-      handleApiError(error)
+      if (!options?.silent) {
+        handleApiError(error)
+      }
       throw error
     }
   }

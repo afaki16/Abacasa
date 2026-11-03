@@ -16,4 +16,5 @@ public enum ErrorCode
     Forbidden = 1011,
     Unauthorized = 1012,
     EmailNotConfirmed = 1013,
+    PasswordChangeRequired = 1014,
 }

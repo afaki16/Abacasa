@@ -34,7 +34,11 @@ public class HouseholdInvitationConfiguration : IEntityTypeConfiguration<Househo
 
         builder.HasIndex(x => x.TokenHash)
             .IsUnique();
-        builder.HasIndex(x => new { x.TenantId, x.Email });
+        // Hanede bir e-postaya tek açık (kabul ya da iptal edilmemiş) davet; eşzamanlı davetlerde biri hariç 23505 → 409.
+        // Süresi dolmuş açık davet, yeni davetten önce iptal edilir (CreateHouseholdInvitation).
+        builder.HasIndex(x => new { x.TenantId, x.Email })
+            .IsUnique()
+            .HasFilter("\"AcceptedAt\" IS NULL AND \"RevokedAt\" IS NULL AND \"IsDeleted\" = false");
 
         // Tenant navigation property yok; sadece FK
         builder.HasOne<Tenant>()

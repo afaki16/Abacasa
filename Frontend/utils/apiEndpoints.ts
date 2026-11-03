@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/api/auth/login',
     REGISTER: '/api/auth/register',
+    CHECK_AVAILABILITY: '/api/auth/check-availability',
     LOGOUT: '/api/auth/logout',
     REFRESH_TOKEN: '/api/auth/refresh-token',
     ME: '/api/auth/me',
@@ -18,7 +19,20 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: '/api/auth/change-password',
     SWITCH_HOUSEHOLD: '/api/auth/switch-household',
     ACCOUNT: '/api/auth/account',
-    ACCOUNT_DELETION_PREVIEW: '/api/auth/account/deletion-preview'
+    ACCOUNT_DELETION_PREVIEW: '/api/auth/account/deletion-preview',
+    ACCOUNT_EXPORT: '/api/auth/account/export',
+    CONSENTS: '/api/auth/consents',
+    PROFILE: '/api/auth/profile',
+    PROFILE_EMAIL: '/api/auth/profile/email',
+    PROFILE_PHOTO: '/api/auth/profile/photo',
+    CONFIRM_EMAIL_CHANGE: '/api/auth/confirm-email-change',
+    PASSWORD_CHANGE_CODE: '/api/auth/password-change/code',
+    PASSWORD_CHANGE_CONFIRM: '/api/auth/password-change/confirm'
+  },
+
+  // Yasal metinler
+  LEGAL: {
+    VERSIONS: '/api/legal/versions'
   },
 
   // Haneler (üyelik)
@@ -31,6 +45,8 @@ export const API_ENDPOINTS = {
     GET: '/api/household',
     UPDATE: '/api/household',
     DELETE: '/api/household',
+    EXPORT: '/api/household/export',
+    MODULES: '/api/household/modules',
     MEMBERS: '/api/household/members',
     MEMBER: (membershipId: number) => `/api/household/members/${membershipId}`,
     LEAVE: '/api/household/leave',
@@ -52,9 +68,8 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/api/users/${id}`,
     UPDATE: (id: string) => `/api/users/${id}`,
     DELETE: (id: string) => `/api/users/${id}`,
-    CHANGE_PASSWORD: (id: string) => `/api/users/${id}/change-password`,
-    UPDATE_PROFILE: '/api/users/profile',
-    UPLOAD_AVATAR: '/api/users/avatar'
+    RESEND_ACCOUNT_INVITATION: (id: string) => `/api/users/${id}/resend-account-invitation`,
+    PHOTO: (id: string) => `/api/users/${id}/photo`
   },
 
   // Tenant management endpoints
@@ -228,19 +243,31 @@ export const API_ENDPOINTS = {
 // Helper function to build full API URLs
 export const buildApiUrl = (endpoint: string): string => {
   const config = useRuntimeConfig()
-  return `${config.public.apiBase}${endpoint}`
+  // Dev'de göreli URL: Vite /api proxy'sinden geçsin (axios.client.ts ile aynı kural)
+  return import.meta.dev ? endpoint : `${config.public.apiBase}${endpoint}`
 }
 
 // Helper function to get paginated endpoint
-export const getPaginatedEndpoint = (baseEndpoint: string, page: number = 1, pageSize: number = 10, search?: string): string => {
+export const getPaginatedEndpoint = (
+  baseEndpoint: string,
+  page: number = 1,
+  pageSize: number = 10,
+  search?: string,
+  extra: Record<string, string | undefined> = {}
+): string => {
   const params = new URLSearchParams({
     page: page.toString(),
     pageSize: pageSize.toString()
   })
-  
+
   if (search) {
     params.append('searchTerm', search)
   }
-  
+
+  // Ek sorgu parametreleri (örn. status filtresi); boş değerler gönderilmez
+  Object.entries(extra).forEach(([key, value]) => {
+    if (value) params.append(key, value)
+  })
+
   return `${baseEndpoint}?${params.toString()}`
 } 

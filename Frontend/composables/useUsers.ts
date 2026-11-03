@@ -5,9 +5,11 @@ import { useApi } from './useApi'
 export const useUsers = () => {
   const api = useApi()
 
-  const getUsers = async (page = 1, pageSize = 10, searchTerm = '') => {
+  const getUsers = async (page = 1, pageSize = 10, searchTerm = '', filters: Record<string, string> = {}) => {
     try {
-      const endpoint = getPaginatedEndpoint(API_ENDPOINTS.USERS.LIST, page, pageSize, searchTerm)
+      const endpoint = getPaginatedEndpoint(API_ENDPOINTS.USERS.LIST, page, pageSize, searchTerm, {
+        status: filters.status
+      })
       const response = await api.get<{ items: User[]; totalCount: number; totalPages: number; pageNumber: number }>(endpoint)
       return response
     } catch (error) {
@@ -60,8 +62,16 @@ export const useUsers = () => {
     }
   }
 
+  // Hesap davetini (şifre belirleme linki) tekrar gönderir; hane davetiyle ilgisi yok.
+  // Hata çağırana bırakılır (sayfa toast gösterir)
+  const resendAccountInvitation = async (id: string) => {
+    await api.post(API_ENDPOINTS.USERS.RESEND_ACCOUNT_INVITATION(id), {}, { silent: true })
+    return true
+  }
+
   return {
     getUsers,
+    resendAccountInvitation,
     getUserById,
     createUser,
     updateUser,

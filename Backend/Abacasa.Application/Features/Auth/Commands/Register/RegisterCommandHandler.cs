@@ -1,4 +1,3 @@
-using Abacasa.Application.Common;
 using Abacasa.Application.Features.Households.Common;
 using Abacasa.Application.Features.Auth.Common;
 using Abacasa.Application.Interfaces;
@@ -45,6 +44,7 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IJsonStringLocalizer _localizer;
         private readonly ILegalVersions _legalVersions;
+        private readonly IPhoneNumberService _phoneNumberService;
 
         public RegisterCommandHandler(
             IUnitOfWork unitOfWork,
@@ -54,9 +54,11 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
             IMapper mapper,
             ILogger<RegisterCommandHandler> logger,
             IJsonStringLocalizer localizer,
-            ILegalVersions legalVersions)
+            ILegalVersions legalVersions,
+            IPhoneNumberService phoneNumberService)
         {
             _legalVersions = legalVersions;
+            _phoneNumberService = phoneNumberService;
             _unitOfWork = unitOfWork;
             _passwordService = passwordService;
             _emailService = emailService;
@@ -89,8 +91,11 @@ namespace Abacasa.Application.Features.Auth.Commands.Register
                   ErrorCode.AlreadyExists,
                   _localizer["users.emailExists"]));
 
-            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
-            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            // Telefon da global: E.164 biçimiyle kontrol edilir ve saklanır; geçersiz numara 400
+            var phoneResult = _phoneNumberService.Normalize(request.PhoneNumber);
+            if (!phoneResult.IsSuccess)
+                return Result<UserDto>.Failure(phoneResult.Errors);
+            var normalizedPhone = phoneResult.Value;
             if (normalizedPhone != null &&
                 await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone))
                 return Result<UserDto>.Failure(Error.Failure(

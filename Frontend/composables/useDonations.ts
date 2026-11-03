@@ -28,9 +28,9 @@ export const useDonations = () => {
   const getKindLabel = (kind: DonationKind) => (kindLabelKeys[kind] ? t(kindLabelKeys[kind]) : String(kind))
 
   const kindOptions = computed(() =>
-    (Object.keys(kindLabelKeys) as unknown as DonationKind[]).map((key) => ({
-      value: Number(key) as DonationKind,
-      title: getKindLabel(Number(key) as DonationKind),
+    (Object.keys(kindLabelKeys) as DonationKind[]).map((key) => ({
+      value: key,
+      title: getKindLabel(key),
     }))
   )
 

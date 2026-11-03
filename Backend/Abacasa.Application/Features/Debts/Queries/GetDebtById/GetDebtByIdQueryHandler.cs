@@ -1,3 +1,4 @@
+using Abacasa.Application.Features.ExchangeRates.Common;
 using AutoMapper;
 using Abacasa.Application.Common.Localization;
 using Abacasa.Application.Common.Results;
@@ -32,9 +33,10 @@ public class GetDebtByIdQueryHandler : IRequestHandler<GetDebtByIdQuery, Result<
                 ErrorCode.NotFound,
                 _localizer["debts.notFound"]));
 
-        var usdRate = await _unitOfWork.ExchangeRates.GetLatestAsync(Currency.USD);
+        // Yabancı birimlerin güncel kurları (TCMB ya da elle; CurrentRates)
+        var rates = await CurrentRates.GetAllAsync(_unitOfWork);
         var dto = _mapper.Map<DebtDto>(debt);
-        DebtAmounts.Fill(dto, debt, usdRate?.Rate);
+        DebtAmounts.Fill(dto, debt, rates);
 
         return Result<DebtDto>.Success(dto);
     }

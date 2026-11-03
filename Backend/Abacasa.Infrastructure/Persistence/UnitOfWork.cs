@@ -43,6 +43,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     private readonly Lazy<ITenantMembershipRepository> _tenantMemberships;
     private readonly Lazy<IHouseholdInvitationRepository> _householdInvitations;
     private readonly Lazy<IConsentRecordRepository> _consentRecords;
+    private readonly Lazy<IMarketRateRepository> _marketRates;
 
     public UnitOfWork(ApplicationDbContext context, IServiceProvider serviceProvider)
     {
@@ -77,6 +78,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
         _tenantMemberships = new Lazy<ITenantMembershipRepository>(() => _serviceProvider.GetRequiredService<ITenantMembershipRepository>());
         _householdInvitations = new Lazy<IHouseholdInvitationRepository>(() => _serviceProvider.GetRequiredService<IHouseholdInvitationRepository>());
         _consentRecords = new Lazy<IConsentRecordRepository>(() => _serviceProvider.GetRequiredService<IConsentRecordRepository>());
+        _marketRates = new Lazy<IMarketRateRepository>(() => _serviceProvider.GetRequiredService<IMarketRateRepository>());
 
     }
 
@@ -108,6 +110,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public ITenantMembershipRepository TenantMemberships => _tenantMemberships.Value;
     public IHouseholdInvitationRepository HouseholdInvitations => _householdInvitations.Value;
     public IConsentRecordRepository ConsentRecords => _consentRecords.Value;
+    public IMarketRateRepository MarketRates => _marketRates.Value;
 
     public IDisposable UseTenant(int tenantId) => _context.UseTenant(tenantId);
 

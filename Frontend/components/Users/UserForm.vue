@@ -20,6 +20,19 @@
       <!-- Tab 1: Kişisel Bilgiler -->
       <v-window-item value="personal">
         <v-container>
+          <!-- Profil fotoğrafı: yalnızca düzenlemede (kullanıcı kaydı olmalı); hemen kaydedilir -->
+          <div v-if="user" class="flex items-center gap-4 mb-4">
+            <ProfilePhotoEditor
+              :url="photoUrl"
+              :initials="`${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase()"
+              :user-id="user.id"
+              :size="72"
+              @changed="onPhotoChanged"
+            />
+            <p class="text-body-sm text-on-surface-variant">
+              Profil fotoğrafı (JPEG, PNG veya WEBP, en fazla 10 MB). Değişiklik hemen kaydedilir.
+            </p>
+          </div>
           <v-row>
             <v-col cols="12" sm="6">
               <v-text-field
@@ -74,7 +87,7 @@
                 density="comfortable"
                 hide-details="auto"
                 type="tel"
-                :rules="[rules.required, rules.phone]"
+                :rules="[rules.phone]"
                 class="modern-input"
               />
             </v-col>
@@ -102,8 +115,8 @@
           <v-col cols="12">
             <v-switch
               v-model="formData.status"
-              :true-value="1"
-              :false-value="0"
+              :true-value="UserStatus.Active"
+              :false-value="UserStatus.Inactive"
               color="primary"
               :disabled="loading"
               hide-details
@@ -113,19 +126,42 @@
                 <div class="status-label">
                   <span class="status-text">Kullanıcı Durumu</span>
                   <v-chip
-                    :color="formData.status === 1 ? 'success' : 'error'"
+                    :color="formData.status === UserStatus.Active ? 'success' : 'error'"
                     size="small"
                     variant="tonal"
                   >
-                    {{ formData.status === 1 ? 'Aktif' : 'Pasif' }}
+                    {{ formData.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
                   </v-chip>
                 </div>
               </template>
             </v-switch>
             <p class="status-description mt-2">
-              {{ formData.status === 1 
-                  ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.' 
-                  : 'Kullanıcı sisteme giriş yapamaz ve hesabı devre dışıdır.' 
+              {{ formData.status === UserStatus.Active
+                  ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.'
+                  : 'Kullanıcı sisteme giriş yapamaz ve hesabı devre dışıdır.'
+              }}
+            </p>
+          </v-col>
+        </v-row>
+
+        <!-- Zorunlu şifre değişimi (kendi hesabı hariç; hesap davetiyle gelen kullanıcı şifresini zaten kendisi belirler) -->
+        <v-row v-if="!isOwnAccount && (user || !formData.sendAccountInvitation)">
+          <v-col cols="12">
+            <v-switch
+              v-model="formData.mustChangePassword"
+              color="primary"
+              :disabled="loading"
+              hide-details
+              class="status-switch"
+            >
+              <template #label>
+                <span class="status-text">Bir sonraki girişte şifre değiştirsin</span>
+              </template>
+            </v-switch>
+            <p class="status-description mt-2">
+              {{ formData.mustChangePassword
+                  ? 'Kullanıcı giriş yaptığında şifresini değiştirmeden uygulamayı kullanamaz.'
+                  : 'Kullanıcı mevcut şifresiyle normal şekilde giriş yapar.'
               }}
             </p>
           </v-col>
@@ -133,9 +169,42 @@
       </v-container>
     </v-window-item>
 
-    <!-- Tab 2: Şifre (Sadece yeni kullanıcı) -->
+    <!-- Tab 2: Giriş bilgisi (Sadece yeni kullanıcı) -->
     <v-window-item v-if="!user" value="password">
       <v-container>
+        <v-row>
+          <v-col cols="12">
+            <div class="login-method-grid">
+              <button
+                v-for="option in loginMethodOptions"
+                :key="String(option.value)"
+                type="button"
+                class="login-method"
+                :class="{ selected: formData.sendAccountInvitation === option.value }"
+                :disabled="loading"
+                @click="formData.sendAccountInvitation = option.value"
+              >
+                <v-icon :icon="option.icon" size="22" class="login-method-icon" />
+                <span class="login-method-title">{{ option.title }}</span>
+                <span class="login-method-text">{{ option.text }}</span>
+              </button>
+            </div>
+          </v-col>
+        </v-row>
+
+        <!-- Hesap daveti yalnızca şifre belirleme linkidir; haneye üyelik açmaz (hane daveti ayrıdır) -->
+        <v-row v-if="formData.sendAccountInvitation">
+          <v-col cols="12">
+            <p class="status-description">
+              Kullanıcının e-posta adresine<template v-if="formData.email"> (<strong>{{ formData.email }}</strong>)</template>
+              şifresini belirleyebileceği bir link gönderilir.
+              Link 72 saat geçerlidir; süresi dolarsa kullanıcı listesinden daveti tekrar gönderebilirsiniz.
+              Hesap hanesiz oluşur; haneye hane daveti ile katılır.
+            </p>
+          </v-col>
+        </v-row>
+
+        <template v-else>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -173,6 +242,7 @@
             />
           </v-col>
         </v-row>
+        </template>
       </v-container>
     </v-window-item>
 
@@ -296,6 +366,7 @@
 
 <script setup lang="ts">
 import type { User, Role, CreateUserRequest, UpdateUserRequest } from '~/types'
+import { UserStatus } from '~/types'
 import { computed, reactive, ref, watch, watchEffect, onMounted } from 'vue'
 
 const { validationRules: rules } = useValidators()
@@ -315,7 +386,15 @@ const emit = defineEmits<{
   submit: [data: CreateUserRequest | UpdateUserRequest]
   cancel: []
   'update:selected-roles': [roleIds: string[]]
+  'photo-changed': [url: string | null]
 }>()
+
+const photoUrl = ref<string | null>(props.user?.profileImageUrl ?? null)
+watch(() => props.user?.profileImageUrl, (url) => { photoUrl.value = url ?? null })
+const onPhotoChanged = (url: string | null) => {
+  photoUrl.value = url
+  emit('photo-changed', url)
+}
 
 const formRef = ref()
 const currentTab = ref('personal')
@@ -331,7 +410,7 @@ const tabs = computed(() => {
   ]
   
   if (!props.user) {
-    baseTabs.push({ value: 'password', label: 'Şifre', icon: 'mdi-lock' })
+    baseTabs.push({ value: 'password', label: 'Giriş Bilgisi', icon: 'mdi-lock' })
   }
   
   baseTabs.push({ value: 'roles', label: 'Roller', icon: 'mdi-shield-account' })
@@ -346,10 +425,22 @@ const formData = reactive({
   phoneNumber: '',
   password: '',
   confirmPassword: '',
-  status: 1,
+  status: UserStatus.Active,
+  mustChangePassword: false,
+  sendAccountInvitation: true,
   roleIds: [] as string[],
   tenantId: null as number | null
 })
+
+const loginMethodOptions = [
+  { value: true, icon: 'mdi-email-fast-outline', title: 'Davet e-postası gönder', text: 'Kullanıcı şifresini kendisi belirler' },
+  { value: false, icon: 'mdi-form-textbox-password', title: 'Şifreyi ben belirleyeceğim', text: 'Şifreyi kullanıcıya siz iletirsiniz' }
+]
+
+// Backend de engelliyor; admin kendi hesabını şifre değişimine kilitleyemez
+const isOwnAccount = computed(
+  () => !!props.user && String(props.user.id) === String(authStore.user?.id)
+)
 
 onMounted(async () => {
   if (canAccessAllTenants.value && !props.user) {
@@ -401,14 +492,19 @@ const handleSubmit = async () => {
     email: formData.email,
     phoneNumber: formData.phoneNumber,
     status: formData.status,
-    profileImageUrl: props.user?.profileImageUrl || "",
+    mustChangePassword: formData.mustChangePassword,
     roleIds: formData.roleIds.map(id => Number(id))
   }
-  
+
   if (props.user) {
     submitData.id = Number(props.user.id)
   } else {
-    submitData.password = formData.password
+    submitData.sendAccountInvitation = formData.sendAccountInvitation
+    if (formData.sendAccountInvitation) {
+      submitData.mustChangePassword = false
+    } else {
+      submitData.password = formData.password
+    }
     if (formData.tenantId != null) {
       submitData.tenantId = formData.tenantId
     }
@@ -435,7 +531,8 @@ watchEffect(() => {
       lastName: props.user.lastName,
       email: props.user.email,
       phoneNumber: props.user.phoneNumber || '',
-      status: props.user.status ?? 1,
+      status: props.user.status ?? UserStatus.Active,
+      mustChangePassword: props.user.mustChangePassword ?? false,
       roleIds: props.user.roles?.map(r => String(r.id)) || [],
       password: '',
       confirmPassword: ''
@@ -446,7 +543,9 @@ watchEffect(() => {
       lastName: '',
       email: '',
       phoneNumber: '',
-      status: 1,
+      status: UserStatus.Active,
+      mustChangePassword: false,
+      sendAccountInvitation: true,
       roleIds: [],
       tenantId: null,
       password: '',
@@ -459,6 +558,51 @@ watchEffect(() => {
 <style scoped>
 .status-switch {
   margin-bottom: 8px;
+}
+
+.login-method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.login-method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px;
+  text-align: left;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.login-method:hover:not(:disabled) {
+  border-color: #cbd5e1;
+}
+
+/* Rol kartlarıyla aynı seçili görünüm */
+.login-method.selected {
+  border-color: rgb(var(--color-primary));
+  background: #f0f7ff;
+}
+
+.login-method-icon {
+  color: rgb(var(--color-primary));
+  margin-bottom: 4px;
+}
+
+.login-method-title {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.login-method-text {
+  font-size: 0.8125rem;
+  color: #64748b;
 }
 
 .status-label {

@@ -1,3 +1,5 @@
+import { UserStatus } from '~/types'
+
 export const useUtils = () => {
   const formatDate = (date: string | Date, format = 'short') => {
     const d = new Date(date)
@@ -38,22 +40,23 @@ export const useUtils = () => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   }
 
-  const getUserStatusColor = (status: number) => {
+  // Değerler backend UserStatus ile aynı (isim olarak gelir: Inactive, Active, Banned, PendingVerification)
+  const getUserStatusColor = (status: UserStatus) => {
     switch (status) {
-      case 1: return 'success' // Active
-      case 2: return 'warning' // Inactive
-      case 3: return 'error'   // Banned
-      case 4: return 'info'    // PendingVerification
+      case UserStatus.Active: return 'success'
+      case UserStatus.Inactive: return 'warning'
+      case UserStatus.Banned: return 'error'
+      case UserStatus.PendingVerification: return 'info'
       default: return 'grey'
     }
   }
 
-  const getUserStatusText = (status: number) => {
+  const getUserStatusText = (status: UserStatus) => {
     switch (status) {
-      case 1: return 'Active'
-      case 2: return 'Inactive'
-      case 3: return 'Banned'
-      case 4: return 'Pending Verification'
+      case UserStatus.Active: return 'Active'
+      case UserStatus.Inactive: return 'Inactive'
+      case UserStatus.Banned: return 'Banned'
+      case UserStatus.PendingVerification: return 'Pending Verification'
       default: return 'Unknown'
     }
   }

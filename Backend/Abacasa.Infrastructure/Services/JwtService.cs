@@ -34,6 +34,7 @@ namespace Abacasa.Infrastructure.Services
         private readonly IJsonStringLocalizer _localizer;
         private readonly IPermissionService _permissionService;
         private readonly ILegalVersions _legalVersions;
+        private readonly IFileStorage _fileStorage;
 
         // A rotated token presented again within this window is treated as a benign race
         // (parallel tabs/requests), not as theft.
@@ -48,9 +49,11 @@ namespace Abacasa.Infrastructure.Services
             IEmailService emailService,
             IJsonStringLocalizer localizer,
             IPermissionService permissionService,
-            ILegalVersions legalVersions)
+            ILegalVersions legalVersions,
+            IFileStorage fileStorage)
         {
             _legalVersions = legalVersions;
+            _fileStorage = fileStorage;
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _passwordService = passwordService;
@@ -601,7 +604,7 @@ namespace Abacasa.Infrastructure.Services
             AccessToken = accessToken,
             RefreshToken = refreshTokenResult.PlainToken,
             ExpiresAt = refreshTokenResult.Stored.ExpiryDate,
-            User = await Application.Features.Users.Common.UserProfileBuilder.BuildAsync(_unitOfWork, _permissionService, _legalVersions, user, activeTenantId)
+            User = await Application.Features.Users.Common.UserProfileBuilder.BuildAsync(_unitOfWork, _permissionService, _legalVersions, _fileStorage, user, activeTenantId)
         };
     }
 

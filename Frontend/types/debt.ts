@@ -1,6 +1,17 @@
+// Backend Currency ile aynı; TRY dışındakiler yabancı (TL karşılığı kurla). QuarterGold çeyrek altın adedi (tam sayı)
 export enum Currency {
-  TRY = 1,
-  USD = 2
+  TRY = 'TRY',
+  USD = 'USD',
+  EUR = 'EUR',
+  QuarterGold = 'QuarterGold'
+}
+
+/** Bir birimin güncel kuru: TCMB ile hanenin elle kurundan tarihi yeni olan (eşitse elle) */
+export interface CurrentRate {
+  currency: Currency
+  rate: number
+  date: string
+  source: 'TCMB' | 'Elle'
 }
 
 export interface Debt {
@@ -21,7 +32,7 @@ export interface Debt {
   remaining: number
   isClosed: boolean
   paidInTry: number
-  /** USD'de kur yoksa null */
+  /** Yabancı birimde kur yoksa null */
   remainingInTry: number | null
   paymentCount: number
   /** Ödemesi varsa para birimi değiştirilemez */
@@ -50,19 +61,25 @@ export interface DebtFilters {
 
 export interface DebtSummary {
   openTry: number
-  openUsd: number
-  /** Kur girilmemişse null */
-  usdRate: { rate: number; date: string } | null
-  openUsdInTry: number | null
+  /** Yalnızca açığı > 0 olan yabancı birimler */
+  foreign: {
+    currency: Currency
+    open: number
+    rate: { rate: number; date: string; source: 'TCMB' | 'Elle' } | null
+    /** Kur yoksa null */
+    openInTry: number | null
+  }[]
+  /** Açığı olan bir birimin kuru yoksa null */
   openTotalInTry: number | null
   paidTotalInTry: number
   openCount: number
+  /** USD, EUR ve çeyrek altının güncel kurları (kuru olmayan yok) */
+  rates: CurrentRate[]
   byCreditor: {
     personId: number
     name: string
     openTry: number
-    openUsd: number
-    openUsdInTry: number | null
+    foreign: { currency: Currency; open: number; openInTry: number | null }[]
     totalInTry: number | null
   }[]
 }
@@ -82,7 +99,7 @@ export interface DebtPayment {
 export interface SaveDebtPaymentRequest {
   date: string
   amount: number
-  /** Yalnızca USD borçta */
+  /** Yalnızca yabancı birimde (döviz kuru ya da çeyrek fiyatı) */
   exchangeRate?: number
   note?: string
 }

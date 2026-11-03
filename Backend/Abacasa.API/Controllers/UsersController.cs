@@ -6,8 +6,11 @@ using Abacasa.Application.Features.Permissions.Dtos;
 using Abacasa.Application.Features.Users.Commands.CreateUser;
 using Abacasa.Application.Features.Users.Commands.UpdateUser;
 using Abacasa.Application.Features.Users.Commands.DeleteUser;
+using Abacasa.Application.Features.Users.Commands.ResendAccountInvitation;
+using Abacasa.Application.Features.Users.Commands.UserPhoto;
 using Abacasa.Application.Features.Users.Queries.GetAllUsers;
 using Abacasa.Application.Features.Users.Queries.GetUserById;
+using Abacasa.Domain.Common.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,13 +40,14 @@ namespace Abacasa.API.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetAllUsers([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string searchTerm = null)
+        public async Task<IActionResult> GetAllUsers([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string searchTerm = null, [FromQuery] UserStatus? status = null)
         {
             var query = new GetAllUsersQuery
             {
                 Page = page,
                 PageSize = pageSize,
-                SearchTerm = searchTerm
+                SearchTerm = searchTerm,
+                Status = status
             };
 
             var result = await _mediator.Send(query);
@@ -88,8 +92,10 @@ namespace Abacasa.API.Controllers
                 LastName = dto.LastName,
                 Email = dto.Email,
                 Password = dto.Password,
+                SendAccountInvitation = dto.SendAccountInvitation,
                 PhoneNumber = dto.PhoneNumber,
                 Status = dto.Status,
+                MustChangePassword = dto.MustChangePassword,
                 RoleIds = dto.RoleIds,
                 TenantId = dto.TenantId
             };
@@ -125,7 +131,7 @@ namespace Abacasa.API.Controllers
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
                 Status = dto.Status,
-                ProfileImageUrl = dto.ProfileImageUrl,
+                MustChangePassword = dto.MustChangePassword,
                 RoleIds = dto.RoleIds
             };
 
@@ -149,6 +155,62 @@ namespace Abacasa.API.Controllers
         {
             var command = new DeleteUserCommand { Id = id };
             var result = await _mediator.Send(command);
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Upload or replace a user's profile photo (multipart field "file"; JPEG, PNG or WEBP up to 10 MB)
+        /// </summary>
+        /// <param name="id">User ID</param>
+        /// <param name="file">Image file</param>
+        [HttpPost("{id:int}/photo")]
+        [Authorize(Policy = "users.update")]
+        // Slightly above SetUserPhotoCommand.MaxBytes so oversized files get a readable error
+        [RequestSizeLimit(11 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 11 * 1024 * 1024)]
+        [ProducesResponseType(typeof(UserPhotoDto), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UploadPhoto(int id, IFormFile? file)
+        {
+            await using var content = file?.OpenReadStream() ?? Stream.Null;
+            var result = await _mediator.Send(new SetUserPhotoCommand { UserId = id, Content = content, Length = file?.Length ?? 0 });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Remove a user's profile photo
+        /// </summary>
+        /// <param name="id">User ID</param>
+        [HttpDelete("{id:int}/photo")]
+        [Authorize(Policy = "users.update")]
+        [ProducesResponseType(typeof(UserPhotoDto), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> RemovePhoto(int id)
+        {
+            var result = await _mediator.Send(new RemoveUserPhotoCommand { UserId = id });
+            return HandleResult(result);
+        }
+
+        /// <summary>
+        /// Email a new set-password link (account invitation) to a user who has not signed in yet.
+        /// Not related to household invitations.
+        /// </summary>
+        /// <param name="id">User ID</param>
+        [HttpPost("{id:int}/resend-account-invitation")]
+        [Authorize(Policy = "users.update")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ResendAccountInvitation(int id)
+        {
+            var result = await _mediator.Send(new ResendAccountInvitationCommand { Id = id });
             return HandleResult(result);
         }
     }

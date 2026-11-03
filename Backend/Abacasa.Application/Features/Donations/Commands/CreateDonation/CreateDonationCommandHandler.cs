@@ -4,6 +4,8 @@ using Abacasa.Application.Common.Results;
 using Abacasa.Application.Features.DonationFunds.Common;
 using Abacasa.Application.Features.Donations.Common;
 using Abacasa.Application.Features.Donations.Dtos;
+using Abacasa.Application.Features.Households.Common;
+using Abacasa.Application.Interfaces;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 using Abacasa.Domain.Entities;
@@ -18,8 +20,11 @@ public class CreateDonationCommandHandler : IRequestHandler<CreateDonationComman
     private readonly IMapper _mapper;
     private readonly IJsonStringLocalizer _localizer;
 
-    public CreateDonationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IJsonStringLocalizer localizer)
+    private readonly ICurrentUserService _currentUserService;
+
+    public CreateDonationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IJsonStringLocalizer localizer, ICurrentUserService currentUserService)
     {
+        _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _localizer = localizer;
@@ -54,6 +59,10 @@ public class CreateDonationCommandHandler : IRequestHandler<CreateDonationComman
         DonationFund? fund = null;
         if (request.FundId.HasValue)
         {
+            // Emanet, bağış hedefleri ve emanetler modülüne bağlı: kapalıysa 403
+            if (!await HouseholdModules.IsDonationExtrasEnabledAsync(_unitOfWork, _currentUserService))
+                return Result<DonationListDto>.Failure(HouseholdModules.DisabledError(_localizer));
+
             var (checkedFund, error) = await FundDistributionCheck.CheckAsync(
                 _unitOfWork, _localizer, request.FundId.Value, request.Kind, request.Amount);
             if (error != null)

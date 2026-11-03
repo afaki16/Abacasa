@@ -4,8 +4,8 @@ export type InvitationStatus = 'Pending' | 'Accepted' | 'Revoked' | 'Expired'
 
 /** Rol gönderiminde backend enum değeri */
 export enum HouseholdRoleValue {
-  Admin = 1,
-  Member = 2
+  Admin = 'Admin',
+  Member = 'Member'
 }
 
 export interface HouseholdDetail {

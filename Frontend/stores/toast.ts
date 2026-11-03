@@ -22,17 +22,15 @@ export const useToastStore = defineStore('toast', {
       const msgArray = Array.isArray(messages) ? messages : [messages]
       if (msgArray.length === 0) return
 
-      const defaultTitles: Record<ToastType, string> = {
-        success: 'Success',
-        error: 'Error',
-        warning: 'Warning',
-        info: 'Info',
-      }
+      // Aynı içerikli toast hâlâ ekrandaysa tekrar basma — API katmanı ve
+      // sayfa catch'i aynı hatayı art arda gösterdiğinde çift bildirim oluşuyor.
+      const key = msgArray.join('\n')
+      if (this.items.some((t) => t.type === type && t.messages.join('\n') === key)) return
 
       const id = `toast_${++idCounter}_${Date.now()}`
       const dur = duration ?? (type === 'error' ? 8000 : 4000)
 
-      this.items.push({ id, type, title: title || defaultTitles[type], messages: msgArray, duration: dur })
+      this.items.push({ id, type, title: title || '', messages: msgArray, duration: dur })
 
       if (dur > 0) {
         setTimeout(() => this.remove(id), dur)

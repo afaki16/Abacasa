@@ -33,6 +33,8 @@ export const useCrudOperations = (config) => {
   const pageSize = ref(initialPageSize)
   const totalCount = ref(0)
   const searchTerm = ref('')
+  // BaseDataTable "Filtreler" panelinden gelen kolon filtreleri (server-side'da loadItems'a 4. parametre)
+  const columnFilters = ref({})
 
   const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
 
@@ -56,7 +58,7 @@ export const useCrudOperations = (config) => {
       const p = page ?? currentPage.value
       const s = size ?? pageSize.value
       const srch = search ?? searchTerm.value
-      const params = serverSidePagination ? [p, s, srch] : []
+      const params = serverSidePagination ? [p, s, srch, columnFilters.value] : []
       const response = await loadItems(...params)
 
       if (serverSidePagination && response?.data) {
@@ -101,6 +103,15 @@ export const useCrudOperations = (config) => {
     searchTerm.value = term
     currentPage.value = 1
     loadItemsData(1, pageSize.value, serverSidePagination ? term : '')
+  }
+
+  // Server-side'da filtreyi backend uygular; client-side'da BaseDataTable kendi filtreler
+  const handleFilter = (filters = {}) => {
+    columnFilters.value = { ...filters }
+    currentPage.value = 1
+    if (serverSidePagination) {
+      loadItemsData(1, pageSize.value, searchTerm.value)
+    }
   }
 
   // Handle submit (create/update)
@@ -169,6 +180,7 @@ export const useCrudOperations = (config) => {
     handleSubmit,
     confirmDelete,
     handleSearch,
+    handleFilter,
     handlePageChange,
     handlePageSizeChange
   }

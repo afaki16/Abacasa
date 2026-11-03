@@ -1,9 +1,9 @@
 import type { PaymentMethodType } from './paymentMethod'
 
 export enum DonationKind {
-  Donation = 1,
-  Zakat = 2,
-  Scholarship = 3
+  Donation = 'Donation',
+  Zakat = 'Zakat',
+  Scholarship = 'Scholarship'
 }
 
 export interface Donation {

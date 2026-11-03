@@ -89,6 +89,24 @@
       />
     </ResizableDrawer>
 
+    <!-- View Role Drawer (salt okunur; sistem rolünün yetkilerini görmenin tek yolu) -->
+    <ResizableDrawer
+      v-model="dialogs.view"
+      title="Rol Detayları"
+      subtitle="Rol bilgilerini ve yetkilerini görüntüleyin"
+      icon="mdi-shield-account"
+      :default-width="600"
+      :min-width="400"
+    >
+      <RoleDetail
+        :role="selectedItem"
+        :can-edit="!!selectedItem && canModifyRole(selectedItem)"
+        :show-tenant="isSuperAdmin"
+        @close="closeViewDialog"
+        @edit="handleEditFromDetail"
+      />
+    </ResizableDrawer>
+
     <!-- Confirm Delete Dialog -->
     <ConfirmDialog
       v-model="dialogs.delete"
@@ -106,6 +124,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import RoleForm from '~/components/Roles/RoleForm.vue'
+import RoleDetail from '~/components/Roles/RoleDetail.vue'
 import BaseDataTable from '~/components/UI/BaseDataTable.vue'
 import ResizableDrawer from '~/components/UI/ResizableDrawer.vue'
 import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
@@ -193,6 +212,7 @@ const {
   openEditDialog,
   openDeleteDialog,
   closeCreateDialog,
+  closeViewDialog,
   closeDeleteDialog,
   handleSubmit,
   confirmDelete,
@@ -228,7 +248,7 @@ const loadPermissions = async () => {
 }
 
 // Same name mapping as authStore.setUser
-const permissionName = (p) => p?.fullPermission ?? p?.name
+const permissionName = (p) => p?.name ?? p?.fullPermission
 
 // Non-SuperAdmin can only grant permissions they have; their own list comes with the user
 // (GET /api/permissions needs Permissions.Read, which a role manager may not have).
@@ -246,6 +266,11 @@ const canModifyRole = (role) => {
   if (isSuperAdmin.value) return true
   if (role.tenantId == null) return false
   return (role.permissions || []).every(p => authStore.permissions.includes(permissionName(p)))
+}
+
+const handleEditFromDetail = (role) => {
+  closeViewDialog()
+  openEditDialog(role)
 }
 //#endregion
 

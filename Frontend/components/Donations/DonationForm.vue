@@ -35,7 +35,7 @@
       </v-row>
 
       <!-- İsteğe bağlı: emanetten dağıtım. Seçilince tür emanetin türüne ayarlanır ve kilitlenir -->
-      <v-row v-if="fundOptions.length || formData.fundId">
+      <v-row v-if="showFund !== false && (fundOptions.length || formData.fundId)">
         <v-col cols="12">
           <v-select
             v-model="formData.fundId"
@@ -178,6 +178,8 @@ const props = defineProps<{
   funds?: DonationFund[]
   /** Emanetler sayfasındaki "Dağıtım ekle": emanet seçili gelir, değiştirilemez */
   presetFundId?: number | null
+  /** Bağış hedefleri ve emanetler modülü kapalıysa false: "Emanetten" alanı görünmez */
+  showFund?: boolean
   loading?: boolean
 }>()
 
@@ -270,7 +272,8 @@ const handleSubmit = async () => {
     giverPersonId: formData.giverPersonId === HOUSEHOLD ? undefined : formData.giverPersonId,
     paymentMethodId: formData.paymentMethodId as number,
     note: formData.note?.trim() || undefined,
-    fundId: formData.fundId ?? undefined,
+    // Alan gizliyken (modül kapalı) düzenlenen kaydın mevcut emaneti değişmeden gönderilir
+    fundId: (props.showFund === false ? props.donation?.fundId : formData.fundId) ?? undefined,
   }
 
   if (props.donation) {

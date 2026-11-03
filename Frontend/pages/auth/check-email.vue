@@ -1,7 +1,7 @@
 <template>
   <div class="check-container" :style="{ background: 'var(--theme-gradient-sidebar)' }">
     <div class="check-card">
-      <v-icon size="80" color="white" class="email-icon">mdi-email-fast-outline</v-icon>
+      <UiIcon icon="mdi-email-fast-outline" :size="80" color="white" class="email-icon" />
 
       <h1 class="title">Email kutunuzu kontrol edin</h1>
       <p v-if="email" class="subtitle">
@@ -16,7 +16,7 @@
       </p>
 
       <div class="actions">
-        <v-btn
+        <UiBtn
           color="white"
           variant="outlined"
           size="large"
@@ -24,19 +24,19 @@
           :loading="resending"
           :disabled="!email"
           @click="onResend"
+          prepend-icon="mdi-email-sync-outline"
         >
-          <v-icon start>mdi-email-sync-outline</v-icon>
           Tekrar Gönder
-        </v-btn>
+        </UiBtn>
 
-        <v-btn
+        <UiBtn
           variant="text"
           color="white"
           class="link-btn"
           @click="goToLogin"
         >
           Giriş sayfasına dön
-        </v-btn>
+        </UiBtn>
       </div>
     </div>
   </div>

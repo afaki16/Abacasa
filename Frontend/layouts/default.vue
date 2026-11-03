@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-full bg-background font-body-md text-on-surface antialiased overflow-hidden">
+  <div class="flex h-[100dvh] w-full bg-background font-body-md text-on-surface antialiased overflow-hidden">
     <!-- Sidebar Navigation -->
     <aside
       class="flex flex-col h-full border-r border-outline-variant bg-surface py-base z-30 transition-all duration-300"
@@ -41,7 +41,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Ara..."
-            class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl py-2 pl-10 pr-4 text-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder-on-surface-variant/50 outline-none"
+            class="w-full bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[24px] py-2 pl-10 pr-4 text-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder-on-surface-variant/50 outline-none"
           />
         </div>
       </div>
@@ -53,7 +53,7 @@
           <NuxtLink
             v-if="!item.children && item.to"
             :to="item.to"
-            class="flex items-center gap-3 mx-4 px-4 py-3 rounded-xl transition-all"
+            class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[24px] transition-all"
             :class="[
               isActive(item.to)
                 ? 'sidebar-active-pill'
@@ -74,13 +74,13 @@
             >
               {{ $t(item.title) }}
             </p>
-            <div v-else class="border-t border-outline-variant/30 my-2 mx-4"></div>
+            <div v-else class="border-t border-solid border-outline-variant/[0.12] my-2 mx-4"></div>
 
             <NuxtLink
               v-for="child in item.children"
               :key="child.title"
               :to="child.to"
-              class="flex items-center gap-3 mx-4 px-4 py-3 rounded-xl transition-all"
+              class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[24px] transition-all"
               :class="[
                 isActive(child.to)
                   ? 'sidebar-active-pill'
@@ -97,19 +97,17 @@
       </nav>
 
       <!-- Sidebar Footer: User Dropdown + Logout (sabit) -->
-      <div class="px-4 py-4 mt-auto border-t border-outline-variant relative">
+      <div class="px-4 py-4 mt-auto border-t border-solid border-outline-variant/[0.12] relative">
         <!-- User Card — Dropdown Trigger -->
         <div class="relative">
           <button
             @click="toggleUserDropdown"
-            class="w-full flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all"
+            class="w-full flex items-center gap-3 rounded-[24px] hover:bg-surface-container-high transition-all"
             :class="isSidebarOpen ? 'px-2 py-2' : 'justify-center p-2'"
             :title="!isSidebarOpen ? userInfo.name : undefined"
           >
             <!-- Avatar -->
-            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-              <Icon name="mdi:account" class="w-5 h-5 text-primary" />
-            </div>
+            <UserAvatar :src="authStore.user?.profileImageUrl" :initials="authStore.userInitials" :size="40" />
 
             <!-- User Info (sadece açık sidebar'da) -->
             <div v-if="isSidebarOpen" class="flex-1 min-w-0 text-left">
@@ -138,7 +136,7 @@
           >
             <div
               v-if="showUserDropdown"
-              class="user-dropdown-menu absolute bottom-full mb-2 bg-surface-container-low border border-outline-variant/30 rounded-xl shadow-xl z-50 overflow-hidden"
+              class="user-dropdown-menu absolute bottom-full mb-2 bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[24px] shadow-xl z-50 overflow-hidden"
               :class="isSidebarOpen ? 'left-0 right-0' : 'left-full ml-2 w-48'"
             >
               <NuxtLink
@@ -154,10 +152,19 @@
                 v-if="authStore.hasPermission('Household.Read')"
                 to="/household"
                 @click="closeUserDropdown"
-                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-outline-variant/20"
+                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
               >
                 <Icon name="mdi:home-heart" class="w-5 h-5 text-on-surface-variant" />
                 <span class="text-body-sm font-medium">Hane ayarları</span>
+              </NuxtLink>
+
+              <NuxtLink
+                :to="LEGAL_ROUTES.privacy"
+                @click="closeUserDropdown"
+                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
+              >
+                <Icon name="mdi:shield-account" class="w-5 h-5 text-on-surface-variant" />
+                <span class="text-body-sm font-medium">Gizlilik ve koşullar</span>
               </NuxtLink>
 
               <!-- Backend'deki RequireAdminRole ile aynı: yalnızca SuperAdmin ya da Admin sistem rolü -->
@@ -165,7 +172,7 @@
                 v-if="canSeeSettings"
                 to="/settings"
                 @click="closeUserDropdown"
-                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-outline-variant/20"
+                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
               >
                 <Icon name="mdi:cog" class="w-5 h-5 text-on-surface-variant" />
                 <span class="text-body-sm font-medium">{{ $t('sidebar.menu.settings') }}</span>
@@ -177,7 +184,7 @@
         <!-- Logout — Sabit, dropdown'dan bağımsız -->
         <button
           @click="handleLogout"
-          class="w-full flex items-center gap-3 mt-2 px-4 py-2 rounded-xl text-error/80 hover:text-error hover:bg-error/10 transition-colors"
+          class="w-full flex items-center gap-3 mt-2 px-4 py-2 rounded-[24px] text-error/80 hover:text-error hover:bg-error/10 transition-colors"
           :class="!isSidebarOpen && 'justify-center px-0'"
         >
           <Icon name="mdi:logout" class="w-5 h-5 flex-shrink-0" />
@@ -189,7 +196,14 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Top Bar -->
-      <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-outline-variant bg-surface flex-shrink-0">
+      <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-solid border-outline-variant/[0.12] bg-surface flex-shrink-0">
+        <!-- SuperAdmin hane filtresi: yalnızca sistem listelerini (kullanıcılar, oturumlar) süzer; bütçe verisini değiştirmez -->
+        <div v-if="isSuperAdmin" class="flex items-center gap-2 mr-auto min-w-0">
+          <Icon name="mdi:shield-crown-outline" class="w-4 h-4 text-on-surface-variant flex-shrink-0" />
+          <span class="text-body-sm text-on-surface-variant font-medium hidden sm:inline">{{ $t('sidebar.context.activeTenant') }}</span>
+          <TenantSelector />
+        </div>
+
         <!-- Hane seçici -->
         <HouseholdSwitcher />
 
@@ -199,7 +213,7 @@
         <!-- Theme Toggle -->
         <button
           @click="toggleTheme"
-          class="w-10 h-10 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center"
+          class="w-10 h-10 rounded-[24px] bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center"
           :title="isDark ? 'Light moda geç' : 'Dark moda geç'"
         >
           <Icon
@@ -213,6 +227,9 @@
       <main class="flex-1 overflow-y-auto px-margin-desktop py-md">
         <slot />
       </main>
+
+      <!-- Bekleyen onaylar: kapatılamayan pencere (yalnızca onay ya da çıkış) -->
+      <ConsentGate />
     </div>
   </div>
 </template>
@@ -226,10 +243,14 @@ import { useAppData } from '~/composables/useAppData'
 import { useAuthStore } from '~/stores/auth'
 import { useTheme } from '~/composables/useTheme'
 import HouseholdSwitcher from '~/components/Household/HouseholdSwitcher.vue'
+import TenantSelector from '~/components/UI/TenantSelector.vue'
+import ConsentGate from '~/components/Legal/ConsentGate.vue'
+import { LEGAL_ROUTES } from '~/utils/legal'
 
 // Auth state
 const authStore = useAuthStore()
 const { roles } = storeToRefs(authStore)
+const isSuperAdmin = computed(() => roles.value.includes('SuperAdmin'))
 const { activeTenant, getRoleLabel } = useHousehold()
 const authUtils = useAuth()
 const router = useRouter()
@@ -262,7 +283,8 @@ const visibleMenus = computed(() =>
   filterNavigationByPermissions(
     navigationItems,
     (p) => authStore.hasPermission(p),
-    (r) => roles.value.includes(r)
+    (r) => roles.value.includes(r),
+    (m) => authStore.hasModule(m)
   )
 )
 

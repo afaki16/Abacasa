@@ -28,6 +28,16 @@ services:
       # Set these in /opt/services/.env, then unset after first successful deploy
       INITIAL_SUPERADMIN_PASSWORD: ${INITIAL_SUPERADMIN_PASSWORD_ABACASA_PROD}
       INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD_ABACASA_PROD}
+      # Dosya depolama: varsayılan Local (aşağıdaki volume). S3 uyumlu servise geçmek için:
+      # Storage__Provider: S3
+      # Storage__S3__ServiceUrl: ${S3_URL_ABACASA}          # ör. https://<hesap>.r2.cloudflarestorage.com
+      # Storage__S3__Bucket: abacasa-prod
+      # Storage__S3__AccessKey: ${S3_KEY_ABACASA}
+      # Storage__S3__SecretKey: ${S3_SECRET_ABACASA}
+      # Storage__S3__PublicBaseUrl: https://files.example.com  # frontend build'inde FILES_PUBLIC_URL de bu olmalı
+    volumes:
+      # Yüklenen dosyalar (Storage:Provider=Local). Volume olmazsa her deploy'da silinir; yedeğe ekleyin.
+      - abacasa-uploads-prod:/app/storage/uploads
     networks: [app-network]
     ports:
       - '127.0.0.1:5003:8080'  # 5003: değiştir (kullanılan port'lara göre)
@@ -54,9 +64,15 @@ services:
       # Set these in /opt/services/.env, then unset after first successful deploy
       INITIAL_SUPERADMIN_PASSWORD: ${INITIAL_SUPERADMIN_PASSWORD_ABACASA_TEST}
       INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD_ABACASA_TEST}
+    volumes:
+      - abacasa-uploads-test:/app/storage/uploads
     networks: [app-network]
     ports:
       - '127.0.0.1:5004:8080'  # 5004: değiştir (kullanılan port'lara göre)
+
+volumes:
+  abacasa-uploads-prod:
+  abacasa-uploads-test:
 
 networks:
   app-network:

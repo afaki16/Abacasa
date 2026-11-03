@@ -2,34 +2,34 @@
   <div class="invite-container" :style="{ background: 'var(--theme-gradient-sidebar)' }">
     <div class="invite-card">
       <div v-if="state === 'loading'" class="state-block">
-        <v-progress-circular indeterminate color="white" size="56" width="4" />
+        <UiProgressCircular indeterminate color="white" :size="56" :width="4" />
         <h2 class="title">Davet yükleniyor...</h2>
       </div>
 
       <!-- Bulunamadı / kabul edilmiş / iptal / süresi dolmuş -->
       <div v-else-if="state === 'unavailable'" class="state-block">
-        <v-icon size="72" color="error">mdi-email-remove-outline</v-icon>
+        <UiIcon icon="mdi-email-remove-outline" :size="72" color="error" />
         <h2 class="title">{{ unavailableTitle }}</h2>
         <p class="subtitle">{{ unavailableText }}</p>
-        <v-btn color="white" variant="outlined" size="large" class="action-btn" @click="goToLogin">
+        <UiBtn color="white" variant="outlined" size="large" class="action-btn" @click="goToLogin">
           Giriş sayfasına dön
-        </v-btn>
+        </UiBtn>
       </div>
 
       <template v-else-if="invite">
         <div class="state-block">
-          <v-icon size="72" color="white">mdi-home-heart</v-icon>
+          <UiIcon icon="mdi-home-heart" :size="72" color="white" />
           <h2 class="title">{{ invite.householdName }}</h2>
           <p class="subtitle">
             {{ invite.inviterName }} sizi bu haneye <strong>{{ roleLabel }}</strong> olarak davet etti.
           </p>
 
-          <v-alert v-if="actionError" type="error" variant="tonal" density="compact" class="w-100 text-left">
+          <UiAlert v-if="actionError" type="error" variant="tonal" density="compact" class="w-full text-left">
             {{ actionError }}
-          </v-alert>
+          </UiAlert>
 
           <!-- Oturum açık, e-posta eşleşiyor -->
-          <v-btn
+          <UiBtn
             v-if="isLoggedIn && emailMatches"
             color="white"
             variant="outlined"
@@ -39,24 +39,24 @@
             @click="accept"
           >
             Daveti kabul et
-          </v-btn>
+          </UiBtn>
 
           <!-- Oturum açık, başka hesap -->
           <template v-else-if="isLoggedIn">
             <p class="subtitle">Bu davet {{ invite.email }} adresine gönderildi. O hesapla giriş yapın.</p>
-            <v-btn color="white" variant="outlined" size="large" class="action-btn" :loading="busy" @click="logout">
+            <UiBtn color="white" variant="outlined" size="large" class="action-btn" :loading="busy" @click="logout">
               Çıkış yap
-            </v-btn>
+            </UiBtn>
           </template>
 
           <!-- Oturum kapalı -->
           <div v-else class="actions-row">
-            <v-btn v-if="invite.userExists" color="white" variant="outlined" size="large" class="action-btn" @click="goToLoginWithRedirect">
+            <UiBtn v-if="invite.userExists" color="white" variant="outlined" size="large" class="action-btn" @click="goToLoginWithRedirect">
               Giriş yap
-            </v-btn>
-            <v-btn v-else color="white" variant="outlined" size="large" class="action-btn" @click="goToRegister">
+            </UiBtn>
+            <UiBtn v-else color="white" variant="outlined" size="large" class="action-btn" @click="goToRegister">
               Kayıt ol
-            </v-btn>
+            </UiBtn>
           </div>
         </div>
       </template>

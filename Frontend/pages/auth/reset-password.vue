@@ -1,23 +1,20 @@
 <template>
   <div class="auth-container" :style="{ background: 'var(--theme-gradient-sidebar)' }">
     <div class="auth-card">
-      <v-icon size="72" color="white" class="auth-icon">
-        {{ linkValid ? 'mdi-lock-reset' : 'mdi-link-variant-off' }}
-      </v-icon>
+      <UiIcon :icon="linkValid ? 'mdi-lock-reset' : 'mdi-link-variant-off'" :size="72" color="white" class="auth-icon" />
 
-      <h1 class="title">{{ t('auth.resetPasswordTitle') }}</h1>
+      <h1 class="title">{{ t(isInvitation ? 'auth.accountInvitationTitle' : 'auth.resetPasswordTitle') }}</h1>
 
       <template v-if="linkValid">
-        <p class="subtitle">{{ t('auth.resetPasswordSubtitle') }}</p>
+        <p class="subtitle">{{ t(isInvitation ? 'auth.accountInvitationSubtitle' : 'auth.resetPasswordSubtitle') }}</p>
 
-        <v-form ref="formRef" v-model="isValid" class="auth-form" @submit.prevent="onSubmit">
-          <v-text-field
+        <UiForm ref="formRef" v-model="isValid" class="auth-form" @submit="onSubmit">
+          <UiTextField
             v-model="newPassword"
             :label="t('auth.newPasswordLabel')"
             :type="showPassword ? 'text' : 'password'"
             prepend-inner-icon="mdi-lock"
             :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-            variant="outlined"
             bg-color="white"
             rounded="lg"
             autocomplete="new-password"
@@ -27,12 +24,11 @@
             @click:append-inner="showPassword = !showPassword"
           />
 
-          <v-text-field
+          <UiTextField
             v-model="confirmPassword"
             :label="t('auth.confirmNewPasswordLabel')"
             :type="showPassword ? 'text' : 'password'"
             prepend-inner-icon="mdi-lock-check"
-            variant="outlined"
             bg-color="white"
             rounded="lg"
             autocomplete="new-password"
@@ -40,30 +36,33 @@
             :disabled="loading"
           />
 
-          <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mb-4">
+          <UiAlert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mb-4">
             {{ errorMessage }}
-          </v-alert>
+          </UiAlert>
 
-          <v-btn
+          <UiBtn
             type="submit"
             color="white"
             variant="outlined"
             size="large"
             class="action-btn"
+            prepend-icon="mdi-content-save-outline"
             :loading="loading"
             :disabled="!isValid"
             block
           >
-            <v-icon start>mdi-content-save-outline</v-icon>
-            {{ t('auth.resetPasswordButton') }}
-          </v-btn>
-        </v-form>
+            {{ t(isInvitation ? 'auth.accountInvitationButton' : 'auth.resetPasswordButton') }}
+          </UiBtn>
+        </UiForm>
       </template>
 
       <p v-else class="subtitle">{{ t('auth.invalidResetLink') }}</p>
 
+      <!-- Hesap daveti linki süresi dolmuşsa "yeni bağlantı iste" de çalışır ama kullanıcıya asıl yolu söyle -->
+      <p v-if="isInvitation && (errorMessage || !linkValid)" class="subtitle mt-4">{{ t('auth.accountInvitationExpiredHint') }}</p>
+
       <div class="actions">
-        <v-btn
+        <UiBtn
           v-if="!linkValid || errorMessage"
           variant="text"
           color="white"
@@ -71,10 +70,10 @@
           @click="goToForgotPassword"
         >
           {{ t('auth.requestNewLink') }}
-        </v-btn>
-        <v-btn variant="text" color="white" class="link-btn" @click="goToLogin">
+        </UiBtn>
+        <UiBtn variant="text" color="white" class="link-btn" @click="goToLogin">
           {{ t('auth.backToLogin') }}
-        </v-btn>
+        </UiBtn>
       </div>
     </div>
   </div>
@@ -99,6 +98,8 @@ const { validationRules: rules } = useValidators()
 const token = ref((route.query.token as string) || '')
 const email = ref((route.query.email as string) || '')
 const linkValid = computed(() => !!token.value && !!email.value)
+// Admin'in gönderdiği hesap daveti linki aynı endpoint'i kullanır; sadece metinler değişir (hane davetiyle ilgisi yok)
+const isInvitation = ref(route.query.invite === '1')
 
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -123,7 +124,7 @@ const onSubmit = async () => {
   try {
     await auth.resetPassword(email.value, token.value, newPassword.value)
     authStore.clearAuth()
-    toast.success(t('auth.resetPasswordSuccess'))
+    toast.success(t(isInvitation.value ? 'auth.accountInvitationSuccess' : 'auth.resetPasswordSuccess'))
     await router.replace('/')
   } catch (error: any) {
     if (error?.response?.status === 429) {

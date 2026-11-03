@@ -2,16 +2,16 @@
   <div class="verify-container" :style="{ background: 'var(--theme-gradient-sidebar)' }">
     <div class="verify-card">
       <div v-if="state === 'loading'" class="state-block">
-        <v-progress-circular indeterminate color="white" size="56" width="4" />
+        <UiProgressCircular indeterminate color="white" :size="56" :width="4" />
         <h2 class="title">Email adresiniz doğrulanıyor...</h2>
         <p class="subtitle">Lütfen bekleyin.</p>
       </div>
 
       <div v-else-if="state === 'success'" class="state-block">
-        <v-icon size="72" color="success">mdi-check-circle-outline</v-icon>
+        <UiIcon icon="mdi-check-circle-outline" :size="72" color="success" />
         <h2 class="title">Email'iniz doğrulandı</h2>
         <p class="subtitle">Artık giriş yapabilirsiniz.</p>
-        <v-btn
+        <UiBtn
           color="white"
           variant="outlined"
           size="large"
@@ -19,16 +19,16 @@
           @click="goToLogin"
         >
           Giriş Sayfasına Git
-        </v-btn>
+        </UiBtn>
       </div>
 
       <div v-else class="state-block">
-        <v-icon size="72" color="error">mdi-alert-circle-outline</v-icon>
+        <UiIcon icon="mdi-alert-circle-outline" :size="72" color="error" />
         <h2 class="title">Bağlantı geçersiz</h2>
         <p class="subtitle">{{ errorMessage }}</p>
 
         <div class="actions-row">
-          <v-btn
+          <UiBtn
             color="white"
             variant="outlined"
             size="large"
@@ -38,8 +38,8 @@
             @click="onResend"
           >
             Tekrar Gönder
-          </v-btn>
-          <v-btn
+          </UiBtn>
+          <UiBtn
             color="white"
             variant="text"
             size="large"
@@ -47,7 +47,7 @@
             @click="goToLogin"
           >
             Giriş Sayfası
-          </v-btn>
+          </UiBtn>
         </div>
       </div>
     </div>

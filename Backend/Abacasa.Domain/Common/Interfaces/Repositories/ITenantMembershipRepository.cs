@@ -10,6 +10,9 @@ public interface ITenantMembershipRepository : IRepository<TenantMembership, int
     // Kullanıcının canlı üyelikleri haneleriyle, en eski önce (hanesi silinmiş üyelikler hariç)
     Task<List<TenantMembership>> GetByUserReadOnlyAsync(int userId);
 
+    // Kullanıcıların canlı üyeliklerinin hane adları (kullanıcı Id → adlar, en eski üyelik önce; silinmiş hane hariç)
+    Task<Dictionary<int, List<string>>> GetHouseholdNamesByUsersAsync(IEnumerable<int> userIds);
+
     // Kullanıcının o hanedeki canlı üyeliği (hane aktiflik kontrolü çağırana kalır)
     Task<TenantMembership?> GetActiveAsync(int userId, int tenantId);
 

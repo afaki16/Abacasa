@@ -33,13 +33,5 @@ namespace Abacasa.Infrastructure.Repositories
 
             UpdateRange(activeTokens);
         }
-
-        public async Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<PasswordResetToken>()
-                .IgnoreQueryFilters()
-                .Where(t => t.ExpiresAt < cutoff)
-                .ExecuteDeleteAsync(cancellationToken);
-        }
     }
 }

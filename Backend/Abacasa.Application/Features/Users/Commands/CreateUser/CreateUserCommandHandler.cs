@@ -1,4 +1,3 @@
-using Abacasa.Application.Common;
 using Abacasa.Application.Interfaces;
 using Abacasa.Application.Common.Authorization;
 using Abacasa.Application.Common.Localization;
@@ -32,9 +31,13 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
         private readonly ICurrentUserService _currentUserService;
         private readonly IPermissionService _permissionService;
         private readonly IJsonStringLocalizer _localizer;
+        private readonly IAccountInvitationService _accountInvitationService;
+        private readonly IPhoneNumberService _phoneNumberService;
 
-        public CreateUserCommandHandler(IUnitOfWork unitOfWork, IPasswordService passwordService, IMapper mapper, ICurrentUserService currentUserService, IPermissionService permissionService, IJsonStringLocalizer localizer)
+        public CreateUserCommandHandler(IUnitOfWork unitOfWork, IPasswordService passwordService, IMapper mapper, ICurrentUserService currentUserService, IPermissionService permissionService, IJsonStringLocalizer localizer, IAccountInvitationService accountInvitationService, IPhoneNumberService phoneNumberService)
         {
+            _phoneNumberService = phoneNumberService;
+            _accountInvitationService = accountInvitationService;
             _unitOfWork = unitOfWork;
             _passwordService = passwordService;
             _mapper = mapper;
@@ -59,8 +62,11 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                     ErrorCode.AlreadyExists,
                     _localizer["users.emailExists"]));
 
-            // Telefon da global: normalize edilmiş biçimle kontrol edilir ve saklanır
-            var normalizedPhone = PhoneNumberNormalizer.Normalize(request.PhoneNumber);
+            // Telefon da global: E.164 biçimiyle kontrol edilir ve saklanır; geçersiz numara 400
+            var phoneResult = _phoneNumberService.Normalize(request.PhoneNumber);
+            if (!phoneResult.IsSuccess)
+                return Result<UserListDto>.Failure(phoneResult.Errors);
+            var normalizedPhone = phoneResult.Value;
             if (normalizedPhone != null &&
                 await _unitOfWork.Users.PhoneExistsAsync(normalizedPhone))
                 return Result<UserListDto>.Failure(Error.Failure(
@@ -72,13 +78,26 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
             if (roleError != null)
                 return Result<UserListDto>.Failure(roleError);
 
-            // Validate password strength (single source of truth: PasswordService)
-            var strengthResult = _passwordService.ValidatePasswordStrength(request.Password);
-            if (!strengthResult.IsSuccess)
-                return Result<UserListDto>.Failure(strengthResult.Errors);
+            string password;
+            if (request.SendAccountInvitation)
+            {
+                // Nobody knows this password; the user sets their own through the account invitation link.
+                var randomResult = _passwordService.GenerateRandomPassword(32);
+                if (!randomResult.IsSuccess)
+                    return Result<UserListDto>.Failure(randomResult.Errors);
+                password = randomResult.Value;
+            }
+            else
+            {
+                // Validate password strength (single source of truth: PasswordService)
+                var strengthResult = _passwordService.ValidatePasswordStrength(request.Password);
+                if (!strengthResult.IsSuccess)
+                    return Result<UserListDto>.Failure(strengthResult.Errors);
+                password = request.Password!;
+            }
 
             // Hash password
-            var passwordResult = _passwordService.HashPassword(request.Password);
+            var passwordResult = _passwordService.HashPassword(password);
             if (!passwordResult.IsSuccess)
                 return Result<UserListDto>.Failure(Error.Failure(
                     ErrorCode.AlreadyExists,
@@ -94,6 +113,8 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                 PhoneNumber = normalizedPhone,
                 Status = request.Status,
                 EmailConfirmed = false,
+                // An invited user picks their own password, so there is nothing to force-change.
+                MustChangePassword = !request.SendAccountInvitation && request.MustChangePassword,
                 TenantId = tenantId
             };
 
@@ -114,6 +135,10 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                 }
                 await _unitOfWork.SaveChangesAsync();
             }
+
+            // A failed email does not roll back the user; the admin can resend the invitation from the list.
+            if (request.SendAccountInvitation)
+                await _accountInvitationService.SendAsync(user, cancellationToken);
 
             // Reload user with roles to get complete data for mapping
             var userWithRoles = await _unitOfWork.Users.GetUserWithRolesAsync(user.Id);

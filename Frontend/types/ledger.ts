@@ -1,8 +1,8 @@
 import type { RecurringPaymentKind } from './recurringPayment'
 
 export enum LedgerDirection {
-  Income = 1,
-  Expense = 2
+  Income = 'Income',
+  Expense = 'Expense'
 }
 
 export interface LedgerItem {

@@ -30,6 +30,17 @@ namespace Abacasa.Infrastructure.Repositories
                     t.ExpiresAt > DateTime.UtcNow);
         }
 
+        public async Task<UserVerificationToken?> GetLatestAsync(
+            int userId,
+            VerificationChannel channel,
+            VerificationPurpose purpose)
+        {
+            return await GetQueryable()
+                .Where(t => t.UserId == userId && t.Channel == channel && t.Purpose == purpose)
+                .OrderByDescending(t => t.CreatedDate)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task InvalidatePreviousTokensAsync(
             int userId,
             VerificationChannel channel,
@@ -48,14 +59,6 @@ namespace Abacasa.Infrastructure.Repositories
                 token.MarkAsUsed();
 
             UpdateRange(activeTokens);
-        }
-
-        public async Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<UserVerificationToken>()
-                .IgnoreQueryFilters()
-                .Where(t => t.ExpiresAt < cutoff)
-                .ExecuteDeleteAsync(cancellationToken);
         }
     }
 }

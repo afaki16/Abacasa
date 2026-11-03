@@ -1,7 +1,7 @@
 <template>
   <v-form ref="formRef" @submit.prevent="handleSubmit">
     <v-row dense>
-      <v-col cols="12" sm="6" :md="isUsd ? 3 : 4">
+      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
         <v-text-field
           v-model="formData.date"
           label="Tarih"
@@ -13,25 +13,25 @@
           :rules="[rules.required]"
         />
       </v-col>
-      <v-col cols="12" sm="6" :md="isUsd ? 3 : 4">
+      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
         <v-text-field
           v-model.number="formData.amount"
-          :label="isUsd ? 'Tutar ($)' : 'Tutar (₺)'"
+          :label="amountLabel"
           type="number"
           min="0"
-          step="0.01"
+          :step="isGold ? 1 : 0.01"
           variant="outlined"
           :disabled="loading"
           density="compact"
           hide-details="auto"
-          :rules="[rules.required, positiveRule]"
+          :rules="[rules.required, positiveRule, wholeRule]"
         />
       </v-col>
-      <!-- Kur yalnızca dövizde; güncel kurla dolu gelir, düzeltilebilir -->
-      <v-col v-if="isUsd" cols="12" sm="6" md="3">
+      <!-- Kur yalnızca yabancı birimde; güncel kurla dolu gelir, düzeltilebilir -->
+      <v-col v-if="isForeign" cols="12" sm="6" md="3">
         <v-text-field
           v-model.number="formData.exchangeRate"
-          label="Kur"
+          :label="rateLabel"
           type="number"
           min="0"
           step="0.0001"
@@ -42,7 +42,7 @@
           :rules="[rules.required, positiveRule]"
         />
       </v-col>
-      <v-col cols="12" sm="6" :md="isUsd ? 3 : 4">
+      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
         <v-text-field
           v-model="formData.note"
           label="Not"
@@ -101,7 +101,14 @@ const formData = reactive({
   note: '',
 })
 
-const isUsd = computed(() => props.currency === Currency.USD)
+// Yabancı birimde (döviz, çeyrek altın) ödeme kuru zorunlu; çeyrekte tutar adettir (tam sayı)
+const isForeign = computed(() => props.currency !== Currency.TRY)
+const isGold = computed(() => props.currency === Currency.QuarterGold)
+const amountLabel = computed(() =>
+  isGold.value ? 'Adet' : props.currency === Currency.USD ? 'Tutar ($)' : props.currency === Currency.EUR ? 'Tutar (€)' : 'Tutar (₺)'
+)
+const rateLabel = computed(() => (isGold.value ? 'Çeyrek fiyatı (₺)' : 'Kur'))
+const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || 'Çeyrek altın tam sayı olmalı.'
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
 const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || '0\'dan büyük olmalıdır'
@@ -109,7 +116,7 @@ const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || '0\'
 // Backend ile aynı: dövizde tutar × kur, 2 haneye yuvarlanır
 const amountInTry = computed(() => {
   const amount = Number(formData.amount) || 0
-  if (!isUsd.value) return amount
+  if (!isForeign.value) return amount
   return Math.round(amount * (Number(formData.exchangeRate) || 0) * 100) / 100
 })
 
@@ -132,7 +139,7 @@ const handleSubmit = async () => {
   emit('submit', {
     date: formData.date,
     amount: Number(formData.amount),
-    exchangeRate: isUsd.value ? Number(formData.exchangeRate) : undefined,
+    exchangeRate: isForeign.value ? Number(formData.exchangeRate) : undefined,
     note: formData.note?.trim() || undefined,
   })
 }

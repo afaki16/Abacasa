@@ -1,5 +1,6 @@
 using FluentValidation;
 using Abacasa.Application.Common.Localization;
+using Abacasa.Domain.Common.Enums;
 
 namespace Abacasa.Application.Features.Debts.Commands.UpdateDebt;
 
@@ -22,6 +23,11 @@ public class UpdateDebtCommandValidator : AbstractValidator<UpdateDebtCommand>
 
         RuleFor(x => x.Amount)
             .GreaterThan(0).WithMessage(localizer["validation.greaterThan", localizer["validation.fields.amount"], 0]);
+
+        // Çeyrek altın adettir
+        RuleFor(x => x.Amount)
+            .Must(a => a == decimal.Truncate(a)).WithMessage(localizer["debts.quarterGoldWhole"])
+            .When(x => x.Currency == Currency.QuarterGold);
 
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage(localizer["validation.required", localizer["validation.fields.date"]]);

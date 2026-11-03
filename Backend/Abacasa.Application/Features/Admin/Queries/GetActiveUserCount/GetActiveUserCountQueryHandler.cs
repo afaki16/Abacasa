@@ -29,6 +29,9 @@ namespace Abacasa.Application.Features.Admin.Queries.GetActiveUserCount
                 return Result<int>.Failure(Error.Failure(ErrorCode.Forbidden, "You can only view active users in your own tenant"));
 
             int? tenantId = request.TenantId;
+            // SuperAdmin: istekte hane yoksa üst barda seçilen hane (o hanede canlı üyeliği olanlar); seçim yoksa tümü.
+            // Diğer rollerde SelectedTenantId her zaman null.
+            int? memberOfTenantId = tenantId.HasValue ? null : _currentUserService.SelectedTenantId;
             if (!_currentUserService.CanAccessAllTenants)
             {
                 if (tenantId.HasValue && tenantId != _currentUserService.TenantId)
@@ -37,7 +40,7 @@ namespace Abacasa.Application.Features.Admin.Queries.GetActiveUserCount
             }
 
             var excludeSuperAdmins = !_currentUserService.CanAccessAllTenants;
-            var count = await _unitOfWork.RefreshTokens.GetActiveUserCountAsync(tenantId, excludeSuperAdmins);
+            var count = await _unitOfWork.RefreshTokens.GetActiveUserCountAsync(tenantId, excludeSuperAdmins, memberOfTenantId);
             return Result<int>.Success(count);
         }
     }

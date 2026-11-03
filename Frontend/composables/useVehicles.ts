@@ -26,9 +26,9 @@ export const useVehicles = () => {
   const getTypeLabel = (type: VehicleObligationType) => (typeLabelKeys[type] ? t(typeLabelKeys[type]) : String(type))
 
   const typeOptions = computed(() =>
-    (Object.keys(typeLabelKeys) as unknown as VehicleObligationType[]).map((key) => ({
-      value: Number(key) as VehicleObligationType,
-      title: getTypeLabel(Number(key) as VehicleObligationType),
+    (Object.keys(typeLabelKeys) as VehicleObligationType[]).map((key) => ({
+      value: key,
+      title: getTypeLabel(key),
     }))
   )
 

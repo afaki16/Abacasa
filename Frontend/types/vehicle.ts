@@ -1,8 +1,8 @@
 export enum VehicleObligationType {
-  TrafficInsurance = 1,
-  Kasko = 2,
-  Inspection = 3,
-  Mtv = 4
+  TrafficInsurance = 'TrafficInsurance',
+  Kasko = 'Kasko',
+  Inspection = 'Inspection',
+  Mtv = 'Mtv'
 }
 
 export interface Vehicle {

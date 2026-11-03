@@ -14,7 +14,7 @@
       <div class="left-overlay" />
       <div class="left-content">
         <div class="brand-badge">
-          <v-icon size="16" color="white">mdi-lightning-bolt</v-icon>
+          <Icon name="mdi:lightning-bolt" class="brand-badge-icon" />
           <span>{{ t("auth.brandBadge") }}</span>
         </div>
         <h2 class="left-title">
@@ -47,20 +47,20 @@
           </p>
         </div>
 
+        <!-- Session Expired Alert -->
+        <AlertBox
+          v-if="showSessionExpiredAlert"
+          variant="warning"
+          :message="t('auth.sessionExpired')"
+          @close="showSessionExpiredAlert = false"
+        />
+
         <!-- Hesap silindikten sonra -->
         <AlertBox
           v-if="route.query.accountDeleted && !accountDeletedDismissed"
           variant="success"
           message="Hesabınız silindi."
           @close="accountDeletedDismissed = true"
-        />
-
-        <!-- Session Expired Alert -->
-        <AlertBox
-          v-if="route.query.expired && !sessionExpiredDismissed"
-          variant="warning"
-          :message="t('auth.sessionExpired')"
-          @close="sessionExpiredDismissed = true"
         />
 
         <!-- Login API errors (from /api/auth/login) -->
@@ -78,70 +78,92 @@
           :message="resendAlertMessage"
           @close="onCloseEmailNotConfirmed"
         >
-          <v-btn
-            size="small"
-            variant="outlined"
-            :loading="resending"
-            :disabled="resendButtonDisabled"
-            class="mt-2"
+          <button
+            type="button"
+            class="resend-btn mt-2"
+            :disabled="resending || resendButtonDisabled"
             @click="onResendVerification"
           >
-            <v-icon start size="16">{{ resendButtonIcon }}</v-icon>
+            <Icon
+              :name="resending ? 'mdi:loading' : resendButtonIcon"
+              class="resend-btn-icon"
+              :class="{ 'animate-spin': resending }"
+            />
             {{ resendButtonText }}
-          </v-btn>
+          </button>
         </AlertBox>
 
-        <v-form
-          ref="loginForm"
-          v-model="isFormValid"
-          @submit.prevent="handleLogin"
-        >
+        <form novalidate @submit.prevent="handleLogin">
           <div class="input-group">
-            <label>{{ t("auth.email") }}</label>
-            <v-text-field
-              v-model="form.email"
-              type="email"
-              :placeholder="t('auth.emailPlaceholder')"
-              prepend-inner-icon="mdi-email-outline"
-              :rules="[validationRules.required, validationRules.email]"
-              variant="outlined"
-              density="comfortable"
-              hide-details="auto"
-              autofocus
-              class="custom-input"
-            />
+            <label for="login-email">{{ t("auth.email") }}</label>
+            <div>
+              <div
+                class="custom-input"
+                :class="{ 'custom-input--error': showEmailError }"
+              >
+                <Icon name="mdi:email-outline" class="custom-input-icon" />
+                <input
+                  id="login-email"
+                  v-model="form.email"
+                  type="email"
+                  autocomplete="email"
+                  :placeholder="t('auth.emailPlaceholder')"
+                  :aria-invalid="showEmailError"
+                  :aria-describedby="showEmailError ? 'login-email-error' : undefined"
+                  autofocus
+                  @input="touched.email = true"
+                />
+              </div>
+              <p v-if="showEmailError" id="login-email-error" class="input-error">
+                {{ emailError }}
+              </p>
+            </div>
           </div>
 
           <div class="input-group">
-            <label>{{ t("auth.password") }}</label>
-            <v-text-field
-              v-model="form.password"
-              :type="showPassword ? 'text' : 'password'"
-              :placeholder="t('auth.passwordPlaceholder')"
-              prepend-inner-icon="mdi-lock-outline"
-              :append-inner-icon="
-                showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
-              "
-              :rules="[validationRules.required]"
-              variant="outlined"
-              density="comfortable"
-              hide-details="auto"
-              class="custom-input"
-              @click:append-inner="showPassword = !showPassword"
-            />
+            <label for="login-password">{{ t("auth.password") }}</label>
+            <div>
+              <div
+                class="custom-input"
+                :class="{ 'custom-input--error': showPasswordError }"
+              >
+                <Icon name="mdi:lock-outline" class="custom-input-icon" />
+                <input
+                  id="login-password"
+                  v-model="form.password"
+                  :type="showPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  :placeholder="t('auth.passwordPlaceholder')"
+                  :aria-invalid="showPasswordError"
+                  :aria-describedby="showPasswordError ? 'login-password-error' : undefined"
+                  @input="touched.password = true"
+                />
+                <button
+                  type="button"
+                  class="custom-input-toggle"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  @click="showPassword = !showPassword"
+                >
+                  <Icon
+                    :name="showPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'"
+                    class="custom-input-icon"
+                  />
+                </button>
+              </div>
+              <p v-if="showPasswordError" id="login-password-error" class="input-error">
+                {{ passwordError }}
+              </p>
+            </div>
           </div>
 
           <div
             class="options-row"
             :class="{ 'options-row--no-forgot': !showForgotPassword }"
           >
-            <v-checkbox
-              v-model="form.rememberMe"
-              :label="t('auth.rememberMe')"
-              density="compact"
-              hide-details
-              class="remember-checkbox"
-            />
+            <label class="remember-checkbox">
+              <input v-model="form.rememberMe" type="checkbox" />
+              <span>{{ t("auth.rememberMe") }}</span>
+            </label>
             <a
               v-if="showForgotPassword"
               class="forgot-link"
@@ -151,17 +173,20 @@
             </a>
           </div>
 
-          <v-btn
+          <button
             type="submit"
-            size="large"
-            block
-            :loading="authStore.isLoading"
-            :disabled="!isFormValid"
             class="login-btn"
+            :disabled="!isFormValid || authStore.isLoading"
+            :aria-busy="authStore.isLoading"
           >
-            {{ t("auth.login") }}
-          </v-btn>
-        </v-form>
+            <Icon
+              v-if="authStore.isLoading"
+              name="mdi:loading"
+              class="login-btn-spinner animate-spin"
+            />
+            <span v-else>{{ t("auth.login") }}</span>
+          </button>
+        </form>
 
         <!-- Register Section (controlled by showRegister prop) -->
         <template v-if="showRegister">
@@ -173,16 +198,22 @@
             <p>
               {{ t("auth.noAccount") }}
             </p>
-            <v-btn
-              variant="outlined"
+            <button
+              type="button"
               class="register-btn"
               @click="$router.push('/auth/register')"
             >
-              <v-icon start size="18">mdi-account-plus-outline</v-icon>
+              <Icon name="mdi:account-plus-outline" class="register-btn-icon" />
               {{ t("auth.createAccount") }}
-            </v-btn>
+            </button>
           </div>
         </template>
+
+        <div class="legal-links">
+          <NuxtLink :to="LEGAL_ROUTES.privacy">Aydınlatma metni</NuxtLink>
+          <span>·</span>
+          <NuxtLink :to="LEGAL_ROUTES.terms">Kullanım koşulları</NuxtLink>
+        </div>
       </div>
     </div>
   </div>
@@ -192,6 +223,8 @@
 import type { LoginRequest } from "~/types";
 import { parseApiErrorMessages } from "~/utils/apiError";
 import { ErrorCode } from "~/utils/errorCodes";
+import { consumeSessionExpired } from "~/utils/authRoutes";
+import { LEGAL_ROUTES } from "~/utils/legal";
 
 const props = withDefaults(
   defineProps<{
@@ -213,12 +246,10 @@ const { getBackgroundImages, getLoginConfig, getLogo } = useAppData();
 const logoSrc = computed(() => getLogo.value?.src || "/favicon.ico");
 const logoAlt = computed(() => getLogo.value?.alt || "Logo");
 
-const loginForm = ref();
-const isFormValid = ref(false);
 const showPassword = ref(false);
 const loginApiErrors = ref<string[]>([]);
 const emailNotConfirmed = ref(false);
-const sessionExpiredDismissed = ref(false);
+const showSessionExpiredAlert = ref(false);
 const accountDeletedDismissed = ref(false);
 const resending = ref(false);
 const currentImageIndex = ref(0);
@@ -269,8 +300,8 @@ const resendButtonText = computed(() => {
 
 const resendButtonIcon = computed(() =>
   resendState.value === "sent" && resendCooldown.value > 0
-    ? "mdi-check-circle-outline"
-    : "mdi-email-sync-outline",
+    ? "mdi:check-circle-outline"
+    : "mdi:email-sync-outline",
 );
 
 const onCloseEmailNotConfirmed = () => {
@@ -292,6 +323,35 @@ const form = reactive<LoginRequest>({
   deviceName: "",
 });
 
+// ── Validation ──
+// Vuetify'ın varsayılan davranışı (validate-on="input"): hata, kullanıcı alana yazdıktan
+// veya submit denendikten sonra görünür; yalnızca odaklanıp çıkmak hata göstermez.
+type Rule = (value: any) => true | string;
+
+const firstError = (value: unknown, rules: Rule[]) => {
+  for (const rule of rules) {
+    const result = rule(value);
+    if (result !== true) return result;
+  }
+  return "";
+};
+
+const touched = reactive({ email: false, password: false });
+
+const emailError = computed(() =>
+  firstError(form.email, [validationRules.required, validationRules.email]),
+);
+const passwordError = computed(() =>
+  firstError(form.password, [validationRules.required]),
+);
+
+const showEmailError = computed(() => touched.email && !!emailError.value);
+const showPasswordError = computed(
+  () => touched.password && !!passwordError.value,
+);
+
+const isFormValid = computed(() => !emailError.value && !passwordError.value);
+
 // ── Carousel Logic ──
 let imageInterval: ReturnType<typeof setInterval>;
 let isPaused = false;
@@ -309,6 +369,8 @@ const nextSlide = () => {
 
 // ── Login Handler ──
 const handleLogin = async () => {
+  touched.email = true;
+  touched.password = true;
   if (!isFormValid.value) return;
   loginApiErrors.value = [];
   emailNotConfirmed.value = false;
@@ -363,6 +425,9 @@ onMounted(() => {
   // Pre-fill email from query
   const registeredEmail = route.query.email as string;
   if (registeredEmail) form.email = registeredEmail;
+
+  // Tek seferlik okunur ve silinir; F5'te uyarı tekrar çıkmaz
+  showSessionExpiredAlert.value = consumeSessionExpired();
 
   // NOT: deviceId ve deviceName artık useAuth.login() içinde otomatik üretiliyor
   // (cookie-based, localStorage'a yazmıyor). Burada manuel set etmeye gerek yok.
@@ -593,26 +658,71 @@ onUnmounted(() => {
   letter-spacing: 0.3px;
 }
 
-.custom-input :deep(.v-field) {
-  background: var(--lp-input-bg) !important;
-  border-color: var(--lp-input-border) !important;
-  border-radius: 12px !important;
-  color: var(--lp-text) !important;
+.custom-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  background: var(--lp-input-bg);
+  border: 1px solid var(--lp-input-border);
+  border-radius: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.custom-input :deep(.v-field--focused) {
-  border-color: var(--lp-accent) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+.custom-input:focus-within {
+  border-color: var(--lp-accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.custom-input :deep(.v-field__input),
-.custom-input :deep(.v-label),
-.custom-input :deep(.v-icon) {
-  color: rgba(255, 255, 255, 0.6) !important;
+.custom-input--error,
+.custom-input--error:focus-within {
+  border-color: #f87171;
 }
 
-.custom-input :deep(.v-field__input) {
-  color: var(--lp-text) !important;
+.custom-input input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--lp-text);
+  font-size: 1rem;
+}
+
+.custom-input input::placeholder {
+  color: var(--lp-text-muted);
+}
+
+/* Tarayıcı otomatik doldurmasında beyaz arka planı engelle */
+.custom-input input:-webkit-autofill {
+  -webkit-text-fill-color: var(--lp-text);
+  -webkit-box-shadow: 0 0 0 1000px #15151c inset;
+  caret-color: var(--lp-text);
+}
+
+.custom-input-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.custom-input-toggle {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.input-error {
+  margin-top: 6px;
+  padding-left: 4px;
+  font-size: 0.75rem;
+  color: #f87171;
 }
 
 /* Options Row */
@@ -627,13 +737,21 @@ onUnmounted(() => {
   justify-content: flex-start;
 }
 
-.remember-checkbox :deep(.v-label) {
+.remember-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 0.85rem;
-  color: var(--lp-text-secondary) !important;
+  color: var(--lp-text-secondary);
+  cursor: pointer;
+  user-select: none;
 }
 
-.remember-checkbox :deep(.v-selection-control__input) {
-  color: var(--lp-accent) !important;
+.remember-checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--lp-accent);
+  cursor: pointer;
 }
 
 .forgot-link {
@@ -651,19 +769,76 @@ onUnmounted(() => {
 
 /* Login Button */
 .login-btn {
-  border-radius: 12px !important;
-  height: 50px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  background: var(--lp-gradient) !important;
-  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--lp-gradient);
+  color: white;
   letter-spacing: 0.3px;
-  transition: all 0.3s ease !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .login-btn:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.35) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.35);
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-btn[aria-busy="true"] {
+  opacity: 0.85;
+  cursor: progress;
+}
+
+.login-btn-spinner {
+  width: 24px;
+  height: 24px;
+}
+
+.brand-badge-icon {
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+/* Resend verification button (inside AlertBox) */
+.resend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.resend-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resend-btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Divider */
@@ -700,18 +875,43 @@ onUnmounted(() => {
 }
 
 .register-btn {
-  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 12px !important;
-  color: var(--lp-text) !important;
-  font-weight: 500 !important;
-  text-transform: none !important;
-  transition: all 0.3s ease !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: var(--lp-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .register-btn:hover {
-  border-color: var(--lp-accent) !important;
-  background: rgba(99, 102, 241, 0.06) !important;
-  transform: translateY(-1px) !important;
+  border-color: var(--lp-accent);
+  background: rgba(99, 102, 241, 0.06);
+  transform: translateY(-1px);
+}
+
+.register-btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 0.82rem;
+  color: var(--lp-text-secondary);
+}
+
+.legal-links a {
+  color: inherit;
 }
 
 /* ── Responsive ── */

@@ -13,9 +13,13 @@ public static class DebtPaymentRules
     public static string? Check(Debt debt, DateOnly date, decimal amount, decimal? exchangeRate,
         int? excludePaymentId, IJsonStringLocalizer localizer)
     {
-        // Kur borcun para birimine göre: dövizde zorunlu, TL'de boş
-        if (debt.Currency == Currency.USD && !exchangeRate.HasValue)
+        // Kur borcun para birimine göre: yabancı birimde (döviz, çeyrek altın) zorunlu, TL'de boş
+        if (debt.Currency != Currency.TRY && !exchangeRate.HasValue)
             return localizer["debts.rateRequired"];
+
+        // Çeyrek altın adettir
+        if (debt.Currency == Currency.QuarterGold && amount != decimal.Truncate(amount))
+            return localizer["debts.quarterGoldWhole"];
 
         if (debt.Currency == Currency.TRY && exchangeRate.HasValue)
             return localizer["debts.rateNotAllowed"];

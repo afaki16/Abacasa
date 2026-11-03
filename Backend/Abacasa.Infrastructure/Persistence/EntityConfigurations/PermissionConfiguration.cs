@@ -37,9 +37,9 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            // Create composite unique index for Resource + Type
-            builder.HasIndex(x => new { x.Resource, x.Type })
-                .IsUnique();
+            // Resource + Type üzerinde unique index yok: CRUD dışı eylemin ("Users.Export") PermissionType
+            // karşılığı olmadığından Read yazılır ve "Users.Read" ile çakışıp açılıştaki seed'i çökertirdi.
+            // Benzersiz kimlik Name'dir (IX_Permissions_Name).
 
             // Relationships
             builder.HasMany(x => x.RolePermissions)

@@ -1,19 +1,20 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="440" persistent @update:model-value="$emit('update:modelValue', $event)">
-    <v-card>
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-home-plus</v-icon>
-        Yeni hane oluştur
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" :disabled="isBusy" @click="close" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="440" persistent @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard>
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-home-plus" class="mr-2" />
+          Yeni hane oluştur
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" :disabled="isBusy" @click="close" />
+        </div>
+      </div>
 
-      <v-card-text>
-        <v-form ref="formRef" @submit.prevent="save">
-          <v-text-field
+      <div class="ui-card-text">
+        <UiForm ref="formRef" @submit="save">
+          <UiTextField
             v-model="name"
             label="Hane adı"
-            variant="outlined"
             density="compact"
             hide-details="auto"
             counter="100"
@@ -23,18 +24,18 @@
           />
 
           <!-- Sunucu hataları (ör. 10 hane sınırı) pencerede kalır -->
-          <v-alert v-if="errors.length" type="error" variant="tonal" density="compact" class="mt-3">
+          <UiAlert v-if="errors.length" type="error" variant="tonal" density="compact" class="mt-3">
             <div v-for="(e, i) in errors" :key="i">{{ e }}</div>
-          </v-alert>
+          </UiAlert>
 
-          <div class="d-flex justify-end ga-2 mt-4">
-            <v-btn variant="text" :disabled="isBusy" @click="close">İptal</v-btn>
-            <v-btn color="primary" type="submit" :loading="isBusy" :disabled="isBusy">Oluştur</v-btn>
+          <div class="flex justify-end gap-2 mt-4">
+            <UiBtn variant="text" :disabled="isBusy" @click="close">İptal</UiBtn>
+            <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy">Oluştur</UiBtn>
           </div>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+        </UiForm>
+      </div>
+    </UiCard>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

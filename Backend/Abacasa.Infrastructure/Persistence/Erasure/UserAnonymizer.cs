@@ -7,19 +7,22 @@ using System.Security.Cryptography;
 namespace Abacasa.Infrastructure.Persistence.Erasure;
 
 // Hesap silme ve imha işinin ortak anonimleştirmesi. Kullanıcı satırı kalır (kayıtların CreatedBy'ı ve davet eden bağı için),
-// kişisel bilgiler silinir. Profil resmi yalnızca URL olarak tutulur (diskte dosya yok). Transaction çağırana aittir.
+// kişisel bilgiler silinir; profil fotoğrafı dosyası da silinir (IFileStorage). Transaction çağırana aittir.
 public class UserAnonymizer : IUserAnonymizer
 {
     public const string DeletedEmailDomain = "@deleted.invalid";
 
     private readonly ApplicationDbContext _context;
     private readonly IPasswordService _passwordService;
+    private readonly IFileStorage _fileStorage;
     private readonly ILogger<UserAnonymizer> _logger;
 
-    public UserAnonymizer(ApplicationDbContext context, IPasswordService passwordService, ILogger<UserAnonymizer> logger)
+    public UserAnonymizer(ApplicationDbContext context, IPasswordService passwordService, IFileStorage fileStorage,
+        ILogger<UserAnonymizer> logger)
     {
         _context = context;
         _passwordService = passwordService;
+        _fileStorage = fileStorage;
         _logger = logger;
     }
 
@@ -53,7 +56,8 @@ public class UserAnonymizer : IUserAnonymizer
         user.Email = $"deleted-{user.Id}{DeletedEmailDomain}";
         user.PhoneNumber = null;
         user.PhoneConfirmed = false;
-        user.ProfileImageUrl = null;
+        var photoKey = user.ProfileImageKey;
+        user.ProfileImageKey = null;
         user.PendingHouseholdName = null;
         // Bilinmeyen rastgele bir parolanın hash'i: hesaba artık giriş yapılamaz
         user.PasswordHash = _passwordService.HashPassword(Convert.ToHexString(RandomNumberGenerator.GetBytes(32))).Value;
@@ -65,6 +69,21 @@ public class UserAnonymizer : IUserAnonymizer
         user.DeletedDate ??= now;
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Profil fotoğrafı kişisel veri: dosya da silinir. Kayıttan sonra; silme hatası yalnızca loglanır (dosya kalır,
+        // anahtar null olduğu için hiçbir yerden gösterilmez). Transaction sonradan geri alınırsa anahtar geri döner ama
+        // dosya yoktur; arayüz baş harfleri gösterir, sonraki anonimleştirme anahtarı temizler.
+        if (!string.IsNullOrEmpty(photoKey))
+        {
+            try
+            {
+                await _fileStorage.DeleteAsync(photoKey, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Anonimlestirmede profil fotografi silinemedi. UserId: {UserId}, Key: {Key}", userId, photoKey);
+            }
+        }
 
         _logger.LogWarning("Kullanici anonimlestirildi. UserId: {UserId}", userId);
     }

@@ -20,6 +20,9 @@ public interface IHouseholdInvitationRepository : IRepository<HouseholdInvitatio
     // Aktif hanede bu e-postaya bekleyen (kabul/iptal edilmemiş, süresi dolmamış) davet var mı
     Task<bool> HasPendingForEmailAsync(string email, DateTime utcNow);
 
+    // Aktif hanede bu e-postaya süresi dolmuş ama kabul/iptal edilmemiş davetler (tracking'li)
+    Task<List<HouseholdInvitation>> GetExpiredOpenForEmailAsync(string email, DateTime utcNow);
+
     // Kişi aktif hanede bekleyen bir davette kullanılıyor mu
     Task<bool> IsPersonInPendingInvitationAsync(int personId, DateTime utcNow, int? excludeInvitationId = null);
 }

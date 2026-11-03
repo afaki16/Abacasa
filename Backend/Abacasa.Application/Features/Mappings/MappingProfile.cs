@@ -45,6 +45,7 @@ namespace Abacasa.Application.Features.Mappings;
         {
             // User mappings
             CreateMap<User, UserDto>()
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom<FileUrlResolver, string?>(src => src.ProfileImageKey))
                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role)))
                 .ForMember(dest => dest.Permissions, opt => opt.MapFrom(src =>
                     src.UserRoles.SelectMany(ur => ur.Role.RolePermissions.Select(rp => rp.Permission)).Distinct()))
@@ -54,6 +55,7 @@ namespace Abacasa.Application.Features.Mappings;
 
             // User list mapping (without permissions for performance)
             CreateMap<User, UserListDto>()
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom<FileUrlResolver, string?>(src => src.ProfileImageKey))
                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role)));
 
             CreateMap<CreateUserCommand, User>()
@@ -120,7 +122,7 @@ namespace Abacasa.Application.Features.Mappings;
                 .ForMember(dest => dest.LastLoginDate, opt => opt.MapFrom(src => src.User.LastLoginDate))
                 .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => src.User.EmailConfirmed))
                 .ForMember(dest => dest.PhoneConfirmed, opt => opt.MapFrom(src => src.User.PhoneConfirmed))
-                .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom(src => src.User.ProfileImageUrl))
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.MapFrom<FileUrlResolver, string?>(src => src.User.ProfileImageKey))
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.User.CreatedDate))
                 .ForMember(dest => dest.Roles, opt => opt.Ignore())
                 .ForMember(dest => dest.Permissions, opt => opt.Ignore());

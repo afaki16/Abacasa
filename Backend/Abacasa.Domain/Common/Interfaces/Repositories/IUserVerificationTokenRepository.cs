@@ -11,11 +11,15 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
             VerificationChannel channel,
             VerificationPurpose purpose);
 
-        Task InvalidatePreviousTokensAsync(
+        /// <summary>Most recently created token for the user/channel/purpose, used or not (null if none).</summary>
+        Task<UserVerificationToken?> GetLatestAsync(
             int userId,
             VerificationChannel channel,
             VerificationPurpose purpose);
 
-        Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default);
+        Task InvalidatePreviousTokensAsync(
+            int userId,
+            VerificationChannel channel,
+            VerificationPurpose purpose);
     }
 }

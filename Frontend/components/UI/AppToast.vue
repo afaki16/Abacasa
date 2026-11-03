@@ -9,11 +9,11 @@
         <div class="app-toast-accent" />
 
         <div class="app-toast-icon">
-          <v-icon :size="20">{{ iconMap[item.type] }}</v-icon>
+          <Icon :name="iconMap[item.type]" class="w-5 h-5" />
         </div>
 
         <div class="app-toast-body">
-          <span class="app-toast-title">{{ item.title }}</span>
+          <span class="app-toast-title">{{ item.title || t(`toast.${item.type}`) }}</span>
           <ul v-if="item.messages.length > 1" class="app-toast-messages">
             <li v-for="(msg, i) in item.messages" :key="i">{{ msg }}</li>
           </ul>
@@ -21,7 +21,7 @@
         </div>
 
         <button class="app-toast-close" @click="toastStore.remove(item.id)">
-          <v-icon size="16">mdi-close</v-icon>
+          <Icon name="mdi:close" class="w-4 h-4" />
         </button>
 
         <div
@@ -38,12 +38,13 @@
 import { useToastStore } from '~/stores/toast'
 
 const toastStore = useToastStore()
+const { t } = useI18n()
 
 const iconMap: Record<string, string> = {
-  success: 'mdi-check-circle-outline',
-  error: 'mdi-alert-circle-outline',
-  warning: 'mdi-alert-outline',
-  info: 'mdi-information-outline',
+  success: 'mdi:check-circle-outline',
+  error: 'mdi:alert-circle-outline',
+  warning: 'mdi:alert-outline',
+  info: 'mdi:information-outline',
 }
 </script>
 
@@ -68,12 +69,12 @@ const iconMap: Record<string, string> = {
   gap: 14px;
   padding: 16px 18px;
   border-radius: 14px;
-  background: rgba(18, 18, 26, 0.92);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid #e8edf3;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    0 12px 36px rgba(15, 23, 42, 0.14),
+    0 2px 8px rgba(15, 23, 42, 0.06);
   overflow: hidden;
   pointer-events: all;
   font-family: 'Inter', sans-serif;
@@ -91,7 +92,7 @@ const iconMap: Record<string, string> = {
 .app-toast-success .app-toast-accent { background: linear-gradient(180deg, #34d399, #10b981); }
 .app-toast-error   .app-toast-accent { background: linear-gradient(180deg, #f87171, #ef4444); }
 .app-toast-warning .app-toast-accent { background: linear-gradient(180deg, #fbbf24, #f59e0b); }
-.app-toast-info    .app-toast-accent { background: linear-gradient(180deg, #818cf8, #6366f1); }
+.app-toast-info    .app-toast-accent { background: var(--theme-gradient, linear-gradient(180deg, #818cf8, #6366f1)); }
 
 .app-toast-icon {
   flex-shrink: 0;
@@ -103,10 +104,13 @@ const iconMap: Record<string, string> = {
   justify-content: center;
 }
 
-.app-toast-success .app-toast-icon { background: rgba(52, 211, 153, 0.12); color: #34d399; }
-.app-toast-error   .app-toast-icon { background: rgba(248, 113, 113, 0.12); color: #f87171; }
-.app-toast-warning .app-toast-icon { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
-.app-toast-info    .app-toast-icon { background: rgba(129, 140, 248, 0.12); color: #818cf8; }
+.app-toast-success .app-toast-icon { background: #ecfdf5; color: #059669; }
+.app-toast-error   .app-toast-icon { background: #fef2f2; color: #dc2626; }
+.app-toast-warning .app-toast-icon { background: #fffbeb; color: #d97706; }
+.app-toast-info    .app-toast-icon {
+  background: color-mix(in srgb, rgb(var(--color-primary)) 10%, white);
+  color: rgb(var(--color-primary));
+}
 
 .app-toast-body {
   flex: 1;
@@ -116,15 +120,15 @@ const iconMap: Record<string, string> = {
 .app-toast-title {
   display: block;
   font-size: 0.85rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
+  color: #0f172a;
   margin-bottom: 4px;
   letter-spacing: 0.2px;
 }
 
 .app-toast-message {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: #64748b;
   line-height: 1.5;
   margin: 0;
 }
@@ -138,7 +142,7 @@ const iconMap: Record<string, string> = {
 .app-toast-messages li {
   position: relative;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: #64748b;
   line-height: 1.55;
   padding-left: 14px;
 }
@@ -153,10 +157,10 @@ const iconMap: Record<string, string> = {
   border-radius: 50%;
 }
 
-.app-toast-success .app-toast-messages li::before { background: rgba(52, 211, 153, 0.5); }
-.app-toast-error   .app-toast-messages li::before { background: rgba(248, 113, 113, 0.5); }
-.app-toast-warning .app-toast-messages li::before { background: rgba(251, 191, 36, 0.5); }
-.app-toast-info    .app-toast-messages li::before { background: rgba(129, 140, 248, 0.5); }
+.app-toast-success .app-toast-messages li::before { background: #10b981; }
+.app-toast-error   .app-toast-messages li::before { background: #ef4444; }
+.app-toast-warning .app-toast-messages li::before { background: #f59e0b; }
+.app-toast-info    .app-toast-messages li::before { background: rgb(var(--color-primary)); }
 
 .app-toast-close {
   flex-shrink: 0;
@@ -168,14 +172,14 @@ const iconMap: Record<string, string> = {
   justify-content: center;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.3);
+  color: #94a3b8;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .app-toast-close:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .app-toast-progress {
@@ -187,10 +191,10 @@ const iconMap: Record<string, string> = {
   animation: appToastShrink linear forwards;
 }
 
-.app-toast-success .app-toast-progress { background: rgba(52, 211, 153, 0.5); }
-.app-toast-error   .app-toast-progress { background: rgba(248, 113, 113, 0.5); }
-.app-toast-warning .app-toast-progress { background: rgba(251, 191, 36, 0.5); }
-.app-toast-info    .app-toast-progress { background: rgba(129, 140, 248, 0.5); }
+.app-toast-success .app-toast-progress { background: #10b981; }
+.app-toast-error   .app-toast-progress { background: #ef4444; }
+.app-toast-warning .app-toast-progress { background: #f59e0b; }
+.app-toast-info    .app-toast-progress { background: rgb(var(--color-primary)); }
 
 @keyframes appToastShrink {
   from { width: 100%; }

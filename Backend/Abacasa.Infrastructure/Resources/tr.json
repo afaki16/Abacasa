@@ -19,8 +19,15 @@
     "sessionsLoadFailed": "Oturumlar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
     "userNotAuthenticated": "Kullanıcı kimliği doğrulanmamış",
     "currentPasswordIncorrect": "Mevcut şifre hatalı",
+    "passwordChangeRequired": "Devam etmeden önce şifrenizi değiştirmeniz gerekiyor.",
     "invalidOrExpiredResetLink": "Geçersiz veya süresi dolmuş sıfırlama bağlantısı",
-    "invalidOrExpiredVerificationLink": "Geçersiz veya süresi dolmuş doğrulama bağlantısı"
+    "invalidOrExpiredVerificationLink": "Geçersiz veya süresi dolmuş doğrulama bağlantısı",
+    "emailChangeSameAddress": "Yeni e-posta adresi mevcut adresinizle aynı.",
+    "emailChangeSendFailed": "Onay e-postası gönderilemedi. Lütfen daha sonra tekrar deneyin.",
+    "otpInvalidOrExpired": "Doğrulama kodu hatalı veya süresi dolmuş.",
+    "otpTooManyAttempts": "Çok fazla hatalı deneme yapıldı. Lütfen yeni bir kod isteyin.",
+    "otpResendCooldown": "Yeni kod istemek için {0} saniye bekleyin.",
+    "otpSendFailed": "Doğrulama kodu gönderilemedi. Lütfen daha sonra tekrar deneyin."
   },
   "users": {
     "notFound": "Kullanıcı bulunamadı",
@@ -34,7 +41,15 @@
     "noAccessToDelete": "Bu kullanıcıyı silme yetkiniz yok",
     "cannotDeleteSelf": "Kendi hesabınızı silemezsiniz",
     "cannotDeleteLastSuperAdmin": "Sistemdeki son SuperAdmin'i silemezsiniz",
-    "cannotChangeOwnStatus": "Kendi hesabınızın durumunu değiştiremezsiniz."
+    "cannotChangeOwnStatus": "Kendi hesabınızın durumunu değiştiremezsiniz.",
+    "cannotChangeOwnMustChangePassword": "Kendi hesabınız için şifre değişikliği zorunluluğu koyamazsınız.",
+    "accountInvitationNotPending": "Bu kullanıcı daha önce giriş yapmış. Bunun yerine \"Şifremi unuttum\" kullanabilir."
+  },
+  "files": {
+    "missing": "Dosya seçilmedi.",
+    "tooLarge": "Dosya en fazla {0} MB olabilir.",
+    "invalidImage": "Yalnızca JPEG, PNG veya WEBP görseller yüklenebilir.",
+    "uploadFailed": "Dosya yüklenemedi, lütfen tekrar deneyin."
   },
   "roles": {
     "notFound": "Rol bulunamadı",
@@ -105,6 +120,7 @@
     "rangeTooLong": "Tarih aralığı en fazla {0} gün olabilir"
   },
   "debts": {
+    "quarterGoldWhole": "Çeyrek altın tam sayı olmalı.",
     "notFound": "Borç bulunamadı",
     "creditorNotFound": "Alacaklı kişi bulunamadı",
     "debtorNotFound": "Borçlu kişi bulunamadı",
@@ -119,8 +135,9 @@
     "paymentExceedsDebt": "Ödemeler toplamı borç tutarını aşamaz (kalan {0})"
   },
   "exchangeRates": {
-    "notFound": "Kur kaydı bulunamadı",
-    "onlyUsd": "Şimdilik yalnızca USD kuru girilebilir"
+    "foreignOnly": "Kur yalnızca Dolar, Euro ve Çeyrek altın için girilebilir",
+    "marketFetchFailed": "TCMB kurları alınamadı",
+    "notFound": "Kur kaydı bulunamadı"
   },
   "dashboard": {
     "invalidRange": "Başlangıç tarihi bitiş tarihinden sonra olamaz",
@@ -154,6 +171,7 @@
     "scholarship": "Burs"
   },
   "households": {
+    "moduleDisabled": "Bu özellik hanede kapalı. Hane ayarlarından açabilirsiniz.",
     "adminLimit": "En fazla {0} hanenin yöneticisi olabilirsiniz",
     "notFound": "Hane bulunamadı",
     "noActiveHousehold": "Aktif bir haneniz yok",
@@ -172,6 +190,11 @@
     "cannotRemoveSelf": "Kendinizi bu işlemle çıkaramazsınız; haneden ayrılın",
     "confirmNameMismatch": "Hane adı eşleşmiyor",
     "cannotDelete": "Bu hane silinemez."
+  },
+  "legal": {
+    "acceptTermsRequired": "Kullanım koşullarını kabul etmelisiniz",
+    "acknowledgePrivacyRequired": "Aydınlatma metnini okuduğunuzu onaylamalısınız",
+    "invalidDocumentType": "Geçersiz belge türü"
   },
   "account": {
     "lastSuperAdmin": "Sistemdeki son süper yöneticisiniz; hesabınız silinemez.",
@@ -205,6 +228,7 @@
     "verifyFailed": "Şifre doğrulanırken bir hata oluştu"
   },
   "common": {
+    "concurrentConflict": "Bu kayıt aynı anda başka bir işlemle oluşturuldu. Sayfayı yenileyip tekrar deneyin.",
     "unexpectedError": "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin veya sorun devam ederse destek ekibiyle iletişime geçin."
   },
   "validation": {
@@ -291,6 +315,8 @@
     "maxLength": "{0} en fazla {1} karakter olabilir",
     "minLength": "{0} en az {1} karakter olmalıdır",
     "emailFormat": "Geçerli bir e-posta adresi girin",
+    "phoneInvalid": "Geçerli bir telefon numarası girin",
+    "tcKimlikInvalid": "Geçerli bir T.C. Kimlik No girin",
     "domainFormat": "Geçersiz domain formatı",
     "invalidEnum": "{0} için geçersiz değer",
     "greaterThan": "{0} {1}'den büyük olmalıdır",

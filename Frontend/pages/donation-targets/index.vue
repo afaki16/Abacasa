@@ -139,12 +139,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import type {
-  DonationKind,
   DonationTarget,
   DonationTargetReport,
   CreateDonationTargetRequest,
   UpdateDonationTargetRequest,
 } from "~/types";
+import { DonationKind } from "~/types";
 import DonationTargetForm from "~/components/DonationTargets/DonationTargetForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
@@ -157,6 +157,8 @@ definePageMeta({
   requiresAuth: true,
   middleware: ["permission"],
   permissions: ["DonationTargets.Read"],
+  // Bağış hedefleri ve emanetler modülü kapalıysa /dashboard'a
+  module: "donationExtras",
 });
 
 useHead({
@@ -200,11 +202,16 @@ const load = async () => {
 
 watch(year, load);
 
+// Enum isim olarak gelir; türler backend sırasıyla (Bağış, Zekat, Burs) dizilir
+const kindOrder = Object.values(DonationKind);
+
 // Hedefi ya da gönüllü bağışı olan türler
 const sections = computed(() => {
   const r = report.value;
   if (!r) return [];
-  const kinds = [...new Set([...r.rows.map((x) => x.kind), ...r.voluntary.map((x) => x.kind)])].sort((a, b) => a - b);
+  const kinds = [...new Set([...r.rows.map((x) => x.kind), ...r.voluntary.map((x) => x.kind)])].sort(
+    (a, b) => kindOrder.indexOf(a) - kindOrder.indexOf(b)
+  );
   return kinds.map((kind) => ({
     kind: kind as DonationKind,
     rows: r.rows.filter((x) => x.kind === kind),

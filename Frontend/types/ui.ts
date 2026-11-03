@@ -5,6 +5,8 @@ export interface NavigationItem {
   children?: NavigationItem[]
   permission?: string
   roles?: string[]
+  /** Aktif hanede açık olması gereken modül */
+  module?: 'donationExtras'
 }
 
 export interface BreadcrumbItem {

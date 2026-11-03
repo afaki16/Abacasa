@@ -1,19 +1,17 @@
 <template>
-  <v-dialog
+  <UiDialog
     :model-value="modelValue"
     :max-width="maxWidth"
     :persistent="persistent"
+    content-class="modern-confirm-dialog"
     @update:model-value="$emit('update:modelValue', $event)"
-    class="modern-confirm-dialog"
   >
-    <v-card class="confirm-card" elevation="0">
+    <div class="confirm-card">
       <!-- Header -->
       <div class="confirm-header" :class="`confirm-header--${type}`">
         <div class="header-content">
           <div class="icon-container" :class="`icon-container--${type}`">
-            <v-icon class="confirm-icon" size="32">
-              {{ icon }}
-            </v-icon>
+            <UiIcon :icon="icon" class="confirm-icon" :size="32" />
           </div>
           <div class="header-text">
             <h2 class="confirm-title">{{ title }}</h2>
@@ -24,7 +22,7 @@
 
       <!-- Actions -->
       <div class="confirm-actions" :class="`confirm-actions--${type}`">
-        <v-btn
+        <UiBtn
           v-if="type === 'error' || type === 'info'"
           variant="outlined"
           size="large"
@@ -33,9 +31,8 @@
           class="cancel-btn"
         >
           {{ cancelText }}
-        </v-btn>
-        
-        <v-btn
+        </UiBtn>
+        <UiBtn
           :color="confirmColor"
           size="large"
           :loading="loading"
@@ -44,10 +41,10 @@
           :class="`confirm-btn--${type}`"
         >
           {{ type === 'warning' || type === 'success' ? 'Tamam' : confirmText }}
-        </v-btn>
+        </UiBtn>
       </div>
-    </v-card>
-  </v-dialog>
+    </div>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">
@@ -102,14 +99,10 @@ const confirmColor = computed(() => {
 </script>
 
 <style scoped>
-.modern-confirm-dialog :deep(.v-overlay__content) {
-  margin: 24px;
-}
-
 .confirm-card {
   border-radius: 20px !important;
   overflow: hidden;
-  background: rgb(var(--v-theme-surface)) !important;
+  background: rgb(var(--color-surface)) !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.15) !important;
 }
 
@@ -239,14 +232,14 @@ const confirmColor = computed(() => {
 .confirm-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 8px 0;
   line-height: 1.3;
 }
 
 .confirm-message {
   font-size: 1rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin: 0;
   line-height: 1.5;
 }
@@ -309,10 +302,6 @@ const confirmColor = computed(() => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modern-confirm-dialog :deep(.v-overlay__content) {
-    margin: 16px;
-  }
-  
   .confirm-header {
     padding: 24px 24px 20px 24px;
   }

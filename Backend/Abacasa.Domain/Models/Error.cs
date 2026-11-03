@@ -1,10 +1,13 @@
 using Abacasa.Domain.Common.Enums;
+using System.Text.Json.Serialization;
 
 namespace Abacasa.Domain.Models;
 
 public class Error
 {
     public int Status { get; }
+    // Global JsonStringEnumConverter'a rağmen sayı olarak serileşir (bkz. ErrorResponse.Code).
+    [JsonConverter(typeof(JsonNumberEnumConverter<ErrorCode>))]
     public ErrorCode Code { get; }
     public string Message { get; }
     public IDictionary<string, string[]>? ValidationErrors { get; }

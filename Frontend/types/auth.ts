@@ -17,6 +17,9 @@ export interface RegisterRequest {
   householdName?: string
   /** Davetli kayıt: hane açılmaz, davet kabul edilir */
   inviteToken?: string
+  /** Kullanım koşulları kabulü ve aydınlatma metni onayı (ikisi de zorunlu) */
+  acceptTerms?: boolean
+  acknowledgePrivacy?: boolean
 }
 
 export interface ForgotPasswordRequest {

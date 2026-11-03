@@ -90,13 +90,5 @@ namespace Abacasa.Infrastructure.Repositories
                 failure.ClearedAt = now;
             }
         }
-
-        public async Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<LoginAttempt>()
-                .IgnoreQueryFilters()
-                .Where(la => la.AttemptedAt < cutoff)
-                .ExecuteDeleteAsync(cancellationToken);
-        }
     }
 }

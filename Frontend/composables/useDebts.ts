@@ -10,6 +10,7 @@ import type {
   SaveExchangeRateRequest
 } from '~/types'
 import { Currency } from '~/types'
+import { CURRENCY_LABELS } from './useMoney'
 import { API_ENDPOINTS, getPaginatedEndpoint } from '~/utils/apiEndpoints'
 import { useApi } from './useApi'
 
@@ -27,13 +28,12 @@ const appendFilters = (endpoint: string, filters: Record<string, unknown> = {}) 
 export const useDebts = () => {
   const api = useApi()
 
-  const currencyOptions = [
-    { value: Currency.TRY, title: 'TL' },
-    { value: Currency.USD, title: 'USD' },
-  ]
+  // Etiketler useMoney'de (tek yer)
+  const currencyOptions = [Currency.TRY, Currency.USD, Currency.EUR, Currency.QuarterGold]
+    .map((value) => ({ value, title: CURRENCY_LABELS[value] }))
 
-  // useMoney().formatMoney için para birimi kodu
-  const currencyCode = (currency: Currency): 'TRY' | 'USD' => (currency === Currency.USD ? 'USD' : 'TRY')
+  // Elle kur girilebilen birimler (TL'nin kuru olmaz)
+  const rateCurrencyOptions = currencyOptions.filter((o) => o.value !== Currency.TRY)
 
   const getDebts = async (page = 1, pageSize = 10, searchTerm = '', filters: DebtFilters = {}) => {
     try {
@@ -148,7 +148,8 @@ export const useDebts = () => {
     }
   }
 
-  const getExchangeRates = async (currency: Currency = Currency.USD) => {
+  // Birim verilmezse bütün birimlerin elle kurları
+  const getExchangeRates = async (currency?: Currency) => {
     try {
       const response = await api.get<ExchangeRate[]>(appendFilters(API_ENDPOINTS.EXCHANGE_RATES.LIST, { currency }))
       return response.data
@@ -181,7 +182,7 @@ export const useDebts = () => {
 
   return {
     currencyOptions,
-    currencyCode,
+    rateCurrencyOptions,
     getDebts,
     getDebtSummary,
     getDebtById,

@@ -65,13 +65,15 @@
           title: 'sidebar.menu.donationTargets',
           icon: 'mdi-target',
           to: '/donation-targets',
-          permission: 'DonationTargets.Read'
+          permission: 'DonationTargets.Read',
+          module: 'donationExtras'
         },
         {
           title: 'sidebar.menu.donationFunds',
           icon: 'mdi-safe',
           to: '/donation-funds',
-          permission: 'DonationFunds.Read'
+          permission: 'DonationFunds.Read',
+          module: 'donationExtras'
         },
         {
           title: 'sidebar.menu.recurringPayments',
@@ -142,17 +144,20 @@
   export const filterNavigationByPermissions = (
     items: NavigationItem[],
     hasPermission: (permission: string) => boolean,
-    hasRole: (role: string) => boolean
+    hasRole: (role: string) => boolean,
+    hasModule: (module: 'donationExtras') => boolean = () => true
   ): NavigationItem[] => {
     return items
       .map((item): NavigationItem | null => {
         // Check permission requirement
         if (item.permission && !hasPermission(item.permission)) return null
+        // Kapalı modülün öğesi gizlenir
+        if (item.module && !hasModule(item.module)) return null
         // Check role requirement
         if (item.roles && !item.roles.some(role => hasRole(role))) return null
         // If item has children, filter recursively and return new object (do not mutate original)
         if (item.children) {
-          const filteredChildren = filterNavigationByPermissions(item.children, hasPermission, hasRole)
+          const filteredChildren = filterNavigationByPermissions(item.children, hasPermission, hasRole, hasModule)
           if (filteredChildren.length === 0) return null
           return { ...item, children: filteredChildren }
         }

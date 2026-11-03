@@ -75,7 +75,7 @@ namespace Abacasa.Infrastructure.Repositories
                 .CountAsync(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpiryDate > DateTime.UtcNow);
         }
 
-        public async Task<int> GetActiveUserCountAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false)
+        public async Task<int> GetActiveUserCountAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null)
         {
             // Users with at least one active (non-revoked, non-expired) refresh token
             var activeUserIds = GetQueryable()
@@ -90,13 +90,16 @@ namespace Abacasa.Infrastructure.Repositories
             if (tenantId.HasValue)
                 userQuery = userQuery.Where(u => u.TenantId == tenantId.Value);
 
+            if (memberOfTenantId.HasValue)
+                userQuery = userQuery.Where(u => _context.Set<TenantMembership>().Any(m => m.UserId == u.Id && m.TenantId == memberOfTenantId.Value));
+
             if (excludeUsersWithSuperAdminRole)
                 userQuery = userQuery.Where(u => !u.UserRoles.Any(ur => ur.Role.Name == RoleNames.SuperAdmin));
 
             return await userQuery.CountAsync();
         }
 
-        public async Task<IEnumerable<int>> GetActiveUserIdsAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false)
+        public async Task<IEnumerable<int>> GetActiveUserIdsAsync(int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null)
         {
             var activeUserIds = GetQueryable()
                 .Where(rt => !rt.IsRevoked && rt.ExpiryDate > DateTime.UtcNow)
@@ -109,6 +112,9 @@ namespace Abacasa.Infrastructure.Repositories
 
             if (tenantId.HasValue)
                 userQuery = userQuery.Where(u => u.TenantId == tenantId.Value);
+
+            if (memberOfTenantId.HasValue)
+                userQuery = userQuery.Where(u => _context.Set<TenantMembership>().Any(m => m.UserId == u.Id && m.TenantId == memberOfTenantId.Value));
 
             if (excludeUsersWithSuperAdminRole)
                 userQuery = userQuery.Where(u => !u.UserRoles.Any(ur => ur.Role.Name == RoleNames.SuperAdmin));
@@ -162,14 +168,6 @@ namespace Abacasa.Infrastructure.Repositories
             }
 
             UpdateRange(tokens);
-        }
-
-        public async Task<int> DeleteOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken = default)
-        {
-            return await _context.Set<RefreshToken>()
-                .IgnoreQueryFilters()
-                .Where(rt => rt.ExpiryDate < cutoff)
-                .ExecuteDeleteAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<RefreshToken>> GetExpiringSoonTokensAsync(int minutesThreshold = 30)

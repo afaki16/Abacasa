@@ -228,6 +228,72 @@ namespace Abacasa.Infrastructure.Persistence
             }
         }
 
+        /// <summary>
+        /// Admin rolünün hiçbir zaman almaması gereken sistem izinleri (yalnızca SuperAdmin). Şu an boş.
+        /// Buraya eklenmeyen izin Admin'den arayüzle kaldırılsa bile bir sonraki açılışta geri verilir.
+        /// </summary>
+        private static readonly HashSet<string> AdminExcludedPermissions = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// SuperAdmin'e bütün sistem izinlerini, Admin'e AdminExcludedPermissions dışındakileri verir; Admin'den
+        /// dışlanan izinleri kaldırır. Her açılışta SeedPermissionsAsync'ten sonra çalışır, idempotenttir.
+        /// Hane izinleri (HouseholdPermissions) sistem rollerine verilmez; onları yalnızca hane rolleri taşır
+        /// ve PermissionService sistem rollerinden gelen hane izinlerini zaten yok sayar. Diğer rollere dokunulmaz.
+        /// </summary>
+        public static async Task EnsureSystemRolesHaveAllPermissionsAsync(ApplicationDbContext context)
+        {
+            var systemRoleNames = new[] { RoleNames.SuperAdmin, RoleNames.Admin };
+
+            var systemRoles = await context.Roles
+                .Where(r => systemRoleNames.Contains(r.Name) && r.TenantId == null)
+                .ToListAsync();
+
+            // Boş veritabanında ilk açılışta roller yok; ilk atamayı SeedRolesAsync yapar
+            if (systemRoles.Count == 0)
+                return;
+
+            var systemPermissions = (await context.Permissions.ToListAsync())
+                .Where(p => !HouseholdPermissions.IsHouseholdPermission(p.Name))
+                .ToList();
+
+            var excludedIds = systemPermissions
+                .Where(p => AdminExcludedPermissions.Contains(p.Name))
+                .Select(p => p.Id)
+                .ToHashSet();
+
+            var systemRoleIds = systemRoles.Select(r => r.Id).ToList();
+            var existingAssignments = await context.RolePermissions
+                .Where(rp => systemRoleIds.Contains(rp.RoleId))
+                .ToListAsync();
+
+            var toAdd = new List<RolePermission>();
+            var toRemove = new List<RolePermission>();
+
+            foreach (var role in systemRoles)
+            {
+                var roleAssignments = existingAssignments.Where(x => x.RoleId == role.Id).ToList();
+                var assignedIds = roleAssignments.Select(x => x.PermissionId).ToHashSet();
+                var isAdmin = role.Name == RoleNames.Admin;
+
+                foreach (var permission in systemPermissions)
+                {
+                    var shouldHave = !(isAdmin && excludedIds.Contains(permission.Id));
+
+                    if (shouldHave && !assignedIds.Contains(permission.Id))
+                        toAdd.Add(new RolePermission { RoleId = role.Id, PermissionId = permission.Id });
+                    else if (!shouldHave)
+                        toRemove.AddRange(roleAssignments.Where(x => x.PermissionId == permission.Id));
+                }
+            }
+
+            if (toRemove.Count > 0)
+                context.RolePermissions.RemoveRange(toRemove);
+            if (toAdd.Count > 0)
+                await context.RolePermissions.AddRangeAsync(toAdd);
+            if (toRemove.Count > 0 || toAdd.Count > 0)
+                await context.SaveChangesAsync();
+        }
+
         private static PermissionType MapActionToPermissionType(string action)
         {
             return action.ToLower() switch
@@ -334,6 +400,9 @@ namespace Abacasa.Infrastructure.Persistence
         {
             string superAdminPassword;
             string adminPassword;
+            // Outside development the initial passwords come from env vars shared with the deployer,
+            // so the admins must replace them on first login.
+            var mustChangePassword = !environment.IsDevelopment();
 
             if (environment.IsDevelopment())
             {
@@ -373,6 +442,7 @@ namespace Abacasa.Infrastructure.Persistence
                 PhoneNumber = "+905550000001",
                 Status = UserStatus.Active,
                 EmailConfirmed = true,
+                MustChangePassword = mustChangePassword,
                 PhoneConfirmed = true,
                 TenantId = defaultTenant?.Id,
                 CreatedDate = DateTime.UtcNow
@@ -387,6 +457,7 @@ namespace Abacasa.Infrastructure.Persistence
                 PhoneNumber = "+905551234567",
                 Status = UserStatus.Active,
                 EmailConfirmed = true,
+                MustChangePassword = mustChangePassword,
                 PhoneConfirmed = true,
                 TenantId = defaultTenant?.Id,
                 CreatedDate = DateTime.UtcNow

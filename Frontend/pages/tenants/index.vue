@@ -19,13 +19,12 @@
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
-    :show-view-button="true"
+    :show-view-button="false"
     :show-edit-button="true"
     :show-delete-button="true"
     :show-pagination="true"
     :items-per-page="pageSize"
     @add="openCreateDialog"
-    @view="openViewDialog"
     @edit="openEditDialog"
     @delete="openDeleteDialog"
     @search="handleSearch"
@@ -161,7 +160,6 @@ const {
   isEditMode,
   pageSize,
   openCreateDialog,
-  openViewDialog,
   openEditDialog,
   openDeleteDialog,
   closeCreateDialog,

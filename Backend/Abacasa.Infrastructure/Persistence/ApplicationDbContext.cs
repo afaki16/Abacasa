@@ -64,6 +64,7 @@ namespace Abacasa.Infrastructure.Persistence
         public DbSet<TenantMembership> TenantMemberships { get; set; }
         public DbSet<HouseholdInvitation> HouseholdInvitations { get; set; }
         public DbSet<ConsentRecord> ConsentRecords { get; set; }
+        public DbSet<MarketRate> MarketRates { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

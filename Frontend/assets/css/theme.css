@@ -219,3 +219,12 @@ html,
 body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* Marka rengi (UI kitinde color="primary"): data.json'dan plugins/brand.client.ts ile gelir,
+ * yoksa tema primary'si. */
+:root {
+  --color-brand: var(--color-brand-light, var(--color-primary));
+}
+.dark {
+  --color-brand: var(--color-brand-dark, var(--color-primary));
+}

@@ -23,7 +23,7 @@
             <div class="text-caption">Kalan</div>
             <div class="text-subtitle-1 font-weight-bold">
               {{ money(debt.remaining) }}
-              <span v-if="isUsd && debt.remainingInTry !== null" class="text-body-2 text-medium-emphasis">
+              <span v-if="isForeign && debt.remainingInTry !== null" class="text-body-2 text-medium-emphasis">
                 ≈ {{ formatMoney(debt.remainingInTry) }}
               </span>
             </div>
@@ -90,7 +90,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import type { Debt, DebtPayment, SaveDebtPaymentRequest } from '~/types'
+import type { Debt, DebtPayment, SaveDebtPaymentRequest, CurrentRate } from '~/types'
 import { Currency } from '~/types'
 import DebtPaymentForm from '~/components/Debts/DebtPaymentForm.vue'
 import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
@@ -100,7 +100,8 @@ import { useToastStore } from '~/stores/toast'
 const props = defineProps<{
   modelValue: boolean
   debtId: number | null
-  currentRate?: number | null
+  /** Güncel kurlar (özetten); yeni ödemede borcun biriminin kuru varsayılan olur */
+  rates?: CurrentRate[]
 }>()
 
 const emit = defineEmits<{
@@ -109,9 +110,9 @@ const emit = defineEmits<{
   changed: []
 }>()
 
-const { formatMoney } = useMoney()
+const { formatMoney, formatAmount } = useMoney()
 const { hasPermission } = useAuth()
-const { currencyCode, getDebtById, getDebtPayments, createDebtPayment, updateDebtPayment, deleteDebtPayment } = useDebts()
+const { getDebtById, getDebtPayments, createDebtPayment, updateDebtPayment, deleteDebtPayment } = useDebts()
 const toastStore = useToastStore()
 
 const debt = ref<Debt | null>(null)
@@ -124,8 +125,9 @@ const isBusy = ref(false)
 const canCreate = computed(() => hasPermission('DebtPayments.Create'))
 const canUpdate = computed(() => hasPermission('DebtPayments.Update'))
 const canDelete = computed(() => hasPermission('DebtPayments.Delete'))
-const isUsd = computed(() => debt.value?.currency === Currency.USD)
-const money = (amount: number) => formatMoney(amount, currencyCode(debt.value?.currency ?? Currency.TRY))
+const isForeign = computed(() => !!debt.value && debt.value.currency !== Currency.TRY)
+const money = (amount: number) => formatAmount(amount, debt.value?.currency ?? Currency.TRY)
+const currentRate = computed(() => props.rates?.find((r) => r.currency === debt.value?.currency)?.rate ?? null)
 
 const load = async () => {
   if (!props.debtId) return

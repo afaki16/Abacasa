@@ -1,5 +1,7 @@
 using Abacasa.Application.Common.Localization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Abacasa.API.Middleware
 {
@@ -34,6 +36,30 @@ namespace Abacasa.API.Middleware
                 return false;
 
             var correlationId = httpContext.TraceIdentifier;
+
+            // Eşzamanlı iki istek aynı benzersiz kaydı oluşturmaya çalıştıysa (PostgreSQL 23505) 500 değil 409:
+            // uygulama kontrolünü ikisi de geçti, benzersiz index biri hariç hepsini reddetti
+            if (exception is DbUpdateException { InnerException: PostgresException { SqlState: PostgresErrorCodes.UniqueViolation } })
+            {
+                _logger.LogWarning(exception,
+                    "Concurrent unique violation. CorrelationId: {CorrelationId}, Path: {Path}",
+                    correlationId, httpContext.Request.Path);
+
+                httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                httpContext.Response.ContentType = "application/json";
+                await httpContext.Response.WriteAsJsonAsync(new
+                {
+                    success = false,
+                    error = new
+                    {
+                        status = 409,
+                        code = 1003, // ErrorCode.AlreadyExists
+                        correlationId,
+                        errors = new { error = new[] { _localizer["common.concurrentConflict"] } }
+                    }
+                }, cancellationToken);
+                return true;
+            }
 
             _logger.LogError(exception,
                 "Unhandled exception. CorrelationId: {CorrelationId}, Path: {Path}, Method: {Method}",

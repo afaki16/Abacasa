@@ -37,6 +37,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ITenantMembershipRepository TenantMemberships { get; }
     IHouseholdInvitationRepository HouseholdInvitations { get; }
     IConsentRecordRepository ConsentRecords { get; }
+    IMarketRateRepository MarketRates { get; }
 
     /// <summary>
     /// Kapsam boyunca hane verisinin TenantId'si (atama ve filtre) oturumun hanesi yerine verilen hane olur.

@@ -9,6 +9,7 @@
 - Demo hanesinde (demo-admin) kalıcı örnek veri var; testler ona dokunmaz, yalnızca 'Test' ile başlayan kayıtları kullanır ve siler.
 - Bütçe sayfalarında her işlem düğmesi kendi iznine bağlıdır; yeni düğme eklerken izin kontrolü zorunlu.
 - Yeni tablo ya da FK eklerken imha işinin (DataRetentionService) ve hane silme rutininin (HouseholdEraser) tablo listesini ve sırasını güncelle.
+- Yeni bir hane tablosu eklenince hane Excel dışa aktarımına sayfası eklenir.
 
 ## Yapı
 - .NET 10 Clean Architecture (API / Application / Domain / Infrastructure), Nuxt 3 SPA (ssr: false), PostgreSQL.
@@ -18,7 +19,7 @@
 
 ## Alan kuralları
 - Para tutarları decimal(18,2), kurlar decimal(18,4). İş tarihleri DateOnly.
-- Para birimleri TRY ve USD. Döviz ödemede kur elle girilir, TL tutar hesaplanır.
+- Para birimleri TRY, USD, EUR, QuarterGold (çeyrek, tam sayı). Güncel kur: TCMB döviz satış (USD, EUR; günlük otomatik) ile hanenin elle girdiği kurdan tarihi yeni olan; eşitse elle girilen. Çeyrek fiyatı elle girilir. Ödeme kuru her zaman elle.
 - Toplamlar saklanmaz, kayıtlardan hesaplanır.
 - Hane verisi entity'leri ITenantScoped'ı uygular. Tenant filtresi ve TenantId ataması ApplicationDbContext'te otomatiktir; handler'larda TenantId ile elle filtreleme ya da atama yapma.
 - Para gösterimi için useMoney().formatMoney kullan, useUtils.formatCurrency kullanma.
@@ -27,10 +28,10 @@
 - Başka kayıtların bağlı olduğu bir tanım silinemez; 409 ve "kullanımda" mesajı döner. Ödeme aracı silinmek yerine pasif yapılabilir.
 - Bağışlar harcama özetine girmez; birleşik toplam Özet sayfasında.
 - Sabit ödemede ödenme durumu saklanmaz; (RecurringPaymentId, RecurringPaymentMonth) ile bağlı canlı harcama/bağış kaydından hesaplanır.
+- Kayıt ve güncellemelerde Kullanım koşulları ve Aydınlatma metni onayı ConsentRecord'a yazılır; metin değişince Legal sürümünü artır, kullanıcılar bir sonraki girişte yeniden onaylar.
 - Davet 7 gün geçerli, tek kullanımlık; davetle kayıt e-postayı doğrulanmış sayar ve hane açmaz. Hanede her zaman en az bir yönetici kalır.
 - Hane erişimi TenantMembership ile; hane kaynaklarının izinleri yalnızca aktif hanedeki üyelik rolünden gelir (HouseholdAdmin/HouseholdMember, kodda tanımlı), sistem rolleri yalnızca sistem izinlerini verir. User.TenantId = son aktif hane.
-- Borç alma ve geri ödeme dönem harcamasına girmez. Döviz ödemede kur elle girilir. Açık dövizin TL karşılığı en son tarihli kurla hesaplanır.
-- Özet: dönem toplamı = gerçekleşen harcama + bağış + ödenmemiş sabit ödeme vadesi; yemek kartı ve borç hareketleri hariç.
+- Borç alma ve geri ödeme dönem harcamasına girmez.- Özet: dönem toplamı = gerçekleşen harcama + bağış + ödenmemiş sabit ödeme vadesi; yemek kartı ve borç hareketleri hariç.
 - Yıllık tablo: gelirler elle; gider tarafı otomatik (plan ödemeleri vade ayına, plan dışı harcama ve bağışlar kayıt tarihine göre), yemek kartı hariç.
 - Emanetten dağıtılan bağış (FundId) hiçbir toplama ve hedefe girmez, emanetle aynı türde olur; emanette elde = kalan − kullanımda, sıfırın altına düşemez.
 - Araç işlemi harcama oluşturduysa tarih/tutar değişikliği ve silme harcamaya yansır; tersi yansımaz. Araç hatırlatmaları yalnızca listede, hiçbir toplama girmez.

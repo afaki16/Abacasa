@@ -34,6 +34,9 @@ namespace Abacasa.Application.Features.Admin.Queries.GetActiveUsersSnapshot
                     Error.Failure(ErrorCode.Forbidden, "You can only view active users in your own tenant"));
 
             int? tenantId = request.TenantId;
+            // SuperAdmin: istekte hane yoksa üst barda seçilen hane (o hanede canlı üyeliği olanlar); seçim yoksa tümü.
+            // Diğer rollerde SelectedTenantId her zaman null.
+            int? memberOfTenantId = tenantId.HasValue ? null : _currentUserService.SelectedTenantId;
             if (!_currentUserService.CanAccessAllTenants)
             {
                 if (tenantId.HasValue && tenantId != _currentUserService.TenantId)
@@ -47,6 +50,11 @@ namespace Abacasa.Application.Features.Admin.Queries.GetActiveUsersSnapshot
             var usersQuery = _unitOfWork.Users.GetQueryable().Where(x => !x.IsDeleted);
             if (!_currentUserService.CanAccessAllTenants)
                 usersQuery = usersQuery.Where(u => !u.UserRoles.Any(ur => ur.Role.Name == RoleNames.SuperAdmin));
+            if (memberOfTenantId.HasValue)
+            {
+                var memberships = _unitOfWork.TenantMemberships.GetQueryable();
+                usersQuery = usersQuery.Where(u => memberships.Any(m => m.UserId == u.Id && m.TenantId == memberOfTenantId.Value));
+            }
 
             var list = await (
                 from rt in _unitOfWork.RefreshTokens.GetQueryable()

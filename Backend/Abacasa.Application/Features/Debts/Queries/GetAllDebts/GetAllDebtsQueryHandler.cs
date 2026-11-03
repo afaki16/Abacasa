@@ -1,3 +1,4 @@
+using Abacasa.Application.Features.ExchangeRates.Common;
 using AutoMapper;
 using Abacasa.Application.Common.Results;
 using Abacasa.Application.Features.Debts.Common;
@@ -36,12 +37,13 @@ public class GetAllDebtsQueryHandler : IRequestHandler<GetAllDebtsQuery, PagedRe
             request.Page, request.PageSize, filter);
 
         // Ödenen/kalan alanları sayfadaki borçların canlı ödemelerinden hesaplanır
-        var usdRate = await _unitOfWork.ExchangeRates.GetLatestAsync(Currency.USD);
+        // Yabancı birimlerin güncel kurları (TCMB ya da elle; CurrentRates)
+        var rates = await CurrentRates.GetAllAsync(_unitOfWork);
         var dtos = new List<DebtListDto>();
         foreach (var debt in debts)
         {
             var dto = _mapper.Map<DebtListDto>(debt);
-            DebtAmounts.Fill(dto, debt, usdRate?.Rate);
+            DebtAmounts.Fill(dto, debt, rates);
             dtos.Add(dto);
         }
 

@@ -8,10 +8,10 @@ public class SaveExchangeRateCommandValidator : AbstractValidator<SaveExchangeRa
 {
     public SaveExchangeRateCommandValidator(IJsonStringLocalizer localizer)
     {
-        // Şimdilik yalnızca USD kuru girilir; TL'nin kuru olmaz
+        // Elle kur yalnızca yabancı birimler için (USD, EUR, çeyrek altın); TL'nin kuru olmaz
         RuleFor(x => x.Currency)
             .IsInEnum().WithMessage(localizer["validation.invalidEnum", localizer["validation.fields.currency"]])
-            .Equal(Currency.USD).WithMessage(localizer["exchangeRates.onlyUsd"]);
+            .NotEqual(Currency.TRY).WithMessage(localizer["exchangeRates.foreignOnly"]);
 
         RuleFor(x => x.Rate)
             .GreaterThan(0).WithMessage(localizer["validation.greaterThan", localizer["validation.fields.exchangeRate"], 0]);

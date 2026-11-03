@@ -49,6 +49,19 @@
   transform: none !important;
 }
 
+/* UI kiti: pasif gradient buton Vuetify'daki gibi opak + beyaz örtü (her iki temada aynı renk) */
+.btn-gradient-primary.ui-btn--disabled {
+  opacity: 1;
+}
+.btn-gradient-primary.ui-btn--disabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+}
+
 .btn-gradient-dark {
   background: rgba(0, 0, 0, 0.04) !important;
   color: rgb(75, 66, 66) !important;
@@ -75,4 +88,11 @@
 .btn-gradient-dark:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Koyu tema: açık temadaki koyu gri yazı koyu zeminde okunmuyordu */
+.dark .btn-gradient-dark {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgb(var(--color-on-surface)) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
 }

@@ -31,6 +31,10 @@ namespace Abacasa.Infrastructure.Persistence.EntityConfigurations
             .IsRequired()
             .HasDefaultValue(true);
 
+        // Varsayılan değer yok (entity'de false); mevcut haneler migration'da SQL ile açıldı
+        builder.Property(x => x.DonationExtrasEnabled)
+            .IsRequired();
+
         builder.Property(x => x.ContactEmail)
             .HasMaxLength(100);
 

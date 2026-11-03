@@ -30,7 +30,10 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
         Task<UserRole> GetUserRoleAsync(int userId, int roleId);
         Task AddUserRoleAsync(UserRole userRole);
         void RemoveUserRole(UserRole userRole);
-        Task<(IEnumerable<User> Users, int TotalCount)> GetUsersPagedAsync(int page, int pageSize, string searchTerm = null, int? tenantId = null, bool excludeUsersWithSuperAdminRole = false);
+        /// <param name="tenantId">Son aktif hanesi (User.TenantId) bu olanlar.</param>
+        /// <param name="memberOfTenantId">Bu hanede canlı üyeliği olanlar (SuperAdmin hane seçicisi).</param>
+        /// <param name="status">Yalnızca bu durumdakiler; null = tümü.</param>
+        Task<(IEnumerable<User> Users, int TotalCount)> GetUsersPagedAsync(int page, int pageSize, string searchTerm = null, int? tenantId = null, bool excludeUsersWithSuperAdminRole = false, int? memberOfTenantId = null, UserStatus? status = null);
         Task<IEnumerable<int>> GetUserIdsByRoleIdAsync(int roleId);
         Task<int> CountActiveSuperAdminsAsync();
 
@@ -39,7 +42,7 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories
         /// TenantOk, tenantId yoksa true; varsa o hanede canlı üyelik olmalı ve hane aktif olmalı.
         /// Returns null when the user does not exist.
         /// </summary>
-        Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk)?> GetSessionStateAsync(int userId, int? tenantId);
+        Task<(DateTime? LastSessionsRevokedAt, UserStatus Status, bool TenantOk, bool MustChangePassword)?> GetSessionStateAsync(int userId, int? tenantId);
 
         Task<bool> TenantHasSuperAdminAsync(int tenantId);
 

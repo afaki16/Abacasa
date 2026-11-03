@@ -6,6 +6,12 @@ export default defineNuxtRouteMiddleware((to) => {
   const requiredPermissions = to.meta.permissions as string[]
   const requiredRole = to.meta.role as string
   const requiredRoles = to.meta.roles as string[]
+  const requiredModule = to.meta.module as 'donationExtras' | undefined
+
+  // Kapalı modülün sayfasına doğrudan gelinirse özete
+  if (requiredModule && !authStore.hasModule(requiredModule)) {
+    return navigateTo('/dashboard')
+  }
 
   // Check single permission
   if (requiredPermission && !authStore.hasPermission(requiredPermission)) {

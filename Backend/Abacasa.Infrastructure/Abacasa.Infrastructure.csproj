@@ -5,7 +5,9 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="AWSSDK.S3" Version="4.0.104.8" />
 		<PackageReference Include="ClosedXML" Version="0.105.1" />
+		<PackageReference Include="libphonenumber-csharp" Version="9.0.42" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
@@ -16,6 +18,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.13" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="SkiaSharp" Version="4.154.0" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.23.0" />
 		<!-- Pinned so every Microsoft.IdentityModel.* package resolves to the same version (JwtBearer only requires >= 8.19.2) -->

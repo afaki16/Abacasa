@@ -1,3 +1,4 @@
+using Abacasa.Application.Features.ExchangeRates.Common;
 using AutoMapper;
 using Abacasa.Application.Common.Localization;
 using Abacasa.Application.Common.Results;
@@ -59,9 +60,10 @@ public class CreateDebtCommandHandler : IRequestHandler<CreateDebtCommand, Resul
         await _unitOfWork.Debts.AddAsync(debt);
         await _unitOfWork.SaveChangesAsync();
 
-        var usdRate = await _unitOfWork.ExchangeRates.GetLatestAsync(Currency.USD);
+        // Yabancı birimlerin güncel kurları (TCMB ya da elle; CurrentRates)
+        var rates = await CurrentRates.GetAllAsync(_unitOfWork);
         var dto = _mapper.Map<DebtListDto>(debt);
-        DebtAmounts.Fill(dto, debt, usdRate?.Rate);
+        DebtAmounts.Fill(dto, debt, rates);
 
         return Result<DebtListDto>.Success(dto);
     }

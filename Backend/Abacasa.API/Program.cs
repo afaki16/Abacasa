@@ -1,4 +1,8 @@
 using Abacasa.Infrastructure;
+using Abacasa.Infrastructure.Services.Storage;
+using Abacasa.Application.Interfaces;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using Abacasa.Infrastructure.Persistence;
 using Abacasa.Application;
 using Abacasa.API.Extensions;
@@ -8,6 +12,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +23,14 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        // Enum'lar yanıtlarda isim olarak yazılır ("TRY", "Active"), sayı değil. İsteklerde hem
+        // isim hem sayı kabul edilir. Hata kodları (ErrorCode) özellik seviyesinde sayıya
+        // sabitlenmiştir (bkz. Error.Code, ErrorResponse.Code).
+        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
@@ -120,6 +132,32 @@ app.UseRequestLocalization();
 // including auth failures and route-not-found responses.
 app.UseSecurityHeaders();
 
+// Locally stored uploads (Storage:Provider = Local). Only image types are served; keys are
+// unique per upload, so responses are cached forever. The sandbox CSP keeps a file opened
+// directly from ever running script.
+if (app.Services.GetRequiredService<IFileStorage>() is LocalFileStorage localStorage)
+{
+    var uploadContentTypes = new FileExtensionContentTypeProvider(new Dictionary<string, string>
+    {
+        [".webp"] = "image/webp",
+        [".png"] = "image/png",
+        [".jpg"] = "image/jpeg",
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(localStorage.RootPath),
+        RequestPath = localStorage.RequestPath,
+        ContentTypeProvider = uploadContentTypes,
+        OnPrepareResponse = ctx =>
+        {
+            var headers = ctx.Context.Response.Headers;
+            headers["Cache-Control"] = "public, max-age=31536000, immutable";
+            headers["Content-Security-Policy"] = "default-src 'none'; sandbox";
+            headers["Cross-Origin-Resource-Policy"] = "cross-origin";
+        },
+    });
+}
+
 // Add CORS middleware (must be before authentication)
 app.UseCors("DefaultCorsPolicy");
 
@@ -130,6 +168,9 @@ app.UseRateLimiter();
 // Authentication and Authorization (order is important)
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Users flagged MustChangePassword may only reach endpoints marked [AllowWhenPasswordChangeRequired]
+app.UseMiddleware<PasswordChangeRequiredMiddleware>();
 
 app.MapControllers();
 app.MapHealthChecks("/health").AllowAnonymous();
@@ -144,12 +185,17 @@ using (var scope = app.Services.CreateScope())
 // Seed data only if database is empty
 await SeedData.SeedAsyncIfEmpty(app.Services);
 
-// Her başlatmada eksik permission'ları ekle, hane rollerinin izinlerini koddaki tanıma eşitle
+// Her başlatmada eksik permission'ları ekle, sistem izinlerini SuperAdmin/Admin'e ata,
+// hane rollerinin izinlerini koddaki tanıma eşitle
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<Abacasa.Infrastructure.Persistence.ApplicationDbContext>();
     await Abacasa.Infrastructure.Persistence.SeedData.SeedPermissionsAsync(context);
+    await Abacasa.Infrastructure.Persistence.SeedData.EnsureSystemRolesHaveAllPermissionsAsync(context);
     await Abacasa.Infrastructure.Persistence.SeedData.SyncHouseholdRolesAsync(context);
+
+    var permissionService = scope.ServiceProvider.GetRequiredService<Abacasa.Application.Interfaces.IPermissionService>();
+    permissionService.ClearRolePermissionCache();
 }
 
 app.Run();

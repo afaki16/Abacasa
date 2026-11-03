@@ -176,6 +176,8 @@ definePageMeta({
   requiresAuth: true,
   middleware: ["permission"],
   permissions: ["DonationFunds.Read"],
+  // Bağış hedefleri ve emanetler modülü kapalıysa /dashboard'a
+  module: "donationExtras",
 });
 
 useHead({

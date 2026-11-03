@@ -37,9 +37,9 @@ export const useRecurringPayments = () => {
   const getKindLabel = (kind: RecurringPaymentKind) => (kindLabelKeys[kind] ? t(kindLabelKeys[kind]) : String(kind))
 
   const kindOptions = computed(() =>
-    (Object.keys(kindLabelKeys) as unknown as RecurringPaymentKind[]).map((key) => ({
-      value: Number(key) as RecurringPaymentKind,
-      title: getKindLabel(Number(key) as RecurringPaymentKind),
+    (Object.keys(kindLabelKeys) as RecurringPaymentKind[]).map((key) => ({
+      value: key,
+      title: getKindLabel(key),
     }))
   )
 

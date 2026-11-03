@@ -3,6 +3,7 @@ using Abacasa.Application.Features.Admin.Queries.GetActiveUsersSnapshot;
 using Abacasa.Application.Features.Admin.Queries.GetRevokableUsers;
 using Abacasa.Application.Features.Admin.Commands.RevokeUserSessions;
 using Abacasa.Application.Features.Admin.Commands.RunDataRetention;
+using Abacasa.Application.Features.Admin.Commands.RefreshMarketRates;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +101,20 @@ namespace Abacasa.API.Controllers
         public async Task<IActionResult> RunDataRetention()
         {
             return HandleResult(await _mediator.Send(new RunDataRetentionCommand()));
+        }
+
+        /// <summary>
+        /// Fetch TCMB forex selling rates (USD, EUR) now (SuperAdmin only). Returns the written rates;
+        /// 502 if TCMB cannot be reached or the format is unexpected.
+        /// </summary>
+        [HttpPost("market-rates/refresh")]
+        [Authorize(Policy = "RequireSuperAdminRole")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(502)]
+        public async Task<IActionResult> RefreshMarketRates()
+        {
+            return HandleResult(await _mediator.Send(new RefreshMarketRatesCommand()));
         }
     }
 }

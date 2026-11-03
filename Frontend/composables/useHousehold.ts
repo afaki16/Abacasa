@@ -3,6 +3,7 @@ import type {
   HouseholdInvitation,
   HouseholdInvitationSendResult,
   HouseholdMember,
+  HouseholdModules,
   HouseholdRole,
   HouseholdRoleValue,
   InvitationInfo,
@@ -114,6 +115,13 @@ export const useHousehold = () => {
     reloadToDashboard()
   }
 
+  // Modül aç/kapat; ardından /me yenilenir (menü ve sayfalar store'dan güncellenir, tam yenileme gerekmez)
+  const updateModules = async (modules: HouseholdModules) => {
+    const response = await api.put<HouseholdModules>(API_ENDPOINTS.HOUSEHOLD.MODULES, modules)
+    await authStore.fetchUserFromApi(false)
+    return response.data
+  }
+
   const invitationStatusLabel = (status: InvitationStatus) =>
     ({ Pending: 'Bekliyor', Accepted: 'Kabul edildi', Revoked: 'İptal edildi', Expired: 'Süresi doldu' })[status] ?? status
   //#endregion
@@ -121,6 +129,6 @@ export const useHousehold = () => {
   return {
     activeTenant, memberships, getRoleLabel, switchHousehold, createHousehold, getInvitation, acceptInvitation,
     getHousehold, updateHousehold, getMembers, updateMember, removeMember, leaveHousehold,
-    getInvitations, createInvitation, resendInvitation, revokeInvitation, invitationStatusLabel, deleteHousehold
+    getInvitations, createInvitation, resendInvitation, revokeInvitation, invitationStatusLabel, deleteHousehold, updateModules
   }
 }
