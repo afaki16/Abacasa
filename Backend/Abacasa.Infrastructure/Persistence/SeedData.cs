@@ -237,8 +237,9 @@ namespace Abacasa.Infrastructure.Persistence
         /// <summary>
         /// SuperAdmin'e bütün sistem izinlerini, Admin'e AdminExcludedPermissions dışındakileri verir; Admin'den
         /// dışlanan izinleri kaldırır. Her açılışta SeedPermissionsAsync'ten sonra çalışır, idempotenttir.
-        /// Hane izinleri (HouseholdPermissions) sistem rollerine verilmez; onları yalnızca hane rolleri taşır
-        /// ve PermissionService sistem rollerinden gelen hane izinlerini zaten yok sayar. Diğer rollere dokunulmaz.
+        /// Hane izinleri (HouseholdPermissions) sistem rollerine verilmez, eski kurulumlardan kalan atamaları silinir;
+        /// onları yalnızca hane rolleri taşır ve PermissionService sistem rollerinden gelen hane izinlerini zaten yok sayar.
+        /// Diğer rollere dokunulmaz.
         /// </summary>
         public static async Task EnsureSystemRolesHaveAllPermissionsAsync(ApplicationDbContext context)
         {
@@ -252,9 +253,14 @@ namespace Abacasa.Infrastructure.Persistence
             if (systemRoles.Count == 0)
                 return;
 
-            var systemPermissions = (await context.Permissions.ToListAsync())
+            var allPermissions = await context.Permissions.ToListAsync();
+            var systemPermissions = allPermissions
                 .Where(p => !HouseholdPermissions.IsHouseholdPermission(p.Name))
                 .ToList();
+            var householdPermissionIds = allPermissions
+                .Where(p => HouseholdPermissions.IsHouseholdPermission(p.Name))
+                .Select(p => p.Id)
+                .ToHashSet();
 
             var excludedIds = systemPermissions
                 .Where(p => AdminExcludedPermissions.Contains(p.Name))
@@ -274,6 +280,9 @@ namespace Abacasa.Infrastructure.Persistence
                 var roleAssignments = existingAssignments.Where(x => x.RoleId == role.Id).ToList();
                 var assignedIds = roleAssignments.Select(x => x.PermissionId).ToHashSet();
                 var isAdmin = role.Name == RoleNames.Admin;
+
+                // Eski kurulumlarda sistem rollerine atanmış hane izinleri (etkisizdi) kaldırılır
+                toRemove.AddRange(roleAssignments.Where(x => householdPermissionIds.Contains(x.PermissionId)));
 
                 foreach (var permission in systemPermissions)
                 {
@@ -333,8 +342,10 @@ namespace Abacasa.Infrastructure.Persistence
             await context.Roles.AddRangeAsync(superAdminRole, adminRole, userRole);
             await context.SaveChangesAsync();
 
-            // Get all permissions and assign to super admin and admin roles
-            var allPermissions = await context.Permissions.ToListAsync();
+            // Sistem izinlerini super admin ve admin rollerine ata; hane izinleri yalnızca hane rollerinde olur
+            var allPermissions = (await context.Permissions.ToListAsync())
+                .Where(p => !HouseholdPermissions.IsHouseholdPermission(p.Name))
+                .ToList();
             var superAdminRolePermissions = allPermissions.Select(p => new RolePermission
             {
                 RoleId = superAdminRole.Id,
