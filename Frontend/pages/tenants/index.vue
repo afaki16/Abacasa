@@ -31,26 +31,26 @@
     @refresh="refreshData"
   >
     <template #cell-name="{ value }">
-      <v-chip
+      <UiChip
         color="primary"
         variant="tonal"
         size="default"
         prepend-icon="mdi-domain"
       >
         {{ value }}
-      </v-chip>
+      </UiChip>
     </template>
 
     <template #cell-isActive="{ value }">
-      <v-chip :color="value ? 'success' : 'error'" size="small" variant="tonal">
+      <UiChip :color="value ? 'success' : 'error'" size="small" variant="tonal">
         {{ value ? "Aktif" : "Pasif" }}
-      </v-chip>
+      </UiChip>
     </template>
 
     <template #cell-userCount="{ value }">
-      <v-chip size="small" variant="tonal" color="info">
+      <UiChip size="small" variant="tonal" color="info">
         {{ value ?? 0 }} kullanıcı
-      </v-chip>
+      </UiChip>
     </template>
   </BaseDataTable>
 

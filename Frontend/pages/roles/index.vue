@@ -43,25 +43,25 @@
     >
        <!-- For RoleName -->
     <template #cell-name="{ value }">
-  <v-chip
+  <UiChip
     color="primary"
     variant="tonal"
     size="default"
     prepend-icon="mdi-shield-account"
   >
     {{ value }}
-  </v-chip>
+  </UiChip>
 </template>
 
     <!-- For isSystemRole -->
   <template #cell-isSystemRole="{ value }">
-  <v-chip
+  <UiChip
     :color="value == true ? 'warning' : 'success '"
     size="small"
     variant="tonal"
   >
     {{ value == true ? 'Sistem' : 'Özel' }}
-  </v-chip>
+  </UiChip>
 </template>
 
     <!-- For tenantId (SuperAdmin only) -->

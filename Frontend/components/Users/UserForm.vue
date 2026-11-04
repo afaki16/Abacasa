@@ -9,17 +9,17 @@
       :disabled="loading"
     >
       <div class="tab-icon-wrapper">
-        <v-icon :icon="tab.icon" size="22" />
+        <UiIcon :icon="tab.icon" :size="22" />
       </div>
       <span class="tab-label">{{ tab.label }}</span>
     </button>
   </div>
 
-  <v-form ref="formRef">
-    <v-window v-model="currentTab" class="mt-6">
+  <UiForm ref="formRef">
+    <UiWindow v-model="currentTab" class="mt-6">
       <!-- Tab 1: Kişisel Bilgiler -->
-      <v-window-item value="personal">
-        <v-container>
+      <UiWindowItem value="personal">
+        <div class="ui-container">
           <!-- Profil fotoğrafı: yalnızca düzenlemede (kullanıcı kaydı olmalı); hemen kaydedilir -->
           <div v-if="user" class="flex items-center gap-4 mb-4">
             <ProfilePhotoEditor
@@ -33,12 +33,11 @@
               Profil fotoğrafı (JPEG, PNG veya WEBP, en fazla 10 MB). Değişiklik hemen kaydedilir.
             </p>
           </div>
-          <v-row>
-            <v-col cols="12" sm="6">
-              <v-text-field
+          <div class="ui-row">
+            <div class="ui-col ui-col-12 ui-col-sm-6">
+              <UiTextField
                 v-model="formData.firstName"
                 label="Ad"
-                variant="outlined"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -46,12 +45,11 @@
                 :rules="[rules.required, rules.minLength(2)]"
                 class="modern-input"
               />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
+            </div>
+            <div class="ui-col ui-col-12 ui-col-sm-6">
+              <UiTextField
                 v-model="formData.lastName"
                 label="Soyad"
-                variant="outlined"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -59,15 +57,14 @@
                 :rules="[rules.required, rules.minLength(2)]"
                 class="modern-input"
               />
-            </v-col>
-          </v-row>
+            </div>
+          </div>
 
-          <v-row>
-            <v-col cols="12" sm="6">
-              <v-text-field
+          <div class="ui-row">
+            <div class="ui-col ui-col-12 ui-col-sm-6">
+              <UiTextField
                 v-model="formData.email"
                 label="E-posta"
-                variant="outlined"
                 :disabled="loading || !!user"
                 prepend-inner-icon="mdi-email"
                 density="comfortable"
@@ -76,12 +73,11 @@
                 :rules="[rules.required, rules.email]"
                 class="modern-input"
               />
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field
+            </div>
+            <div class="ui-col ui-col-12 ui-col-sm-6">
+              <UiTextField
                 v-model="formData.phoneNumber"
                 label="Telefon Numarası"
-                variant="outlined"
                 :disabled="loading"
                 prepend-inner-icon="mdi-phone"
                 density="comfortable"
@@ -90,16 +86,15 @@
                 :rules="[rules.phone]"
                 class="modern-input"
               />
-            </v-col>
+            </div>
           <!-- Tenant seçici: Sadece SuperAdmin yeni kullanıcı oluştururken -->
-          <v-col v-if="!user && canAccessAllTenants" cols="12" sm="6">
-            <v-select
+          <div class="ui-col ui-col-12 ui-col-sm-6" v-if="!user && canAccessAllTenants">
+            <UiSelect
               v-model="formData.tenantId"
               :items="tenants"
               item-title="name"
               item-value="id"
               label="Tenant"
-              variant="outlined"
               :disabled="loading"
               prepend-inner-icon="mdi-domain"
               density="comfortable"
@@ -107,13 +102,13 @@
               clearable
               class="modern-input"
             />
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
         <!-- Status (Sadece edit modunda) -->
-        <v-row v-if="user">
-          <v-col cols="12">
-            <v-switch
+        <div class="ui-row" v-if="user">
+          <div class="ui-col ui-col-12">
+            <UiSwitch
               v-model="formData.status"
               :true-value="UserStatus.Active"
               :false-value="UserStatus.Inactive"
@@ -125,29 +120,29 @@
               <template #label>
                 <div class="status-label">
                   <span class="status-text">Kullanıcı Durumu</span>
-                  <v-chip
+                  <UiChip
                     :color="formData.status === UserStatus.Active ? 'success' : 'error'"
                     size="small"
                     variant="tonal"
                   >
                     {{ formData.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
-                  </v-chip>
+                  </UiChip>
                 </div>
               </template>
-            </v-switch>
+            </UiSwitch>
             <p class="status-description mt-2">
               {{ formData.status === UserStatus.Active
                   ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.'
                   : 'Kullanıcı sisteme giriş yapamaz ve hesabı devre dışıdır.'
               }}
             </p>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
         <!-- Zorunlu şifre değişimi (kendi hesabı hariç; hesap davetiyle gelen kullanıcı şifresini zaten kendisi belirler) -->
-        <v-row v-if="!isOwnAccount && (user || !formData.sendAccountInvitation)">
-          <v-col cols="12">
-            <v-switch
+        <div class="ui-row" v-if="!isOwnAccount && (user || !formData.sendAccountInvitation)">
+          <div class="ui-col ui-col-12">
+            <UiSwitch
               v-model="formData.mustChangePassword"
               color="primary"
               :disabled="loading"
@@ -157,23 +152,23 @@
               <template #label>
                 <span class="status-text">Bir sonraki girişte şifre değiştirsin</span>
               </template>
-            </v-switch>
+            </UiSwitch>
             <p class="status-description mt-2">
               {{ formData.mustChangePassword
                   ? 'Kullanıcı giriş yaptığında şifresini değiştirmeden uygulamayı kullanamaz.'
                   : 'Kullanıcı mevcut şifresiyle normal şekilde giriş yapar.'
               }}
             </p>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-window-item>
+          </div>
+        </div>
+      </div>
+    </UiWindowItem>
 
     <!-- Tab 2: Giriş bilgisi (Sadece yeni kullanıcı) -->
-    <v-window-item v-if="!user" value="password">
-      <v-container>
-        <v-row>
-          <v-col cols="12">
+    <UiWindowItem v-if="!user" value="password">
+      <div class="ui-container">
+        <div class="ui-row">
+          <div class="ui-col ui-col-12">
             <div class="login-method-grid">
               <button
                 v-for="option in loginMethodOptions"
@@ -184,33 +179,32 @@
                 :disabled="loading"
                 @click="formData.sendAccountInvitation = option.value"
               >
-                <v-icon :icon="option.icon" size="22" class="login-method-icon" />
+                <UiIcon :icon="option.icon" :size="22" class="login-method-icon" />
                 <span class="login-method-title">{{ option.title }}</span>
                 <span class="login-method-text">{{ option.text }}</span>
               </button>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
         <!-- Hesap daveti yalnızca şifre belirleme linkidir; haneye üyelik açmaz (hane daveti ayrıdır) -->
-        <v-row v-if="formData.sendAccountInvitation">
-          <v-col cols="12">
+        <div class="ui-row" v-if="formData.sendAccountInvitation">
+          <div class="ui-col ui-col-12">
             <p class="status-description">
               Kullanıcının e-posta adresine<template v-if="formData.email"> (<strong>{{ formData.email }}</strong>)</template>
               şifresini belirleyebileceği bir link gönderilir.
               Link 72 saat geçerlidir; süresi dolarsa kullanıcı listesinden daveti tekrar gönderebilirsiniz.
               Hesap hanesiz oluşur; haneye hane daveti ile katılır.
             </p>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
         <template v-else>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
+        <div class="ui-row">
+          <div class="ui-col ui-col-12">
+            <UiTextField
               v-model="formData.password"
               label="Şifre"
-              variant="outlined"
               :disabled="loading"
               :type="showPassword ? 'text' : 'password'"
               prepend-inner-icon="mdi-lock"
@@ -221,15 +215,14 @@
               :rules="[rules.password]"
               class="modern-input"
             />
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
+        <div class="ui-row">
+          <div class="ui-col ui-col-12">
+            <UiTextField
               v-model="formData.confirmPassword"
               label="Şifre Tekrar"
-              variant="outlined"
               :disabled="loading"
               :type="showConfirmPassword ? 'text' : 'password'"
               prepend-inner-icon="mdi-lock-check"
@@ -240,21 +233,20 @@
               :rules="[rules.confirmPassword(formData.password)]"
               class="modern-input"
             />
-          </v-col>
-        </v-row>
+          </div>
+        </div>
         </template>
-      </v-container>
-    </v-window-item>
+      </div>
+    </UiWindowItem>
 
     <!-- Tab 3: Roller -->
-    <v-window-item value="roles">
-      <v-container>
-        <v-row v-if="assignableRoles && assignableRoles.length">
-          <v-col cols="12">
-            <v-text-field
+    <UiWindowItem value="roles">
+      <div class="ui-container">
+        <div class="ui-row" v-if="assignableRoles && assignableRoles.length">
+          <div class="ui-col ui-col-12">
+            <UiTextField
               v-model="searchQuery"
               prepend-inner-icon="mdi-magnify"
-              variant="outlined"
               density="compact"
               hide-details
               clearable
@@ -262,7 +254,7 @@
             />
 
             <div class="quick-actions mb-4">
-              <v-btn
+              <UiBtn
                 variant="outlined"
                 size="small"
                 @click="selectAllRoles"
@@ -270,8 +262,8 @@
                 prepend-icon="mdi-check-all"
               >
                 Tümünü Seç
-              </v-btn>
-              <v-btn
+              </UiBtn>
+              <UiBtn
                 variant="outlined"
                 size="small"
                 @click="clearAllRoles"
@@ -279,15 +271,15 @@
                 prepend-icon="mdi-close-box"
               >
                 Temizle
-              </v-btn>
-              <v-chip 
+              </UiBtn>
+              <UiChip 
                 v-if="formData.roleIds.length" 
                 size="small" 
                 color="primary" 
                 variant="tonal"
               >
                 {{ formData.roleIds.length }} seçili
-              </v-chip>
+              </UiChip>
             </div>
 
             <div class="roles-grid">
@@ -297,7 +289,7 @@
                 class="role-item"
                 :class="{ 'selected': formData.roleIds.includes(String(role.id)) }"
               >
-                <v-checkbox
+                <UiCheckbox
                   v-model="formData.roleIds"
                   :value="String(role.id)"
                   :disabled="loading"
@@ -308,14 +300,14 @@
                 <div class="role-info">
                   <div class="role-header">
                     <h4 class="role-name">{{ role.name }}</h4>
-                    <v-chip
+                    <UiChip
                       v-if="role.isSystemRole"
                       size="x-small"
                       color="orange"
                       variant="tonal"
                     >
                       Sistem
-                    </v-chip>
+                    </UiChip>
                   </div>
                   <p v-if="role.description" class="role-description">
                     {{ role.description }}
@@ -323,25 +315,25 @@
                 </div>
               </div>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
-        <v-row v-else>
-          <v-col cols="12">
+        <div class="ui-row" v-else>
+          <div class="ui-col ui-col-12">
             <div class="empty-state">
-              <v-icon size="64" color="grey-400">mdi-shield-off</v-icon>
+              <UiIcon icon="mdi-shield-off" :size="64" color="grey-400" />
               <h3 class="empty-title">Rol Bulunamadı</h3>
               <p class="empty-text">Atanabilir rol bulunmuyor</p>
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-window-item>
-    </v-window>
+          </div>
+        </div>
+      </div>
+    </UiWindowItem>
+    </UiWindow>
 
     <!-- Modern Actions -->
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -349,9 +341,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
       
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -359,9 +351,9 @@
         class="btn-gradient-primary"
       >
         {{ user ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">
@@ -662,7 +654,7 @@ watchEffect(() => {
   flex-shrink: 0;
 }
 
-.role-checkbox :deep(.v-selection-control) {
+.role-checkbox :deep(.ui-check__row) {
   min-height: auto !important;
 }
 

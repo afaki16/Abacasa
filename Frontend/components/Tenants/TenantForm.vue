@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.name"
             label="Tenant Adı"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-domain"
             density="comfortable"
@@ -14,15 +13,14 @@
             :rules="[rules.required, rules.minLength(2)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.domain"
             label="Domain"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-web"
             density="comfortable"
@@ -30,15 +28,14 @@
             :rules="[rules.required, rules.minLength(2)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-textarea
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField multiline
             v-model="formData.description"
             label="Açıklama"
-            variant="outlined"
             :disabled="loading"
             rows="3"
             auto-grow
@@ -48,15 +45,14 @@
             :rules="[rules.maxLength(2000)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-text-field
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.contactEmail"
             label="İletişim E-postası"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-email"
             density="comfortable"
@@ -65,12 +61,11 @@
             :rules="[rules.optionalEmail]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.contactPhone"
             label="İletişim Telefonu"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-phone"
             density="comfortable"
@@ -79,24 +74,24 @@
             :rules="[rules.optionalPhone]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-switch
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiSwitch
             v-model="formData.isActive"
             label="Aktif"
             color="primary"
             :disabled="loading"
             hide-details
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -104,9 +99,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -114,9 +109,9 @@
         class="btn-gradient-primary"
       >
         {{ tenant ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

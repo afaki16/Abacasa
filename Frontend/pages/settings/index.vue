@@ -14,41 +14,41 @@
     </div>
 
     <!-- Tabs: Admin / SuperAdmin (sadece her iki rol varsa göster) -->
-    <v-card class="settings-card" elevation="2">
+    <UiCard class="settings-card" elevation="2">
       <template v-if="hasMultipleTabs">
-        <v-tabs
+        <UiTabs
           v-model="activeTab"
           bg-color="transparent"
           color="primary"
           grow
           class="settings-tabs"
         >
-          <v-tab value="admin" prepend-icon="mdi-shield-account-outline">
+          <UiTab value="admin" prepend-icon="mdi-shield-account-outline">
             Admin Ayarları
-          </v-tab>
-          <v-tab value="superadmin" prepend-icon="mdi-shield-crown-outline">
+          </UiTab>
+          <UiTab value="superadmin" prepend-icon="mdi-shield-crown-outline">
             SuperAdmin Ayarları
-          </v-tab>
-        </v-tabs>
-        <v-divider />
+          </UiTab>
+        </UiTabs>
+        <hr class="ui-divider" />
       </template>
 
-      <v-window v-model="activeTab" class="settings-window">
+      <UiWindow v-model="activeTab" class="settings-window">
         <!-- Admin Tab Content -->
-        <v-window-item value="admin" v-if="showAdminTab">
-          <div class="pa-6">
+        <UiWindowItem value="admin" v-if="showAdminTab">
+          <div class="p-6">
             <SettingsAdminSection />
           </div>
-        </v-window-item>
+        </UiWindowItem>
 
         <!-- SuperAdmin Tab Content -->
-        <v-window-item value="superadmin" v-if="showSuperAdminTab">
-          <div class="pa-6">
+        <UiWindowItem value="superadmin" v-if="showSuperAdminTab">
+          <div class="p-6">
             <SettingsSuperAdminSection />
           </div>
-        </v-window-item>
-      </v-window>
-    </v-card>
+        </UiWindowItem>
+      </UiWindow>
+    </UiCard>
   </div>
 </template>
 
@@ -99,12 +99,12 @@ watch(
 <style scoped>
 .settings-container {
   padding: 24px;
-  background: rgb(var(--v-theme-background));
+  background: rgb(var(--color-background));
   min-height: 100vh;
 }
 
 .settings-header {
-  background: rgb(var(--v-theme-surface));
+  background: rgb(var(--color-surface));
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -113,13 +113,13 @@ watch(
 .settings-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0;
 }
 
 .settings-subtitle {
   font-size: 0.95rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-top: 8px;
 }
 
@@ -128,7 +128,7 @@ watch(
   overflow: hidden;
 }
 
-.settings-tabs :deep(.v-tab) {
+.settings-tabs :deep(.ui-tab) {
   text-transform: none;
   font-weight: 600;
 }

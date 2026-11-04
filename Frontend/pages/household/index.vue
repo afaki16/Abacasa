@@ -1,12 +1,12 @@
 <template>
   <!-- Başlık: hane adı -->
-  <div class="d-flex align-center flex-wrap ga-2 mb-4">
-    <v-icon size="28">mdi-home-heart</v-icon>
-    <h1 class="text-h5 font-weight-bold mb-0">{{ household?.name ?? 'Hane' }}</h1>
-    <v-btn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openRename" />
-    <v-spacer />
-    <span v-if="household" class="text-caption text-medium-emphasis">{{ household.memberCount }} üye</span>
-    <v-btn
+  <div class="flex items-center flex-wrap gap-2 mb-4">
+    <UiIcon icon="mdi-home-heart" :size="28" />
+    <h1 class="text-[1.5rem] leading-[2rem] font-bold mb-0">{{ household?.name ?? 'Hane' }}</h1>
+    <UiBtn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openRename" />
+    <div class="flex-1" />
+    <span v-if="household" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ household.memberCount }} üye</span>
+    <UiBtn
       v-if="canUpdateHousehold"
       size="small"
       variant="tonal"
@@ -16,13 +16,13 @@
       @click="exportHousehold"
     >
       Hane verisini indir (Excel)
-    </v-btn>
+    </UiBtn>
   </div>
 
   <!-- Üyeler -->
-  <v-card variant="outlined" class="mb-6">
-    <v-card-title class="text-subtitle-1 font-weight-bold">Üyeler</v-card-title>
-    <v-table density="comfortable">
+  <UiCard elevation="0" border class="mb-6">
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Üyeler</div>
+    <table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
           <th>Ad</th>
@@ -37,17 +37,17 @@
         <tr v-for="m in members" :key="m.membershipId">
           <td>
             {{ m.fullName }}
-            <span v-if="m.isCurrentUser" class="text-medium-emphasis">(siz)</span>
+            <span v-if="m.isCurrentUser" class="text-black/60 dark:text-white/70">(siz)</span>
           </td>
           <td>{{ m.email }}</td>
           <td>
-            <v-chip size="small" :color="m.role === 'Admin' ? 'primary' : undefined" variant="tonal">{{ getRoleLabel(m.role) }}</v-chip>
+            <UiChip size="small" :color="m.role === 'Admin' ? 'primary' : undefined" variant="tonal">{{ getRoleLabel(m.role) }}</UiChip>
           </td>
           <td>{{ m.personName ?? '—' }}</td>
           <td>{{ formatDisplayDate(m.joinedAt) }}</td>
-          <td class="text-right text-no-wrap">
-            <v-btn v-if="canUpdateMembers" icon="mdi-account-edit" size="x-small" variant="text" title="Rol ve kişi" @click="openMemberEdit(m)" />
-            <v-btn
+          <td class="text-right whitespace-nowrap">
+            <UiBtn v-if="canUpdateMembers" icon="mdi-account-edit" size="x-small" variant="text" title="Rol ve kişi" @click="openMemberEdit(m)" />
+            <UiBtn
               v-if="canDeleteMembers && !m.isCurrentUser"
               icon="mdi-account-remove"
               size="x-small"
@@ -56,42 +56,42 @@
               title="Çıkar"
               @click="memberToRemove = m"
             />
-            <v-btn v-if="m.isCurrentUser" size="small" variant="text" color="error" @click="leaveDialog = true">Haneden ayrıl</v-btn>
+            <UiBtn v-if="m.isCurrentUser" size="small" variant="text" color="error" @click="leaveDialog = true">Haneden ayrıl</UiBtn>
           </td>
         </tr>
         <tr v-if="!members.length">
-          <td colspan="6" class="text-medium-emphasis">Üye yok</td>
+          <td colspan="6" class="text-black/60 dark:text-white/70">Üye yok</td>
         </tr>
       </tbody>
-    </v-table>
-  </v-card>
+    </table>
+  </UiCard>
 
   <!-- Modüller (yalnızca yönetici: Household.Update) -->
-  <v-card v-if="canUpdateHousehold" variant="outlined" class="mb-6">
-    <v-card-title class="text-subtitle-1 font-weight-bold">Modüller</v-card-title>
-    <v-card-text>
-      <v-switch
+  <UiCard v-if="canUpdateHousehold" elevation="0" border class="mb-6">
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Modüller</div>
+    <div class="ui-card-text">
+      <UiSwitch
         :model-value="donationExtras"
         color="primary"
         hide-details
-        inset
-        :loading="savingModules"
         :disabled="savingModules"
         label="Bağış hedefleri ve emanetler"
         @update:model-value="toggleDonationExtras"
       />
-      <div class="text-body-2 text-medium-emphasis">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</div>
-    </v-card-text>
-  </v-card>
+      <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</div>
+    </div>
+  </UiCard>
 
   <!-- Davetler -->
-  <v-card v-if="canReadMembers" variant="outlined">
-    <v-card-title class="d-flex align-center text-subtitle-1 font-weight-bold">
-      Davetler
-      <v-spacer />
-      <v-btn v-if="canCreateMembers" color="primary" size="small" prepend-icon="mdi-email-plus" @click="openInvite">Davet et</v-btn>
-    </v-card-title>
-    <v-table density="comfortable">
+  <UiCard v-if="canReadMembers" elevation="0" border>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">
+      <div class="flex items-center">
+        Davetler
+        <div class="flex-1" />
+        <UiBtn v-if="canCreateMembers" color="primary" size="small" prepend-icon="mdi-email-plus" @click="openInvite">Davet et</UiBtn>
+      </div>
+    </div>
+    <table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
           <th>E-posta</th>
@@ -108,11 +108,11 @@
           <td>{{ getRoleLabel(i.role) }}</td>
           <td>{{ i.personName ?? '—' }}</td>
           <td>
-            <v-chip size="small" variant="tonal" :color="statusColor(i.status)">{{ invitationStatusLabel(i.status) }}</v-chip>
+            <UiChip size="small" variant="tonal" :color="statusColor(i.status)">{{ invitationStatusLabel(i.status) }}</UiChip>
           </td>
           <td>{{ formatDisplayDate(i.expiresAt) }}</td>
-          <td class="text-right text-no-wrap">
-            <v-btn
+          <td class="text-right whitespace-nowrap">
+            <UiBtn
               v-if="canCreateMembers && (i.status === 'Pending' || i.status === 'Expired')"
               size="small"
               variant="text"
@@ -120,149 +120,142 @@
               @click="resend(i)"
             >
               Yeniden gönder
-            </v-btn>
-            <v-btn v-if="canDeleteMembers && i.status === 'Pending'" size="small" variant="text" color="error" @click="invitationToRevoke = i">
+            </UiBtn>
+            <UiBtn v-if="canDeleteMembers && i.status === 'Pending'" size="small" variant="text" color="error" @click="invitationToRevoke = i">
               İptal
-            </v-btn>
+            </UiBtn>
           </td>
         </tr>
         <tr v-if="!invitations.length">
-          <td colspan="6" class="text-medium-emphasis">Davet yok</td>
+          <td colspan="6" class="text-black/60 dark:text-white/70">Davet yok</td>
         </tr>
       </tbody>
-    </v-table>
-  </v-card>
+    </table>
+  </UiCard>
 
-  <!-- Haneyi sil -->
-  <v-card v-if="canDeleteHousehold" variant="outlined" color="error" class="mt-6">
-    <v-card-title class="text-subtitle-1 font-weight-bold">Haneyi sil</v-card-title>
-    <v-card-text>
-      <p class="mb-4 text-high-emphasis">
+  <!-- Haneyi sil (eski outlined + color="error" görünümü: çerçeve ve başlık hata renginde) -->
+  <UiCard v-if="canDeleteHousehold" elevation="0" border class="danger-card mt-6">
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Haneyi sil</div>
+    <div class="ui-card-text">
+      <p class="mb-4 text-black/[0.87] dark:text-white/[0.87]">
         Hanenin bütün kayıtları (harcamalar, borçlar, planlar, kişiler…), üyelikleri ve davetleri kalıcı olarak silinir. Bu işlem geri
         alınamaz.
       </p>
-      <v-form @submit.prevent="removeHousehold">
-        <v-row dense>
-          <v-col cols="12" sm="6">
-            <v-text-field
+      <UiForm @submit="removeHousehold">
+        <div class="ui-row ui-row--dense">
+          <div class="ui-col ui-col-12 ui-col-sm-6">
+            <UiTextField
               v-model="deleteConfirmName"
               label="Onaylamak için hane adını yazın"
               :placeholder="household?.name"
-              variant="outlined"
               density="compact"
               :disabled="deleting"
             />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field
+          </div>
+          <div class="ui-col ui-col-12 ui-col-sm-6">
+            <UiTextField
               v-model="deletePassword"
               label="Parola"
               type="password"
               autocomplete="current-password"
-              variant="outlined"
               density="compact"
               :disabled="deleting"
             />
-          </v-col>
-        </v-row>
-        <v-alert v-if="deleteErrors.length" type="error" variant="tonal" density="compact" class="mb-3">
+          </div>
+        </div>
+        <UiAlert v-if="deleteErrors.length" type="error" variant="tonal" density="compact" class="mb-3">
           <div v-for="(e, idx) in deleteErrors" :key="idx">{{ e }}</div>
-        </v-alert>
-        <v-btn type="submit" color="error" :loading="deleting" :disabled="!canConfirmDelete">Haneyi kalıcı olarak sil</v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+        </UiAlert>
+        <UiBtn type="submit" color="error" :loading="deleting" :disabled="!canConfirmDelete">Haneyi kalıcı olarak sil</UiBtn>
+      </UiForm>
+    </div>
+  </UiCard>
 
   <!-- Hane adı -->
-  <v-dialog v-model="renameDialog" max-width="440">
-    <v-card>
-      <v-card-title>Hane adını düzenle</v-card-title>
-      <v-card-text>
-        <v-form ref="renameFormRef" @submit.prevent="saveRename">
-          <v-text-field
+  <UiDialog v-model="renameDialog" max-width="440">
+    <UiCard>
+      <div class="ui-card-title">Hane adını düzenle</div>
+      <div class="ui-card-text">
+        <UiForm ref="renameFormRef" @submit="saveRename">
+          <UiTextField
             v-model="renameValue"
             label="Hane adı"
-            variant="outlined"
             density="compact"
             counter="100"
             autofocus
             :rules="[requiredRule('Hane adı'), maxRule('Hane adı', 100)]"
             :disabled="busy"
           />
-          <div class="d-flex justify-end ga-2 mt-2">
-            <v-btn variant="text" :disabled="busy" @click="renameDialog = false">İptal</v-btn>
-            <v-btn color="primary" type="submit" :loading="busy">Kaydet</v-btn>
+          <div class="flex justify-end gap-2 mt-2">
+            <UiBtn variant="text" :disabled="busy" @click="renameDialog = false">İptal</UiBtn>
+            <UiBtn color="primary" type="submit" :loading="busy">Kaydet</UiBtn>
           </div>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+        </UiForm>
+      </div>
+    </UiCard>
+  </UiDialog>
 
   <!-- Rol ve kişi -->
-  <v-dialog v-model="memberDialog" max-width="480">
-    <v-card v-if="editingMember">
-      <v-card-title>{{ editingMember.fullName }}</v-card-title>
-      <v-card-text>
-        <v-select v-model="memberRole" :items="roleItems" label="Rol" variant="outlined" density="compact" class="mb-3" :disabled="busy" />
-        <v-select
+  <UiDialog v-model="memberDialog" max-width="480">
+    <UiCard v-if="editingMember">
+      <div class="ui-card-title">{{ editingMember.fullName }}</div>
+      <div class="ui-card-text">
+        <UiSelect v-model="memberRole" :items="roleItems" label="Rol" density="compact" class="mb-3" :disabled="busy" />
+        <UiSelect
           v-model="memberPersonId"
           :items="personItemsFor(editingMember.personId)"
           label="Bağlı kişi"
-          variant="outlined"
           density="compact"
           clearable
           :disabled="busy"
         />
-        <v-alert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
+        <UiAlert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
           <div v-for="(e, idx) in dialogErrors" :key="idx">{{ e }}</div>
-        </v-alert>
-        <div class="d-flex justify-end ga-2 mt-4">
-          <v-btn variant="text" :disabled="busy" @click="memberDialog = false">İptal</v-btn>
-          <v-btn color="primary" :loading="busy" @click="saveMember">Kaydet</v-btn>
+        </UiAlert>
+        <div class="flex justify-end gap-2 mt-4">
+          <UiBtn variant="text" :disabled="busy" @click="memberDialog = false">İptal</UiBtn>
+          <UiBtn color="primary" :loading="busy" @click="saveMember">Kaydet</UiBtn>
         </div>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+      </div>
+    </UiCard>
+  </UiDialog>
 
   <!-- Davet et -->
-  <v-dialog v-model="inviteDialog" max-width="480">
-    <v-card>
-      <v-card-title>Davet et</v-card-title>
-      <v-card-text>
-        <v-form ref="inviteFormRef" @submit.prevent="sendInvite">
-          <v-text-field
+  <UiDialog v-model="inviteDialog" max-width="480">
+    <UiCard>
+      <div class="ui-card-title">Davet et</div>
+      <div class="ui-card-text">
+        <UiForm ref="inviteFormRef" @submit="sendInvite">
+          <UiTextField
             v-model="inviteEmail"
             label="E-posta"
             type="email"
-            variant="outlined"
             density="compact"
             class="mb-3"
             autofocus
             :rules="[requiredRule('E-posta'), emailRule]"
             :disabled="busy"
           />
-          <v-select v-model="inviteRole" :items="roleItems" label="Rol" variant="outlined" density="compact" class="mb-3" :disabled="busy" />
-          <v-select
+          <UiSelect v-model="inviteRole" :items="roleItems" label="Rol" density="compact" class="mb-3" :disabled="busy" />
+          <UiSelect
             v-model="invitePersonId"
             :items="personItemsFor(null)"
             label="Bağlanacak kişi (isteğe bağlı)"
-            variant="outlined"
             density="compact"
             clearable
             :disabled="busy"
           />
-          <v-alert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
+          <UiAlert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
             <div v-for="(e, idx) in dialogErrors" :key="idx">{{ e }}</div>
-          </v-alert>
-          <div class="d-flex justify-end ga-2 mt-4">
-            <v-btn variant="text" :disabled="busy" @click="inviteDialog = false">İptal</v-btn>
-            <v-btn color="primary" type="submit" :loading="busy">Gönder</v-btn>
+          </UiAlert>
+          <div class="flex justify-end gap-2 mt-4">
+            <UiBtn variant="text" :disabled="busy" @click="inviteDialog = false">İptal</UiBtn>
+            <UiBtn color="primary" type="submit" :loading="busy">Gönder</UiBtn>
           </div>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
-
+        </UiForm>
+      </div>
+    </UiCard>
+  </UiDialog>
   <ConfirmDialog
     :model-value="!!memberToRemove"
     title="Üyeyi çıkar"
@@ -588,3 +581,12 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.danger-card {
+  border-color: rgb(var(--color-error));
+}
+.danger-card > .ui-card-title {
+  color: rgb(var(--color-error));
+}
+</style>

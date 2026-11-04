@@ -3,17 +3,17 @@
     <!-- Header -->
     <div class="detail-header">
       <div class="detail-icon">
-        <v-icon size="32" color="primary">mdi-shield-account</v-icon>
+        <UiIcon icon="mdi-shield-account" :size="32" color="primary" />
       </div>
       <div class="header-info">
         <h2 class="role-name">{{ role?.name }}</h2>
         <div class="role-meta">
-          <v-chip :color="role?.isSystemRole ? 'warning' : 'success'" size="small" variant="tonal">
+          <UiChip :color="role?.isSystemRole ? 'warning' : 'success'" size="small" variant="tonal">
             {{ role?.isSystemRole ? 'Sistem' : 'Özel' }}
-          </v-chip>
-          <v-chip v-if="showTenant" size="small" variant="tonal" color="info" prepend-icon="mdi-domain">
+          </UiChip>
+          <UiChip v-if="showTenant" size="small" variant="tonal" color="info" prepend-icon="mdi-domain">
             {{ role?.tenantId == null ? 'Ortak' : `Tenant ${role.tenantId}` }}
-          </v-chip>
+          </UiChip>
         </div>
       </div>
     </div>
@@ -21,38 +21,38 @@
     <div class="info-grid">
       <div class="info-item">
         <div class="info-label">
-          <v-icon size="18" color="primary">mdi-text</v-icon>
+          <UiIcon icon="mdi-text" :size="18" color="primary" />
           Açıklama
         </div>
         <div class="info-value">{{ role?.description || '-' }}</div>
       </div>
       <div class="info-item">
         <div class="info-label">
-          <v-icon size="18" color="primary">mdi-calendar</v-icon>
+          <UiIcon icon="mdi-calendar" :size="18" color="primary" />
           Oluşturulma
         </div>
         <div class="info-value">{{ role?.createdDate ? dateTimeFormatLong(role.createdDate) : '-' }}</div>
       </div>
     </div>
 
-    <v-divider class="my-6" />
+    <hr class="ui-divider my-6" />
 
     <!-- Permissions -->
     <div class="section-header">
       <h3 class="section-title">
-        <v-icon size="20" class="mr-2">mdi-key-variant</v-icon>
+        <UiIcon icon="mdi-key-variant" :size="20" class="mr-2" />
         Yetkiler
       </h3>
-      <v-chip size="small" color="primary" variant="tonal">
+      <UiChip size="small" color="primary" variant="tonal">
         {{ role?.permissions?.length || 0 }} yetki
-      </v-chip>
+      </UiChip>
     </div>
 
     <div v-if="groups.length" class="permission-groups">
       <div v-for="group in groups" :key="group.resource" class="permission-group">
         <div class="group-title">{{ group.resource }} ({{ group.permissions.length }})</div>
         <div class="group-items">
-          <v-chip
+          <UiChip
             v-for="permission in group.permissions"
             :key="permission.id"
             size="small"
@@ -60,20 +60,20 @@
             :title="permission.description || undefined"
           >
             {{ permission.name }}
-          </v-chip>
+          </UiChip>
         </div>
       </div>
     </div>
     <div v-else class="empty-state">
-      <v-icon size="48" color="grey-400">mdi-key-remove</v-icon>
+      <UiIcon icon="mdi-key-remove" :size="48" color="grey-400" />
       <p class="empty-text">Bu role atanmış yetki yok</p>
     </div>
 
     <div class="detail-footer">
-      <v-btn variant="outlined" size="large" class="btn-gradient-dark" @click="$emit('close')">
+      <UiBtn variant="outlined" size="large" class="btn-gradient-dark" @click="$emit('close')">
         Kapat
-      </v-btn>
-      <v-btn
+      </UiBtn>
+      <UiBtn
         v-if="canEdit"
         size="large"
         class="btn-gradient-primary"
@@ -81,7 +81,7 @@
         @click="$emit('edit', role)"
       >
         Düzenle
-      </v-btn>
+      </UiBtn>
     </div>
   </div>
 </template>
@@ -136,7 +136,7 @@ const groups = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--v-theme-primary), 0.1);
+  background: rgb(var(--color-brand) / 0.1);
   border-radius: 12px;
   flex-shrink: 0;
 }
@@ -149,7 +149,7 @@ const groups = computed(() => {
 .role-name {
   font-size: 1.5rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 8px 0;
 }
 
@@ -167,9 +167,9 @@ const groups = computed(() => {
 
 .info-item {
   padding: 14px 16px;
-  background: rgb(var(--v-theme-surface-variant));
+  background: rgb(var(--color-surface-variant));
   border-radius: 8px;
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  border: 1px solid rgb(var(--color-outline-variant));
 }
 
 .info-label {
@@ -177,7 +177,7 @@ const groups = computed(() => {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-bottom: 6px;
   font-weight: 500;
   text-transform: uppercase;
@@ -186,7 +186,7 @@ const groups = computed(() => {
 
 .info-value {
   font-size: 0.9375rem;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   font-weight: 500;
   white-space: pre-line;
 }
@@ -201,7 +201,7 @@ const groups = computed(() => {
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0;
   display: flex;
   align-items: center;
@@ -215,15 +215,15 @@ const groups = computed(() => {
 
 .permission-group {
   padding: 12px 16px;
-  background: rgb(var(--v-theme-surface));
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  background: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-outline-variant));
   border-radius: 8px;
 }
 
 .group-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin-bottom: 8px;
 }
 
@@ -240,7 +240,7 @@ const groups = computed(() => {
 
 .empty-text {
   font-size: 0.875rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-top: 8px;
 }
 
@@ -250,7 +250,7 @@ const groups = computed(() => {
   gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid rgb(var(--v-theme-outline-variant));
+  border-top: 1px solid rgb(var(--color-outline-variant));
 }
 
 @media (max-width: 768px) {
@@ -262,7 +262,7 @@ const groups = computed(() => {
     flex-direction: column;
   }
 
-  .detail-footer .v-btn {
+  .detail-footer .ui-btn {
     width: 100%;
   }
 }

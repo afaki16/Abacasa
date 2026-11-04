@@ -7,7 +7,7 @@
     </div>
 
     <!-- ═══════════════ HERO ═══════════════ -->
-    <v-card class="hero-card mb-6" rounded="xl" elevation="0" border>
+    <UiCard class="hero-card mb-6" rounded="xl" elevation="0" border>
       <!-- Gradient banner with decorative blobs -->
       <div class="hero-banner">
         <div class="blob blob-1" />
@@ -15,7 +15,7 @@
         <div class="blob blob-3" />
       </div>
 
-      <v-card-text class="hero-body pt-0 px-6 pb-0">
+      <div class="ui-card-text hero-body !pt-0 !px-6 !pb-0">
         <div class="hero-top">
           <!-- Avatar -->
           <div class="avatar-wrap">
@@ -32,13 +32,13 @@
           <div class="hero-meta">
             <h1 class="profile-name">{{ user?.fullName }}</h1>
             <p class="profile-email mt-1">
-              <v-icon size="13" class="me-1">mdi-email-outline</v-icon>
+              <UiIcon icon="mdi-email-outline" :size="13" class="me-1" />
               {{ user?.email }}
             </p>
           </div>
 
           <!-- Status chip -->
-          <v-chip
+          <UiChip
             class="hero-status ml-auto"
             :color="statusColor"
             variant="tonal"
@@ -50,14 +50,14 @@
             "
           >
             {{ statusLabel }}
-          </v-chip>
+          </UiChip>
         </div>
-      </v-card-text>
+      </div>
 
       <!-- Stats strip -->
       <div class="stats-strip">
         <div class="stat-pill">
-          <v-icon size="16" color="primary">mdi-monitor-multiple</v-icon>
+          <UiIcon icon="mdi-monitor-multiple" :size="16" color="primary" />
           <div>
             <div class="stat-val">
               {{ loadingSessions ? "—" : activeSessions.length }}
@@ -67,9 +67,7 @@
         </div>
         <div class="stat-sep" />
         <div class="stat-pill">
-          <v-icon size="16" color="primary"
-            >mdi-calendar-account-outline</v-icon
-          >
+          <UiIcon icon="mdi-calendar-account-outline" :size="16" color="primary" />
           <div>
             <div class="stat-val">{{ memberDays }}</div>
             <div class="stat-lbl">Gün Üye</div>
@@ -77,7 +75,7 @@
         </div>
         <div class="stat-sep" />
         <div class="stat-pill">
-          <v-icon size="16" color="primary">mdi-login-variant</v-icon>
+          <UiIcon icon="mdi-login-variant" :size="16" color="primary" />
           <div>
             <div class="stat-val">
               {{ user?.lastLoginDate ? lastLoginShort : "—" }}
@@ -86,26 +84,26 @@
           </div>
         </div>
       </div>
-    </v-card>
+    </UiCard>
 
     <!-- ═══════════════ MAIN ═══════════════ -->
-    <v-row>
+    <div class="ui-row">
       <!-- ── Left: Account Info ── -->
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" elevation="0" border height="100%">
-          <v-card-title class="section-title pa-5">
-            <v-avatar
+      <div class="ui-col ui-col-12 ui-col-md-4">
+        <UiCard rounded="xl" elevation="0" border height="100%">
+          <div class="ui-card-title section-title !p-5">
+            <UiAvatar
               color="primary"
               variant="tonal"
-              size="32"
+              :size="32"
               rounded="lg"
               class="mr-3"
             >
-              <v-icon size="16">mdi-account-circle-outline</v-icon>
-            </v-avatar>
+              <UiIcon icon="mdi-account-circle-outline" :size="16" />
+            </UiAvatar>
             Hesap Bilgileri
-            <v-spacer />
-            <v-btn
+            <div class="flex-1" />
+            <UiBtn
               size="small"
               variant="text"
               color="primary"
@@ -113,11 +111,11 @@
               @click="openProfileDialog"
             >
               Düzenle
-            </v-btn>
-          </v-card-title>
-          <v-divider />
+            </UiBtn>
+          </div>
+          <hr class="ui-divider" />
 
-          <v-card-text class="pa-4">
+          <div class="ui-card-text !p-4">
             <div class="info-grid">
               <div class="info-tile">
                 <span class="tile-lbl">Ad</span>
@@ -131,27 +129,19 @@
 
               <div class="info-tile info-tile--wide">
                 <span class="tile-lbl">E-posta</span>
-                <div class="d-flex align-center ga-1">
+                <div class="flex items-center gap-1">
                   <span class="tile-val">{{ user?.email }}</span>
-                  <v-tooltip
+                  <UiTooltip
                     :text="user?.emailConfirmed ? 'Doğrulandı' : 'Doğrulanmadı'"
                     location="top"
                   >
-                    <template #activator="{ props }">
-                      <v-icon
-                        v-bind="props"
-                        size="14"
-                        :color="user?.emailConfirmed ? 'success' : 'warning'"
-                      >
-                        {{
-                          user?.emailConfirmed
-                            ? "mdi-check-circle"
-                            : "mdi-alert-circle-outline"
-                        }}
-                      </v-icon>
-                    </template>
-                  </v-tooltip>
-                  <v-btn
+                    <UiIcon
+                      :icon="user?.emailConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'"
+                      :size="14"
+                      :color="user?.emailConfirmed ? 'success' : 'warning'"
+                    />
+                  </UiTooltip>
+                  <UiBtn
                     size="x-small"
                     variant="text"
                     color="primary"
@@ -159,32 +149,24 @@
                     @click="openEmailDialog"
                   >
                     Değiştir
-                  </v-btn>
+                  </UiBtn>
                 </div>
               </div>
 
               <div v-if="user?.phoneNumber" class="info-tile info-tile--wide">
                 <span class="tile-lbl">Telefon</span>
-                <div class="d-flex align-center ga-1">
+                <div class="flex items-center gap-1">
                   <span class="tile-val">{{ user.phoneNumber }}</span>
-                  <v-tooltip
+                  <UiTooltip
                     :text="user?.phoneConfirmed ? 'Doğrulandı' : 'Doğrulanmadı'"
                     location="top"
                   >
-                    <template #activator="{ props }">
-                      <v-icon
-                        v-bind="props"
-                        size="14"
-                        :color="user?.phoneConfirmed ? 'success' : 'warning'"
-                      >
-                        {{
-                          user?.phoneConfirmed
-                            ? "mdi-check-circle"
-                            : "mdi-alert-circle-outline"
-                        }}
-                      </v-icon>
-                    </template>
-                  </v-tooltip>
+                    <UiIcon
+                      :icon="user?.phoneConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'"
+                      :size="14"
+                      :color="user?.phoneConfirmed ? 'success' : 'warning'"
+                    />
+                  </UiTooltip>
                 </div>
               </div>
 
@@ -202,25 +184,25 @@
                 }}</span>
               </div>
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
+          </div>
+        </UiCard>
+      </div>
 
       <!-- ── Right: Sessions ── -->
-      <v-col cols="12" md="8">
-        <v-card rounded="xl" elevation="0" border>
-          <v-card-title class="section-title d-flex align-center pa-5">
-            <v-avatar
+      <div class="ui-col ui-col-12 ui-col-md-8">
+        <UiCard rounded="xl" elevation="0" border>
+          <div class="ui-card-title section-title !p-5">
+            <UiAvatar
               color="primary"
               variant="tonal"
-              size="32"
+              :size="32"
               rounded="lg"
               class="mr-3"
             >
-              <v-icon size="16">mdi-monitor-multiple</v-icon>
-            </v-avatar>
+              <UiIcon icon="mdi-monitor-multiple" :size="16" />
+            </UiAvatar>
             <span>Oturumlarım</span>
-            <v-chip
+            <UiChip
               v-if="!loadingSessions && activeSessions.length"
               size="x-small"
               color="primary"
@@ -228,9 +210,9 @@
               class="ml-2"
             >
               {{ activeSessions.length }} aktif
-            </v-chip>
-            <v-spacer />
-            <v-btn
+            </UiChip>
+            <div class="flex-1" />
+            <UiBtn
               size="small"
               variant="text"
               color="primary"
@@ -239,8 +221,8 @@
               @click="loadSessions"
             >
               Yenile
-            </v-btn>
-            <v-btn
+            </UiBtn>
+            <UiBtn
               v-if="activeSessions.length"
               size="small"
               variant="tonal"
@@ -251,12 +233,12 @@
               @click="confirmLogoutAll = true"
             >
               Tümünden Çık
-            </v-btn>
-          </v-card-title>
-          <v-divider />
+            </UiBtn>
+          </div>
+          <hr class="ui-divider" />
 
-          <v-card-text class="pa-0">
-            <v-progress-linear
+          <div class="ui-card-text !p-0">
+            <UiProgressLinear
               v-if="loadingSessions"
               indeterminate
               color="primary"
@@ -265,12 +247,12 @@
             <!-- Empty -->
             <div
               v-if="!loadingSessions && !sessions.length"
-              class="empty-state pa-10"
+              class="empty-state p-10"
             >
-              <v-avatar color="grey-lighten-3" size="64" class="mb-4">
-                <v-icon size="30" color="grey">mdi-monitor-off</v-icon>
-              </v-avatar>
-              <p class="text-body-2 text-medium-emphasis">
+              <UiAvatar color="grey-lighten-3" :size="64" class="mb-4">
+                <UiIcon icon="mdi-monitor-off" :size="30" color="grey" />
+              </UiAvatar>
+              <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">
                 Aktif oturum bulunamadı.
               </p>
             </div>
@@ -278,7 +260,7 @@
             <!-- Active sessions -->
             <div
               v-if="!loadingSessions && activeSessions.length"
-              class="pa-4 d-flex flex-column ga-2"
+              class="p-4 flex flex-col gap-2"
             >
               <div
                 v-for="session in activeSessions"
@@ -293,22 +275,20 @@
                   }"
                 />
 
-                <v-avatar
+                <UiAvatar
                   :color="session.isCurrentSession ? 'primary' : 'grey'"
                   variant="tonal"
-                  size="44"
+                  :size="44"
                   rounded="lg"
                   class="flex-shrink-0"
                 >
-                  <v-icon size="22">{{
-                    deviceIcon(session.deviceType)
-                  }}</v-icon>
-                </v-avatar>
+                  <UiIcon :icon="deviceIcon(session.deviceType)" :size="22" />
+                </UiAvatar>
 
                 <div class="flex-1 min-w-0">
-                  <div class="d-flex align-center ga-2 flex-wrap">
+                  <div class="flex items-center gap-2 flex-wrap">
                     <span class="session-name">{{ session.deviceName }}</span>
-                    <v-chip
+                    <UiChip
                       v-if="session.isCurrentSession"
                       size="x-small"
                       color="primary"
@@ -316,32 +296,30 @@
                       rounded
                     >
                       Bu cihaz
-                    </v-chip>
-                    <v-chip
+                    </UiChip>
+                    <UiChip
                       size="x-small"
                       color="success"
                       variant="tonal"
                       rounded
                     >
-                      <v-icon start size="9">mdi-circle</v-icon>
+                      <UiIcon icon="mdi-circle" start :size="9" />
                       Aktif
-                    </v-chip>
+                    </UiChip>
                   </div>
                   <div class="session-meta mt-1">
                     <span>
-                      <v-icon size="11">mdi-ip-network-outline</v-icon>
+                      <UiIcon icon="mdi-ip-network-outline" :size="11" />
                       {{ session.ipAddress }}
                     </span>
                     <span class="mx-1 opacity-30">·</span>
                     <span>
-                      <v-icon size="11">mdi-calendar-outline</v-icon>
+                      <UiIcon icon="mdi-calendar-outline" :size="11" />
                       {{ formatDate(session.createdDate) }}
                     </span>
                     <span class="mx-1 opacity-30">·</span>
-                    <span class="text-success font-weight-medium">
-                      <v-icon size="11" color="success"
-                        >mdi-clock-outline</v-icon
-                      >
+                    <span class="text-primary font-medium">
+                      <UiIcon icon="mdi-clock-outline" :size="11" color="success" />
                       {{ remainingLabel(session) }} kaldı
                     </span>
                   </div>
@@ -354,49 +332,45 @@
               v-if="!loadingSessions && inactiveSessions.length"
               class="px-4 pb-4"
             >
-              <v-divider class="mb-3" />
+              <hr class="ui-divider !mb-3" />
               <div
-                class="history-toggle d-flex align-center ga-2 mb-3"
+                class="history-toggle flex items-center gap-2 mb-3"
                 @click="showHistory = !showHistory"
               >
-                <v-icon size="16" color="grey">{{
-                  showHistory ? "mdi-chevron-up" : "mdi-chevron-down"
-                }}</v-icon>
-                <span class="text-caption text-medium-emphasis">
+                <UiIcon :icon="showHistory ? 'mdi-chevron-up' : 'mdi-chevron-down'" :size="16" color="grey" />
+                <span class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">
                   Geçmiş oturumlar ({{ inactiveSessions.length }})
                 </span>
               </div>
 
-              <div v-if="showHistory" class="d-flex flex-column ga-2">
+              <div v-if="showHistory" class="flex flex-col gap-2">
                 <div
                   v-for="session in inactiveSessions"
                   :key="session.id"
                   class="session-card session-card--inactive"
                 >
                   <div class="session-accent session-accent--error" />
-                  <v-avatar
+                  <UiAvatar
                     color="grey"
                     variant="tonal"
-                    size="44"
+                    :size="44"
                     rounded="lg"
                     class="flex-shrink-0"
                   >
-                    <v-icon size="22" color="grey">{{
-                      deviceIcon(session.deviceType)
-                    }}</v-icon>
-                  </v-avatar>
+                    <UiIcon :icon="deviceIcon(session.deviceType)" :size="22" color="grey" />
+                  </UiAvatar>
                   <div class="flex-1 min-w-0">
-                    <span class="session-name text-medium-emphasis">{{
+                    <span class="session-name !text-black/60 dark:!text-white/70">{{
                       session.deviceName
                     }}</span>
                     <div class="session-meta mt-1">
                       <span>
-                        <v-icon size="11">mdi-ip-network-outline</v-icon>
+                        <UiIcon icon="mdi-ip-network-outline" :size="11" />
                         {{ session.ipAddress }}
                       </span>
                       <span class="mx-1 opacity-30">·</span>
                       <span>
-                        <v-icon size="11">mdi-calendar-outline</v-icon>
+                        <UiIcon icon="mdi-calendar-outline" :size="11" />
                         {{ formatDate(session.createdDate) }}
                       </span>
                       <span class="mx-1 opacity-30">·</span>
@@ -406,208 +380,203 @@
                 </div>
               </div>
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+          </div>
+        </UiCard>
+      </div>
+    </div>
 
     <!-- ═══════════════ CHANGE PASSWORD ═══════════════ -->
-    <v-row class="mt-0">
-      <v-col cols="12" md="6">
-        <v-card rounded="xl" elevation="0" border>
-          <v-card-title class="section-title pa-5">
-            <v-avatar
+    <div class="ui-row !mt-0">
+      <div class="ui-col ui-col-12 ui-col-md-6">
+        <UiCard rounded="xl" elevation="0" border>
+          <div class="ui-card-title section-title !p-5">
+            <UiAvatar
               color="primary"
               variant="tonal"
-              size="32"
+              :size="32"
               rounded="lg"
               class="mr-3"
             >
-              <v-icon size="16">mdi-lock-reset</v-icon>
-            </v-avatar>
+              <UiIcon icon="mdi-lock-reset" :size="16" />
+            </UiAvatar>
             Şifre Değiştir
-          </v-card-title>
-          <v-divider />
+          </div>
+          <hr class="ui-divider" />
 
-          <v-card-text class="pa-5">
-            <v-form
+          <div class="ui-card-text !p-5">
+            <UiForm
               ref="passwordFormRef"
-              @submit.prevent="submitChangePassword"
+              @submit="submitChangePassword"
             >
               <template v-if="!useCode">
-                <v-text-field
+                <UiTextField
                   v-model="currentPassword"
                   label="Mevcut Şifre"
                   :type="showCurrent ? 'text' : 'password'"
                   :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
                   :rules="[validationRules.required]"
-                  variant="outlined"
                   density="comfortable"
                   class="mb-1"
                   @click:append-inner="showCurrent = !showCurrent"
                 />
-                <div class="d-flex justify-end mb-3">
-                  <v-btn size="small" variant="text" color="primary" @click="switchToCode">
+                <div class="flex justify-end mb-3">
+                  <UiBtn size="small" variant="text" color="primary" @click="switchToCode">
                     Mevcut şifremi hatırlamıyorum
-                  </v-btn>
+                  </UiBtn>
                 </div>
               </template>
 
               <!-- Mevcut şifre yerine e-postaya gelen 6 haneli kod -->
               <template v-else>
-                <p class="text-body-2 text-medium-emphasis mb-3">
+                <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-3">
                   <strong>{{ user?.email }}</strong> adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.
                 </p>
-                <div class="d-flex ga-2 align-start mb-1">
-                  <v-text-field
+                <div class="flex gap-2 items-start mb-1">
+                  <UiTextField
                     v-model="passwordCode"
                     label="Doğrulama Kodu"
                     inputmode="numeric"
                     maxlength="6"
                     autocomplete="one-time-code"
                     :rules="[validationRules.required]"
-                    variant="outlined"
                     density="comfortable"
+                    class="flex-1"
                   />
-                  <v-btn
+                  <!-- Etiket alanın üstünde: düğme giriş kutusuyla aynı hizada başlasın -->
+                  <UiBtn
                     variant="tonal"
                     color="primary"
-                    height="48"
+                    class="mt-[23px]"
+                    style="height: 48px"
                     :loading="sendingCode"
                     :disabled="codeCooldown > 0"
                     @click="sendCode"
                   >
                     {{ codeCooldown > 0 ? `${codeCooldown} sn` : codeSent ? "Tekrar Gönder" : "Kod Gönder" }}
-                  </v-btn>
+                  </UiBtn>
                 </div>
-                <div class="d-flex justify-end mb-3">
-                  <v-btn size="small" variant="text" @click="useCode = false">Mevcut şifremle değiştir</v-btn>
+                <div class="flex justify-end mb-3">
+                  <UiBtn size="small" variant="text" @click="useCode = false">Mevcut şifremle değiştir</UiBtn>
                 </div>
               </template>
-              <v-text-field
+              <UiTextField
                 v-model="newPassword"
                 label="Yeni Şifre"
                 :type="showNew ? 'text' : 'password'"
                 :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
                 :rules="[validationRules.password]"
-                variant="outlined"
                 density="comfortable"
                 class="mb-3"
                 @click:append-inner="showNew = !showNew"
               />
-              <v-text-field
+              <UiTextField
                 v-model="confirmNewPassword"
                 label="Yeni Şifre Tekrar"
                 :type="showConfirm ? 'text' : 'password'"
                 :append-inner-icon="showConfirm ? 'mdi-eye-off' : 'mdi-eye'"
                 :rules="[validationRules.confirmPassword(newPassword)]"
-                variant="outlined"
                 density="comfortable"
                 class="mb-4"
                 @click:append-inner="showConfirm = !showConfirm"
               />
-              <v-btn
+              <UiBtn
                 type="submit"
                 color="primary"
                 :loading="isChangingPassword"
                 block
               >
                 Şifreyi Güncelle
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+              </UiBtn>
+            </UiForm>
+          </div>
+        </UiCard>
+      </div>
+    </div>
 
     <!-- ═══════════════ VERİLERİM / DELETE ACCOUNT ═══════════════ -->
-    <v-row class="mt-0">
-      <v-col cols="12" md="6">
-        <v-card rounded="xl" elevation="0" border class="mb-6">
-          <v-card-title class="section-title pa-5">
-            <v-avatar color="primary" variant="tonal" size="32" rounded="lg" class="mr-3">
-              <v-icon size="16">mdi-microsoft-excel</v-icon>
-            </v-avatar>
+    <div class="ui-row !mt-0">
+      <div class="ui-col ui-col-12 ui-col-md-6">
+        <UiCard rounded="xl" elevation="0" border class="mb-6">
+          <div class="ui-card-title section-title !p-5">
+            <UiAvatar color="primary" variant="tonal" :size="32" rounded="lg" class="mr-3">
+              <UiIcon icon="mdi-microsoft-excel" :size="16" />
+            </UiAvatar>
             Verilerim
-          </v-card-title>
-          <v-divider />
-          <v-card-text class="pa-5">
+          </div>
+          <hr class="ui-divider" />
+          <div class="ui-card-text !p-5">
             <p class="mb-4">Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.</p>
-            <v-btn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
+            <UiBtn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
               Verilerimi indir (Excel)
-            </v-btn>
-          </v-card-text>
-        </v-card>
+            </UiBtn>
+          </div>
+        </UiCard>
         <DeleteAccountSection />
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- Bilgilerimi düzenle -->
-    <v-dialog v-model="profileDialog" max-width="460">
-      <v-card rounded="xl">
-        <v-card-title class="pt-5 px-5">Bilgilerimi Düzenle</v-card-title>
-        <v-card-text class="px-5">
-          <v-form ref="profileFormRef" @submit.prevent="saveProfile">
-            <v-text-field
+    <UiDialog v-model="profileDialog" max-width="460">
+      <UiCard rounded="xl">
+        <div class="ui-card-title !pt-5 !px-5">Bilgilerimi Düzenle</div>
+        <div class="ui-card-text !px-5">
+          <UiForm ref="profileFormRef" @submit="saveProfile">
+            <UiTextField
               v-model="profileForm.firstName"
               label="Ad"
-              variant="outlined"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
               class="mb-2"
             />
-            <v-text-field
+            <UiTextField
               v-model="profileForm.lastName"
               label="Soyad"
-              variant="outlined"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
               class="mb-2"
             />
-            <v-text-field
+            <UiTextField
               v-model="profileForm.phoneNumber"
               label="Telefon"
-              variant="outlined"
               density="comfortable"
               type="tel"
               :rules="[validationRules.phone]"
               :disabled="savingProfile"
             />
-            <v-alert v-if="profileError" type="error" variant="tonal" density="compact" class="mt-2">
+            <UiAlert v-if="profileError" type="error" variant="tonal" density="compact" class="mt-2">
               {{ profileError }}
-            </v-alert>
-          </v-form>
-        </v-card-text>
-        <v-card-actions class="px-5 pb-5">
-          <v-spacer />
-          <v-btn variant="text" :disabled="savingProfile" @click="profileDialog = false">İptal</v-btn>
-          <v-btn color="primary" variant="flat" :loading="savingProfile" @click="saveProfile">Kaydet</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            </UiAlert>
+          </UiForm>
+        </div>
+        <div class="ui-card-actions !px-5 !pb-5">
+          <div class="flex-1" />
+          <UiBtn variant="text" :disabled="savingProfile" @click="profileDialog = false">İptal</UiBtn>
+          <UiBtn color="primary" variant="flat" :loading="savingProfile" @click="saveProfile">Kaydet</UiBtn>
+        </div>
+      </UiCard>
+    </UiDialog>
 
     <!-- E-posta değiştir: değişiklik yeni adrese giden link onaylanınca uygulanır -->
-    <v-dialog v-model="emailDialog" max-width="460">
-      <v-card rounded="xl">
-        <v-card-title class="pt-5 px-5">E-posta Adresini Değiştir</v-card-title>
-        <v-card-text class="px-5">
+    <UiDialog v-model="emailDialog" max-width="460">
+      <UiCard rounded="xl">
+        <div class="ui-card-title !pt-5 !px-5">E-posta Adresini Değiştir</div>
+        <div class="ui-card-text !px-5">
           <template v-if="emailSentTo">
-            <v-alert type="success" variant="tonal" class="mb-2">
+            <UiAlert type="success" variant="tonal" class="mb-2">
               <strong>{{ emailSentTo }}</strong> adresine bir onay bağlantısı gönderdik. Bağlantıya
               tıklayana kadar mevcut adresinizle giriş yapmaya devam edersiniz.
-            </v-alert>
+            </UiAlert>
           </template>
-          <v-form v-else ref="emailFormRef" @submit.prevent="submitEmailChange">
-            <p class="text-body-2 text-medium-emphasis mb-4">
+          <UiForm v-else ref="emailFormRef" @submit="submitEmailChange">
+            <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-4">
               Yeni adrese bir onay bağlantısı gönderilir. E-postanız bu bağlantı onaylandığında değişir
               ve tüm oturumlarınız kapatılır.
             </p>
-            <v-text-field
+            <UiTextField
               v-model="emailForm.newEmail"
               label="Yeni e-posta"
-              variant="outlined"
               density="comfortable"
               type="email"
               autocomplete="email"
@@ -615,10 +584,9 @@
               :disabled="sendingEmailChange"
               class="mb-2"
             />
-            <v-text-field
+            <UiTextField
               v-model="emailForm.currentPassword"
               label="Mevcut şifre"
-              variant="outlined"
               density="comfortable"
               :type="showEmailPassword ? 'text' : 'password'"
               :append-inner-icon="showEmailPassword ? 'mdi-eye-off' : 'mdi-eye'"
@@ -627,25 +595,25 @@
               :disabled="sendingEmailChange"
               @click:append-inner="showEmailPassword = !showEmailPassword"
             />
-            <v-alert v-if="emailError" type="error" variant="tonal" density="compact" class="mt-2">
+            <UiAlert v-if="emailError" type="error" variant="tonal" density="compact" class="mt-2">
               {{ emailError }}
-            </v-alert>
-          </v-form>
-        </v-card-text>
-        <v-card-actions class="px-5 pb-5">
-          <v-spacer />
+            </UiAlert>
+          </UiForm>
+        </div>
+        <div class="ui-card-actions !px-5 !pb-5">
+          <div class="flex-1" />
           <template v-if="emailSentTo">
-            <v-btn color="primary" variant="flat" @click="emailDialog = false">Tamam</v-btn>
+            <UiBtn color="primary" variant="flat" @click="emailDialog = false">Tamam</UiBtn>
           </template>
           <template v-else>
-            <v-btn variant="text" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</v-btn>
-            <v-btn color="primary" variant="flat" :loading="sendingEmailChange" @click="submitEmailChange">
+            <UiBtn variant="text" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</UiBtn>
+            <UiBtn color="primary" variant="flat" :loading="sendingEmailChange" @click="submitEmailChange">
               Onay Bağlantısı Gönder
-            </v-btn>
+            </UiBtn>
           </template>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </div>
+      </UiCard>
+    </UiDialog>
 
     <ConfirmDialog
       v-model="confirmLogoutAll"

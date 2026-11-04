@@ -54,13 +54,13 @@
 
 <!-- For Status -->
   <template #cell-status="{ value }">
-  <v-chip
+  <UiChip
     :color="getStatusBadge(value).color"
     size="small"
     variant="tonal"
   >
     {{ getStatusBadge(value).label }}
-  </v-chip>
+  </UiChip>
 </template>
 
 <!-- Haneler (yalnızca SuperAdmin, platform görünümü): kullanıcının canlı üyeliklerinin hane adları -->
@@ -80,7 +80,7 @@
       :disabled="resendingId === item.id"
       @click.stop="openResendDialog(item)"
     >
-      <v-icon :icon="resendingId === item.id ? 'mdi-loading mdi-spin' : 'mdi-email-arrow-right-outline'" size="18" />
+      <UiIcon :icon="resendingId === item.id ? 'mdi-loading' : 'mdi-email-arrow-right-outline'" :size="18" :class="{ 'animate-spin': resendingId === item.id }" />
     </button>
   </template>
   </BaseDataTable>

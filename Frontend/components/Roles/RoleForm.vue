@@ -9,23 +9,22 @@
       :disabled="loading"
     >
       <div class="tab-icon-wrapper">
-        <v-icon :icon="tab.icon" size="22" />
+        <UiIcon :icon="tab.icon" :size="22" />
       </div>
       <span class="tab-label">{{ tab.label }}</span>
     </button>
   </div>
 
-  <v-form ref="formRef">
-    <v-window v-model="currentTab" class="mt-6">
+  <UiForm ref="formRef">
+    <UiWindow v-model="currentTab" class="mt-6">
       <!-- Tab 1: Temel Bilgiler -->
-      <v-window-item value="basic">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
+      <UiWindowItem value="basic">
+        <div class="ui-container">
+          <div class="ui-row">
+            <div class="ui-col ui-col-12">
+              <UiTextField
                 v-model="formData.name"
                 label="Rol Adı"
-                variant="outlined"
                 :disabled="loading || (role && role.isSystemRole)"
                 prepend-inner-icon="mdi-shield-account"
                 density="comfortable"
@@ -33,15 +32,14 @@
                 :rules="[rules.required, rules.minLength(2)]"
                 class="modern-input"
               />
-            </v-col>
-          </v-row>
+            </div>
+          </div>
 
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
+          <div class="ui-row">
+            <div class="ui-col ui-col-12">
+              <UiTextField multiline
                 v-model="formData.description"
                 label="Açıklama"
-                variant="outlined"
                 :disabled="loading"
                 rows="3"
                 auto-grow
@@ -51,20 +49,19 @@
                 :rules="[rules.maxLength(2000)]"
                 class="modern-input"
               />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-window-item>
+            </div>
+          </div>
+        </div>
+      </UiWindowItem>
 
     <!-- Tab 2: İzinler -->
-    <v-window-item value="permissions">
-      <v-container fluid>
-        <v-row v-if="groupedPermissions && Object.keys(groupedPermissions).length">
-          <v-col cols="12">
-            <v-text-field
+    <UiWindowItem value="permissions">
+      <div class="ui-container ui-container--fluid">
+        <div class="ui-row" v-if="groupedPermissions && Object.keys(groupedPermissions).length">
+          <div class="ui-col ui-col-12">
+            <UiTextField
               v-model="searchQuery"
               prepend-inner-icon="mdi-magnify"
-              variant="outlined"
               density="compact"
               hide-details
               clearable
@@ -72,7 +69,7 @@
             />
 
             <div class="quick-actions mb-3">
-              <v-btn
+              <UiBtn
                 variant="outlined"
                 size="small"
                 @click="selectAllPermissions"
@@ -80,8 +77,8 @@
                 prepend-icon="mdi-check-all"
               >
                 Tümünü Seç
-              </v-btn>
-              <v-btn
+              </UiBtn>
+              <UiBtn
                 variant="outlined"
                 size="small"
                 @click="clearAllPermissions"
@@ -89,15 +86,15 @@
                 prepend-icon="mdi-close-box"
               >
                 Temizle
-              </v-btn>
-              <v-chip 
+              </UiBtn>
+              <UiChip 
                 v-if="formData.permissionIds.length" 
                 size="small" 
                 color="primary" 
                 variant="tonal"
               >
                 {{ formData.permissionIds.length }} seçili
-              </v-chip>
+              </UiChip>
             </div>
 
             <div class="permissions-simple-tree">
@@ -110,14 +107,11 @@
                   class="resource-row"
                   @click="toggleResource(resource)"
                 >
-                  <v-icon 
+                  <UiIcon icon="mdi-chevron-right" 
                     class="chevron-icon"
                     :class="{ 'expanded': expandedResources.includes(resource) }"
-                    size="18"
-                  >
-                    mdi-chevron-right
-                  </v-icon>
-                  <v-checkbox
+                    :size="18" />
+                  <UiCheckbox
                     :model-value="isResourceFullySelected(resource)"
                     :indeterminate="isResourcePartiallySelected(resource)"
                     @update:model-value="toggleResourcePermissions(resource, $event)"
@@ -139,7 +133,7 @@
                     :key="permission.id"
                     class="permission-simple-item"
                   >
-                    <v-checkbox
+                    <UiCheckbox
                       v-model="formData.permissionIds"
                       :value="String(permission.id)"
                       :disabled="loading"
@@ -153,25 +147,25 @@
                 </div>
               </div>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
-        <v-row v-else>
-          <v-col cols="12">
+        <div class="ui-row" v-else>
+          <div class="ui-col ui-col-12">
             <div class="empty-state">
-              <v-icon size="64" color="grey-400">mdi-key-off</v-icon>
+              <UiIcon icon="mdi-key-off" :size="64" color="grey-400" />
               <h3 class="empty-title">İzin Bulunamadı</h3>
               <p class="empty-text">Atanabilir izin bulunmuyor</p>
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-window-item>
-    </v-window>
+          </div>
+        </div>
+      </div>
+    </UiWindowItem>
+    </UiWindow>
 
     <!-- Modern Actions -->
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -179,9 +173,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
       
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -189,9 +183,9 @@
         class="btn-gradient-primary"
       >
         {{ role ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">
@@ -392,7 +386,7 @@ onMounted(() => {
   margin: 0 !important;
 }
 
-.resource-group-checkbox :deep(.v-selection-control) {
+.resource-group-checkbox :deep(.ui-check__row) {
   min-height: auto !important;
 }
 
@@ -413,7 +407,7 @@ onMounted(() => {
   padding: 1px 0;
 }
 
-.permission-simple-checkbox :deep(.v-label) {
+.permission-simple-checkbox :deep(.ui-check__label) {
   font-size: 0.8125rem !important;
   color: #374151 !important;
   line-height: 1.4;

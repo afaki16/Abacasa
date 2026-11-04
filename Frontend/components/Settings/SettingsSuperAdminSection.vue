@@ -3,10 +3,10 @@
 
     <!-- Başlık -->
     <div class="section-header mb-6">
-      <div class="d-flex align-center ga-3">
-        <v-avatar color="deep-purple" variant="tonal" size="44" rounded="lg">
-          <v-icon>mdi-shield-crown-outline</v-icon>
-        </v-avatar>
+      <div class="flex items-center gap-3">
+        <UiAvatar color="deep-purple" variant="tonal" :size="44" rounded="lg">
+          <UiIcon icon="mdi-shield-crown-outline" />
+        </UiAvatar>
         <div>
           <h2 class="section-title">Sistem Ayarları</h2>
           <p class="section-desc">Tüm tenant'ları kapsayan global oturum ve kullanıcı yönetimi</p>
@@ -15,30 +15,30 @@
     </div>
 
     <!-- Stat Kartlar + Tenant Filtresi -->
-    <v-row class="mb-5" dense>
-      <v-col cols="12" sm="6" md="4">
-        <v-card class="stat-card" rounded="xl" elevation="0" border>
-          <v-card-text class="d-flex align-center ga-4 pa-5">
-            <v-avatar color="deep-purple" variant="tonal" size="52" rounded="lg">
-              <v-icon size="26">mdi-account-group</v-icon>
-            </v-avatar>
+    <div class="ui-row ui-row--dense mb-5">
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4">
+        <UiCard class="stat-card" rounded="xl" elevation="0" border>
+          <div class="ui-card-text flex items-center gap-4 !p-5">
+            <UiAvatar color="deep-purple" variant="tonal" :size="52" rounded="lg">
+              <UiIcon icon="mdi-account-group" :size="26" />
+            </UiAvatar>
             <div>
               <div class="stat-value">
-                <v-progress-circular v-if="loadingCount" indeterminate size="20" width="2" />
+                <UiProgressCircular v-if="loadingCount" indeterminate :size="20" :width="2" />
                 <template v-else>{{ activeUserCount }}</template>
               </div>
               <div class="stat-label">
                 {{ selectedTenantId ? 'Tenant Aktif Kullanıcı' : 'Toplam Aktif Kullanıcı' }}
               </div>
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
+          </div>
+        </UiCard>
+      </div>
 
-      <v-col v-if="tenants.length" cols="12" sm="6" md="4">
-        <v-card rounded="xl" elevation="0" border height="100%">
-          <v-card-text class="d-flex align-center pa-4" style="height:100%">
-            <v-select
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4" v-if="tenants.length">
+        <UiCard rounded="xl" elevation="0" border height="100%">
+          <div class="ui-card-text flex items-center !p-4" style="height:100%">
+            <UiSelect
               v-model="selectedTenantId"
               :items="tenantOptions"
               item-title="label"
@@ -50,23 +50,24 @@
               prepend-inner-icon="mdi-domain"
               @update:model-value="onTenantChange"
             />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+          </div>
+        </UiCard>
+      </div>
+    </div>
 
     <!-- Çevrimiçi Kullanıcılar -->
-    <v-card rounded="xl" elevation="0" border class="mb-5">
-      <v-card-title class="d-flex align-center flex-wrap ga-2 pa-5">
-        <div class="d-flex align-center ga-2">
-          <v-icon color="deep-purple">mdi-account-multiple-check-outline</v-icon>
+    <UiCard rounded="xl" elevation="0" border class="mb-5">
+      <div class="ui-card-title !p-5">
+        <div class="flex items-center flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <UiIcon icon="mdi-account-multiple-check-outline" color="deep-purple" />
           <span class="table-title">Şu An Çevrimiçi</span>
-          <v-chip v-if="selectedTenantId" size="x-small" color="deep-purple" variant="tonal">
+          <UiChip v-if="selectedTenantId" size="x-small" color="deep-purple" variant="tonal">
             {{ selectedTenantLabel }}
-          </v-chip>
+          </UiChip>
         </div>
-        <v-spacer />
-        <v-btn
+        <div class="flex-1" />
+        <UiBtn
           size="small"
           variant="text"
           prepend-icon="mdi-refresh"
@@ -74,16 +75,17 @@
           @click="loadActiveUsers"
         >
           Yenile
-        </v-btn>
-      </v-card-title>
-      <v-divider />
-      <v-card-text class="pa-0">
-        <p class="text-body-2 text-medium-emphasis px-5 pt-4 pb-2">
+        </UiBtn>
+        </div>
+      </div>
+      <hr class="ui-divider" />
+      <div class="ui-card-text !p-0">
+        <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 px-5 pt-4 pb-2">
           En az bir geçerli oturumu olan kullanıcılar.
           {{ selectedTenantId ? 'Seçili tenant filtrelenmiş.' : 'Tüm tenant\'lar gösteriliyor.' }}
         </p>
-        <v-progress-linear v-if="loadingActiveUsers" indeterminate color="deep-purple" />
-        <v-table v-if="!loadingActiveUsers && activeUsers.length" density="comfortable" class="online-table">
+        <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="deep-purple" />
+        <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table"><table class="ui-table ui-table--comfortable">
           <thead>
             <tr>
               <th>Kullanıcı</th>
@@ -95,56 +97,59 @@
           <tbody>
             <tr v-for="row in activeUsers" :key="row.userId + '-' + (row.tenantId ?? 'x')">
               <td>
-                <div class="d-flex align-center ga-3 py-1">
-                  <v-avatar color="deep-purple" variant="tonal" size="32" class="text-caption font-weight-bold">
+                <div class="flex items-center gap-3 py-1">
+                  <UiAvatar color="deep-purple" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-bold">
                     {{ initials(row.fullName) }}
-                  </v-avatar>
+                  </UiAvatar>
                   <div>
-                    <div class="font-weight-medium">{{ row.fullName }}</div>
-                    <div class="text-caption text-medium-emphasis">{{ row.email }}</div>
+                    <div class="font-medium">{{ row.fullName }}</div>
+                    <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ row.email }}</div>
                   </div>
                 </div>
               </td>
               <td>
-                <v-chip size="small" variant="tonal" color="grey">
-                  <v-icon start size="12">mdi-domain</v-icon>
+                <UiChip size="small" variant="tonal" color="grey">
+                  <UiIcon icon="mdi-domain" start :size="12" />
                   {{ row.tenantName || '—' }}
-                </v-chip>
+                </UiChip>
               </td>
               <td>
-                <v-chip size="small" color="success" variant="tonal">
-                  <v-icon start size="12">mdi-circle</v-icon>
+                <UiChip size="small" color="success" variant="tonal">
+                  <UiIcon icon="mdi-circle" start :size="12" />
                   {{ row.activeSessionCount }} oturum
-                </v-chip>
+                </UiChip>
               </td>
-              <td class="text-caption text-medium-emphasis">{{ formatActivity(row.lastActivityAt) }}</td>
+              <td class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ formatActivity(row.lastActivityAt) }}</td>
             </tr>
           </tbody>
-        </v-table>
-        <div v-if="!loadingActiveUsers && activeUsers.length === 0" class="empty-table pa-8 text-center">
-          <v-icon size="40" color="grey-lighten-1">mdi-account-off-outline</v-icon>
-          <p class="text-body-2 text-medium-emphasis mt-2">Şu anda çevrimiçi kullanıcı yok.</p>
+        </table></div>
+        <div v-if="!loadingActiveUsers && activeUsers.length === 0" class="empty-table p-8 text-center">
+          <UiIcon icon="mdi-account-off-outline" :size="40" color="grey-lighten-1" />
+          <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-2">Şu anda çevrimiçi kullanıcı yok.</p>
         </div>
-      </v-card-text>
-    </v-card>
+      </div>
+    </UiCard>
 
     <!-- Uzaktan Kullanıcı Çıkışı -->
-    <v-card rounded="xl" elevation="0" border>
-      <v-card-title class="pa-5 d-flex align-center ga-2">
-        <v-icon color="error">mdi-account-off-outline</v-icon>
+    <UiCard rounded="xl" elevation="0" border>
+      <div class="ui-card-title !p-5">
+        <div class="flex items-center gap-2">
+        <UiIcon icon="mdi-account-off-outline" color="error" />
         <span class="table-title">Uzaktan Kullanıcı Çıkışı</span>
-      </v-card-title>
-      <v-divider />
-      <v-card-text class="pa-5">
-        <p class="text-body-2 text-medium-emphasis mb-4">
+        </div>
+      </div>
+      <hr class="ui-divider" />
+      <div class="ui-card-text !p-5">
+        <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-4">
           Herhangi bir kullanıcıyı tüm cihazlarından çıkış yaptırabilirsiniz.
         </p>
-        <div class="d-flex align-start ga-3 flex-wrap">
-          <v-autocomplete
+        <div class="flex items-start gap-3 flex-wrap">
+          <UiSelect autocomplete
             v-model="selectedUser"
             :items="users"
             item-title="fullName"
             item-value="id"
+            :filter-keys="['fullName', 'email']"
             label="Kullanıcı seçin"
             placeholder="İsim veya e-posta ile ara..."
             :loading="loadingUsers"
@@ -153,19 +158,19 @@
             density="comfortable"
             style="min-width: 280px; flex: 1"
           >
-            <template #item="{ props, item }">
-              <v-list-item v-bind="props">
-                <template #prepend>
-                  <v-avatar color="deep-purple" variant="tonal" size="32" class="text-caption font-weight-bold mr-2">
-                    {{ initials(item.raw.fullName) }}
-                  </v-avatar>
-                </template>
-                <template #title>{{ item.raw.fullName }}</template>
-                <template #subtitle>{{ item.raw.email }}</template>
-              </v-list-item>
+            <template #item="{ item }">
+              <div class="flex items-center gap-4 min-w-0">
+                <UiAvatar color="deep-purple" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-bold shrink-0">
+                  {{ initials(item.fullName) }}
+                </UiAvatar>
+                <div class="min-w-0">
+                  <div class="ui-list-title">{{ item.fullName }}</div>
+                  <div class="ui-list-subtitle">{{ item.email }}</div>
+                </div>
+              </div>
             </template>
-          </v-autocomplete>
-          <v-btn
+          </UiSelect>
+          <UiBtn
             color="error"
             variant="tonal"
             :disabled="!selectedUser"
@@ -174,10 +179,10 @@
             @click="revokeSessions"
           >
             Çıkış Yaptır
-          </v-btn>
+          </UiBtn>
         </div>
-      </v-card-text>
-    </v-card>
+      </div>
+    </UiCard>
 
   </div>
 </template>
@@ -277,13 +282,13 @@ onMounted(async () => {
 .section-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0;
 }
 
 .section-desc {
   font-size: 0.85rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin: 0;
 }
 
@@ -297,13 +302,13 @@ onMounted(async () => {
 .stat-value {
   font-size: 1.8rem;
   font-weight: 700;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   line-height: 1.2;
 }
 
 .stat-label {
   font-size: 0.8rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-top: 2px;
 }
 
@@ -317,12 +322,12 @@ onMounted(async () => {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgb(var(--v-theme-on-surface-variant)) !important;
-  background: rgb(var(--v-theme-surface-variant));
+  color: rgb(var(--color-on-surface-variant)) !important;
+  background: rgb(var(--color-surface-variant));
 }
 
 .online-table :deep(tr:hover td) {
-  background: rgba(var(--v-theme-deep-purple), 0.08);
+  background: rgba(103, 58, 183, 0.08);
 }
 
 .empty-table {

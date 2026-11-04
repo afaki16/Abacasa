@@ -11,15 +11,15 @@
       <div class="header-info">
         <h2 class="user-name">{{ user?.firstName }} {{ user?.lastName }}</h2>
         <div class="user-meta">
-          <v-chip
+          <UiChip
             :color="user?.status === UserStatus.Active ? 'success' : 'error'"
             size="small"
             variant="tonal"
             prepend-icon="mdi-circle"
           >
             {{ user?.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
-          </v-chip>
-          <v-chip
+          </UiChip>
+          <UiChip
             v-if="user?.emailConfirmed"
             color="info"
             size="small"
@@ -27,12 +27,12 @@
             prepend-icon="mdi-email-check"
           >
             E-posta Doğrulandı
-          </v-chip>
+          </UiChip>
         </div>
       </div>
     </div>
 
-    <v-divider class="my-6" />
+    <hr class="ui-divider my-6" />
 
     <!-- Tabs -->
     <div class="tabs-container">
@@ -43,24 +43,24 @@
         @click="currentTab = tab.value"
       >
         <div class="tab-icon-wrapper">
-          <v-icon :icon="tab.icon" size="22" />
+          <UiIcon :icon="tab.icon" :size="22" />
         </div>
         <span class="tab-label">{{ tab.label }}</span>
       </button>
     </div>
 
-    <v-window v-model="currentTab" class="mt-6">
+    <UiWindow v-model="currentTab" class="mt-6">
       <!-- Tab 1: Genel Bilgiler -->
-      <v-window-item value="general">
+      <UiWindowItem value="general">
         <div class="info-section">
           <h3 class="section-title">
-            <v-icon size="20" class="mr-2">mdi-account-details</v-icon>
+            <UiIcon icon="mdi-account-details" :size="20" class="mr-2" />
             Kişisel Bilgiler
           </h3>
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">
-                <v-icon size="18" color="primary">mdi-account</v-icon>
+                <UiIcon icon="mdi-account" :size="18" color="primary" />
                 Ad Soyad
               </div>
               <div class="info-value">{{ user?.firstName }} {{ user?.lastName }}</div>
@@ -68,7 +68,7 @@
 
             <div class="info-item">
               <div class="info-label">
-                <v-icon size="18" color="primary">mdi-email</v-icon>
+                <UiIcon icon="mdi-email" :size="18" color="primary" />
                 E-posta
               </div>
               <div class="info-value">{{ user?.email || '-' }}</div>
@@ -76,7 +76,7 @@
 
             <div class="info-item">
               <div class="info-label">
-                <v-icon size="18" color="primary">mdi-phone</v-icon>
+                <UiIcon icon="mdi-phone" :size="18" color="primary" />
                 Telefon
               </div>
               <div class="info-value">{{ user?.phoneNumber || '-' }}</div>
@@ -84,17 +84,17 @@
           </div>
         </div>
 
-        <v-divider class="my-6" />
+        <hr class="ui-divider my-6" />
 
         <div class="info-section">
           <h3 class="section-title">
-            <v-icon size="20" class="mr-2">mdi-clock-outline</v-icon>
+            <UiIcon icon="mdi-clock-outline" :size="20" class="mr-2" />
             Hesap Bilgileri
           </h3>
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">
-                <v-icon size="18" color="primary">mdi-calendar-plus</v-icon>
+                <UiIcon icon="mdi-calendar-plus" :size="18" color="primary" />
                 Kayıt Tarihi
               </div>
               <div class="info-value">{{ formatDateTime(user?.createdDate) }}</div>
@@ -102,33 +102,33 @@
 
             <div class="info-item">
               <div class="info-label">
-                <v-icon size="18" color="primary">mdi-login</v-icon>
+                <UiIcon icon="mdi-login" :size="18" color="primary" />
                 Son Giriş
               </div>
               <div class="info-value">{{ formatDateTime(user?.lastLoginDate) }}</div>
             </div>
           </div>
         </div>
-      </v-window-item>
+      </UiWindowItem>
 
       <!-- Tab 2: Roller ve Yetkiler -->
-      <v-window-item value="roles">
+      <UiWindowItem value="roles">
         <div class="info-section">
           <div class="section-header">
             <h3 class="section-title">
-              <v-icon size="20" class="mr-2">mdi-shield-account</v-icon>
+              <UiIcon icon="mdi-shield-account" :size="20" class="mr-2" />
               Atanmış Roller
             </h3>
-            <v-chip size="small" color="primary" variant="tonal">
+            <UiChip size="small" color="primary" variant="tonal">
               {{ user?.roles?.length || 0 }} Rol
-            </v-chip>
+            </UiChip>
           </div>
 
           <div v-if="user?.roles && user.roles.length > 0" class="roles-list">
             <div v-for="role in user.roles" :key="role.id" class="role-card">
               <div class="role-card-header">
                 <div class="role-card-icon">
-                  <v-icon size="24" color="primary">mdi-shield-star</v-icon>
+                  <UiIcon icon="mdi-shield-star" :size="24" color="primary" />
                 </div>
                 <div class="role-card-info">
                   <h4 class="role-card-name">{{ role.name }}</h4>
@@ -136,37 +136,37 @@
                     {{ role.description }}
                   </p>
                 </div>
-                <v-chip
+                <UiChip
                   v-if="role.isSystemRole"
                   size="small"
                   color="orange"
                   variant="tonal"
                 >
                   Sistem Rolü
-                </v-chip>
+                </UiChip>
               </div>
             </div>
           </div>
 
           <div v-else class="empty-state">
-            <v-icon size="64" color="grey-400">mdi-shield-off</v-icon>
+            <UiIcon icon="mdi-shield-off" :size="64" color="grey-400" />
             <h3 class="empty-title">Rol Atanmamış</h3>
             <p class="empty-text">Bu kullanıcıya henüz rol atanmamış</p>
           </div>
         </div>
-      </v-window-item>
+      </UiWindowItem>
 
       <!-- Tab 3: Güvenlik -->
-      <v-window-item value="security">
+      <UiWindowItem value="security">
         <div class="info-section">
           <h3 class="section-title">
-            <v-icon size="20" class="mr-2">mdi-security</v-icon>
+            <UiIcon icon="mdi-security" :size="20" class="mr-2" />
             Güvenlik Bilgileri
           </h3>
           <div class="security-grid">
             <div class="security-card">
               <div class="security-icon" :class="user?.emailConfirmed ? 'success' : 'warning'">
-                <v-icon size="32">{{ user?.emailConfirmed ? 'mdi-email-check' : 'mdi-email-alert' }}</v-icon>
+                <UiIcon :icon="user?.emailConfirmed ? 'mdi-email-check' : 'mdi-email-alert'" :size="32" />
               </div>
               <div class="security-info">
                 <h4 class="security-title">E-posta Doğrulama</h4>
@@ -178,7 +178,7 @@
 
             <div class="security-card">
               <div class="security-icon" :class="user?.phoneConfirmed ? 'success' : 'warning'">
-                <v-icon size="32">{{ user?.phoneConfirmed ? 'mdi-phone-check' : 'mdi-phone-alert' }}</v-icon>
+                <UiIcon :icon="user?.phoneConfirmed ? 'mdi-phone-check' : 'mdi-phone-alert'" :size="32" />
               </div>
               <div class="security-info">
                 <h4 class="security-title">Telefon Doğrulama</h4>
@@ -189,27 +189,27 @@
             </div>
           </div>
         </div>
-      </v-window-item>
-    </v-window>
+      </UiWindowItem>
+    </UiWindow>
 
     <!-- Footer Actions -->
     <div class="detail-footer">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('close')"
         class="btn-gradient-dark"
       >
         Kapat
-      </v-btn>
-      <v-btn
+      </UiBtn>
+      <UiBtn
         size="large"
         @click="$emit('edit', user)"
         class="btn-gradient-primary"
         prepend-icon="mdi-pencil"
       >
         Düzenle
-      </v-btn>
+      </UiBtn>
     </div>
   </div>
 </template>
@@ -263,7 +263,7 @@ const formatDateTime = (date?: string | null) => {
 }
 
 .detail-avatar {
-  border: 3px solid rgb(var(--v-theme-outline-variant));
+  border: 3px solid rgb(var(--color-outline-variant));
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -274,7 +274,7 @@ const formatDateTime = (date?: string | null) => {
 .user-name {
   font-size: 1.5rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 8px 0;
 }
 
@@ -298,7 +298,7 @@ const formatDateTime = (date?: string | null) => {
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 16px 0;
   display: flex;
   align-items: center;
@@ -312,15 +312,15 @@ const formatDateTime = (date?: string | null) => {
 
 .info-item {
   padding: 14px 16px;
-  background: rgb(var(--v-theme-surface-variant));
+  background: rgb(var(--color-surface-variant));
   border-radius: 8px;
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  border: 1px solid rgb(var(--color-outline-variant));
   transition: all 0.2s ease;
 }
 
 .info-item:hover {
-  border-color: rgb(var(--v-theme-outline));
-  background: rgb(var(--v-theme-surface));
+  border-color: rgb(var(--color-outline));
+  background: rgb(var(--color-surface));
 }
 
 .info-label {
@@ -328,7 +328,7 @@ const formatDateTime = (date?: string | null) => {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-bottom: 6px;
   font-weight: 500;
   text-transform: uppercase;
@@ -337,7 +337,7 @@ const formatDateTime = (date?: string | null) => {
 
 .info-value {
   font-size: 0.9375rem;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   font-weight: 500;
 }
 
@@ -349,15 +349,15 @@ const formatDateTime = (date?: string | null) => {
 }
 
 .role-card {
-  background: rgb(var(--v-theme-surface));
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  background: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-outline-variant));
   border-radius: 8px;
   padding: 14px 16px;
   transition: all 0.2s ease;
 }
 
 .role-card:hover {
-  border-color: rgb(var(--v-theme-outline));
+  border-color: rgb(var(--color-outline));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -373,7 +373,7 @@ const formatDateTime = (date?: string | null) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--v-theme-primary), 0.1);
+  background: rgb(var(--color-brand) / 0.1);
   border-radius: 8px;
   flex-shrink: 0;
 }
@@ -386,13 +386,13 @@ const formatDateTime = (date?: string | null) => {
 .role-card-name {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 4px 0;
 }
 
 .role-card-description {
   font-size: 0.8125rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin: 0;
   line-height: 1.4;
 }
@@ -409,14 +409,14 @@ const formatDateTime = (date?: string | null) => {
   display: flex;
   gap: 12px;
   padding: 14px 16px;
-  background: rgb(var(--v-theme-surface));
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  background: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-outline-variant));
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .security-card:hover {
-  border-color: rgb(var(--v-theme-outline));
+  border-color: rgb(var(--color-outline));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -441,8 +441,8 @@ const formatDateTime = (date?: string | null) => {
 }
 
 .security-icon.default {
-  background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface-variant));
+  background: rgb(var(--color-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
 }
 
 .security-info {
@@ -452,13 +452,13 @@ const formatDateTime = (date?: string | null) => {
 .security-title {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--color-on-surface));
   margin: 0 0 4px 0;
 }
 
 .security-status {
   font-size: 0.8125rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin: 0;
   font-weight: 500;
 }
@@ -472,13 +472,13 @@ const formatDateTime = (date?: string | null) => {
 .empty-title {
   font-size: 1rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-top: 12px;
 }
 
 .empty-text {
   font-size: 0.875rem;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgb(var(--color-on-surface-variant));
   margin-top: 6px;
   opacity: 0.7;
 }
@@ -490,7 +490,7 @@ const formatDateTime = (date?: string | null) => {
   gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid rgb(var(--v-theme-outline-variant));
+  border-top: 1px solid rgb(var(--color-outline-variant));
 }
 
 @media (max-width: 768px) {
@@ -516,7 +516,7 @@ const formatDateTime = (date?: string | null) => {
     flex-direction: column;
   }
 
-  .detail-footer .v-btn {
+  .detail-footer .ui-btn {
     width: 100%;
   }
 }
