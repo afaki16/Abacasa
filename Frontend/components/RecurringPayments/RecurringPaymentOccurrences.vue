@@ -9,7 +9,7 @@
 
   <!-- Özet -->
   <div class="ui-row !mb-2">
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Ödenen</div>
@@ -17,7 +17,7 @@
         </div>
       </UiCard>
     </div>
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#fea619]/[0.12] !text-[#fea619]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Bekleyen</div>
@@ -25,7 +25,7 @@
         </div>
       </UiCard>
     </div>
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Toplam</div>

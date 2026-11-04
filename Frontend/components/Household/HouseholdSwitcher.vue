@@ -4,7 +4,7 @@
       <button v-bind="menuProps" class="household-btn" type="button" :disabled="isBusy" aria-label="Hane seç">
         <UiIcon icon="mdi-home-outline" :size="20" />
         <span class="household-name">{{ activeTenant?.name ?? 'Hane yok' }}</span>
-        <UiChip v-if="activeTenant" size="x-small" :color="activeTenant.role === 'Admin' ? 'primary' : undefined" variant="tonal">
+        <UiChip v-if="activeTenant" class="household-role" size="x-small" :color="activeTenant.role === 'Admin' ? 'primary' : undefined" variant="tonal">
           {{ getRoleLabel(activeTenant.role) }}
         </UiChip>
         <UiIcon icon="mdi-chevron-down" :size="16" class="household-chevron" />
@@ -98,7 +98,12 @@ const select = async (tenantId: number) => {
 
 @media (max-width: 600px) {
   .household-name {
-    max-width: 90px;
+    max-width: 120px;
+    min-width: 48px;
+  }
+  /* Telefonda yer hane adına kalsın; rol açılır listede ve menüdeki kullanıcı kartında görünür */
+  .household-role {
+    display: none;
   }
 }
 

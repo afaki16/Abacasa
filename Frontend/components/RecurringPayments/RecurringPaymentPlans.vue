@@ -1,7 +1,7 @@
 <template>
   <!-- Filtreler -->
   <div class="ui-row ui-row--dense !mb-2">
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4">
       <UiSelect
         v-model="filterKind"
         :items="kindOptions"

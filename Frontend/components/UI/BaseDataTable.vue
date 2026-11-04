@@ -286,6 +286,7 @@
                   :key="column.key"
                   class="table-cell"
                   :class="column.align || 'left'"
+                  :data-label="column.label"
                 >
                   <slot :name="`cell-${column.key}`" :item="item" :value="getNestedValue(item, column.key)">
                     <div class="cell-content">
@@ -1658,5 +1659,56 @@ watch(() => props.itemsPerPage, (newValue) => {
   .title-wrapper { @apply flex-col items-start; }
   .header-right { @apply flex-col; }
   .filters-grid { @apply grid-cols-1; }
+
+  /* Telefonda tablo yerine kart listesi: her satır bir kart, her hücrenin solunda sütun adı (data-label) */
+  .data-table,
+  .data-table .table-body,
+  .data-table .table-row,
+  .data-table .table-cell {
+    display: block;
+    width: 100%;
+  }
+  .table-header-section,
+  .scroll-indicators {
+    display: none;
+  }
+  .table-row {
+    padding: 10px 16px;
+  }
+  .data-table .table-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    white-space: normal;
+    text-align: right;
+    word-break: break-word;
+  }
+  .data-table .table-cell::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    max-width: 45%;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgb(var(--color-on-surface-variant));
+  }
+  .data-table .table-cell > :deep(*) {
+    min-width: 0;
+  }
+  .data-table .table-cell .cell-content {
+    justify-content: flex-end;
+  }
+  .data-table .actions-cell {
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+  .data-table .actions-cell::before {
+    content: none;
+  }
+  .data-table .action-buttons {
+    justify-content: flex-end;
+  }
 }
 </style>

@@ -359,10 +359,12 @@ onMounted(async () => {
 
 <style scoped>
 /* SuperAdmin platform görünümünde Haneler sütunuyla 6 sütun 1366px ekrana sığsın diye hücre yan boşlukları daraltıldı */
-.users-table :deep(th),
-.users-table :deep(td) {
-  padding-left: 16px;
-  padding-right: 16px;
+@media (min-width: 641px) {
+  .users-table :deep(th),
+  .users-table :deep(td) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
 .household-pills {

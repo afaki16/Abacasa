@@ -103,7 +103,7 @@
 
   <!-- Filtreler -->
   <div class="ui-row ui-row--dense !mb-2">
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiSelect
         v-model="filterStatus"
         :items="statusOptions"
@@ -114,7 +114,7 @@
         hide-details
       />
     </div>
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiSelect
         v-model="filterCreditor"
         :items="people"
@@ -126,7 +126,7 @@
         clearable
       />
     </div>
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiSelect
         v-model="filterCurrency"
         :items="currencyOptions"

@@ -22,7 +22,7 @@
 
   <!-- Özet -->
   <div class="ui-row !mb-2">
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı</div>
@@ -30,7 +30,7 @@
         </div>
       </UiCard>
     </div>
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kayıt sayısı</div>
@@ -39,7 +39,7 @@
       </UiCard>
     </div>
     <!-- Emanetten dağıtılanlar dönem toplamına girmez; ayrı gösterilir. Modül kapalıysa kart hiç görünmez -->
-    <div class="ui-col ui-col-12 ui-col-md-4" v-if="donationExtras">
+    <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4" v-if="donationExtras">
       <UiCard class="!bg-secondary/[0.12] !text-secondary">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Emanetten dağıtılan</div>
@@ -93,7 +93,7 @@
 
   <!-- Filtreler -->
   <div class="ui-row ui-row--dense !mb-2">
-    <div class="ui-col ui-col-12 ui-col-md-4">
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4">
       <UiSelect
         v-model="filterKind"
         :items="kindOptions"
