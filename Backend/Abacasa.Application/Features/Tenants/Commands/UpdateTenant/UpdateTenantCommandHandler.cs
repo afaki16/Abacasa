@@ -66,11 +66,11 @@ namespace Abacasa.Application.Features.Tenants.Commands.UpdateTenant;
         }
 
         tenant.Name = request.Name;
-        tenant.Description = request.Description;
-        tenant.Domain = request.Domain;
+        tenant.Description = request.Description ?? string.Empty;
+        tenant.Domain = string.IsNullOrWhiteSpace(request.Domain) ? null : request.Domain;
         tenant.IsActive = request.IsActive;
-        tenant.ContactEmail = request.ContactEmail;
-        tenant.ContactPhone = request.ContactPhone;
+        tenant.ContactEmail = request.ContactEmail ?? string.Empty;
+        tenant.ContactPhone = request.ContactPhone ?? string.Empty;
 
         _unitOfWork.Tenants.Update(tenant);
         await _unitOfWork.SaveChangesAsync();

@@ -48,7 +48,7 @@
           :disabled="loading"
         />
 
-        <UiAlert v-if="errorMessages.length" type="error" variant="tonal" density="compact" class="mb-4">
+        <UiAlert v-if="errorMessages.length" type="error" variant="flat" density="compact" class="mb-4">
           <div v-for="(e, i) in errorMessages" :key="i">{{ e }}</div>
         </UiAlert>
 

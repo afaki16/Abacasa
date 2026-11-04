@@ -112,7 +112,9 @@ namespace Abacasa.Application.Features.Users.Commands.CreateUser
                 PasswordHash = passwordResult.Value,
                 PhoneNumber = normalizedPhone,
                 Status = request.Status,
-                EmailConfirmed = false,
+                // Şifreyi admin belirlediyse kullanıcı doğrulama maili almaz; doğrulanmış sayılmazsa hiç giriş yapamaz.
+                // Davetle oluşturulan kullanıcı e-postayı davet bağlantısıyla doğrular.
+                EmailConfirmed = !request.SendAccountInvitation,
                 // An invited user picks their own password, so there is nothing to force-change.
                 MustChangePassword = !request.SendAccountInvitation && request.MustChangePassword,
                 TenantId = tenantId

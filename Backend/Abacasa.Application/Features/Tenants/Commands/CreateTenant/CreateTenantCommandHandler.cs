@@ -51,11 +51,11 @@ namespace Abacasa.Application.Features.Tenants.Commands.CreateTenant;
         var tenant = new Tenant
         {
             Name = request.Name,
-            Description = request.Description,
-            Domain = request.Domain,
+            Description = request.Description ?? string.Empty,
+            Domain = string.IsNullOrWhiteSpace(request.Domain) ? null : request.Domain,
             IsActive = request.IsActive,
-            ContactEmail = request.ContactEmail,
-            ContactPhone = request.ContactPhone
+            ContactEmail = request.ContactEmail ?? string.Empty,
+            ContactPhone = request.ContactPhone ?? string.Empty
         };
 
         await _unitOfWork.Tenants.AddAsync(tenant);

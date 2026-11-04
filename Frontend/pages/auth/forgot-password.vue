@@ -22,7 +22,7 @@
             :disabled="loading"
           />
 
-          <UiAlert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mb-4 text-left">
+          <UiAlert v-if="errorMessage" type="error" variant="flat" density="compact" class="mb-4 text-left">
             {{ errorMessage }}
           </UiAlert>
 

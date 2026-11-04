@@ -24,7 +24,7 @@
             {{ invite.inviterName }} sizi bu haneye <strong>{{ roleLabel }}</strong> olarak davet etti.
           </p>
 
-          <UiAlert v-if="actionError" type="error" variant="tonal" density="compact" class="w-full text-left">
+          <UiAlert v-if="actionError" type="error" variant="flat" density="compact" class="w-full text-left">
             {{ actionError }}
           </UiAlert>
 

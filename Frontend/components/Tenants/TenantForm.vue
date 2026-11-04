@@ -27,7 +27,7 @@
             prepend-inner-icon="mdi-web"
             density="comfortable"
             hide-details="auto"
-            :rules="[rules.required, rules.minLength(2)]"
+            :rules="[(v: string) => !v || rules.minLength(2)(v)]"
             class="modern-input"
           />
         </div>

@@ -40,10 +40,10 @@
 
           <!-- Register Form Component -->
           <!-- Davet modu: hane adı gizli, e-posta davetteki adres -->
-          <UiAlert v-if="invite" type="info" variant="tonal" density="compact" class="mb-4">
+          <UiAlert v-if="invite" type="info" variant="flat" density="compact" class="mb-4">
             {{ invite.householdName }} hanesine davet edildiniz. Kayıttan sonra doğrudan haneye katılırsınız.
           </UiAlert>
-          <UiAlert v-if="inviteError" type="error" variant="tonal" density="compact" class="mb-4">
+          <UiAlert v-if="inviteError" type="error" variant="flat" density="compact" class="mb-4">
             {{ inviteError }}
           </UiAlert>
 
