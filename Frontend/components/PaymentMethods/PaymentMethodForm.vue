@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.name"
             label="Ad"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -14,18 +13,17 @@
             :rules="[rules.required, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.type"
             :items="typeOptions"
             item-title="title"
             item-value="value"
             label="Tür"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-shape-outline"
             density="comfortable"
@@ -33,12 +31,11 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.bank"
             label="Banka"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-bank"
             density="comfortable"
@@ -46,33 +43,31 @@
             :rules="[rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" :sm="isCreditCard ? 6 : 12">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12" :class="isCreditCard ? 'ui-col-sm-6' : 'ui-col-sm-12'">
+          <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
             item-value="id"
             label="Sahibi"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
             class="modern-input"
           />
-        </v-col>
-        <v-col v-if="isCreditCard" cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6" v-if="isCreditCard">
+          <UiTextField
             v-model.number="formData.statementDay"
             label="Kesim günü"
             type="number"
             min="1"
             max="31"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
             density="comfortable"
@@ -80,24 +75,24 @@
             :rules="[rules.required, statementDayRule]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-switch
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiSwitch
             v-model="formData.isActive"
             label="Aktif"
             color="primary"
             :disabled="loading"
             hide-details
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -105,9 +100,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -115,9 +110,9 @@
         class="btn-gradient-primary"
       >
         {{ paymentMethod ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

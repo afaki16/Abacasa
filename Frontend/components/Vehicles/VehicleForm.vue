@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.name"
             label="Ad"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-car"
             density="comfortable"
@@ -14,13 +13,12 @@
             :rules="[rules.required, nameRule, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
           <!-- Plaka büyük harfle saklanır -->
-          <v-text-field
+          <UiTextField
             v-model="formData.plate"
             label="Plaka"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-card-text-outline"
             density="comfortable"
@@ -29,30 +27,28 @@
             class="modern-input"
             @blur="formData.plate = formData.plate.trim().toUpperCase()"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
             item-value="id"
             label="Sahip"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.note"
             label="Not"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -60,19 +56,19 @@
             :rules="[rules.maxLength(200)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Aktif yalnızca düzenlemede; yeni araç aktif başlar -->
-      <v-row v-if="vehicle">
-        <v-col cols="12">
-          <v-switch v-model="formData.isActive" label="Aktif" color="primary" :disabled="loading" hide-details inset />
-        </v-col>
-      </v-row>
-    </v-container>
+      <div class="ui-row" v-if="vehicle">
+        <div class="ui-col ui-col-12">
+          <UiSwitch v-model="formData.isActive" label="Aktif" color="primary" :disabled="loading" hide-details />
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -80,9 +76,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -90,9 +86,9 @@
         class="btn-gradient-primary"
       >
         {{ vehicle ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

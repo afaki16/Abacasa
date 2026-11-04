@@ -1,15 +1,17 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="900" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card v-if="vehicle">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-file-certificate-outline</v-icon>
-        İşlemler · {{ vehicle.name }} ({{ vehicle.plate }})
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="900" @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard v-if="vehicle">
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-file-certificate-outline" class="mr-2" />
+          İşlemler · {{ vehicle.name }} ({{ vehicle.plate }})
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
+        </div>
+      </div>
 
-      <v-card-text>
-        <v-table density="compact" class="mb-4">
+      <div class="ui-card-text">
+        <div class="overflow-x-auto mb-4"><table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Tür</th>
@@ -28,147 +30,140 @@
               <td>{{ formatDisplayDate(o.validUntil) }}</td>
               <td class="text-right">{{ formatMoney(o.amount) }}</td>
               <td class="text-center">
-                <v-icon v-if="o.hasExpense" size="small" color="success">mdi-check</v-icon>
+                <UiIcon v-if="o.hasExpense" icon="mdi-check" size="1.25em" color="success" />
               </td>
               <td>{{ o.note }}</td>
-              <td v-if="canUpdate" class="text-right text-no-wrap">
-                <v-btn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(o)" />
-                <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = o" />
+              <td v-if="canUpdate" class="text-right whitespace-nowrap">
+                <UiBtn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(o)" />
+                <UiBtn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = o" />
               </td>
             </tr>
             <tr v-if="!obligations.length">
-              <td :colspan="canUpdate ? 7 : 6" class="text-medium-emphasis">İşlem yok</td>
+              <td :colspan="canUpdate ? 7 : 6" class="text-black/60 dark:text-white/70">İşlem yok</td>
             </tr>
           </tbody>
-        </v-table>
+        </table></div>
 
         <!-- Ekleme ya da seçili işlemi düzenleme -->
         <template v-if="canUpdate">
-          <div class="text-subtitle-2 mb-2">{{ editing ? 'İşlemi düzenle' : 'İşlem ekle' }}</div>
-          <v-form ref="formRef" @submit.prevent="save">
-            <v-row dense>
-              <v-col cols="12" sm="4">
-                <v-select
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'İşlemi düzenle' : 'İşlem ekle' }}</div>
+          <UiForm ref="formRef" @submit="save">
+            <div class="ui-row ui-row--dense">
+              <div class="ui-col ui-col-12 ui-col-sm-4">
+                <UiSelect
                   v-model="formData.type"
                   :items="typeOptions"
                   item-title="title"
                   item-value="value"
                   label="Tür"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   @update:model-value="suggest"
                 />
-              </v-col>
-              <v-col cols="12" sm="4">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-4">
+                <UiTextField
                   v-model="formData.date"
                   label="Tarih"
                   type="date"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.required]"
                   @update:model-value="suggest"
                 />
-              </v-col>
-              <v-col cols="12" sm="4">
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-4">
                 <!-- Türe göre önerilir, düzeltilebilir; elle değiştirilince öneri durur -->
-                <v-text-field
+                <UiTextField
                   v-model="formData.validUntil"
                   label="Geçerlilik sonu"
                   type="date"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.required, validUntilRule]"
                   @update:model-value="validUntilTouched = true"
                 />
-              </v-col>
-              <v-col cols="12" sm="4">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-4">
+                <UiTextField
                   v-model.number="formData.amount"
                   label="Tutar"
                   type="number"
                   min="0"
                   step="0.01"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[amountRule]"
                 />
-              </v-col>
-              <v-col cols="12" sm="8">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-8">
+                <UiTextField
                   v-model="formData.note"
                   label="Not"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.maxLength(200)]"
                 />
-              </v-col>
-            </v-row>
+              </div>
+            </div>
 
             <!-- Bağlı harcaması olan işlemde kutu yerine not -->
-            <div v-if="editing?.hasExpense" class="text-body-2 text-medium-emphasis mt-2">
+            <div v-if="editing?.hasExpense" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-2">
               Bağlı harcama var; tarih ve tutar değişikliği harcamaya da yansır.
             </div>
             <template v-else>
-              <v-checkbox
+              <UiCheckbox
                 v-model="formData.createExpense"
                 label="Harcama olarak da kaydet"
                 density="compact"
                 hide-details
                 :disabled="isBusy"
               />
-              <v-row v-if="formData.createExpense" dense>
-                <v-col cols="12" sm="6">
-                  <v-select
+              <div class="ui-row ui-row--dense" v-if="formData.createExpense">
+                <div class="ui-col ui-col-12 ui-col-sm-6">
+                  <UiSelect
                     v-model="formData.categoryId"
                     :items="categories"
                     item-title="name"
                     item-value="id"
                     label="Kategori"
-                    variant="outlined"
                     density="compact"
                     hide-details="auto"
                     :disabled="isBusy"
                     :rules="[rules.required]"
                   />
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-select
+                </div>
+                <div class="ui-col ui-col-12 ui-col-sm-6">
+                  <UiSelect
                     v-model="formData.paymentMethodId"
                     :items="activePaymentMethods"
                     item-title="name"
                     item-value="id"
                     label="Ödeme aracı"
-                    variant="outlined"
                     density="compact"
                     hide-details="auto"
                     :disabled="isBusy"
                     :rules="[rules.required]"
                   />
-                </v-col>
-              </v-row>
+                </div>
+              </div>
             </template>
 
-            <div class="d-flex justify-end mt-3 ga-2">
-              <v-btn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</v-btn>
-              <v-btn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
+            <div class="flex justify-end mt-3 gap-2">
+              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</UiBtn>
+              <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
                 {{ editing ? 'Güncelle' : 'Ekle' }}
-              </v-btn>
+              </UiBtn>
             </div>
-          </v-form>
+          </UiForm>
         </template>
-      </v-card-text>
-    </v-card>
+      </div>
+    </UiCard>
 
     <ConfirmDialog
       :model-value="!!toDelete"
@@ -180,7 +175,7 @@
       @confirm="remove"
       @cancel="toDelete = null"
     />
-  </v-dialog>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

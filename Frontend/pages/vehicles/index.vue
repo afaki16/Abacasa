@@ -7,9 +7,9 @@
   </div>
 
   <!-- Yaklaşan ve geciken -->
-  <v-card variant="outlined" class="mb-4">
-    <v-card-title class="text-subtitle-1">Yaklaşan ve geciken</v-card-title>
-    <v-table density="compact">
+  <UiCard elevation="0" border class="mb-4">
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Yaklaşan ve geciken</div>
+    <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
       <thead>
         <tr>
           <th>Araç</th>
@@ -21,21 +21,21 @@
       </thead>
       <tbody>
         <tr v-for="r in reminders" :key="`${r.vehicleId}-${r.type}`">
-          <td>{{ r.vehicleName }} <span class="text-medium-emphasis">· {{ r.plate }}</span></td>
+          <td>{{ r.vehicleName }} <span class="text-black/60 dark:text-white/70">· {{ r.plate }}</span></td>
           <td>{{ getTypeLabel(r.type) }}</td>
           <td>{{ formatDisplayDate(r.validUntil) }}</td>
           <td>
-            <v-chip v-if="r.isOverdue" size="small" color="error" variant="tonal">Gecikti · {{ -r.daysLeft }} gün</v-chip>
+            <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">Gecikti · {{ -r.daysLeft }} gün</UiChip>
             <span v-else>{{ r.daysLeft === 0 ? "Bugün" : `${r.daysLeft} gün kaldı` }}</span>
           </td>
           <td class="text-right">{{ formatMoney(r.lastAmount) }}</td>
         </tr>
         <tr v-if="!reminders.length">
-          <td colspan="5" class="text-medium-emphasis">Yaklaşan tarih yok</td>
+          <td colspan="5" class="text-black/60 dark:text-white/70">Yaklaşan tarih yok</td>
         </tr>
       </tbody>
-    </v-table>
-  </v-card>
+    </table></div>
+  </UiCard>
 
   <BaseDataTable
     :items="items"
@@ -72,18 +72,18 @@
 
     <!-- Dört tür için güncel kaydın geçerlilik sonu; renk bugüne göre -->
     <template v-for="type in OBLIGATION_TYPES" :key="type" #[`cell-type${type}`]="{ item }">
-      <v-chip size="small" variant="tonal" :color="badge(item, type).color">{{ badge(item, type).text }}</v-chip>
+      <UiChip size="small" variant="tonal" :color="badge(item, type).color">{{ badge(item, type).text }}</UiChip>
     </template>
 
     <template #cell-isActive="{ value }">
-      <v-chip size="small" :color="value ? 'success' : 'grey'" variant="tonal">{{ value ? "Aktif" : "Pasif" }}</v-chip>
+      <UiChip size="small" :color="value ? 'success' : 'grey'" variant="tonal">{{ value ? "Aktif" : "Pasif" }}</UiChip>
     </template>
 
     <template #actions="{ item }">
-      <div class="d-flex align-center ga-1">
-        <v-btn size="small" variant="tonal" color="primary" @click="openObligations(item)">İşlemler</v-btn>
-        <v-btn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
-        <v-btn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
+      <div class="flex items-center gap-1">
+        <UiBtn size="small" variant="tonal" color="primary" @click="openObligations(item)">İşlemler</UiBtn>
+        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
+        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
       </div>
     </template>
   </BaseDataTable>

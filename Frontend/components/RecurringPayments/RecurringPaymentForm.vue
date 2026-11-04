@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.name"
             label="Ad"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -14,15 +13,14 @@
             :rules="[rules.required, nameRule, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-select
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.kind"
             :items="kindOptions"
             item-title="title"
             item-value="value"
             label="Tür"
-            variant="outlined"
             :disabled="loading || isLocked"
             :hint="isLocked ? 'Ödemesi olan planda değiştirilemez' : ''"
             persistent-hint
@@ -32,18 +30,17 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.paymentMethodId"
             :items="paymentMethodOptions"
             item-title="name"
             item-value="id"
             label="Ödeme aracı"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -51,32 +48,30 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-select
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
             item-value="id"
             :label="isDonation ? 'Veren' : 'Kişi'"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Abonelik, fatura ve bağış: başlangıç ayı ve vade günü -->
-      <v-row v-if="!isInstallment">
-        <v-col cols="12" sm="6">
-          <v-text-field
+      <div class="ui-row" v-if="!isInstallment">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.startMonth"
             label="Başlangıç ayı"
             type="month"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar-month"
             density="comfortable"
@@ -84,15 +79,14 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model.number="formData.dueDay"
             label="Vade günü"
             type="number"
             min="1"
             max="31"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar-today"
             density="comfortable"
@@ -100,19 +94,18 @@
             :rules="[rules.required, dueDayRule]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Abonelik, fatura ve taksit: kategori -->
-      <v-row v-if="!isDonation">
-        <v-col cols="12">
-          <v-select
+      <div class="ui-row" v-if="!isDonation">
+        <div class="ui-col ui-col-12">
+          <UiSelect
             v-model="formData.categoryId"
             :items="categories"
             item-title="name"
             item-value="id"
             label="Kategori"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-shape-outline"
             density="comfortable"
@@ -120,16 +113,15 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Bağış: kime ve bağış türü -->
-      <v-row v-if="isDonation">
-        <v-col cols="12" sm="6">
-          <v-text-field
+      <div class="ui-row" v-if="isDonation">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.recipient"
             label="Kime"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -137,15 +129,14 @@
             :rules="[rules.required, recipientRule, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-select
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.donationKind"
             :items="donationKindOptions"
             item-title="title"
             item-value="value"
             label="Bağış türü"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -153,19 +144,18 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Taksit: toplam tutar, taksit sayısı, ilk taksit tarihi -->
-      <v-row v-if="isInstallment">
-        <v-col cols="12" sm="4">
-          <v-text-field
+      <div class="ui-row" v-if="isInstallment">
+        <div class="ui-col ui-col-12 ui-col-sm-4">
+          <UiTextField
             v-model.number="formData.totalAmount"
             label="Toplam tutar"
             type="number"
             min="0"
             step="0.01"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-currency-try"
             density="comfortable"
@@ -173,15 +163,14 @@
             :rules="[rules.required, positiveRule]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="4">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-4">
+          <UiTextField
             v-model.number="formData.installmentCount"
             label="Taksit sayısı"
             type="number"
             min="2"
             max="120"
-            variant="outlined"
             :disabled="loading || isLocked"
             prepend-inner-icon="mdi-counter"
             density="comfortable"
@@ -189,13 +178,12 @@
             :rules="[rules.required, installmentCountRule]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="4">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-4">
+          <UiTextField
             v-model="formData.firstDueDate"
             label="İlk taksit tarihi"
             type="date"
-            variant="outlined"
             :disabled="loading || isLocked"
             prepend-inner-icon="mdi-calendar"
             density="comfortable"
@@ -203,18 +191,17 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-text-field
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model.number="formData.expectedAmount"
             label="Beklenen tutar"
             type="number"
             min="0"
             step="0.01"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-currency-try"
             density="comfortable"
@@ -223,22 +210,21 @@
             class="modern-input"
             @update:model-value="expectedTouched = true"
           />
-        </v-col>
-        <v-col v-if="recurringPayment" cols="12" sm="6" class="d-flex align-center">
-          <v-switch
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6 flex items-center" v-if="recurringPayment">
+          <UiSwitch
             v-model="formData.isActive"
             label="Aktif"
             color="primary"
             :disabled="loading"
             hide-details
-            inset
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -246,9 +232,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -256,9 +242,9 @@
         class="btn-gradient-primary"
       >
         {{ recurringPayment ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

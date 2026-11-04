@@ -7,18 +7,18 @@
   </div>
 
   <!-- Yıl seçici (hafızaya alınmaz) ve kalem ekleme -->
-  <div class="d-flex align-center mb-4 ga-2">
-    <v-btn icon="mdi-chevron-left" variant="text" :disabled="isLoading" @click="year--" />
-    <div class="text-h6">{{ year }}</div>
-    <v-btn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
-    <v-spacer />
-    <v-btn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Kalem ekle</v-btn>
+  <div class="flex items-center mb-4 gap-2">
+    <UiBtn icon="mdi-chevron-left" variant="text" :disabled="isLoading" @click="year--" />
+    <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ year }}</div>
+    <UiBtn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
+    <div class="flex-1" />
+    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Kalem ekle</UiBtn>
   </div>
 
-  <v-card variant="outlined">
-    <v-progress-linear v-if="isLoading" indeterminate color="primary" />
+  <UiCard elevation="0" border>
+    <UiProgressLinear v-if="isLoading" indeterminate color="primary" />
     <LedgerTable :data="data" @edit="openEdit" @delete="openDelete" @save-cell="saveCell" />
-  </v-card>
+  </UiCard>
 
   <!-- Kalem formu -->
   <ResizableDrawer

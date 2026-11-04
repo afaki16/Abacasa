@@ -1,20 +1,19 @@
 <template>
   <!-- Filtreler -->
-  <v-row class="mb-2" dense>
-    <v-col cols="12" md="4">
-      <v-select
+  <div class="ui-row ui-row--dense mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterKind"
         :items="kindOptions"
         item-title="title"
         item-value="value"
         label="Tür"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="items"
@@ -51,7 +50,7 @@
 
     <template #cell-expectedAmount="{ value }">
       <span v-if="value === null || value === undefined">—</span>
-      <span v-else class="font-weight-medium">{{ formatMoney(value) }}</span>
+      <span v-else class="font-medium">{{ formatMoney(value) }}</span>
     </template>
 
     <template #cell-categoryOrRecipient="{ item }">
@@ -63,9 +62,9 @@
     </template>
 
     <template #cell-isActive="{ value }">
-      <v-chip :color="value ? 'success' : 'default'" size="small" variant="tonal">
+      <UiChip :color="value ? 'success' : undefined" size="small" variant="tonal">
         {{ value ? "Aktif" : "Pasif" }}
-      </v-chip>
+      </UiChip>
     </template>
   </BaseDataTable>
 

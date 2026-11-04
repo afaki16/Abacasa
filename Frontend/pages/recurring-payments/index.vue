@@ -6,10 +6,10 @@
     />
   </div>
 
-  <v-tabs v-model="tab" color="primary" class="mb-4">
-    <v-tab value="period">Dönem</v-tab>
-    <v-tab value="plans">Planlar</v-tab>
-  </v-tabs>
+  <UiTabs v-model="tab" color="primary" class="mb-4">
+    <UiTab value="period">Dönem</UiTab>
+    <UiTab value="plans">Planlar</UiTab>
+  </UiTabs>
 
   <!-- Sekme her açılışta yeniden yüklenir; planlardaki değişiklik dönem sekmesine yansır -->
   <RecurringPaymentOccurrences v-if="tab === 'period'" />

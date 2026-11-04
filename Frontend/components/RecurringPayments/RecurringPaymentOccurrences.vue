@@ -8,34 +8,34 @@
   />
 
   <!-- Özet -->
-  <v-row class="mb-2">
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="success">
-        <v-card-text>
-          <div class="text-caption">Ödenen</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(occurrences?.paidTotal ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="warning">
-        <v-card-text>
-          <div class="text-caption">Bekleyen</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(occurrences?.pendingTotal ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="primary">
-        <v-card-text>
-          <div class="text-caption">Toplam</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(occurrences?.total ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Ödenen</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.paidTotal ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[#fea619]/[0.12] !text-[#fea619]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Bekleyen</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.pendingTotal ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Toplam</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.total ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+  </div>
 
-  <v-alert
+  <UiAlert
     v-if="(occurrences?.unknownCount ?? 0) > 0"
     type="info"
     variant="tonal"
@@ -43,27 +43,29 @@
     class="mb-4"
   >
     {{ occurrences?.unknownCount }} kalemin tutarı belli değil
-  </v-alert>
+  </UiAlert>
 
-  <v-row class="mb-4">
-    <v-col cols="12">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Ödeme aracına göre</v-card-title>
-        <v-list density="compact">
-          <v-list-item v-for="row in occurrences?.byPaymentMethod ?? []" :key="row.id">
-            <template #title>{{ row.name }}</template>
-            <template #subtitle>
-              Ödenen {{ formatMoney(row.paidTotal) }} · Bekleyen {{ formatMoney(row.pendingTotal) }}
-            </template>
-            <template #append>{{ formatMoney(row.total) }}</template>
-          </v-list-item>
-          <v-list-item v-if="!occurrences?.byPaymentMethod?.length">
-            <template #title><span class="text-medium-emphasis">Kayıt yok</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-4">
+    <div class="ui-col ui-col-12">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="row in occurrences?.byPaymentMethod ?? []" :key="row.id">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ row.name }}</div>
+              <div class="ui-list-subtitle">Ödenen {{ formatMoney(row.paidTotal) }} · Bekleyen {{ formatMoney(row.pendingTotal) }}</div>
+            </div>
+            <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
+          </li>
+          <li class="ui-list-item" v-if="!occurrences?.byPaymentMethod?.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+            </div>
+          </li>
+        </ul>
+      </UiCard>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="tableItems"
@@ -95,21 +97,21 @@
 
     <template #cell-amount="{ item }">
       <span v-if="item.amount === null || item.amount === undefined">—</span>
-      <span v-else class="font-weight-medium">
+      <span v-else class="font-medium">
         {{ formatMoney(item.amount) }}
-        <v-chip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</v-chip>
+        <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</UiChip>
       </span>
     </template>
 
     <template #cell-status="{ item }">
-      <v-chip v-if="item.isPaid" size="small" color="success" variant="tonal">
+      <UiChip v-if="item.isPaid" size="small" color="success" variant="tonal">
         Ödendi · {{ formatDisplayDate(item.paidDate) }}
-      </v-chip>
-      <v-chip v-else size="small" color="warning" variant="tonal">Bekliyor</v-chip>
+      </UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">Bekliyor</UiChip>
     </template>
 
     <template #actions="{ item }">
-      <v-btn
+      <UiBtn
         v-if="!item.isPaid && canPay"
         size="small"
         color="primary"
@@ -117,8 +119,8 @@
         @click="openPayDialog(item)"
       >
         Öde
-      </v-btn>
-      <v-btn
+      </UiBtn>
+      <UiBtn
         v-else-if="item.isPaid && canUndo(item)"
         size="small"
         color="error"
@@ -126,7 +128,7 @@
         @click="openUndoDialog(item)"
       >
         Geri al
-      </v-btn>
+      </UiBtn>
     </template>
   </BaseDataTable>
 

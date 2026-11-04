@@ -1,36 +1,38 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="860" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card v-if="debt">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-cash-check</v-icon>
-        Ödemeler · {{ debt.creditorName }}
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="860" @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard v-if="debt">
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-cash-check" class="mr-2" />
+          Ödemeler · {{ debt.creditorName }}
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
+        </div>
+      </div>
 
-      <v-card-text>
+      <div class="ui-card-text">
         <!-- Borcun tutarı, ödenen ve kalan -->
-        <v-row dense class="mb-2">
-          <v-col cols="4">
-            <div class="text-caption">Tutar</div>
-            <div class="text-subtitle-1 font-weight-bold">{{ money(debt.amount) }}</div>
-          </v-col>
-          <v-col cols="4">
-            <div class="text-caption">Ödenen</div>
-            <div class="text-subtitle-1 font-weight-bold">{{ money(debt.paidAmount) }}</div>
-          </v-col>
-          <v-col cols="4">
-            <div class="text-caption">Kalan</div>
-            <div class="text-subtitle-1 font-weight-bold">
+        <div class="ui-row ui-row--dense mb-2">
+          <div class="ui-col ui-col-4">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Tutar</div>
+            <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">{{ money(debt.amount) }}</div>
+          </div>
+          <div class="ui-col ui-col-4">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Ödenen</div>
+            <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">{{ money(debt.paidAmount) }}</div>
+          </div>
+          <div class="ui-col ui-col-4">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kalan</div>
+            <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">
               {{ money(debt.remaining) }}
-              <span v-if="isForeign && debt.remainingInTry !== null" class="text-body-2 text-medium-emphasis">
+              <span v-if="isForeign && debt.remainingInTry !== null" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">
                 ≈ {{ formatMoney(debt.remainingInTry) }}
               </span>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
 
-        <v-table density="compact" class="mb-4">
+        <div class="overflow-x-auto mb-4"><table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Tarih</th>
@@ -48,20 +50,20 @@
               <td class="text-right">{{ p.exchangeRate ?? '—' }}</td>
               <td class="text-right">{{ formatMoney(p.amountInTry) }}</td>
               <td>{{ p.note }}</td>
-              <td v-if="canUpdate || canDelete" class="text-right text-no-wrap">
-                <v-btn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="editing = p" />
-                <v-btn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="paymentToDelete = p" />
+              <td v-if="canUpdate || canDelete" class="text-right whitespace-nowrap">
+                <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="editing = p" />
+                <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="paymentToDelete = p" />
               </td>
             </tr>
             <tr v-if="!payments.length">
-              <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-medium-emphasis">Ödeme yok</td>
+              <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-black/60 dark:text-white/70">Ödeme yok</td>
             </tr>
           </tbody>
-        </v-table>
+        </table></div>
 
         <!-- Ekleme ya da seçili ödemeyi düzenleme -->
         <template v-if="editing ? canUpdate : canCreate && debt.remaining > 0">
-          <div class="text-subtitle-2 mb-2">{{ editing ? 'Ödemeyi düzenle' : 'Ödeme ekle' }}</div>
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'Ödemeyi düzenle' : 'Ödeme ekle' }}</div>
           <DebtPaymentForm
             :currency="debt.currency"
             :remaining="debt.remaining"
@@ -72,8 +74,8 @@
             @cancel="editing = null"
           />
         </template>
-      </v-card-text>
-    </v-card>
+      </div>
+    </UiCard>
 
     <ConfirmDialog
       :model-value="!!paymentToDelete"
@@ -85,7 +87,7 @@
       @confirm="removePayment"
       @cancel="paymentToDelete = null"
     />
-  </v-dialog>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

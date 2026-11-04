@@ -1,71 +1,67 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-row dense>
-      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
-        <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-row ui-row--dense">
+      <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
+        <UiTextField
           v-model="formData.date"
           label="Tarih"
           type="date"
-          variant="outlined"
           :disabled="loading"
           density="compact"
           hide-details="auto"
           :rules="[rules.required]"
         />
-      </v-col>
-      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
-        <v-text-field
+      </div>
+      <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
+        <UiTextField
           v-model.number="formData.amount"
           :label="amountLabel"
           type="number"
           min="0"
           :step="isGold ? 1 : 0.01"
-          variant="outlined"
           :disabled="loading"
           density="compact"
           hide-details="auto"
           :rules="[rules.required, positiveRule, wholeRule]"
         />
-      </v-col>
+      </div>
       <!-- Kur yalnızca yabancı birimde; güncel kurla dolu gelir, düzeltilebilir -->
-      <v-col v-if="isForeign" cols="12" sm="6" md="3">
-        <v-text-field
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3" v-if="isForeign">
+        <UiTextField
           v-model.number="formData.exchangeRate"
           :label="rateLabel"
           type="number"
           min="0"
           step="0.0001"
-          variant="outlined"
           :disabled="loading"
           density="compact"
           hide-details="auto"
           :rules="[rules.required, positiveRule]"
         />
-      </v-col>
-      <v-col cols="12" sm="6" :md="isForeign ? 3 : 4">
-        <v-text-field
+      </div>
+      <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
+        <UiTextField
           v-model="formData.note"
           label="Not"
-          variant="outlined"
           :disabled="loading"
           density="compact"
           hide-details="auto"
           :rules="[rules.maxLength(200)]"
         />
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <div class="d-flex align-center mt-3 ga-2">
-      <span class="text-body-2">
+    <div class="flex items-center mt-3 gap-2">
+      <span class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
         TL karşılığı: <strong>{{ formatMoney(amountInTry) }}</strong>
       </span>
-      <v-spacer />
-      <v-btn v-if="payment" variant="text" :disabled="loading" @click="$emit('cancel')">İptal</v-btn>
-      <v-btn color="primary" :loading="loading" :disabled="loading || !isFormValid" type="submit">
+      <div class="flex-1" />
+      <UiBtn v-if="payment" variant="text" :disabled="loading" @click="$emit('cancel')">İptal</UiBtn>
+      <UiBtn color="primary" :loading="loading" :disabled="loading || !isFormValid" type="submit">
         {{ payment ? 'Güncelle' : 'Ödeme ekle' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

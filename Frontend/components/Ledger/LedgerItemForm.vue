@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.name"
             label="Ad"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-format-title"
             density="comfortable"
@@ -14,19 +13,18 @@
             :rules="[rules.required, nameRule, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
           <!-- Tutarı olan kalemin yönü değiştirilemez -->
-          <v-select
+          <UiSelect
             v-model="formData.direction"
             :items="directionOptions"
             item-title="title"
             item-value="value"
             label="Yön"
-            variant="outlined"
             :disabled="loading || !!item?.hasAmounts"
             :hint="item?.hasAmounts ? 'Tutarı olan kalemin yönü değiştirilemez' : ''"
             persistent-hint
@@ -36,41 +34,39 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-select
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
             item-value="id"
             label="Kişi"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- Aktif yalnızca düzenlemede; yeni kalem aktif başlar -->
-      <v-row v-if="item">
-        <v-col cols="12">
-          <v-switch
+      <div class="ui-row" v-if="item">
+        <div class="ui-col ui-col-12">
+          <UiSwitch
             v-model="formData.isActive"
             label="Aktif"
             color="primary"
             :disabled="loading"
             hide-details
-            inset
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -78,9 +74,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -88,9 +84,9 @@
         class="btn-gradient-primary"
       >
         {{ item ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

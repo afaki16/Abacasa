@@ -1,21 +1,21 @@
 <template>
   <!-- Hanesiz kullanıcı: API çağrılmaz, hane oluşturma kartı -->
   <template v-if="!hasHousehold">
-    <v-card variant="outlined" class="pa-6">
-      <div class="text-h6">Henüz bir haneniz yok</div>
-      <div class="text-body-2 text-medium-emphasis mt-1">
+    <UiCard elevation="0" border class="p-6">
+      <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">Henüz bir haneniz yok</div>
+      <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-1">
         Kendi hanenizi oluşturabilir ya da size gelen davet e-postasındaki bağlantıyı kullanabilirsiniz.
       </div>
-      <v-btn color="primary" prepend-icon="mdi-home-plus" class="mt-4" @click="createDialog = true">Hane oluştur</v-btn>
-    </v-card>
+      <UiBtn color="primary" prepend-icon="mdi-home-plus" class="mt-4" @click="createDialog = true">Hane oluştur</UiBtn>
+    </UiCard>
     <CreateHouseholdDialog v-model="createDialog" />
   </template>
 
   <!-- Dashboard.Read yoksa API çağrılmaz; kısa hoş geldin mesajı -->
-  <v-card v-else-if="!canRead" variant="outlined" class="pa-6">
-    <div class="text-h6">{{ greeting }}</div>
-    <div class="text-body-2 text-medium-emphasis mt-1">Abacasa'ya hoş geldiniz.</div>
-  </v-card>
+  <UiCard elevation="0" border v-else-if="!canRead" class="p-6">
+    <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ greeting }}</div>
+    <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-1">Abacasa'ya hoş geldiniz.</div>
+  </UiCard>
 
   <template v-else>
     <!-- Dönem seçici -->
@@ -27,68 +27,68 @@
     />
 
     <!-- Kartlar -->
-    <v-row class="mb-2">
-      <v-col cols="12" sm="6" md="3">
-        <v-card variant="tonal" color="primary" class="fill-height">
-          <v-card-text>
-            <div class="text-caption">Dönem toplamı (yemek kartı hariç)</div>
-            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.outflowTotal ?? 0) }}</div>
-            <div class="text-caption">
+    <div class="ui-row mb-2">
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+        <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+          <div class="ui-card-text">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı (yemek kartı hariç)</div>
+            <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.outflowTotal ?? 0) }}</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               Harcama {{ formatMoney(data?.spent.expenses ?? 0) }} · Bağış {{ formatMoney(data?.spent.donations ?? 0) }} ·
               Bekleyen {{ formatMoney(data?.pending.total ?? 0) }}
             </div>
-            <div v-if="(data?.pending.unknownCount ?? 0) > 0" class="text-caption">
+            <div v-if="(data?.pending.unknownCount ?? 0) > 0" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               {{ data?.pending.unknownCount }} kalemin tutarı belli değil
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6" md="3">
-        <v-card variant="tonal" color="info" class="fill-height">
-          <v-card-text>
-            <div class="text-caption">Sabit ödemeler</div>
-            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.recurring.total ?? 0) }}</div>
-            <div class="text-caption">
+          </div>
+        </UiCard>
+      </div>
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+        <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+          <div class="ui-card-text">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Sabit ödemeler</div>
+            <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.recurring.total ?? 0) }}</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               Ödenen {{ formatMoney(data?.recurring.paidTotal ?? 0) }} · Bekleyen {{ formatMoney(data?.recurring.pendingTotal ?? 0) }}
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6" md="3">
+          </div>
+        </UiCard>
+      </div>
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <!-- Borçlar sayfasındaki kartla aynı kurallar -->
-        <v-card variant="tonal" color="warning" class="fill-height">
-          <v-card-text>
-            <div class="text-caption">Açık borç (TL karşılığı)</div>
-            <div class="text-h5 font-weight-bold">
+        <UiCard class="h-full !bg-[#fea619]/[0.12] !text-[#fea619]">
+          <div class="ui-card-text">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Açık borç (TL karşılığı)</div>
+            <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">
               {{ formatMoney(data?.debts.openTotalInTry) }}
             </div>
             <!-- TL ve yabancı birimler tek satırda -->
-            <div class="text-caption">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               {{ formatOpenLine(data?.debts.openTry ?? 0, data?.debts.foreign ?? []) }}
             </div>
-            <div v-if="missingRateLabels.length" class="text-caption">{{ missingRateLabels.join(", ") }} kuru girilmemiş</div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6" md="3">
-        <v-card variant="tonal" color="secondary" class="fill-height">
-          <v-card-text>
-            <div class="text-caption">Yemek kartı</div>
-            <div class="text-h5 font-weight-bold">{{ formatMoney(data?.mealCard.total ?? 0) }}</div>
-            <div class="text-caption">
+            <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ missingRateLabels.join(", ") }} kuru girilmemiş</div>
+          </div>
+        </UiCard>
+      </div>
+      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+        <UiCard class="h-full !bg-secondary/[0.12] !text-secondary">
+          <div class="ui-card-text">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Yemek kartı</div>
+            <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.mealCard.total ?? 0) }}</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               Harcanan {{ formatMoney(data?.mealCard.spent ?? 0) }} · Bekleyen {{ formatMoney(data?.mealCard.pending ?? 0) }}
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+          </div>
+        </UiCard>
+      </div>
+    </div>
 
     <!-- Ödeme aracına ve kişiye göre -->
-    <v-row class="mb-2">
-      <v-col cols="12" md="6">
-        <v-card variant="outlined" class="fill-height">
-          <v-card-title class="text-subtitle-1">Ödeme aracına göre</v-card-title>
-          <v-table density="compact">
+    <div class="ui-row mb-2">
+      <div class="ui-col ui-col-12 ui-col-md-6">
+        <UiCard elevation="0" border class="h-full">
+          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+          <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
             <thead>
               <tr>
                 <th>Ad</th>
@@ -104,19 +104,19 @@
                 <td>{{ getTypeLabel(row.type) }}</td>
                 <td class="text-right">{{ formatMoney(row.spent) }}</td>
                 <td class="text-right">{{ formatMoney(row.pending) }}</td>
-                <td class="text-right font-weight-medium">{{ formatMoney(row.total) }}</td>
+                <td class="text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPaymentMethod?.length">
-                <td colspan="5" class="text-medium-emphasis">Kayıt yok</td>
+                <td colspan="5" class="text-black/60 dark:text-white/70">Kayıt yok</td>
               </tr>
             </tbody>
-          </v-table>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-card variant="outlined" class="fill-height">
-          <v-card-title class="text-subtitle-1">Kişiye göre</v-card-title>
-          <v-table density="compact">
+          </table></div>
+        </UiCard>
+      </div>
+      <div class="ui-col ui-col-12 ui-col-md-6">
+        <UiCard elevation="0" border class="h-full">
+          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kişiye göre</div>
+          <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
             <thead>
               <tr>
                 <th>Ad</th>
@@ -130,33 +130,35 @@
                 <td>{{ row.name ?? "Hane" }}</td>
                 <td class="text-right">{{ formatMoney(row.spent) }}</td>
                 <td class="text-right">{{ formatMoney(row.pending) }}</td>
-                <td class="text-right font-weight-medium">{{ formatMoney(row.total) }}</td>
+                <td class="text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPerson?.length">
-                <td colspan="4" class="text-medium-emphasis">Kayıt yok</td>
+                <td colspan="4" class="text-black/60 dark:text-white/70">Kayıt yok</td>
               </tr>
             </tbody>
             <tfoot v-if="data?.byPerson?.length">
-              <tr class="font-weight-bold">
+              <tr class="font-bold">
                 <td>Toplam</td>
                 <td class="text-right">{{ formatMoney(personTotals.spent) }}</td>
                 <td class="text-right">{{ formatMoney(personTotals.pending) }}</td>
                 <td class="text-right">{{ formatMoney(personTotals.total) }}</td>
               </tr>
             </tfoot>
-          </v-table>
-        </v-card>
-      </v-col>
-    </v-row>
+          </table></div>
+        </UiCard>
+      </div>
+    </div>
 
     <!-- Yaklaşan ödemeler -->
-    <v-card variant="outlined">
-      <v-card-title class="d-flex align-center text-subtitle-1">
-        Yaklaşan ödemeler
-        <v-spacer />
-        <NuxtLink to="/recurring-payments" class="text-body-2 text-primary">Sabit ödemeler'e git</NuxtLink>
-      </v-card-title>
-      <v-table density="compact">
+    <UiCard elevation="0" border>
+      <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">
+        <div class="flex items-center">
+          Yaklaşan ödemeler
+          <div class="flex-1" />
+          <NuxtLink to="/recurring-payments" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-[rgb(var(--color-brand))]">Sabit ödemeler'e git</NuxtLink>
+        </div>
+      </div>
+      <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
         <thead>
           <tr>
             <th>Vade</th>
@@ -175,7 +177,7 @@
             <td>{{ formatDisplayDate(item.dueDate) }}</td>
             <!-- Araç satırı Araçlar sayfasına bağlanır -->
             <td>
-              <NuxtLink v-if="item.source === 'vehicle'" to="/vehicles" class="text-primary">{{ item.name }}</NuxtLink>
+              <NuxtLink v-if="item.source === 'vehicle'" to="/vehicles" class="text-[rgb(var(--color-brand))]">{{ item.name }}</NuxtLink>
               <template v-else>{{ item.name }}</template>
             </td>
             <td>
@@ -184,19 +186,19 @@
             <td>{{ item.source === 'vehicle' ? '—' : item.paymentMethodName }}</td>
             <td class="text-right">
               {{ formatMoney(item.amount) }}
-              <v-chip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</v-chip>
+              <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</UiChip>
             </td>
             <td>
-              <v-chip v-if="item.isOverdue" size="small" color="error" variant="tonal">Gecikti</v-chip>
+              <UiChip v-if="item.isOverdue" size="small" color="error" variant="tonal">Gecikti</UiChip>
               <span v-else>{{ dueLabel(item.dueDate) }}</span>
             </td>
           </tr>
           <tr v-if="!data?.upcoming?.length">
-            <td colspan="6" class="text-medium-emphasis">Yaklaşan ödeme yok</td>
+            <td colspan="6" class="text-black/60 dark:text-white/70">Yaklaşan ödeme yok</td>
           </tr>
         </tbody>
-      </v-table>
-    </v-card>
+      </table></div>
+    </UiCard>
   </template>
 </template>
 

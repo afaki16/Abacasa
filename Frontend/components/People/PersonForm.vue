@@ -1,12 +1,11 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.name"
             label="Ad"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -14,15 +13,14 @@
             :rules="[rules.required, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.relation"
             label="Yakınlık"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -30,12 +28,12 @@
             :rules="[rules.maxLength(50)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -43,9 +41,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -53,9 +51,9 @@
         class="btn-gradient-primary"
       >
         {{ person ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

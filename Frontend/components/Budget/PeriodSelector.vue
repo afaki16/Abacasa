@@ -1,44 +1,43 @@
 <template>
-  <v-card class="mb-4" variant="outlined">
-    <v-card-text>
-      <v-row align="center" dense>
-        <v-col cols="12" md="auto">
-          <v-btn-toggle
+  <UiCard elevation="0" border class="mb-4">
+    <div class="ui-card-text">
+      <div class="ui-row ui-row--dense ui-row--align-center">
+        <div class="ui-col ui-col-12 ui-col-md-auto">
+          <UiBtnToggle
             v-model="mode"
+            :items="[
+              { title: 'Takvim ayı', value: 'calendar' },
+              { title: 'Kart dönemi', value: 'statement', disabled: creditCards.length === 0 },
+            ]"
             mandatory
             color="primary"
             density="comfortable"
-            variant="outlined"
             divided
-          >
-            <v-btn value="calendar">Takvim ayı</v-btn>
-            <v-btn value="statement" :disabled="creditCards.length === 0">Kart dönemi</v-btn>
-          </v-btn-toggle>
-        </v-col>
+          />
+        </div>
 
-        <v-col v-if="mode === 'statement'" cols="12" md="3">
-          <v-select
+        <div class="ui-col ui-col-12 ui-col-md-3" v-if="mode === 'statement'">
+          <UiSelect
             v-model="selectedCardId"
             :items="creditCards"
             item-title="name"
             item-value="id"
             label="Kredi kartı"
-            variant="outlined"
             density="compact"
             hide-details
           />
-        </v-col>
+        </div>
 
-        <v-col cols="12" md="auto" class="d-flex align-center ga-2">
-          <v-btn icon="mdi-chevron-left" variant="text" @click="shiftPeriod(-1)" />
-          <span class="text-body-1 font-weight-medium">
+        <div class="ui-col ui-col-12 ui-col-md-auto flex items-center gap-2">
+          <UiBtn icon="mdi-chevron-left" variant="text" @click="shiftPeriod(-1)" />
+          <span class="text-[1rem] leading-[1.5] tracking-[0.03125em] font-medium">
             {{ formatDisplayDate(period.start) }} – {{ formatDisplayDate(period.end) }}
           </span>
-          <v-btn icon="mdi-chevron-right" variant="text" @click="shiftPeriod(1)" />
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+          <UiBtn icon="mdi-chevron-right" variant="text" @click="shiftPeriod(1)" />
+        </div>
+      </div>
+    </div>
+  </UiCard>
 </template>
 
 <script setup lang="ts">

@@ -7,48 +7,47 @@
   </div>
 
   <!-- Özet: açık emanetlerin toplamı -->
-  <v-row class="mb-2">
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="primary">
-        <v-card-text>
-          <div class="text-caption">Dağıtılacak kalan</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(openTotals.remaining) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="warning">
-        <v-card-text>
-          <div class="text-caption">Kullanımda</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(openTotals.inUse) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="success">
-        <v-card-text>
-          <div class="text-caption">Elde</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(openTotals.onHand) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dağıtılacak kalan</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.remaining) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[#fea619]/[0.12] !text-[#fea619]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kullanımda</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.inUse) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Elde</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.onHand) }}</div>
+        </div>
+      </UiCard>
+    </div>
+  </div>
 
   <!-- Filtreler -->
-  <v-row class="mb-2" dense>
-    <v-col cols="12" md="4">
-      <v-select
+  <div class="ui-row ui-row--dense mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterStatus"
         :items="statusOptions"
         item-title="title"
         item-value="value"
         label="Durum"
-        variant="outlined"
         density="compact"
         hide-details
       />
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="items"
@@ -88,31 +87,31 @@
     </template>
 
     <template #cell-amount="{ value }">
-      <span class="font-weight-medium">{{ formatMoney(value) }}</span>
+      <span class="font-medium">{{ formatMoney(value) }}</span>
     </template>
 
     <template #cell-distributed="{ value }">{{ formatMoney(value) }}</template>
     <template #cell-inUse="{ value }">{{ formatMoney(value) }}</template>
     <template #cell-remaining="{ value }">
-      <span class="font-weight-medium">{{ formatMoney(value) }}</span>
+      <span class="font-medium">{{ formatMoney(value) }}</span>
     </template>
     <template #cell-onHand="{ value }">{{ formatMoney(value) }}</template>
 
     <template #cell-status="{ item }">
-      <v-chip v-if="item.isClosed" size="small" color="success" variant="tonal">Bitti</v-chip>
-      <v-chip v-else size="small" color="warning" variant="tonal">Açık</v-chip>
+      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">Bitti</UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">Açık</UiChip>
     </template>
 
     <template #actions="{ item }">
-      <div class="d-flex align-center ga-1">
-        <v-btn size="small" variant="tonal" color="primary" @click="openDistributions(item)">
+      <div class="flex items-center gap-1">
+        <UiBtn size="small" variant="tonal" color="primary" @click="openDistributions(item)">
           Dağıtımlar ({{ item.distributionCount }})
-        </v-btn>
-        <v-btn size="small" variant="tonal" @click="openMovements(item)">
+        </UiBtn>
+        <UiBtn size="small" variant="tonal" @click="openMovements(item)">
           Hareketler ({{ item.movementCount }})
-        </v-btn>
-        <v-btn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
-        <v-btn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
+        </UiBtn>
+        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
+        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
       </div>
     </template>
   </BaseDataTable>

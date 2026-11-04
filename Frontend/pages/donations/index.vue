@@ -15,84 +15,91 @@
   />
 
   <!-- Özet -->
-  <v-row class="mb-2">
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="primary">
-        <v-card-text>
-          <div class="text-caption">Dönem toplamı</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="info">
-        <v-card-text>
-          <div class="text-caption">Kayıt sayısı</div>
-          <div class="text-h5 font-weight-bold">{{ summary?.count ?? 0 }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
+  <div class="ui-row mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kayıt sayısı</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ summary?.count ?? 0 }}</div>
+        </div>
+      </UiCard>
+    </div>
     <!-- Emanetten dağıtılanlar dönem toplamına girmez; ayrı gösterilir. Modül kapalıysa kart hiç görünmez -->
-    <v-col v-if="donationExtras" cols="12" md="4">
-      <v-card variant="tonal" color="secondary">
-        <v-card-text>
-          <div class="text-caption">Emanetten dağıtılan</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.fundDistributedTotal ?? 0) }}</div>
-          <div class="text-caption">{{ summary?.fundDistributedCount ?? 0 }} kayıt</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+    <div class="ui-col ui-col-12 ui-col-md-4" v-if="donationExtras">
+      <UiCard class="!bg-secondary/[0.12] !text-secondary">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Emanetten dağıtılan</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.fundDistributedTotal ?? 0) }}</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ summary?.fundDistributedCount ?? 0 }} kayıt</div>
+        </div>
+      </UiCard>
+    </div>
+  </div>
 
-  <v-row class="mb-4">
-    <v-col cols="12" md="6">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Türe göre</v-card-title>
-        <v-list density="compact">
-          <v-list-item v-for="row in summary?.byKind ?? []" :key="row.kind">
-            <template #title>{{ getKindLabel(row.kind) }}</template>
-            <template #subtitle>{{ row.count }} kayıt</template>
-            <template #append>{{ formatMoney(row.total) }}</template>
-          </v-list-item>
-          <v-list-item v-if="!summary?.byKind?.length">
-            <template #title><span class="text-medium-emphasis">Kayıt yok</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="6">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Verene göre</v-card-title>
-        <v-list density="compact">
-          <v-list-item v-for="row in summary?.byGiver ?? []" :key="row.personId ?? 'household'">
-            <template #title>{{ row.personName ?? "Hane" }}</template>
-            <template #subtitle>{{ row.count }} kayıt</template>
-            <template #append>{{ formatMoney(row.total) }}</template>
-          </v-list-item>
-          <v-list-item v-if="!summary?.byGiver?.length">
-            <template #title><span class="text-medium-emphasis">Kayıt yok</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-4">
+    <div class="ui-col ui-col-12 ui-col-md-6">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Türe göre</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="row in summary?.byKind ?? []" :key="row.kind">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ getKindLabel(row.kind) }}</div>
+              <div class="ui-list-subtitle">{{ row.count }} kayıt</div>
+            </div>
+            <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
+          </li>
+          <li class="ui-list-item" v-if="!summary?.byKind?.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+            </div>
+          </li>
+        </ul>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-6">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Verene göre</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="row in summary?.byGiver ?? []" :key="row.personId ?? 'household'">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ row.personName ?? "Hane" }}</div>
+              <div class="ui-list-subtitle">{{ row.count }} kayıt</div>
+            </div>
+            <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
+          </li>
+          <li class="ui-list-item" v-if="!summary?.byGiver?.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+            </div>
+          </li>
+        </ul>
+      </UiCard>
+    </div>
+  </div>
 
   <!-- Filtreler -->
-  <v-row class="mb-2" dense>
-    <v-col cols="12" md="4">
-      <v-select
+  <div class="ui-row ui-row--dense mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterKind"
         :items="kindOptions"
         item-title="title"
         item-value="value"
         label="Tür"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="items"
@@ -133,9 +140,9 @@
 
     <template #cell-recipient="{ item, value }">
       {{ value }}
-      <v-chip v-if="item.fundId" size="x-small" variant="tonal" color="secondary" class="ml-1">
+      <UiChip v-if="item.fundId" size="x-small" variant="tonal" color="secondary" class="ml-1">
         Emanet: {{ fundFrom(item.fundLabel) }}
-      </v-chip>
+      </UiChip>
     </template>
 
     <template #cell-giverPersonName="{ value }">
@@ -143,7 +150,7 @@
     </template>
 
     <template #cell-amount="{ value }">
-      <span class="font-weight-medium">{{ formatMoney(value) }}</span>
+      <span class="font-medium">{{ formatMoney(value) }}</span>
     </template>
   </BaseDataTable>
 

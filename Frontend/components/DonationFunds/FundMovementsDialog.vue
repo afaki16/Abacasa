@@ -1,19 +1,21 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="760" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card v-if="fund">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-swap-horizontal</v-icon>
-        Hareketler · {{ fund.fromPersonName }}
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="760" @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard v-if="fund">
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-swap-horizontal" class="mr-2" />
+          Hareketler · {{ fund.fromPersonName }}
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
+        </div>
+      </div>
 
-      <v-card-text>
-        <div class="text-body-2 mb-2">
+      <div class="ui-card-text">
+        <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal mb-2">
           Kullanımda {{ formatMoney(fund.inUse) }} · Elde {{ formatMoney(fund.onHand) }}
         </div>
 
-        <v-table density="compact" class="mb-4">
+        <div class="overflow-x-auto mb-4"><table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Tarih</th>
@@ -29,83 +31,79 @@
               <td>{{ getMovementTypeLabel(m.type) }}</td>
               <td class="text-right">{{ formatMoney(m.amount) }}</td>
               <td>{{ m.note }}</td>
-              <td v-if="canUpdate" class="text-right text-no-wrap">
-                <v-btn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(m)" />
-                <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = m" />
+              <td v-if="canUpdate" class="text-right whitespace-nowrap">
+                <UiBtn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(m)" />
+                <UiBtn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = m" />
               </td>
             </tr>
             <tr v-if="!movements.length">
-              <td :colspan="canUpdate ? 5 : 4" class="text-medium-emphasis">Hareket yok</td>
+              <td :colspan="canUpdate ? 5 : 4" class="text-black/60 dark:text-white/70">Hareket yok</td>
             </tr>
           </tbody>
-        </v-table>
+        </table></div>
 
         <!-- Ekleme ya da seçili hareketi düzenleme; tarih varsayılanı bugün -->
         <template v-if="canUpdate">
-          <div class="text-subtitle-2 mb-2">{{ editing ? 'Hareketi düzenle' : 'Hareket ekle' }}</div>
-          <v-form ref="formRef" @submit.prevent="save">
-            <v-row dense>
-              <v-col cols="12" sm="3">
-                <v-select
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'Hareketi düzenle' : 'Hareket ekle' }}</div>
+          <UiForm ref="formRef" @submit="save">
+            <div class="ui-row ui-row--dense">
+              <div class="ui-col ui-col-12 ui-col-sm-3">
+                <UiSelect
                   v-model="formData.type"
                   :items="movementTypeOptions"
                   item-title="title"
                   item-value="value"
                   label="Tür"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                 />
-              </v-col>
-              <v-col cols="12" sm="3">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-3">
+                <UiTextField
                   v-model="formData.date"
                   label="Tarih"
                   type="date"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.required]"
                 />
-              </v-col>
-              <v-col cols="12" sm="3">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-3">
+                <UiTextField
                   v-model.number="formData.amount"
                   label="Tutar"
                   type="number"
                   min="0"
                   step="0.01"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.required, amountRule]"
                 />
-              </v-col>
-              <v-col cols="12" sm="3">
-                <v-text-field
+              </div>
+              <div class="ui-col ui-col-12 ui-col-sm-3">
+                <UiTextField
                   v-model="formData.note"
                   label="Not"
-                  variant="outlined"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
                   :rules="[rules.maxLength(200)]"
                 />
-              </v-col>
-            </v-row>
-            <div class="d-flex justify-end mt-3 ga-2">
-              <v-btn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</v-btn>
-              <v-btn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
-                {{ editing ? 'Güncelle' : 'Ekle' }}
-              </v-btn>
+              </div>
             </div>
-          </v-form>
+            <div class="flex justify-end mt-3 gap-2">
+              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</UiBtn>
+              <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
+                {{ editing ? 'Güncelle' : 'Ekle' }}
+              </UiBtn>
+            </div>
+          </UiForm>
         </template>
-      </v-card-text>
-    </v-card>
+      </div>
+    </UiCard>
 
     <ConfirmDialog
       :model-value="!!toDelete"
@@ -117,7 +115,7 @@
       @confirm="remove"
       @cancel="toDelete = null"
     />
-  </v-dialog>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

@@ -1,69 +1,69 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="520" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card>
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-swap-horizontal</v-icon>
-        Kurlar (elle)
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="520" @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard>
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-swap-horizontal" class="mr-2" />
+          Kurlar (elle)
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
+        </div>
+      </div>
 
-      <v-card-text>
+      <div class="ui-card-text">
         <!-- Aynı tarih için kayıt varsa backend onu günceller -->
-        <v-form ref="formRef" @submit.prevent="save">
-          <v-row dense>
-            <v-col cols="12">
-              <v-select
+        <UiForm ref="formRef" @submit="save">
+          <div class="ui-row ui-row--dense">
+            <div class="ui-col ui-col-12">
+              <UiSelect
                 v-model="formData.currency"
                 :items="rateCurrencyOptions"
                 item-title="title"
                 item-value="value"
                 label="Birim"
-                variant="outlined"
                 density="compact"
                 hide-details="auto"
                 :disabled="isBusy"
               />
-            </v-col>
-            <v-col cols="12" sm="5">
-              <v-text-field
+            </div>
+            <div class="ui-col ui-col-12 ui-col-sm-5">
+              <UiTextField
                 v-model.number="formData.rate"
                 :label="formData.currency === Currency.QuarterGold ? 'Çeyrek fiyatı (₺)' : 'Kur (₺)'"
                 type="number"
                 min="0"
                 step="0.0001"
-                variant="outlined"
                 density="compact"
                 hide-details="auto"
                 :disabled="isBusy"
                 :rules="[rules.required, positiveRule]"
               />
-            </v-col>
-            <v-col cols="12" sm="5">
-              <v-text-field
+            </div>
+            <div class="ui-col ui-col-12 ui-col-sm-5">
+              <UiTextField
                 v-model="formData.date"
                 label="Tarih"
                 type="date"
-                variant="outlined"
                 density="compact"
                 hide-details="auto"
                 :disabled="isBusy"
                 :rules="[rules.required]"
               />
-            </v-col>
-            <v-col cols="12" sm="2" class="d-flex align-center">
-              <v-btn color="primary" type="submit" block :loading="isBusy" :disabled="isBusy || !isFormValid">Kaydet</v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
+            </div>
+            <div class="ui-col ui-col-12 ui-col-sm-2 flex items-center">
+              <UiBtn color="primary" type="submit" block :loading="isBusy" :disabled="isBusy || !isFormValid">Kaydet</UiBtn>
+            </div>
+          </div>
+        </UiForm>
 
-        <div class="text-subtitle-2 mt-4 mb-1">Son kayıtlar</div>
-        <v-list density="compact">
-          <v-list-item v-for="r in rates" :key="r.id">
-            <template #title>{{ formatDisplayDate(r.date) }} · {{ currencyLabel(r.currency) }}</template>
-            <template #append>
-              <span class="mr-2">{{ formatMoney(r.rate) }}</span>
-              <v-btn
+        <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mt-4 mb-1">Son kayıtlar</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="r in rates" :key="r.id">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ formatDisplayDate(r.date) }} · {{ currencyLabel(r.currency) }}</div>
+            </div>
+            <span class="ui-list-item__append"><span class="mr-2">{{ formatMoney(r.rate) }}</span>
+              <UiBtn
                 v-if="canDelete"
                 icon="mdi-delete"
                 size="x-small"
@@ -71,15 +71,16 @@
                 color="error"
                 :disabled="isBusy"
                 @click="rateToDelete = r"
-              />
-            </template>
-          </v-list-item>
-          <v-list-item v-if="!rates.length">
-            <template #title><span class="text-medium-emphasis">Kur girilmemiş</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-    </v-card>
+              /></span>
+          </li>
+          <li class="ui-list-item" v-if="!rates.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kur girilmemiş</span></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </UiCard>
 
     <ConfirmDialog
       :model-value="!!rateToDelete"
@@ -91,7 +92,7 @@
       @confirm="remove"
       @cancel="rateToDelete = null"
     />
-  </v-dialog>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

@@ -18,18 +18,18 @@
         </tr>
         <tr v-for="row in section.rows" :key="row.key">
           <td class="sticky-col">
-            <div class="d-flex align-center ga-1">
+            <div class="flex items-center gap-1">
               <span>{{ rowLabel(row) }}</span>
-              <v-chip v-if="row.source === 'plan' && row.kind" size="x-small" variant="tonal">
+              <UiChip v-if="row.source === 'plan' && row.kind" size="x-small" variant="tonal">
                 {{ getKindLabel(row.kind) }}
-              </v-chip>
-              <span v-if="row.source === 'manual' && row.ownerName" class="text-caption text-medium-emphasis">
+              </UiChip>
+              <span v-if="row.source === 'manual' && row.ownerName" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">
                 · {{ row.ownerName }}
               </span>
               <template v-if="row.source === 'manual'">
-                <v-spacer />
-                <v-btn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="$emit('edit', row)" />
-                <v-btn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="$emit('delete', row)" />
+                <div class="flex-1" />
+                <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="$emit('edit', row)" />
+                <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="$emit('delete', row)" />
               </template>
             </div>
           </td>
@@ -54,11 +54,11 @@
             />
             <template v-else>{{ formatMoney(value) }}</template>
           </td>
-          <td class="num font-weight-medium">{{ formatMoney(row.total) }}</td>
+          <td class="num font-medium">{{ formatMoney(row.total) }}</td>
           <td class="num">{{ formatMoney(row.average) }}</td>
         </tr>
         <tr v-if="!section.rows.length">
-          <td class="sticky-col text-medium-emphasis">Kayıt yok</td>
+          <td class="sticky-col text-black/60 dark:text-white/70">Kayıt yok</td>
           <td :colspan="14" />
         </tr>
       </tbody>
@@ -186,13 +186,13 @@ const commit = () => {
 .ledger-table th,
 .ledger-table td {
   padding: 6px 10px;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-bottom: 1px solid rgb(var(--color-on-surface) / 0.12);
   white-space: nowrap;
 }
 
 .ledger-table thead th {
   font-weight: 600;
-  background: rgb(var(--v-theme-surface));
+  background: rgb(var(--color-surface));
 }
 
 .num {
@@ -207,43 +207,43 @@ const commit = () => {
   z-index: 1;
   min-width: 260px;
   text-align: left;
-  background: rgb(var(--v-theme-surface));
+  background: rgb(var(--color-surface));
 }
 
 .section-row td {
   font-weight: 600;
-  background: rgba(var(--v-theme-primary), 0.08);
+  background: rgb(var(--color-brand) / 0.08);
 }
 
 .section-row .sticky-col {
-  background: rgb(var(--v-theme-surface));
-  box-shadow: inset 0 0 0 9999px rgba(var(--v-theme-primary), 0.08);
+  background: rgb(var(--color-surface));
+  box-shadow: inset 0 0 0 9999px rgb(var(--color-brand) / 0.08);
 }
 
 /* Elle hücreler tıklanabilir; otomatik hücreler soluk ve salt okunur */
 .cell-manual {
   cursor: pointer;
-  border-left: 1px dashed rgba(var(--v-border-color), var(--v-border-opacity));
+  border-left: 1px dashed rgb(var(--color-on-surface) / 0.12);
 }
 
 .cell-manual:hover {
-  background: rgba(var(--v-theme-primary), 0.06);
+  background: rgb(var(--color-brand) / 0.06);
 }
 
 .cell-auto {
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  color: rgb(var(--color-on-surface) / 0.7);
   font-style: italic;
 }
 
 .cell-input {
   width: 100px;
   text-align: right;
-  border: 1px solid rgb(var(--v-theme-primary));
+  border: 1px solid rgb(var(--color-brand));
   border-radius: 4px;
   padding: 2px 4px;
   font: inherit;
   color: inherit;
-  background: rgb(var(--v-theme-surface));
+  background: rgb(var(--color-surface));
 }
 
 tfoot td {
@@ -251,6 +251,6 @@ tfoot td {
 }
 
 .negative {
-  color: rgb(var(--v-theme-error));
+  color: rgb(var(--color-error));
 }
 </style>

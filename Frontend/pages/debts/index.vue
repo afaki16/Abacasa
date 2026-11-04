@@ -7,71 +7,71 @@
   </div>
 
   <!-- Özet -->
-  <v-row class="mb-2">
-    <v-col cols="12" sm="6" md="3">
-      <v-card variant="tonal" color="primary" class="fill-height">
-        <v-card-text>
-          <div class="text-caption">Açık borç (TL karşılığı)</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.openTotalInTry) }}</div>
+  <div class="ui-row mb-2">
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+      <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Açık borç (TL karşılığı)</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.openTotalInTry) }}</div>
           <!-- Açığı olan bir birimin kuru yoksa TL karşılığı hesaplanamaz -->
-          <div v-if="missingRateLabels.length" class="text-caption">
+          <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
             {{ missingRateLabels.join(", ") }} kuru girilmemiş
           </div>
-          <div v-else class="text-caption">{{ summary?.openCount ?? 0 }} açık borç</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" sm="6" md="3">
-      <v-card variant="tonal" color="info" class="fill-height">
-        <v-card-text>
-          <div class="text-caption">TL borç</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.openTry ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
+          <div v-else class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ summary?.openCount ?? 0 }} açık borç</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+      <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">TL borç</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.openTry ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
     <!-- Açığı olan her yabancı birim için bir kart -->
-    <v-col v-for="f in summary?.foreign ?? []" :key="f.currency" cols="12" sm="6" md="3">
-      <v-card variant="tonal" color="info" class="fill-height">
-        <v-card-text>
-          <div class="text-caption">{{ foreignCardTitle(f.currency) }}</div>
-          <div class="text-h5 font-weight-bold">{{ formatAmount(f.open, f.currency) }}</div>
-          <div class="text-caption">≈ {{ formatMoney(f.openInTry) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" sm="6" md="3">
-      <v-card variant="tonal" color="secondary" class="fill-height">
-        <v-card-text>
-          <div class="d-flex align-center">
-            <div class="text-caption">Kurlar</div>
-            <v-spacer />
-            <v-btn
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3" v-for="f in summary?.foreign ?? []" :key="f.currency">
+      <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ foreignCardTitle(f.currency) }}</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatAmount(f.open, f.currency) }}</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">≈ {{ formatMoney(f.openInTry) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+      <UiCard class="h-full !bg-secondary/[0.12] !text-secondary">
+        <div class="ui-card-text">
+          <div class="flex items-center">
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kurlar</div>
+            <div class="flex-1" />
+            <UiBtn
               v-if="canEditRate"
               size="x-small"
               variant="tonal"
               @click="rateDialog = true"
             >
               Güncelle
-            </v-btn>
+            </UiBtn>
           </div>
-          <div v-for="r in summary?.rates ?? []" :key="r.currency" class="d-flex align-center ga-2 mt-1 text-body-2">
-            <span class="font-weight-medium">{{ currencyLabel(r.currency) }}</span>
+          <div v-for="r in summary?.rates ?? []" :key="r.currency" class="flex items-center gap-2 mt-1 text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
+            <span class="font-medium">{{ currencyLabel(r.currency) }}</span>
             <span>{{ formatMoney(r.rate) }}</span>
-            <span class="text-caption text-medium-emphasis">{{ formatDisplayDate(r.date) }}</span>
-            <v-chip size="x-small" :color="r.source === 'TCMB' ? 'primary' : undefined" variant="tonal">{{ r.source }}</v-chip>
+            <span class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ formatDisplayDate(r.date) }}</span>
+            <UiChip size="x-small" :color="r.source === 'TCMB' ? 'primary' : undefined" variant="tonal">{{ r.source }}</UiChip>
           </div>
-          <div v-if="!summary?.rates?.length" class="text-caption mt-1">Kur yok</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+          <div v-if="!summary?.rates?.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal mt-1">Kur yok</div>
+        </div>
+      </UiCard>
+    </div>
+  </div>
 
   <!-- Alacaklıya göre -->
-  <v-row class="mb-4">
-    <v-col cols="12">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Alacaklıya göre</v-card-title>
-        <v-table density="compact">
+  <div class="ui-row mb-4">
+    <div class="ui-col ui-col-12">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Alacaklıya göre</div>
+        <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Alacaklı</th>
@@ -84,58 +84,55 @@
               <td>{{ row.name }}</td>
               <!-- TL ve yabancı birimler tek satırda -->
               <td class="text-right">{{ formatOpenLine(row.openTry, row.foreign) }}</td>
-              <td class="text-right font-weight-medium">{{ formatMoney(row.totalInTry) }}</td>
+              <td class="text-right font-medium">{{ formatMoney(row.totalInTry) }}</td>
             </tr>
             <tr v-if="!summary?.byCreditor?.length">
-              <td colspan="3" class="text-medium-emphasis">Açık borç yok</td>
+              <td colspan="3" class="text-black/60 dark:text-white/70">Açık borç yok</td>
             </tr>
           </tbody>
-        </v-table>
-      </v-card>
-    </v-col>
-  </v-row>
+        </table></div>
+      </UiCard>
+    </div>
+  </div>
 
   <!-- Filtreler -->
-  <v-row class="mb-2" dense>
-    <v-col cols="12" md="4">
-      <v-select
+  <div class="ui-row ui-row--dense mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterStatus"
         :items="statusOptions"
         item-title="title"
         item-value="value"
         label="Durum"
-        variant="outlined"
         density="compact"
         hide-details
       />
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-select
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterCreditor"
         :items="people"
         item-title="name"
         item-value="id"
         label="Alacaklı"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-select
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterCurrency"
         :items="currencyOptions"
         item-title="title"
         item-value="value"
         label="Para birimi"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="items"
@@ -175,7 +172,7 @@
     </template>
 
     <template #cell-amount="{ item }">
-      <span class="font-weight-medium">{{ money(item.amount, item) }}</span>
+      <span class="font-medium">{{ money(item.amount, item) }}</span>
     </template>
 
     <template #cell-paidAmount="{ item }">
@@ -183,23 +180,23 @@
     </template>
 
     <template #cell-remaining="{ item }">
-      <span class="font-weight-medium">{{ money(item.remaining, item) }}</span>
-      <span v-if="item.currency !== Currency.TRY && item.remainingInTry !== null" class="text-medium-emphasis">
+      <span class="font-medium">{{ money(item.remaining, item) }}</span>
+      <span v-if="item.currency !== Currency.TRY && item.remainingInTry !== null" class="text-black/60 dark:text-white/70">
         ≈ {{ formatMoney(item.remainingInTry) }}
       </span>
     </template>
 
     <template #cell-status="{ item }">
-      <v-chip v-if="item.isClosed" size="small" color="success" variant="tonal">Kapandı</v-chip>
-      <v-chip v-else size="small" color="warning" variant="tonal">Açık</v-chip>
+      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">Kapandı</UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">Açık</UiChip>
     </template>
 
     <template #actions="{ item }">
-      <div class="d-flex align-center ga-1">
-        <v-btn size="small" variant="tonal" color="primary" @click="openPayments(item)">
+      <div class="flex items-center gap-1">
+        <UiBtn size="small" variant="tonal" color="primary" @click="openPayments(item)">
           Ödemeler ({{ item.paymentCount }})
-        </v-btn>
-        <v-btn
+        </UiBtn>
+        <UiBtn
           v-if="canUpdate"
           icon="mdi-pencil"
           size="small"
@@ -207,7 +204,7 @@
           title="Düzenle"
           @click="openEditDialog(item)"
         />
-        <v-btn
+        <UiBtn
           v-if="canDelete"
           icon="mdi-delete"
           size="small"

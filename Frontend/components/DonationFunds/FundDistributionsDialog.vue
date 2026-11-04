@@ -1,21 +1,23 @@
 <template>
-  <v-dialog :model-value="modelValue" max-width="860" @update:model-value="$emit('update:modelValue', $event)">
-    <v-card v-if="fund">
-      <v-card-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-hand-heart</v-icon>
-        Dağıtımlar · {{ fund.fromPersonName }} · {{ getKindLabel(fund.kind) }}
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
-      </v-card-title>
+  <UiDialog :model-value="modelValue" max-width="860" @update:model-value="$emit('update:modelValue', $event)">
+    <UiCard v-if="fund">
+      <div class="ui-card-title">
+        <div class="flex items-center">
+          <UiIcon icon="mdi-hand-heart" class="mr-2" />
+          Dağıtımlar · {{ fund.fromPersonName }} · {{ getKindLabel(fund.kind) }}
+          <div class="flex-1" />
+          <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
+        </div>
+      </div>
 
-      <v-card-text>
-        <div class="d-flex align-center mb-2">
-          <span class="text-body-2">
+      <div class="ui-card-text">
+        <div class="flex items-center mb-2">
+          <span class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
             Kalan {{ formatMoney(fund.remaining) }} · Elde {{ formatMoney(fund.onHand) }}
           </span>
-          <v-spacer />
+          <div class="flex-1" />
           <!-- Bağış formunu emanet seçili ve tür kilitli açar -->
-          <v-btn
+          <UiBtn
             v-if="canCreate"
             color="primary"
             size="small"
@@ -24,10 +26,10 @@
             @click="formOpen = true"
           >
             Dağıtım ekle
-          </v-btn>
+          </UiBtn>
         </div>
 
-        <v-table density="compact">
+        <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Tarih</th>
@@ -46,12 +48,12 @@
               <td>{{ d.note }}</td>
             </tr>
             <tr v-if="!distributions.length">
-              <td colspan="5" class="text-medium-emphasis">Dağıtım yok</td>
+              <td colspan="5" class="text-black/60 dark:text-white/70">Dağıtım yok</td>
             </tr>
           </tbody>
-        </v-table>
-      </v-card-text>
-    </v-card>
+        </table></div>
+      </div>
+    </UiCard>
 
     <ResizableDrawer
       v-model="formOpen"
@@ -71,7 +73,7 @@
         @cancel="formOpen = false"
       />
     </ResizableDrawer>
-  </v-dialog>
+  </UiDialog>
 </template>
 
 <script setup lang="ts">

@@ -1,13 +1,12 @@
 <template>
-  <v-form ref="formRef" @submit.prevent="handleSubmit">
-    <v-container>
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-text-field
+  <UiForm ref="formRef" @submit="handleSubmit">
+    <div class="ui-container">
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.date"
             label="Tarih"
             type="date"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
             density="comfortable"
@@ -15,15 +14,14 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model.number="formData.amount"
             label="Tutar"
             type="number"
             min="0"
             step="0.01"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-currency-try"
             density="comfortable"
@@ -31,19 +29,18 @@
             :rules="[rules.required, amountRule]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
       <!-- İsteğe bağlı: emanetten dağıtım. Seçilince tür emanetin türüne ayarlanır ve kilitlenir -->
-      <v-row v-if="showFund !== false && (fundOptions.length || formData.fundId)">
-        <v-col cols="12">
-          <v-select
+      <div class="ui-row" v-if="showFund !== false && (fundOptions.length || formData.fundId)">
+        <div class="ui-col ui-col-12">
+          <UiSelect
             v-model="formData.fundId"
             :items="fundOptions"
             item-title="title"
             item-value="value"
             label="Emanetten"
-            variant="outlined"
             :disabled="loading || !!presetFundId"
             prepend-inner-icon="mdi-safe"
             density="comfortable"
@@ -51,18 +48,17 @@
             clearable
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.kind"
             :items="kindOptions"
             item-title="title"
             item-value="value"
             label="Tür"
-            variant="outlined"
             :disabled="loading || !!selectedFund"
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -70,12 +66,11 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-text-field
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiTextField
             v-model="formData.recipient"
             label="Kime"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -83,33 +78,31 @@
             :rules="[rules.required, recipientRule, rules.maxLength(100)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-select
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.giverPersonId"
             :items="giverOptions"
             item-title="name"
             item-value="id"
             label="Veren"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
             class="modern-input"
           />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <v-select
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.paymentMethodId"
             :items="paymentMethodOptions"
             item-title="name"
             item-value="id"
             label="Ödeme aracı"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -117,15 +110,14 @@
             :rules="[rules.required]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
 
-      <v-row>
-        <v-col cols="12">
-          <v-text-field
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
+          <UiTextField
             v-model="formData.note"
             label="Not"
-            variant="outlined"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -133,12 +125,12 @@
             :rules="[rules.maxLength(200)]"
             class="modern-input"
           />
-        </v-col>
-      </v-row>
-    </v-container>
+        </div>
+      </div>
+    </div>
 
     <div class="form-actions">
-      <v-btn
+      <UiBtn
         variant="outlined"
         size="large"
         @click="$emit('cancel')"
@@ -146,9 +138,9 @@
         class="btn-gradient-dark"
       >
         İptal
-      </v-btn>
+      </UiBtn>
 
-      <v-btn
+      <UiBtn
         size="large"
         :loading="loading"
         :disabled="loading || !isFormValid"
@@ -156,9 +148,9 @@
         class="btn-gradient-primary"
       >
         {{ donation ? 'Güncelle' : 'Kaydet' }}
-      </v-btn>
+      </UiBtn>
     </div>
-  </v-form>
+  </UiForm>
 </template>
 
 <script setup lang="ts">

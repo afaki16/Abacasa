@@ -31,14 +31,14 @@
     @refresh="refreshData"
   >
     <template #cell-name="{ value }">
-      <v-chip
+      <UiChip
         color="primary"
         variant="tonal"
         size="default"
         prepend-icon="mdi-shape"
       >
         {{ value }}
-      </v-chip>
+      </UiChip>
     </template>
   </BaseDataTable>
 

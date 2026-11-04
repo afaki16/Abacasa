@@ -15,107 +15,112 @@
   />
 
   <!-- Özet -->
-  <v-row class="mb-2">
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="primary">
-        <v-card-text>
-          <div class="text-caption">Dönem toplamı (yemek kartı hariç)</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="success">
-        <v-card-text>
-          <div class="text-caption">Yemek kartı</div>
-          <div class="text-h5 font-weight-bold">{{ formatMoney(summary?.mealCardTotal ?? 0) }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-card variant="tonal" color="info">
-        <v-card-text>
-          <div class="text-caption">İşlem sayısı</div>
-          <div class="text-h5 font-weight-bold">{{ summary?.count ?? 0 }}</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı (yemek kartı hariç)</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Yemek kartı</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.mealCardTotal ?? 0) }}</div>
+        </div>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiCard class="!bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+        <div class="ui-card-text">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">İşlem sayısı</div>
+          <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ summary?.count ?? 0 }}</div>
+        </div>
+      </UiCard>
+    </div>
+  </div>
 
-  <v-row class="mb-4">
-    <v-col cols="12" md="6">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Kategoriye göre</v-card-title>
-        <v-list density="compact">
-          <v-list-item v-for="row in summary?.byCategory ?? []" :key="row.categoryId">
-            <template #title>{{ row.categoryName }}</template>
-            <template #append>{{ formatMoney(row.total) }}</template>
-          </v-list-item>
-          <v-list-item v-if="!summary?.byCategory?.length">
-            <template #title><span class="text-medium-emphasis">Kayıt yok</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="6">
-      <v-card variant="outlined">
-        <v-card-title class="text-subtitle-1">Ödeme aracına göre</v-card-title>
-        <v-list density="compact">
-          <v-list-item v-for="row in summary?.byPaymentMethod ?? []" :key="row.paymentMethodId">
-            <template #title>{{ row.paymentMethodName }}</template>
-            <template #subtitle>{{ getTypeLabel(row.type) }}</template>
-            <template #append>{{ formatMoney(row.total) }}</template>
-          </v-list-item>
-          <v-list-item v-if="!summary?.byPaymentMethod?.length">
-            <template #title><span class="text-medium-emphasis">Kayıt yok</span></template>
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div class="ui-row mb-4">
+    <div class="ui-col ui-col-12 ui-col-md-6">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kategoriye göre</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="row in summary?.byCategory ?? []" :key="row.categoryId">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ row.categoryName }}</div>
+            </div>
+            <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
+          </li>
+          <li class="ui-list-item" v-if="!summary?.byCategory?.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+            </div>
+          </li>
+        </ul>
+      </UiCard>
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-6">
+      <UiCard elevation="0" border>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="row in summary?.byPaymentMethod ?? []" :key="row.paymentMethodId">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ row.paymentMethodName }}</div>
+              <div class="ui-list-subtitle">{{ getTypeLabel(row.type) }}</div>
+            </div>
+            <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
+          </li>
+          <li class="ui-list-item" v-if="!summary?.byPaymentMethod?.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+            </div>
+          </li>
+        </ul>
+      </UiCard>
+    </div>
+  </div>
 
   <!-- Filtreler -->
-  <v-row class="mb-2" dense>
-    <v-col cols="12" md="4">
-      <v-select
+  <div class="ui-row ui-row--dense mb-2">
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterCategoryId"
         :items="categories"
         item-title="name"
         item-value="id"
         label="Kategori"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-select
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterPaymentMethodId"
         :items="paymentMethods"
         item-title="name"
         item-value="id"
         label="Ödeme aracı"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-    <v-col cols="12" md="4">
-      <v-select
+    </div>
+    <div class="ui-col ui-col-12 ui-col-md-4">
+      <UiSelect
         v-model="filterOwnerPersonId"
         :items="people"
         item-title="name"
         item-value="id"
         label="Kişi"
-        variant="outlined"
         density="compact"
         hide-details
         clearable
       />
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <BaseDataTable
     :items="items"
@@ -155,7 +160,7 @@
     </template>
 
     <template #cell-amount="{ value }">
-      <span class="font-weight-medium">{{ formatMoney(value) }}</span>
+      <span class="font-medium">{{ formatMoney(value) }}</span>
     </template>
   </BaseDataTable>
 

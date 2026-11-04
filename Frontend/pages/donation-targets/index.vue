@@ -7,44 +7,44 @@
   </div>
 
   <!-- Yıl seçici ve hedef ekleme -->
-  <div class="d-flex align-center mb-4 ga-2">
-    <v-btn icon="mdi-chevron-left" variant="text" :disabled="isLoading" @click="year--" />
-    <div class="text-h6">{{ year }}</div>
-    <v-btn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
-    <v-spacer />
-    <v-btn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Hedef ekle</v-btn>
+  <div class="flex items-center mb-4 gap-2">
+    <UiBtn icon="mdi-chevron-left" variant="text" :disabled="isLoading" @click="year--" />
+    <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ year }}</div>
+    <UiBtn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
+    <div class="flex-1" />
+    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Hedef ekle</UiBtn>
   </div>
 
-  <v-progress-linear v-if="isLoading" indeterminate color="primary" class="mb-2" />
+  <UiProgressLinear v-if="isLoading" indeterminate color="primary" class="mb-2" />
 
-  <div v-if="!isLoading && !sections.length" class="text-medium-emphasis mb-4">
+  <div v-if="!isLoading && !sections.length" class="text-black/60 dark:text-white/70 mb-4">
     {{ year }} için hedef ya da bağış yok.
   </div>
 
   <!-- Her tür için bir bölüm (hedefi ya da gönüllü bağışı varsa) -->
-  <v-card v-for="section in sections" :key="section.kind" variant="outlined" class="mb-4">
-    <v-card-title class="text-subtitle-1">{{ getKindLabel(section.kind) }}</v-card-title>
-    <v-card-text>
-      <v-row dense class="mb-2">
-        <v-col cols="6" md="3">
-          <div class="text-caption">Hedef</div>
-          <div class="text-h6">{{ formatMoney(section.totals?.target ?? 0) }}</div>
-        </v-col>
-        <v-col cols="6" md="3">
-          <div class="text-caption">Verilen</div>
-          <div class="text-h6">{{ formatMoney(section.totals?.given ?? 0) }}</div>
-        </v-col>
-        <v-col cols="6" md="3">
-          <div class="text-caption">Kalan</div>
-          <div class="text-h6">{{ formatMoney(section.totals?.remainingTotal ?? 0) }}</div>
-        </v-col>
-        <v-col cols="6" md="3">
-          <div class="text-caption">Plana göre kalan</div>
-          <div class="text-h6">{{ formatMoney(section.totals?.remainingAfterPlanTotal ?? 0) }}</div>
-        </v-col>
-      </v-row>
+  <UiCard elevation="0" border v-for="section in sections" :key="section.kind" class="mb-4">
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ getKindLabel(section.kind) }}</div>
+    <div class="ui-card-text">
+      <div class="ui-row ui-row--dense mb-2">
+        <div class="ui-col ui-col-6 ui-col-md-3">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Hedef</div>
+          <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.target ?? 0) }}</div>
+        </div>
+        <div class="ui-col ui-col-6 ui-col-md-3">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Verilen</div>
+          <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.given ?? 0) }}</div>
+        </div>
+        <div class="ui-col ui-col-6 ui-col-md-3">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kalan</div>
+          <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.remainingTotal ?? 0) }}</div>
+        </div>
+        <div class="ui-col ui-col-6 ui-col-md-3">
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Plana göre kalan</div>
+          <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.remainingAfterPlanTotal ?? 0) }}</div>
+        </div>
+      </div>
 
-      <v-table v-if="section.rows.length" density="compact">
+      <div class="overflow-x-auto" v-if="section.rows.length"><table class="ui-table ui-table--compact">
         <thead>
           <tr>
             <th>Kişi</th>
@@ -65,25 +65,25 @@
             <td class="text-right">{{ formatMoney(row.planned) }}</td>
             <td class="text-right">{{ formatMoney(row.expectedYearEnd) }}</td>
             <td class="text-right">
-              <span v-if="row.remaining < 0" class="text-success">Fazla ödendi {{ formatMoney(-row.remaining) }}</span>
+              <span v-if="row.remaining < 0" class="text-primary">Fazla ödendi {{ formatMoney(-row.remaining) }}</span>
               <span v-else>{{ formatMoney(row.remaining) }}</span>
             </td>
             <td class="text-right">{{ formatMoney(row.remainingAfterPlan) }}</td>
-            <td v-if="canUpdate || canDelete" class="text-right text-no-wrap">
-              <v-btn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="openEdit(row.targetId)" />
-              <v-btn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="targetToDelete = row" />
+            <td v-if="canUpdate || canDelete" class="text-right whitespace-nowrap">
+              <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="openEdit(row.targetId)" />
+              <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="targetToDelete = row" />
             </td>
           </tr>
         </tbody>
-      </v-table>
-      <div v-else class="text-medium-emphasis">Bu tür için hedef yok.</div>
-    </v-card-text>
-  </v-card>
+      </table></div>
+      <div v-else class="text-black/60 dark:text-white/70">Bu tür için hedef yok.</div>
+    </div>
+  </UiCard>
 
   <!-- Gönüllü bağışlar -->
-  <v-card variant="outlined">
-    <v-card-title class="text-subtitle-1">Hedefsiz bağışlar (gönüllü)</v-card-title>
-    <v-table density="compact">
+  <UiCard elevation="0" border>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Hedefsiz bağışlar (gönüllü)</div>
+    <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
       <thead>
         <tr>
           <th>Kişi</th>
@@ -98,11 +98,11 @@
           <td class="text-right">{{ formatMoney(v.given) }}</td>
         </tr>
         <tr v-if="!report?.voluntary?.length">
-          <td colspan="3" class="text-medium-emphasis">Hedefsiz bağış yok</td>
+          <td colspan="3" class="text-black/60 dark:text-white/70">Hedefsiz bağış yok</td>
         </tr>
       </tbody>
-    </v-table>
-  </v-card>
+    </table></div>
+  </UiCard>
 
   <!-- Hedef formu -->
   <ResizableDrawer

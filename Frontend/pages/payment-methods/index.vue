@@ -31,14 +31,14 @@
     @refresh="refreshData"
   >
     <template #cell-name="{ value }">
-      <v-chip
+      <UiChip
         color="primary"
         variant="tonal"
         size="default"
         prepend-icon="mdi-credit-card-outline"
       >
         {{ value }}
-      </v-chip>
+      </UiChip>
     </template>
 
     <template #cell-type="{ value }">
@@ -50,9 +50,9 @@
     </template>
 
     <template #cell-isActive="{ value }">
-      <v-chip :color="value ? 'success' : 'error'" size="small" variant="tonal">
+      <UiChip :color="value ? 'success' : 'error'" size="small" variant="tonal">
         {{ value ? "Aktif" : "Pasif" }}
-      </v-chip>
+      </UiChip>
     </template>
   </BaseDataTable>
 
