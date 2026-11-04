@@ -27,7 +27,7 @@
     />
 
     <!-- Kartlar -->
-    <div class="ui-row mb-2">
+    <div class="ui-row !mb-2">
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
           <div class="ui-card-text">
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Ödeme aracına ve kişiye göre -->
-    <div class="ui-row mb-2">
+    <div class="ui-row !mb-2">
       <div class="ui-col ui-col-12 ui-col-md-6">
         <UiCard elevation="0" border class="h-full">
           <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
@@ -93,18 +93,18 @@
               <tr>
                 <th>Ad</th>
                 <th>Tür</th>
-                <th class="text-right">Gerçekleşen</th>
-                <th class="text-right">Bekleyen</th>
-                <th class="text-right">Toplam</th>
+                <th class="!text-right">Gerçekleşen</th>
+                <th class="!text-right">Bekleyen</th>
+                <th class="!text-right">Toplam</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in data?.byPaymentMethod ?? []" :key="row.id">
                 <td>{{ row.name }}</td>
                 <td>{{ getTypeLabel(row.type) }}</td>
-                <td class="text-right">{{ formatMoney(row.spent) }}</td>
-                <td class="text-right">{{ formatMoney(row.pending) }}</td>
-                <td class="text-right font-medium">{{ formatMoney(row.total) }}</td>
+                <td class="!text-right">{{ formatMoney(row.spent) }}</td>
+                <td class="!text-right">{{ formatMoney(row.pending) }}</td>
+                <td class="!text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPaymentMethod?.length">
                 <td colspan="5" class="text-black/60 dark:text-white/70">Kayıt yok</td>
@@ -120,17 +120,17 @@
             <thead>
               <tr>
                 <th>Ad</th>
-                <th class="text-right">Gerçekleşen</th>
-                <th class="text-right">Bekleyen</th>
-                <th class="text-right">Toplam</th>
+                <th class="!text-right">Gerçekleşen</th>
+                <th class="!text-right">Bekleyen</th>
+                <th class="!text-right">Toplam</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in data?.byPerson ?? []" :key="row.personId ?? 'household'">
                 <td>{{ row.name ?? "Hane" }}</td>
-                <td class="text-right">{{ formatMoney(row.spent) }}</td>
-                <td class="text-right">{{ formatMoney(row.pending) }}</td>
-                <td class="text-right font-medium">{{ formatMoney(row.total) }}</td>
+                <td class="!text-right">{{ formatMoney(row.spent) }}</td>
+                <td class="!text-right">{{ formatMoney(row.pending) }}</td>
+                <td class="!text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPerson?.length">
                 <td colspan="4" class="text-black/60 dark:text-white/70">Kayıt yok</td>
@@ -139,9 +139,9 @@
             <tfoot v-if="data?.byPerson?.length">
               <tr class="font-bold">
                 <td>Toplam</td>
-                <td class="text-right">{{ formatMoney(personTotals.spent) }}</td>
-                <td class="text-right">{{ formatMoney(personTotals.pending) }}</td>
-                <td class="text-right">{{ formatMoney(personTotals.total) }}</td>
+                <td class="!text-right">{{ formatMoney(personTotals.spent) }}</td>
+                <td class="!text-right">{{ formatMoney(personTotals.pending) }}</td>
+                <td class="!text-right">{{ formatMoney(personTotals.total) }}</td>
               </tr>
             </tfoot>
           </table></div>
@@ -165,7 +165,7 @@
             <th>Ad</th>
             <th>Tür</th>
             <th>Ödeme aracı</th>
-            <th class="text-right">Tutar</th>
+            <th class="!text-right">Tutar</th>
             <th>Durum</th>
           </tr>
         </thead>
@@ -184,7 +184,7 @@
               {{ item.source === 'vehicle' && item.obligationType ? getObligationTypeLabel(item.obligationType) : item.kind ? getKindLabel(item.kind) : '' }}
             </td>
             <td>{{ item.source === 'vehicle' ? '—' : item.paymentMethodName }}</td>
-            <td class="text-right">
+            <td class="!text-right">
               {{ formatMoney(item.amount) }}
               <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</UiChip>
             </td>

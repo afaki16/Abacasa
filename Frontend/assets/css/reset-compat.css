@@ -284,3 +284,21 @@ progress {
   cursor: default;
 }
 
+
+/*
+ * Vuetify'ın genel html kuralları (styles/elements/_global.sass). font-family, font-size ve
+ * line-height main.scss'te; burada yalnızca onun dışındakiler. overflow-x olmadan sayfa dışına
+ * taşan süsler (ör. giriş sayfasındaki ışık) yatay kaydırma çubuğu açar.
+ */
+html {
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Vuetify koyu temada :root'a color-scheme: dark veriyordu: tarih/sayı alanlarının yerel ikonları,
+ * kaydırma çubukları ve rengi verilmemiş metin koyu zemine göre çizilir. */
+html.dark {
+  color-scheme: dark;
+}

@@ -24,7 +24,7 @@
         <span v-if="selectedTenantId == null" class="ui-list-item__append"><UiIcon icon="mdi-check" :size="20" color="success" /></span>
       </button>
 
-      <hr class="ui-divider my-1" />
+      <hr class="ui-divider !my-1" />
 
       <div class="tenant-scroll">
         <div v-if="loading" class="ui-list-item ui-list-item--disabled">

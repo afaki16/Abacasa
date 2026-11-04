@@ -7,7 +7,7 @@
   </div>
 
   <!-- Özet -->
-  <div class="ui-row mb-2">
+  <div class="ui-row !mb-2">
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
       <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
@@ -67,7 +67,7 @@
   </div>
 
   <!-- Alacaklıya göre -->
-  <div class="ui-row mb-4">
+  <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12">
       <UiCard elevation="0" border>
         <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Alacaklıya göre</div>
@@ -75,16 +75,16 @@
           <thead>
             <tr>
               <th>Alacaklı</th>
-              <th class="text-right">Açık</th>
-              <th class="text-right">Toplam TL</th>
+              <th class="!text-right">Açık</th>
+              <th class="!text-right">Toplam TL</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in summary?.byCreditor ?? []" :key="row.personId">
               <td>{{ row.name }}</td>
               <!-- TL ve yabancı birimler tek satırda -->
-              <td class="text-right">{{ formatOpenLine(row.openTry, row.foreign) }}</td>
-              <td class="text-right font-medium">{{ formatMoney(row.totalInTry) }}</td>
+              <td class="!text-right">{{ formatOpenLine(row.openTry, row.foreign) }}</td>
+              <td class="!text-right font-medium">{{ formatMoney(row.totalInTry) }}</td>
             </tr>
             <tr v-if="!summary?.byCreditor?.length">
               <td colspan="3" class="text-black/60 dark:text-white/70">Açık borç yok</td>
@@ -96,7 +96,7 @@
   </div>
 
   <!-- Filtreler -->
-  <div class="ui-row ui-row--dense mb-2">
+  <div class="ui-row ui-row--dense !mb-2">
     <div class="ui-col ui-col-12 ui-col-md-4">
       <UiSelect
         v-model="filterStatus"

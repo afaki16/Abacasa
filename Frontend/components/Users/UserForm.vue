@@ -130,7 +130,7 @@
                 </div>
               </template>
             </UiSwitch>
-            <p class="status-description mt-2">
+            <p class="status-description !mt-2">
               {{ formData.status === UserStatus.Active
                   ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.'
                   : 'Kullanıcı sisteme giriş yapamaz ve hesabı devre dışıdır.'
@@ -153,7 +153,7 @@
                 <span class="status-text">Bir sonraki girişte şifre değiştirsin</span>
               </template>
             </UiSwitch>
-            <p class="status-description mt-2">
+            <p class="status-description !mt-2">
               {{ formData.mustChangePassword
                   ? 'Kullanıcı giriş yaptığında şifresini değiştirmeden uygulamayı kullanamaz.'
                   : 'Kullanıcı mevcut şifresiyle normal şekilde giriş yapar.'
@@ -253,7 +253,7 @@
               class="mb-4 modern-input"
             />
 
-            <div class="quick-actions mb-4">
+            <div class="quick-actions !mb-4">
               <UiBtn
                 variant="outlined"
                 size="small"

@@ -196,7 +196,7 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Top Bar -->
-      <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-solid border-outline-variant/[0.12] bg-surface flex-shrink-0">
+      <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-solid border-black/[0.12] dark:border-white/[0.12] bg-surface flex-shrink-0">
         <!-- SuperAdmin hane filtresi: yalnızca sistem listelerini (kullanıcılar, oturumlar) süzer; bütçe verisini değiştirmez -->
         <div v-if="isSuperAdmin" class="flex items-center gap-2 mr-auto min-w-0">
           <Icon name="mdi:shield-crown-outline" class="w-4 h-4 text-on-surface-variant flex-shrink-0" />

@@ -12,7 +12,7 @@
 
       <div class="ui-card-text">
         <!-- Borcun tutarı, ödenen ve kalan -->
-        <div class="ui-row ui-row--dense mb-2">
+        <div class="ui-row ui-row--dense !mb-2">
           <div class="ui-col ui-col-4">
             <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Tutar</div>
             <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">{{ money(debt.amount) }}</div>
@@ -36,9 +36,9 @@
           <thead>
             <tr>
               <th>Tarih</th>
-              <th class="text-right">Tutar</th>
-              <th class="text-right">Kur</th>
-              <th class="text-right">TL karşılığı</th>
+              <th class="!text-right">Tutar</th>
+              <th class="!text-right">Kur</th>
+              <th class="!text-right">TL karşılığı</th>
               <th>Not</th>
               <th v-if="canUpdate || canDelete" />
             </tr>
@@ -46,11 +46,11 @@
           <tbody>
             <tr v-for="p in payments" :key="p.id">
               <td>{{ formatDisplayDate(p.date) }}</td>
-              <td class="text-right">{{ money(p.amount) }}</td>
-              <td class="text-right">{{ p.exchangeRate ?? '—' }}</td>
-              <td class="text-right">{{ formatMoney(p.amountInTry) }}</td>
+              <td class="!text-right">{{ money(p.amount) }}</td>
+              <td class="!text-right">{{ p.exchangeRate ?? '—' }}</td>
+              <td class="!text-right">{{ formatMoney(p.amountInTry) }}</td>
               <td>{{ p.note }}</td>
-              <td v-if="canUpdate || canDelete" class="text-right whitespace-nowrap">
+              <td v-if="canUpdate || canDelete" class="!text-right whitespace-nowrap">
                 <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="editing = p" />
                 <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="paymentToDelete = p" />
               </td>

@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <hr class="ui-divider my-6" />
+    <hr class="ui-divider !my-6" />
 
     <!-- Tabs -->
     <div class="tabs-container">
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <hr class="ui-divider my-6" />
+        <hr class="ui-divider !my-6" />
 
         <div class="info-section">
           <h3 class="section-title">

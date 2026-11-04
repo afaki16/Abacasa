@@ -30,7 +30,7 @@
         </span>
       </button>
 
-      <hr v-if="memberships.length" class="ui-divider my-1" />
+      <hr v-if="memberships.length" class="ui-divider !my-1" />
 
       <button type="button" role="menuitem" class="ui-list-item ui-list-item--link" @click="createDialog = true">
         <span class="ui-list-item__prepend"><UiIcon icon="mdi-plus" :size="24" /></span>

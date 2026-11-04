@@ -1,6 +1,6 @@
 <template>
   <!-- Filtreler -->
-  <div class="ui-row ui-row--dense mb-2">
+  <div class="ui-row ui-row--dense !mb-2">
     <div class="ui-col ui-col-12 ui-col-md-4">
       <UiSelect
         v-model="filterKind"

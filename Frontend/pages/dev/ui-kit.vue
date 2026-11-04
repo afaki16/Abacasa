@@ -119,7 +119,7 @@
                 </span>
                 <span v-if="menuChoice === o.label" class="ui-list-item__append"><UiIcon icon="mdi-check" :size="20" color="success" /></span>
               </button>
-              <hr class="ui-divider my-1" />
+              <hr class="ui-divider !my-1" />
               <div class="ui-list-item ui-list-item--disabled">
                 <span class="ui-list-item__content ui-list-title">Pasif öğe</span>
               </div>

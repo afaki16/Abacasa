@@ -20,7 +20,7 @@
     <Transition name="lang-menu">
       <ul
         v-if="isOpen"
-        class="lang-list bg-surface-container-lowest text-on-surface border border-solid border-outline-variant/[0.12]"
+        class="lang-list bg-surface-container-lowest text-on-surface border border-solid border-black/[0.12] dark:border-white/[0.12]"
         role="listbox"
       >
         <li

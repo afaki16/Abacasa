@@ -16,7 +16,7 @@
           <th>Tür</th>
           <th>Geçerlilik sonu</th>
           <th>Durum</th>
-          <th class="text-right">Son tutar</th>
+          <th class="!text-right">Son tutar</th>
         </tr>
       </thead>
       <tbody>
@@ -28,7 +28,7 @@
             <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">Gecikti · {{ -r.daysLeft }} gün</UiChip>
             <span v-else>{{ r.daysLeft === 0 ? "Bugün" : `${r.daysLeft} gün kaldı` }}</span>
           </td>
-          <td class="text-right">{{ formatMoney(r.lastAmount) }}</td>
+          <td class="!text-right">{{ formatMoney(r.lastAmount) }}</td>
         </tr>
         <tr v-if="!reminders.length">
           <td colspan="5" class="text-black/60 dark:text-white/70">Yaklaşan tarih yok</td>

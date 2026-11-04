@@ -68,7 +68,7 @@
               class="mb-3 modern-input"
             />
 
-            <div class="quick-actions mb-3">
+            <div class="quick-actions !mb-3">
               <UiBtn
                 variant="outlined"
                 size="small"

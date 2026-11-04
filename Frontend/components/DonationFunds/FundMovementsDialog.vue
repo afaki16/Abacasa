@@ -20,7 +20,7 @@
             <tr>
               <th>Tarih</th>
               <th>Tür</th>
-              <th class="text-right">Tutar</th>
+              <th class="!text-right">Tutar</th>
               <th>Not</th>
               <th v-if="canUpdate" />
             </tr>
@@ -29,9 +29,9 @@
             <tr v-for="m in movements" :key="m.id">
               <td>{{ formatDisplayDate(m.date) }}</td>
               <td>{{ getMovementTypeLabel(m.type) }}</td>
-              <td class="text-right">{{ formatMoney(m.amount) }}</td>
+              <td class="!text-right">{{ formatMoney(m.amount) }}</td>
               <td>{{ m.note }}</td>
-              <td v-if="canUpdate" class="text-right whitespace-nowrap">
+              <td v-if="canUpdate" class="!text-right whitespace-nowrap">
                 <UiBtn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(m)" />
                 <UiBtn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = m" />
               </td>

@@ -1,7 +1,7 @@
 {
   "name": "abacasa-frontend",
   "version": "1.0.0",
-  "description": "Abacasa Frontend with Nuxt.js and Vuetify",
+  "description": "Abacasa Frontend with Nuxt.js and Tailwind CSS",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -22,7 +22,6 @@
     "vue-tsc": "^3.0.4"
   },
   "dependencies": {
-    "@mdi/font": "^7.4.47",
     "@nuxt/icon": "^1.15.0",
     "@nuxtjs/google-fonts": "^3.0.2",
     "@nuxtjs/i18n": "^10.6.0",
@@ -40,7 +39,6 @@
     "flag-icons": "^7.5.0",
     "jwt-decode": "^4.0.0",
     "pinia": "^2.1.7",
-    "vue-chartjs": "^5.3.3",
-    "vuetify": "^3.4.8"
+    "vue-chartjs": "^5.3.3"
   }
 }

@@ -17,8 +17,8 @@
               <th>Tür</th>
               <th>Tarih</th>
               <th>Geçerlilik sonu</th>
-              <th class="text-right">Tutar</th>
-              <th class="text-center">Harcama</th>
+              <th class="!text-right">Tutar</th>
+              <th class="!text-center">Harcama</th>
               <th>Not</th>
               <th v-if="canUpdate" />
             </tr>
@@ -28,12 +28,12 @@
               <td>{{ getTypeLabel(o.type) }}</td>
               <td>{{ formatDisplayDate(o.date) }}</td>
               <td>{{ formatDisplayDate(o.validUntil) }}</td>
-              <td class="text-right">{{ formatMoney(o.amount) }}</td>
-              <td class="text-center">
+              <td class="!text-right">{{ formatMoney(o.amount) }}</td>
+              <td class="!text-center">
                 <UiIcon v-if="o.hasExpense" icon="mdi-check" size="1.25em" color="success" />
               </td>
               <td>{{ o.note }}</td>
-              <td v-if="canUpdate" class="text-right whitespace-nowrap">
+              <td v-if="canUpdate" class="!text-right whitespace-nowrap">
                 <UiBtn icon="mdi-pencil" size="x-small" variant="text" :disabled="isBusy" @click="startEdit(o)" />
                 <UiBtn icon="mdi-delete" size="x-small" variant="text" color="error" :disabled="isBusy" @click="toDelete = o" />
               </td>

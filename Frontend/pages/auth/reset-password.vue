@@ -59,7 +59,7 @@
       <p v-else class="subtitle">{{ t('auth.invalidResetLink') }}</p>
 
       <!-- Hesap daveti linki süresi dolmuşsa "yeni bağlantı iste" de çalışır ama kullanıcıya asıl yolu söyle -->
-      <p v-if="isInvitation && (errorMessage || !linkValid)" class="subtitle mt-4">{{ t('auth.accountInvitationExpiredHint') }}</p>
+      <p v-if="isInvitation && (errorMessage || !linkValid)" class="subtitle !mt-4">{{ t('auth.accountInvitationExpiredHint') }}</p>
 
       <div class="actions">
         <UiBtn

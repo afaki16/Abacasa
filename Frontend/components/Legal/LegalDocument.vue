@@ -24,8 +24,8 @@ defineProps<{ title: string; version: string | null }>()
 /* Uzun metin rahat okunsun: en fazla 720px, belirgin başlık ve maddeler */
 .legal-page {
   min-height: 100vh;
-  background: rgb(var(--v-theme-background));
-  color: rgb(var(--v-theme-on-background));
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-on-background));
   padding: 40px 16px 64px;
 }
 
@@ -39,7 +39,7 @@ defineProps<{ title: string; version: string | null }>()
 .legal-back {
   display: inline-block;
   margin-bottom: 24px;
-  color: rgb(var(--v-theme-primary));
+  color: rgb(var(--color-brand));
   text-decoration: none;
   font-weight: 600;
 }
@@ -83,6 +83,6 @@ defineProps<{ title: string; version: string | null }>()
 }
 
 .legal-links a {
-  color: rgb(var(--v-theme-primary));
+  color: rgb(var(--color-brand));
 }
 </style>

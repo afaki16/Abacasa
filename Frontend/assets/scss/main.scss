@@ -18,8 +18,7 @@ body {
 
 // Print styles
 @media print {
-  .sidebar,
-  .v-navigation-drawer {
+  .sidebar {
     display: none !important;
   }
 }

@@ -40,7 +40,7 @@ function buildCsp(apiBase: string): string {
     // sorun çıkarsa eklenebilir.
     "script-src 'self' 'unsafe-inline'",
 
-    // Style: Vuetify/Vue scoped style için unsafe-inline zorunlu
+    // Style: Vue scoped style için unsafe-inline zorunlu
     // Google Fonts CSS dosyaları fonts.googleapis.com'dan geliyor
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 
@@ -49,7 +49,7 @@ function buildCsp(apiBase: string): string {
     // API origin'i (Storage:Provider=Local → /uploads) ve S3 kullanılıyorsa dosya origin'i
     ["img-src 'self' data: https://images.unsplash.com", apiOrigin, FILES_ORIGIN].filter(Boolean).join(" "),
 
-    // Font: kendi domain, data URI (MDI icon font),
+    // Font: kendi domain, data URI,
     // Google Fonts woff/woff2 dosyaları fonts.gstatic.com'dan
     "font-src 'self' data: https://fonts.gstatic.com",
 
@@ -105,17 +105,11 @@ export default defineNuxtConfig({
   css: [
     "~/assets/css/theme.css",
     "~/assets/css/reset-compat.css",
-    "vuetify/lib/styles/main.sass",
-    "@mdi/font/css/materialdesignicons.min.css",
     "~/assets/scss/main.scss",
     "~/assets/css/main.css",
     "~/assets/css/global-admin.css",
     "flag-icons/css/flag-icons.min.css",
   ],
-
-  build: {
-    transpile: ["vuetify"],
-  },
 
   modules: [
     "@pinia/nuxt",
@@ -208,9 +202,6 @@ export default defineNuxtConfig({
           additionalData: '@use "~/assets/scss/variables.scss" as *;',
         },
       },
-    },
-    ssr: {
-      noExternal: ["vuetify"],
     },
     // HMR overlay'i kapatın
     server: {

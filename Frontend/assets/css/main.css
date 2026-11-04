@@ -1,18 +1,5 @@
 /* Main CSS file */
 
-.v-select .v-field {
-  cursor: pointer !important;
-}
-
-.v-select.v-input--disabled .v-field {
-  cursor: not-allowed !important;
-}
-
-.v-menu .v-list {
-  max-height: 300px !important;
-  overflow-y: auto !important;
-}
-
 /* ========================================
    GRADIENT BUTTONS (DoctorForm / Theetify style)
    ======================================== */

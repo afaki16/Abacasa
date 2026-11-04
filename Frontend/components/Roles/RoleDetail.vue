@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <hr class="ui-divider my-6" />
+    <hr class="ui-divider !my-6" />
 
     <!-- Permissions -->
     <div class="section-header">

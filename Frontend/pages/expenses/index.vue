@@ -15,7 +15,7 @@
   />
 
   <!-- Özet -->
-  <div class="ui-row mb-2">
+  <div class="ui-row !mb-2">
     <div class="ui-col ui-col-12 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="ui-row mb-4">
+  <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12 ui-col-md-6">
       <UiCard elevation="0" border>
         <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kategoriye göre</div>
@@ -83,7 +83,7 @@
   </div>
 
   <!-- Filtreler -->
-  <div class="ui-row ui-row--dense mb-2">
+  <div class="ui-row ui-row--dense !mb-2">
     <div class="ui-col ui-col-12 ui-col-md-4">
       <UiSelect
         v-model="filterCategoryId"

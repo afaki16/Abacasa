@@ -35,7 +35,7 @@
               <th>Tarih</th>
               <th>Kime</th>
               <th>Ödeme aracı</th>
-              <th class="text-right">Tutar</th>
+              <th class="!text-right">Tutar</th>
               <th>Not</th>
             </tr>
           </thead>
@@ -44,7 +44,7 @@
               <td>{{ formatDisplayDate(d.date) }}</td>
               <td>{{ d.recipient }}</td>
               <td>{{ d.paymentMethodName }}</td>
-              <td class="text-right">{{ formatMoney(d.amount) }}</td>
+              <td class="!text-right">{{ formatMoney(d.amount) }}</td>
               <td>{{ d.note }}</td>
             </tr>
             <tr v-if="!distributions.length">

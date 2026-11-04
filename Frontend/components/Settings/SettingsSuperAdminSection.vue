@@ -15,7 +15,7 @@
     </div>
 
     <!-- Stat Kartlar + Tenant Filtresi -->
-    <div class="ui-row ui-row--dense mb-5">
+    <div class="ui-row ui-row--dense !mb-5">
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4">
         <UiCard class="stat-card" rounded="xl" elevation="0" border>
           <div class="ui-card-text flex items-center gap-4 !p-5">

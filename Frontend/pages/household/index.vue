@@ -30,7 +30,7 @@
           <th>Rol</th>
           <th>Bağlı kişi</th>
           <th>Katılma tarihi</th>
-          <th class="text-right">İşlemler</th>
+          <th class="!text-right">İşlemler</th>
         </tr>
       </thead>
       <tbody>
@@ -45,7 +45,7 @@
           </td>
           <td>{{ m.personName ?? '—' }}</td>
           <td>{{ formatDisplayDate(m.joinedAt) }}</td>
-          <td class="text-right whitespace-nowrap">
+          <td class="!text-right whitespace-nowrap">
             <UiBtn v-if="canUpdateMembers" icon="mdi-account-edit" size="x-small" variant="text" title="Rol ve kişi" @click="openMemberEdit(m)" />
             <UiBtn
               v-if="canDeleteMembers && !m.isCurrentUser"
@@ -99,7 +99,7 @@
           <th>Bağlı kişi</th>
           <th>Durum</th>
           <th>Son geçerlilik</th>
-          <th class="text-right">İşlemler</th>
+          <th class="!text-right">İşlemler</th>
         </tr>
       </thead>
       <tbody>
@@ -111,7 +111,7 @@
             <UiChip size="small" variant="tonal" :color="statusColor(i.status)">{{ invitationStatusLabel(i.status) }}</UiChip>
           </td>
           <td>{{ formatDisplayDate(i.expiresAt) }}</td>
-          <td class="text-right whitespace-nowrap">
+          <td class="!text-right whitespace-nowrap">
             <UiBtn
               v-if="canCreateMembers && (i.status === 'Pending' || i.status === 'Expired')"
               size="small"

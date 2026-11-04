@@ -8,14 +8,13 @@ const currentTheme = ref<Theme>('light')
 let initialized = false
 
 /**
- * Theme composable — light/dark switching, localStorage persist, Vuetify sync.
+ * Theme composable — light/dark switching, localStorage persist.
  *
  * Kullanım:
  *   const { theme, toggleTheme, isDark } = useTheme()
  *
  * Yan etkiler:
  *  - <html>'e 'dark' class'ı ekler/çıkarır (Tailwind dark mode için)
- *  - Vuetify global theme'ini senkronize eder ($syncVuetifyTheme plugin helper'ı)
  *  - localStorage'a 'app-theme' anahtarıyla kaydeder
  */
 export const useTheme = () => {
@@ -44,19 +43,6 @@ export const useTheme = () => {
       root.classList.add('dark')
     } else {
       root.classList.remove('dark')
-    }
-
-    // 2. Vuetify global theme'ini senkronize et
-    // $syncVuetifyTheme plugin tarafından provide edilen helper
-    try {
-      const nuxtApp = useNuxtApp()
-      const syncFn = nuxtApp.$syncVuetifyTheme as ((t: Theme) => void) | undefined
-      if (typeof syncFn === 'function') {
-        syncFn(theme)
-      }
-    } catch {
-      // useNuxtApp henüz hazır değilse (init sırasında) sessizce geç
-      // Vuetify plugin kendi defaultTheme'ini localStorage'dan okuyor zaten
     }
   }
 

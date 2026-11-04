@@ -31,7 +31,7 @@
           <!-- Name & email -->
           <div class="hero-meta">
             <h1 class="profile-name">{{ user?.fullName }}</h1>
-            <p class="profile-email mt-1">
+            <p class="profile-email !mt-1">
               <UiIcon icon="mdi-email-outline" :size="13" class="me-1" />
               {{ user?.email }}
             </p>

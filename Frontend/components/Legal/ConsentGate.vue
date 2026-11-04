@@ -40,7 +40,7 @@
           <div v-for="(e, i) in errors" :key="i">{{ e }}</div>
         </UiAlert>
       </div>
-      <div class="ui-card-actions px-6 pb-4">
+      <div class="ui-card-actions !px-6 !pb-4">
         <UiBtn variant="text" :disabled="busy" @click="logout">Çıkış yap</UiBtn>
         <div class="flex-1" />
         <UiBtn color="primary" variant="flat" :loading="busy" :disabled="!canContinue" @click="submit">Devam et</UiBtn>
