@@ -1,15 +1,14 @@
 <template>
-  <UiCard rounded="xl" elevation="0" border class="delete-account-card">
-    <div class="ui-card-title section-title !p-5 text-error">
-      <UiAvatar color="error" variant="tonal" :size="32" rounded="lg" class="mr-3">
-        <UiIcon icon="mdi-account-remove" :size="16" />
-      </UiAvatar>
-      Hesabı sil
+  <!-- Profil sayfasındaki panel kartı (global-admin.css .panel-card), tehlike tonunda -->
+  <div class="panel-card delete-account-card">
+    <div class="panel-card__header">
+      <div class="panel-card__icon panel-card__icon--danger"><UiIcon icon="mdi-account-remove" :size="16" /></div>
+      <span class="text-error">Hesabı sil</span>
     </div>
-    <hr class="ui-divider" />
+    <div class="panel-card__divider" />
 
-    <div class="ui-card-text !p-5">
-      <p class="mb-4">
+    <div class="panel-card__body">
+      <p class="panel-card__hint">
         Hesabınız silindiğinde kişisel bilgileriniz kalıcı olarak silinir ve bu işlem geri alınamaz. Girdiğiniz kayıtlar ait
         oldukları hanelerde kalır.
       </p>
@@ -46,6 +45,7 @@
             <UiTextField
               v-model="password"
               label="Parola"
+              placeholder="••••••••"
               type="password"
               density="comfortable"
               autocomplete="current-password"
@@ -62,7 +62,7 @@
         </template>
       </template>
     </div>
-  </UiCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -121,6 +121,6 @@ const submit = async () => {
 
 <style scoped>
 .delete-account-card {
-  border-color: rgb(var(--color-error)) !important;
+  border-color: rgb(var(--color-error) / 0.5);
 }
 </style>

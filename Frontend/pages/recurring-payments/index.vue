@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-calendar-sync"
+    title="Sabit ödemeler"
+    subtitle="Düzenli ödeme planlarını ve dönemin vadelerini yönetin."
+  />
+
   <UiTabs v-model="tab" color="primary" class="mb-4">
     <UiTab value="period">Dönem</UiTab>
     <UiTab value="plans">Planlar</UiTab>

@@ -7,7 +7,15 @@
       ]" />
     </div>
 
+  <PageHero
+    icon="mdi-account-group-outline"
+    title="Kullanıcılar"
+    subtitle="Sistem kullanıcılarını görüntüleyin, oluşturun ve yönetin."
+    :count="totalCount"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
       :items="items"
       :columns="tableColumns"
       title="Kullanıcılar"
@@ -107,11 +115,11 @@
   <!-- View Detail Drawer -->
   <ResizableDrawer
     v-model="dialogs.view"
-    title="Kullanıcı Detayları"
-    :subtitle="'Kullanıcı bilgilerini görüntüleyin'"
-    icon="mdi-account-details"
-    :default-width="800"
-    :min-width="600"
+    title="Kullanıcı Detayı"
+    subtitle="Hesap bilgileri ve roller"
+    icon="mdi-account-details-outline"
+    :default-width="720"
+    :min-width="520"
   >
     <UserDetail
       :user="selectedItem"

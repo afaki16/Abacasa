@@ -1,85 +1,60 @@
 /* Main CSS file */
 
 /* ========================================
-   GRADIENT BUTTONS (DoctorForm / Theetify style)
+   FORM BUTONLARI (Dernify'daki gibi: düz marka rengi, 10px köşe, sade gölge)
+   Sınıf adları geriye uyum için "gradient"; renkler temadan (--color-brand = data.json).
    ======================================== */
 .btn-gradient-primary {
-  background: var(--theme-gradient, linear-gradient(135deg, #006c49 0%, #10b981 100%)) !important;
-  color: white !important;
+  background: rgb(var(--color-brand)) !important;
+  color: rgb(var(--color-on-primary)) !important;
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  letter-spacing: 0.3px !important;
-  padding: 12px 32px !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.3s ease !important;
+  letter-spacing: 0.02em !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
+  transition: background 0.15s ease, box-shadow 0.15s ease !important;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-gradient-primary:hover:not(:disabled) {
-  background: var(--theme-gradient-hover, linear-gradient(135deg, #004d34 0%, #006c49 100%)) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  background: color-mix(in srgb, rgb(var(--color-brand)) 88%, #000) !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1) !important;
 }
 
-.btn-gradient-primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-}
-
-.btn-gradient-primary:disabled {
+.btn-gradient-primary:disabled,
+.btn-gradient-primary.ui-btn--disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
-}
-
-/* UI kiti: pasif gradient buton Vuetify'daki gibi opak + beyaz örtü (her iki temada aynı renk) */
-.btn-gradient-primary.ui-btn--disabled {
-  opacity: 1;
-}
-.btn-gradient-primary.ui-btn--disabled::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(255, 255, 255, 0.45);
-  pointer-events: none;
 }
 
 .btn-gradient-dark {
-  background: rgba(0, 0, 0, 0.04) !important;
-  color: rgb(75, 66, 66) !important;
-  border: none !important;
-  border-radius: 12px !important;
+  background: rgb(var(--color-surface-container-low)) !important;
+  color: rgb(var(--color-on-surface-variant)) !important;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.6) !important;
+  border-radius: 10px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  letter-spacing: 0.3px !important;
-  padding: 12px 32px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease !important;
+  letter-spacing: 0.02em !important;
+  padding: 10px 24px !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
   cursor: pointer;
 }
 
 .btn-gradient-dark:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(44, 62, 80, 0.4) !important;
+  background: rgb(var(--color-surface-container)) !important;
+  border-color: rgb(var(--color-outline-variant)) !important;
 }
 
-.btn-gradient-dark:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-gradient-dark:disabled {
+.btn-gradient-dark:disabled,
+.btn-gradient-dark.ui-btn--disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Koyu tema: açık temadaki koyu gri yazı koyu zeminde okunmuyordu */
+/* Koyu tema: yazı açık renkte kalsın */
 .dark .btn-gradient-dark {
-  background: rgba(255, 255, 255, 0.08) !important;
   color: rgb(var(--color-on-surface)) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
 }

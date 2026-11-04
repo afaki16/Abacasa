@@ -38,6 +38,7 @@
               <UiTextField
                 v-model="formData.firstName"
                 label="Ad"
+                placeholder="Adınız"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -50,6 +51,7 @@
               <UiTextField
                 v-model="formData.lastName"
                 label="Soyad"
+                placeholder="Soyadınız"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -65,6 +67,7 @@
               <UiTextField
                 v-model="formData.email"
                 label="E-posta"
+                placeholder="ornek@sirket.com"
                 :disabled="loading || !!user"
                 prepend-inner-icon="mdi-email"
                 density="comfortable"
@@ -78,6 +81,7 @@
               <UiTextField
                 v-model="formData.phoneNumber"
                 label="Telefon Numarası"
+                placeholder="0555 000 00 00"
                 :disabled="loading"
                 prepend-inner-icon="mdi-phone"
                 density="comfortable"
@@ -95,6 +99,7 @@
               item-title="name"
               item-value="id"
               label="Tenant"
+              placeholder="Tenant seçin"
               :disabled="loading"
               prepend-inner-icon="mdi-domain"
               density="comfortable"
@@ -108,28 +113,25 @@
         <!-- Status (Sadece edit modunda) -->
         <div class="ui-row" v-if="user">
           <div class="ui-col ui-col-12">
-            <UiSwitch
-              v-model="formData.status"
-              :true-value="UserStatus.Active"
-              :false-value="UserStatus.Inactive"
-              color="primary"
-              :disabled="loading"
-              hide-details
-              class="status-switch"
-            >
-              <template #label>
-                <div class="status-label">
-                  <span class="status-text">Kullanıcı Durumu</span>
-                  <UiChip
-                    :color="formData.status === UserStatus.Active ? 'success' : 'error'"
-                    size="small"
-                    variant="tonal"
-                  >
-                    {{ formData.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
-                  </UiChip>
-                </div>
-              </template>
-            </UiSwitch>
+            <div class="toggle-card">
+              <div>
+                <span class="toggle-card-title">Kullanıcı Durumu</span>
+                <span
+                  class="toggle-card-sub"
+                  :class="formData.status === UserStatus.Active ? 'toggle-card-sub--on' : 'toggle-card-sub--off'"
+                >
+                  {{ formData.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
+                </span>
+              </div>
+              <UiSwitch
+                v-model="formData.status"
+                :true-value="UserStatus.Active"
+                :false-value="UserStatus.Inactive"
+                color="primary"
+                :disabled="loading"
+                hide-details
+              />
+            </div>
             <p class="status-description !mt-2">
               {{ formData.status === UserStatus.Active
                   ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.'
@@ -142,17 +144,23 @@
         <!-- Zorunlu şifre değişimi (kendi hesabı hariç; hesap davetiyle gelen kullanıcı şifresini zaten kendisi belirler) -->
         <div class="ui-row" v-if="!isOwnAccount && (user || !formData.sendAccountInvitation)">
           <div class="ui-col ui-col-12">
-            <UiSwitch
-              v-model="formData.mustChangePassword"
-              color="primary"
-              :disabled="loading"
-              hide-details
-              class="status-switch"
-            >
-              <template #label>
-                <span class="status-text">Bir sonraki girişte şifre değiştirsin</span>
-              </template>
-            </UiSwitch>
+            <div class="toggle-card">
+              <div>
+                <span class="toggle-card-title">Bir sonraki girişte şifre değiştirsin</span>
+                <span
+                  class="toggle-card-sub"
+                  :class="formData.mustChangePassword ? 'toggle-card-sub--warn' : ''"
+                >
+                  {{ formData.mustChangePassword ? 'Zorunlu' : 'Kapalı' }}
+                </span>
+              </div>
+              <UiSwitch
+                v-model="formData.mustChangePassword"
+                color="primary"
+                :disabled="loading"
+                hide-details
+              />
+            </div>
             <p class="status-description !mt-2">
               {{ formData.mustChangePassword
                   ? 'Kullanıcı giriş yaptığında şifresini değiştirmeden uygulamayı kullanamaz.'
@@ -205,6 +213,7 @@
             <UiTextField
               v-model="formData.password"
               label="Şifre"
+              placeholder="••••••••"
               :disabled="loading"
               :type="showPassword ? 'text' : 'password'"
               prepend-inner-icon="mdi-lock"
@@ -223,6 +232,8 @@
             <UiTextField
               v-model="formData.confirmPassword"
               label="Şifre Tekrar"
+              placeholder="••••••••"
+              required
               :disabled="loading"
               :type="showConfirmPassword ? 'text' : 'password'"
               prepend-inner-icon="mdi-lock-check"
@@ -246,6 +257,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="searchQuery"
+              placeholder="Rol ara..."
               prepend-inner-icon="mdi-magnify"
               density="compact"
               hide-details
@@ -253,33 +265,18 @@
               class="mb-4 modern-input"
             />
 
-            <div class="quick-actions !mb-4">
-              <UiBtn
-                variant="outlined"
-                size="small"
-                @click="selectAllRoles"
+            <div class="select-all-bar mb-4">
+              <UiCheckbox
+                :model-value="allRolesSelected"
+                :indeterminate="someRolesSelected"
                 :disabled="loading"
-                prepend-icon="mdi-check-all"
-              >
-                Tümünü Seç
-              </UiBtn>
-              <UiBtn
-                variant="outlined"
-                size="small"
-                @click="clearAllRoles"
-                :disabled="loading"
-                prepend-icon="mdi-close-box"
-              >
-                Temizle
-              </UiBtn>
-              <UiChip 
-                v-if="formData.roleIds.length" 
-                size="small" 
-                color="primary" 
-                variant="tonal"
-              >
-                {{ formData.roleIds.length }} seçili
-              </UiChip>
+                color="primary"
+                hide-details
+                density="compact"
+                label="Tümünü seç"
+                @update:model-value="toggleAllRoles"
+              />
+              <span class="select-all-count">{{ formData.roleIds.length }} / {{ assignableRoles.length }} seçili</span>
             </div>
 
             <div class="roles-grid">
@@ -342,7 +339,6 @@
       >
         İptal
       </UiBtn>
-      
       <UiBtn
         size="large"
         :loading="loading"
@@ -474,6 +470,11 @@ const clearAllRoles = () => {
   formData.roleIds = []
 }
 
+const allRolesSelected = computed(() =>
+  assignableRoles.value.length > 0 && formData.roleIds.length >= assignableRoles.value.length)
+const someRolesSelected = computed(() => formData.roleIds.length > 0 && !allRolesSelected.value)
+const toggleAllRoles = (checked: boolean) => (checked ? selectAllRoles() : clearAllRoles())
+
 const handleSubmit = async () => {
   const { valid } = await formRef.value?.validate()
   if (!valid) return
@@ -565,7 +566,7 @@ watchEffect(() => {
   gap: 4px;
   padding: 16px;
   text-align: left;
-  border: 2px solid #e2e8f0;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
@@ -576,14 +577,13 @@ watchEffect(() => {
   border-color: #cbd5e1;
 }
 
-/* Rol kartlarıyla aynı seçili görünüm */
 .login-method.selected {
-  border-color: rgb(var(--color-primary));
-  background: #f0f7ff;
+  border-color: rgb(var(--color-brand));
+  background: rgb(var(--color-brand) / 0.06);
 }
 
 .login-method-icon {
-  color: rgb(var(--color-primary));
+  color: rgb(var(--color-brand));
   margin-bottom: 4px;
 }
 
@@ -611,14 +611,29 @@ watchEffect(() => {
 .status-description {
   font-size: 0.875rem;
   color: #64748b;
-  margin: 0;
+  /* margin yok: reset zaten 0; üstteki boşluk şablondaki mt-2 ile verilir */
   line-height: 1.5;
 }
 
-.quick-actions {
+/* Tümünü seç: tek onay kutusu (kısmi seçimde yarım işaret) + seçim sayacı */
+.select-all-bar {
   display: flex;
-  gap: 12px;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.6);
+  border-radius: 10px;
+  background: rgb(var(--color-surface-container-low));
+}
+.select-all-count {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgb(var(--color-brand) / 0.1);
+  color: rgb(var(--color-brand));
 }
 
 .roles-grid {

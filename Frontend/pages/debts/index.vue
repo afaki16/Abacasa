@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-hand-coin-outline"
+    title="Borçlar"
+    subtitle="Alınan borçları ve geri ödemelerini izleyin; borç hareketleri dönem harcamasına girmez."
+  />
+
   <!-- Özet -->
   <div class="ui-row !mb-2">
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
@@ -135,6 +141,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Borçlar"

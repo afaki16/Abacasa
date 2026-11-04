@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-hand-heart-outline"
+    title="Bağışlar"
+    subtitle="Dönemdeki bağışlarınızı kaydedin ve izleyin."
+  />
+
   <!-- Dönem seçici -->
   <PeriodSelector
     ref="periodSelectorRef"
@@ -102,6 +108,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Bağışlar"

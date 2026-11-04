@@ -7,7 +7,15 @@
       ]" />
     </div>
 
+    <PageHero
+      icon="mdi-key-variant"
+      title="İzinler"
+      subtitle="Sistemde tanımlı izinleri görüntüleyin."
+      :count="permissions.length"
+    />
+
     <BaseDataTable
+      :hide-page-header="true"
       :items="permissions"
       :columns="tableColumns"
       title="İzinler"

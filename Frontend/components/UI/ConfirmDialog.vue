@@ -25,7 +25,6 @@
         <UiBtn
           v-if="type === 'error' || type === 'info'"
           variant="outlined"
-          size="large"
           :disabled="loading"
           @click="$emit('cancel')"
           class="cancel-btn"
@@ -34,7 +33,6 @@
         </UiBtn>
         <UiBtn
           :color="confirmColor"
-          size="large"
           :loading="loading"
           @click="$emit('confirm')"
           class="confirm-btn"
@@ -261,31 +259,39 @@ const confirmColor = computed(() => {
   justify-content: flex-end;
 }
 
-.cancel-btn {
-  min-width: 100px;
-  border-radius: 12px !important;
+/* Dernify: yuvarlak, kompakt butonlar; İptal açık kenarlıklı, onay düz renk */
+.cancel-btn,
+.confirm-btn {
+  height: 44px !important;
+  padding: 0 24px !important;
+  border-radius: 999px !important;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0;
+}
+
+.cancel-btn {
+  color: rgb(var(--color-on-surface-variant)) !important;
+  border: 1px solid rgb(var(--color-outline-variant)) !important;
+  background: transparent !important;
+}
+.cancel-btn:hover {
+  background: rgb(var(--color-surface-container-high)) !important;
 }
 
 .confirm-btn {
-  min-width: 120px;
-  border-radius: 12px !important;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  color: #fff !important;
+  box-shadow: none;
+  transition: filter 0.15s ease;
 }
 
 .confirm-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
 }
 
 .confirm-btn--info {
-  background: var(--theme-gradient) !important;
+  background: rgb(var(--color-primary)) !important;
 }
 
 .confirm-btn--warning {

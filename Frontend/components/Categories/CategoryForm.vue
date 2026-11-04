@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Kategori Adı"
+            placeholder="Örn. Market"
             :disabled="loading"
             prepend-inner-icon="mdi-shape"
             density="comfortable"

@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Ad"
+            placeholder="Örn. Ayşe"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -21,6 +22,7 @@
           <UiTextField
             v-model="formData.relation"
             label="Yakınlık"
+            placeholder="Örn. Eş, anne"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"

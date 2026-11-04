@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-car-outline"
+    title="Araçlar"
+    subtitle="Araçlarınızı, bakım ve yükümlülük tarihlerini izleyin."
+  />
+
   <!-- Yaklaşan ve geciken -->
   <UiCard elevation="0" border class="mb-4">
     <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Yaklaşan ve geciken</div>
@@ -38,6 +44,7 @@
   </UiCard>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Araçlar"

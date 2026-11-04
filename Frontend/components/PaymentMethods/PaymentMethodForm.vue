@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Ad"
+            placeholder="Örn. Maaş kartı"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -36,6 +37,7 @@
           <UiTextField
             v-model="formData.bank"
             label="Banka"
+            placeholder="Örn. Ziraat Bankası"
             :disabled="loading"
             prepend-inner-icon="mdi-bank"
             density="comfortable"

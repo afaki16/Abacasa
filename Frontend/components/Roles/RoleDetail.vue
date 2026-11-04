@@ -1,83 +1,70 @@
 <template>
-  <div class="role-detail-container">
-    <!-- Header -->
-    <div class="detail-header">
-      <div class="detail-icon">
-        <UiIcon icon="mdi-shield-account" :size="32" color="primary" />
+  <div class="role-detail">
+    <!-- Başlık -->
+    <div class="role-header">
+      <div class="role-header__icon">
+        <UiIcon icon="mdi-shield-account-outline" :size="20" />
       </div>
-      <div class="header-info">
-        <h2 class="role-name">{{ role?.name }}</h2>
-        <div class="role-meta">
-          <UiChip :color="role?.isSystemRole ? 'warning' : 'success'" size="small" variant="tonal">
+      <div class="role-header__copy">
+        <h2 class="role-title">{{ role?.name }}</h2>
+        <div class="role-badges">
+          <span :class="['badge', role?.isSystemRole ? 'badge--warn' : 'badge--success']">
             {{ role?.isSystemRole ? 'Sistem' : 'Özel' }}
-          </UiChip>
-          <UiChip v-if="showTenant" size="small" variant="tonal" color="info" prepend-icon="mdi-domain">
+          </span>
+          <span v-if="showTenant" class="badge badge--tenant">
+            <UiIcon icon="mdi-domain" :size="13" />
             {{ role?.tenantId == null ? 'Ortak' : `Tenant ${role.tenantId}` }}
-          </UiChip>
+          </span>
         </div>
       </div>
     </div>
 
     <div class="info-grid">
-      <div class="info-item">
-        <div class="info-label">
-          <UiIcon icon="mdi-text" :size="18" color="primary" />
-          Açıklama
-        </div>
-        <div class="info-value">{{ role?.description || '-' }}</div>
+      <div class="info-card">
+        <span class="info-label">Açıklama</span>
+        <span class="info-value">{{ role?.description || '—' }}</span>
       </div>
-      <div class="info-item">
-        <div class="info-label">
-          <UiIcon icon="mdi-calendar" :size="18" color="primary" />
-          Oluşturulma
-        </div>
-        <div class="info-value">{{ role?.createdDate ? dateTimeFormatLong(role.createdDate) : '-' }}</div>
+      <div class="info-card">
+        <span class="info-label">Oluşturulma</span>
+        <span class="info-value">{{ role?.createdDate ? dateTimeFormatLong(role.createdDate) : '—' }}</span>
       </div>
     </div>
 
-    <hr class="ui-divider !my-6" />
-
-    <!-- Permissions -->
-    <div class="section-header">
+    <!-- Yetkiler -->
+    <div class="section-head">
       <h3 class="section-title">
-        <UiIcon icon="mdi-key-variant" :size="20" class="mr-2" />
-        Yetkiler
+        <UiIcon icon="mdi-key-variant" :size="16" /> Yetkiler
       </h3>
-      <UiChip size="small" color="primary" variant="tonal">
-        {{ role?.permissions?.length || 0 }} yetki
-      </UiChip>
+      <span class="badge badge--tenant">{{ role?.permissions?.length || 0 }} yetki</span>
     </div>
 
-    <div v-if="groups.length" class="permission-groups">
-      <div v-for="group in groups" :key="group.resource" class="permission-group">
+    <div v-if="groups.length" class="group-list">
+      <div v-for="group in groups" :key="group.resource" class="group-card">
         <div class="group-title">{{ group.resource }} ({{ group.permissions.length }})</div>
         <div class="group-items">
-          <UiChip
+          <span
             v-for="permission in group.permissions"
             :key="permission.id"
-            size="small"
-            variant="tonal"
+            class="badge badge--muted"
             :title="permission.description || undefined"
           >
             {{ permission.name }}
-          </UiChip>
+          </span>
         </div>
       </div>
     </div>
-    <div v-else class="empty-state">
-      <UiIcon icon="mdi-key-remove" :size="48" color="grey-400" />
-      <p class="empty-text">Bu role atanmış yetki yok</p>
+    <div v-else class="empty-block">
+      <UiIcon icon="mdi-key-remove" :size="40" class="empty-icon" />
+      <p>Bu role atanmış yetki yok.</p>
     </div>
 
-    <div class="detail-footer">
-      <UiBtn variant="outlined" size="large" class="btn-gradient-dark" @click="$emit('close')">
-        Kapat
-      </UiBtn>
+    <!-- Alt butonlar -->
+    <div class="detail-actions">
+      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">Kapat</UiBtn>
       <UiBtn
         v-if="canEdit"
-        size="large"
         class="btn-gradient-primary"
-        prepend-icon="mdi-pencil"
+        prepend-icon="mdi-pencil-outline"
         @click="$emit('edit', role)"
       >
         Düzenle
@@ -102,7 +89,7 @@ defineEmits<{
   edit: [role: Role | null]
 }>()
 
-// RoleForm ile aynı gruplama (kaynağa göre), salt okunur görünüm için sıralı
+// Same grouping as RoleForm (by resource), sorted for a stable read-only view
 const groups = computed(() => {
   const map = new Map<string, Permission[]>()
   for (const p of props.role?.permissions ?? []) {
@@ -119,151 +106,156 @@ const groups = computed(() => {
 </script>
 
 <style scoped>
-.role-detail-container {
-  padding: 24px;
+.role-detail {
+  --rd-border: rgb(var(--color-outline-variant) / 0.6);
+  --rd-surface: rgb(var(--color-surface-container-lowest));
+  --rd-muted: rgb(var(--color-surface-container-low));
+  --rd-text: rgb(var(--color-on-surface));
+  --rd-text-muted: rgb(var(--color-on-surface-variant));
+  --rd-accent: rgb(var(--color-primary));
+  padding: 0 4px 8px;
 }
 
-.detail-header {
+.role-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.detail-icon {
-  width: 64px;
-  height: 64px;
+.role-header__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(var(--color-brand) / 0.1);
-  border-radius: 12px;
-  flex-shrink: 0;
+  background: color-mix(in srgb, var(--rd-accent) 10%, transparent);
+  color: var(--rd-accent);
+  border: 1px solid color-mix(in srgb, var(--rd-accent) 12%, transparent);
 }
 
-.header-info {
-  flex: 1;
-  min-width: 0;
+.role-header__copy { flex: 1; min-width: 0; }
+
+.role-title {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rd-text);
 }
 
-.role-name {
-  font-size: 1.5rem;
+.role-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0 0 8px 0;
 }
-
-.role-meta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+.badge--success { background: rgba(34, 197, 94, 0.12); color: #15803d; }
+.badge--warn { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+.badge--muted { background: var(--rd-muted); color: var(--rd-text-muted); }
+.badge--tenant { background: color-mix(in srgb, var(--rd-accent) 10%, transparent); color: var(--rd-accent); }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
+  margin-bottom: 24px;
 }
 
-.info-item {
+.info-card {
+  display: flex;
+  flex-direction: column;
   padding: 14px 16px;
-  background: rgb(var(--color-surface-variant));
-  border-radius: 8px;
-  border: 1px solid rgb(var(--color-outline-variant));
+  border-radius: 12px;
+  border: 1px solid var(--rd-border);
+  background: var(--rd-muted);
 }
 
 .info-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-bottom: 6px;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
+  color: var(--rd-text-muted);
+  margin-bottom: 6px;
 }
 
 .info-value {
   font-size: 0.9375rem;
-  color: rgb(var(--color-on-surface));
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--rd-text);
   white-space: pre-line;
 }
 
-.section-header {
+.section-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--rd-text);
 }
 
-.permission-groups {
+.group-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.permission-group {
+.group-card {
   padding: 12px 16px;
-  background: rgb(var(--color-surface));
-  border: 1px solid rgb(var(--color-outline-variant));
-  border-radius: 8px;
+  border: 1px solid var(--rd-border);
+  border-radius: 12px;
+  background: var(--rd-surface);
 }
 
 .group-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgb(var(--color-on-surface));
+  color: var(--rd-text);
   margin-bottom: 8px;
 }
 
-.group-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+.group-items { display: flex; flex-wrap: wrap; gap: 6px; }
 
-.empty-state {
+.empty-block {
   text-align: center;
-  padding: 32px 24px;
-}
-
-.empty-text {
+  padding: 40px 16px;
+  color: var(--rd-text-muted);
   font-size: 0.875rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-top: 8px;
 }
+.empty-icon { opacity: 0.4; margin-bottom: 8px; }
 
-.detail-footer {
+.detail-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgb(var(--color-outline-variant));
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rd-border);
 }
 
-@media (max-width: 768px) {
-  .role-detail-container {
-    padding: 16px;
-  }
-
-  .detail-footer {
-    flex-direction: column;
-  }
-
-  .detail-footer .ui-btn {
-    width: 100%;
-  }
+@media (max-width: 640px) {
+  .detail-actions { flex-direction: column; }
+  .detail-actions .ui-btn { width: 100%; }
 }
+</style>
+
+<style>
+.dark .role-detail .badge--success { color: #4ade80; }
+.dark .role-detail .badge--warn { color: #fbbf24; }
 </style>

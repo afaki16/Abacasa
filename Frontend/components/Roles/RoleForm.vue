@@ -25,6 +25,7 @@
               <UiTextField
                 v-model="formData.name"
                 label="Rol Adı"
+                placeholder="Rol adını girin"
                 :disabled="loading || (role && role.isSystemRole)"
                 prepend-inner-icon="mdi-shield-account"
                 density="comfortable"
@@ -40,6 +41,7 @@
               <UiTextField multiline
                 v-model="formData.description"
                 label="Açıklama"
+                placeholder="Rolün kısa açıklaması"
                 :disabled="loading"
                 rows="3"
                 auto-grow
@@ -61,6 +63,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="searchQuery"
+              placeholder="İzin ara..."
               prepend-inner-icon="mdi-magnify"
               density="compact"
               hide-details
@@ -68,33 +71,18 @@
               class="mb-3 modern-input"
             />
 
-            <div class="quick-actions !mb-3">
-              <UiBtn
-                variant="outlined"
-                size="small"
-                @click="selectAllPermissions"
+            <div class="select-all-bar mb-3">
+              <UiCheckbox
+                :model-value="allPermissionsSelected"
+                :indeterminate="somePermissionsSelected"
                 :disabled="loading"
-                prepend-icon="mdi-check-all"
-              >
-                Tümünü Seç
-              </UiBtn>
-              <UiBtn
-                variant="outlined"
-                size="small"
-                @click="clearAllPermissions"
-                :disabled="loading"
-                prepend-icon="mdi-close-box"
-              >
-                Temizle
-              </UiBtn>
-              <UiChip 
-                v-if="formData.permissionIds.length" 
-                size="small" 
-                color="primary" 
-                variant="tonal"
-              >
-                {{ formData.permissionIds.length }} seçili
-              </UiChip>
+                color="primary"
+                hide-details
+                density="compact"
+                label="Tümünü seç"
+                @update:model-value="toggleAllPermissions"
+              />
+              <span class="select-all-count">{{ formData.permissionIds.length }} / {{ permissions.length }} seçili</span>
             </div>
 
             <div class="permissions-simple-tree">
@@ -110,7 +98,8 @@
                   <UiIcon icon="mdi-chevron-right" 
                     class="chevron-icon"
                     :class="{ 'expanded': expandedResources.includes(resource) }"
-                    :size="18" />
+                    :size="18"
+                   />
                   <UiCheckbox
                     :model-value="isResourceFullySelected(resource)"
                     :indeterminate="isResourcePartiallySelected(resource)"
@@ -174,7 +163,6 @@
       >
         İptal
       </UiBtn>
-      
       <UiBtn
         size="large"
         :loading="loading"
@@ -299,6 +287,12 @@ const clearAllPermissions = () => {
   formData.permissionIds = []
 }
 
+const allPermissionsSelected = computed(() =>
+  props.permissions.length > 0 && formData.permissionIds.length >= props.permissions.length)
+const somePermissionsSelected = computed(() =>
+  formData.permissionIds.length > 0 && !allPermissionsSelected.value)
+const toggleAllPermissions = (checked: boolean) => (checked ? selectAllPermissions() : clearAllPermissions())
+
 const handleSubmit = async () => {
   const { valid } = await formRef.value?.validate()
   if (!valid) return
@@ -340,11 +334,25 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.quick-actions {
+/* Tümünü seç: tek onay kutusu (kısmi seçimde yarım işaret) + seçim sayacı */
+.select-all-bar {
   display: flex;
-  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.6);
+  border-radius: 10px;
+  background: rgb(var(--color-surface-container-low));
+}
+.select-all-count {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgb(var(--color-brand) / 0.1);
+  color: rgb(var(--color-brand));
 }
 
 .permissions-simple-tree {

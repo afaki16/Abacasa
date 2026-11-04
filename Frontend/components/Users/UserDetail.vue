@@ -1,213 +1,117 @@
 <template>
-  <div class="user-detail-container">
-    <!-- Header with Avatar -->
-    <div class="detail-header">
-      <UserAvatar
-        :src="user?.profileImageUrl"
-        :initials="getInitials(user?.firstName, user?.lastName)"
-        :size="80"
-        class="detail-avatar"
-      />
-      <div class="header-info">
-        <h2 class="user-name">{{ user?.firstName }} {{ user?.lastName }}</h2>
-        <div class="user-meta">
-          <UiChip
-            :color="user?.status === UserStatus.Active ? 'success' : 'error'"
-            size="small"
-            variant="tonal"
-            prepend-icon="mdi-circle"
-          >
-            {{ user?.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
-          </UiChip>
-          <UiChip
-            v-if="user?.emailConfirmed"
-            color="info"
-            size="small"
-            variant="tonal"
-            prepend-icon="mdi-email-check"
-          >
-            E-posta Doğrulandı
-          </UiChip>
+  <div class="user-detail">
+    <!-- Profil kartı -->
+    <div class="profile-card">
+      <div class="profile-cover" />
+      <div class="profile-body">
+        <UserAvatar
+          :src="user?.profileImageUrl"
+          :initials="initials"
+          :size="72"
+          class="profile-avatar"
+        />
+        <div class="profile-main">
+          <h2 class="profile-name">{{ displayName }}</h2>
+          <p class="profile-email">{{ user?.email || '—' }}</p>
+          <div class="profile-badges">
+            <span :class="['badge', statusBadge.cls]">{{ statusBadge.label }}</span>
+            <span v-if="user?.emailConfirmed" class="badge badge--info">
+              <UiIcon icon="mdi-email-check-outline" :size="14" /> E-posta doğrulandı
+            </span>
+            <!-- Üye olduğu haneler (listede yalnızca SuperAdmin platform görünümünde dolu) -->
+            <span v-for="name in user?.householdNames || []" :key="name" class="badge badge--tenant">
+              <UiIcon icon="mdi-home-outline" :size="14" /> {{ name }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
-    <hr class="ui-divider !my-6" />
-
-    <!-- Tabs -->
-    <div class="tabs-container">
+    <!-- Sekmeler -->
+    <div class="detail-tabs">
       <button
         v-for="tab in tabs"
         :key="tab.value"
-        :class="['tab-item', { active: currentTab === tab.value }]"
+        type="button"
+        class="detail-tab"
+        :class="{ 'detail-tab--active': currentTab === tab.value }"
         @click="currentTab = tab.value"
       >
-        <div class="tab-icon-wrapper">
-          <UiIcon :icon="tab.icon" :size="22" />
-        </div>
-        <span class="tab-label">{{ tab.label }}</span>
+        <UiIcon :icon="tab.icon" :size="16" />
+        {{ tab.label }}
       </button>
     </div>
 
-    <UiWindow v-model="currentTab" class="mt-6">
-      <!-- Tab 1: Genel Bilgiler -->
-      <UiWindowItem value="general">
-        <div class="info-section">
-          <h3 class="section-title">
-            <UiIcon icon="mdi-account-details" :size="20" class="mr-2" />
-            Kişisel Bilgiler
-          </h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">
-                <UiIcon icon="mdi-account" :size="18" color="primary" />
-                Ad Soyad
-              </div>
-              <div class="info-value">{{ user?.firstName }} {{ user?.lastName }}</div>
-            </div>
+    <!-- Genel -->
+    <div v-show="currentTab === 'general'" class="detail-panel">
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-label">Telefon</span>
+          <span class="info-value">{{ user?.phoneNumber || '—' }}</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Kayıt tarihi</span>
+          <span class="info-value">{{ formatDateTime(user?.createdDate) }}</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Son giriş</span>
+          <span class="info-value">{{ formatDateTime(user?.lastLoginDate) }}</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Kullanıcı ID</span>
+          <span class="info-value mono">{{ user?.id || '—' }}</span>
+        </div>
+      </div>
+    </div>
 
-            <div class="info-item">
-              <div class="info-label">
-                <UiIcon icon="mdi-email" :size="18" color="primary" />
-                E-posta
-              </div>
-              <div class="info-value">{{ user?.email || '-' }}</div>
-            </div>
+    <!-- Roller -->
+    <div v-show="currentTab === 'roles'" class="detail-panel">
+      <div v-if="user?.roles?.length" class="role-list">
+        <div v-for="role in user.roles" :key="role.id" class="role-row">
+          <div class="role-icon">
+            <UiIcon icon="mdi-shield-account-outline" :size="20" />
+          </div>
+          <div class="role-copy">
+            <div class="role-name">{{ role.name }}</div>
+            <div v-if="role.description" class="role-desc">{{ role.description }}</div>
+          </div>
+          <span v-if="role.isSystemRole" class="badge badge--muted">Sistem</span>
+        </div>
+      </div>
+      <div v-else class="empty-block">
+        <UiIcon icon="mdi-shield-off-outline" :size="40" class="empty-icon" />
+        <p>Bu kullanıcıya henüz rol atanmamış.</p>
+      </div>
+    </div>
 
-            <div class="info-item">
-              <div class="info-label">
-                <UiIcon icon="mdi-phone" :size="18" color="primary" />
-                Telefon
-              </div>
-              <div class="info-value">{{ user?.phoneNumber || '-' }}</div>
-            </div>
+    <!-- Güvenlik -->
+    <div v-show="currentTab === 'security'" class="detail-panel">
+      <div class="security-grid">
+        <div class="security-item">
+          <div class="security-icon" :class="user?.emailConfirmed ? 'ok' : 'warn'">
+            <UiIcon :icon="user?.emailConfirmed ? 'mdi-email-check' : 'mdi-email-alert'" :size="20" />
+          </div>
+          <div>
+            <div class="security-title">E-posta doğrulama</div>
+            <div class="security-value">{{ user?.emailConfirmed ? 'Doğrulandı' : 'Bekliyor' }}</div>
           </div>
         </div>
-
-        <hr class="ui-divider !my-6" />
-
-        <div class="info-section">
-          <h3 class="section-title">
-            <UiIcon icon="mdi-clock-outline" :size="20" class="mr-2" />
-            Hesap Bilgileri
-          </h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">
-                <UiIcon icon="mdi-calendar-plus" :size="18" color="primary" />
-                Kayıt Tarihi
-              </div>
-              <div class="info-value">{{ formatDateTime(user?.createdDate) }}</div>
-            </div>
-
-            <div class="info-item">
-              <div class="info-label">
-                <UiIcon icon="mdi-login" :size="18" color="primary" />
-                Son Giriş
-              </div>
-              <div class="info-value">{{ formatDateTime(user?.lastLoginDate) }}</div>
-            </div>
+        <div class="security-item">
+          <div class="security-icon" :class="user?.phoneConfirmed ? 'ok' : 'warn'">
+            <UiIcon :icon="user?.phoneConfirmed ? 'mdi-phone-check' : 'mdi-phone-alert'" :size="20" />
+          </div>
+          <div>
+            <div class="security-title">Telefon doğrulama</div>
+            <div class="security-value">{{ user?.phoneConfirmed ? 'Doğrulandı' : 'Bekliyor' }}</div>
           </div>
         </div>
-      </UiWindowItem>
+      </div>
+    </div>
 
-      <!-- Tab 2: Roller ve Yetkiler -->
-      <UiWindowItem value="roles">
-        <div class="info-section">
-          <div class="section-header">
-            <h3 class="section-title">
-              <UiIcon icon="mdi-shield-account" :size="20" class="mr-2" />
-              Atanmış Roller
-            </h3>
-            <UiChip size="small" color="primary" variant="tonal">
-              {{ user?.roles?.length || 0 }} Rol
-            </UiChip>
-          </div>
-
-          <div v-if="user?.roles && user.roles.length > 0" class="roles-list">
-            <div v-for="role in user.roles" :key="role.id" class="role-card">
-              <div class="role-card-header">
-                <div class="role-card-icon">
-                  <UiIcon icon="mdi-shield-star" :size="24" color="primary" />
-                </div>
-                <div class="role-card-info">
-                  <h4 class="role-card-name">{{ role.name }}</h4>
-                  <p v-if="role.description" class="role-card-description">
-                    {{ role.description }}
-                  </p>
-                </div>
-                <UiChip
-                  v-if="role.isSystemRole"
-                  size="small"
-                  color="orange"
-                  variant="tonal"
-                >
-                  Sistem Rolü
-                </UiChip>
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="empty-state">
-            <UiIcon icon="mdi-shield-off" :size="64" color="grey-400" />
-            <h3 class="empty-title">Rol Atanmamış</h3>
-            <p class="empty-text">Bu kullanıcıya henüz rol atanmamış</p>
-          </div>
-        </div>
-      </UiWindowItem>
-
-      <!-- Tab 3: Güvenlik -->
-      <UiWindowItem value="security">
-        <div class="info-section">
-          <h3 class="section-title">
-            <UiIcon icon="mdi-security" :size="20" class="mr-2" />
-            Güvenlik Bilgileri
-          </h3>
-          <div class="security-grid">
-            <div class="security-card">
-              <div class="security-icon" :class="user?.emailConfirmed ? 'success' : 'warning'">
-                <UiIcon :icon="user?.emailConfirmed ? 'mdi-email-check' : 'mdi-email-alert'" :size="32" />
-              </div>
-              <div class="security-info">
-                <h4 class="security-title">E-posta Doğrulama</h4>
-                <p class="security-status">
-                  {{ user?.emailConfirmed ? 'Doğrulanmış' : 'Doğrulanmamış' }}
-                </p>
-              </div>
-            </div>
-
-            <div class="security-card">
-              <div class="security-icon" :class="user?.phoneConfirmed ? 'success' : 'warning'">
-                <UiIcon :icon="user?.phoneConfirmed ? 'mdi-phone-check' : 'mdi-phone-alert'" :size="32" />
-              </div>
-              <div class="security-info">
-                <h4 class="security-title">Telefon Doğrulama</h4>
-                <p class="security-status">
-                  {{ user?.phoneConfirmed ? 'Doğrulanmış' : 'Doğrulanmamış' }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </UiWindowItem>
-    </UiWindow>
-
-    <!-- Footer Actions -->
-    <div class="detail-footer">
-      <UiBtn
-        variant="outlined"
-        size="large"
-        @click="$emit('close')"
-        class="btn-gradient-dark"
-      >
-        Kapat
-      </UiBtn>
-      <UiBtn
-        size="large"
-        @click="$emit('edit', user)"
-        class="btn-gradient-primary"
-        prepend-icon="mdi-pencil"
-      >
+    <!-- Alt butonlar -->
+    <div class="detail-actions">
+      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">Kapat</UiBtn>
+      <UiBtn class="btn-gradient-primary" prepend-icon="mdi-pencil-outline" @click="$emit('edit', user!)">
         Düzenle
       </UiBtn>
     </div>
@@ -215,12 +119,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { User } from '~/types'
 import { UserStatus } from '~/types'
 import { dateTimeFormatLong } from '~/utils/datesFormat'
 
-defineProps<{
+const props = defineProps<{
   user?: User | null
 }>()
 
@@ -232,292 +136,268 @@ defineEmits<{
 const currentTab = ref('general')
 
 const tabs = [
-  { value: 'general', label: 'Genel Bilgiler', icon: 'mdi-information' },
-  { value: 'roles', label: 'Roller', icon: 'mdi-shield-account' },
-  { value: 'security', label: 'Güvenlik', icon: 'mdi-security' }
+  { value: 'general', label: 'Genel', icon: 'mdi-information-outline' },
+  { value: 'roles', label: 'Roller', icon: 'mdi-shield-account-outline' },
+  { value: 'security', label: 'Güvenlik', icon: 'mdi-lock-outline' },
 ]
 
-const getInitials = (firstName?: string, lastName?: string) => {
-  if (!firstName && !lastName) return '?'
-  const first = firstName?.charAt(0) || ''
-  const last = lastName?.charAt(0) || ''
-  return (first + last).toUpperCase()
-}
+const displayName = computed(() => {
+  if (!props.user) return '—'
+  return props.user.fullName || `${props.user.firstName} ${props.user.lastName}`.trim()
+})
 
-const formatDateTime = (date?: string | null) => {
-  if (!date) return '-'
-  return dateTimeFormatLong(date)
-}
+const initials = computed(() => {
+  const f = props.user?.firstName?.charAt(0) || ''
+  const l = props.user?.lastName?.charAt(0) || ''
+  return (f + l).toUpperCase() || '?'
+})
+
+const statusBadge = computed(() => {
+  switch (props.user?.status) {
+    case UserStatus.Active: return { label: 'Aktif', cls: 'badge--success' }
+    case UserStatus.Banned: return { label: 'Yasaklı', cls: 'badge--danger' }
+    case UserStatus.PendingVerification: return { label: 'Doğrulanmamış', cls: 'badge--warn' }
+    default: return { label: 'Pasif', cls: 'badge--muted' }
+  }
+})
+
+const formatDateTime = (date?: string | null) => (date ? dateTimeFormatLong(date) : '—')
 </script>
 
 <style scoped>
-.user-detail-container {
-  padding: 24px;
+.user-detail {
+  --ud-border: rgb(var(--color-outline-variant) / 0.6);
+  --ud-surface: rgb(var(--color-surface-container-lowest));
+  --ud-muted: rgb(var(--color-surface-container-low));
+  --ud-text: rgb(var(--color-on-surface));
+  --ud-text-muted: rgb(var(--color-on-surface-variant));
+  --ud-accent: rgb(var(--color-primary));
+  padding: 0 4px 8px;
 }
 
-.detail-header {
+/* Profil kartı: üstte marka tonlu bant, avatar banda taşar */
+.profile-card {
+  border: 1px solid var(--ud-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--ud-surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  margin-bottom: 20px;
+}
+
+.profile-cover {
+  height: 72px;
+  background: color-mix(in srgb, var(--ud-accent) 8%, var(--ud-muted));
+}
+
+.profile-body {
   display: flex;
+  gap: 16px;
+  padding: 0 20px 20px;
+  margin-top: -28px;
+  align-items: flex-end;
+}
+
+.profile-avatar :deep(.user-avatar) {
+  border: 3px solid var(--ud-surface) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+}
+
+.profile-main {
+  min-width: 0;
+}
+
+.profile-name {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ud-text);
+}
+
+.profile-email {
+  margin: 0 0 10px;
+  font-size: 0.875rem;
+  color: var(--ud-text-muted);
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.detail-avatar {
-  border: 3px solid rgb(var(--color-outline-variant));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.header-info {
-  flex: 1;
-}
-
-.user-name {
-  font-size: 1.5rem;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0 0 8px 0;
 }
+.badge--success { background: rgba(34, 197, 94, 0.12); color: #15803d; }
+.badge--danger { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+.badge--warn { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+.badge--muted { background: var(--ud-muted); color: var(--ud-text-muted); }
+.badge--info { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+.badge--tenant { background: color-mix(in srgb, var(--ud-accent) 10%, transparent); color: var(--ud-accent); }
 
-.user-meta {
+/* Sekmeler: küçük hap butonlar */
+.detail-tabs {
   display: flex;
   gap: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
-.info-section {
-  margin-bottom: 24px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
+.detail-tab {
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 1rem;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--ud-border);
+  background: var(--ud-surface);
+  color: var(--ud-text-muted);
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0 0 16px 0;
-  display: flex;
-  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-tab:hover {
+  border-color: color-mix(in srgb, var(--ud-accent) 25%, transparent);
+  color: var(--ud-accent);
+}
+
+.detail-tab--active {
+  background: color-mix(in srgb, var(--ud-accent) 8%, var(--ud-surface));
+  border-color: color-mix(in srgb, var(--ud-accent) 22%, transparent);
+  color: var(--ud-accent);
+}
+
+.detail-panel {
+  margin-bottom: 20px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 }
 
-.info-item {
+.info-card {
+  display: flex;
+  flex-direction: column;
   padding: 14px 16px;
-  background: rgb(var(--color-surface-variant));
-  border-radius: 8px;
-  border: 1px solid rgb(var(--color-outline-variant));
-  transition: all 0.2s ease;
-}
-
-.info-item:hover {
-  border-color: rgb(var(--color-outline));
-  background: rgb(var(--color-surface));
+  border-radius: 12px;
+  border: 1px solid var(--ud-border);
+  background: var(--ud-muted);
 }
 
 .info-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-bottom: 6px;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
+  color: var(--ud-text-muted);
+  margin-bottom: 6px;
 }
 
 .info-value {
   font-size: 0.9375rem;
-  color: rgb(var(--color-on-surface));
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--ud-text);
+  word-break: break-word;
 }
 
-/* Roles Section */
-.roles-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.mono { font-family: ui-monospace, monospace; font-size: 0.8125rem; }
 
-.role-card {
-  background: rgb(var(--color-surface));
-  border: 1px solid rgb(var(--color-outline-variant));
-  border-radius: 8px;
-  padding: 14px 16px;
-  transition: all 0.2s ease;
-}
+.role-list { display: flex; flex-direction: column; gap: 10px; }
 
-.role-card:hover {
-  border-color: rgb(var(--color-outline));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.role-card-header {
+.role-row {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--ud-border);
+  border-radius: 12px;
+  background: var(--ud-surface);
 }
 
-.role-card-icon {
+.role-icon {
   width: 40px;
   height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(var(--color-brand) / 0.1);
-  border-radius: 8px;
-  flex-shrink: 0;
+  background: color-mix(in srgb, var(--ud-accent) 10%, transparent);
+  color: var(--ud-accent);
 }
 
-.role-card-info {
-  flex: 1;
-  min-width: 0;
-}
+.role-copy { flex: 1; min-width: 0; }
+.role-name { font-weight: 600; color: var(--ud-text); }
+.role-desc { font-size: 0.8125rem; color: var(--ud-text-muted); margin-top: 2px; }
 
-.role-card-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0 0 4px 0;
-}
-
-.role-card-description {
-  font-size: 0.8125rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Security Section */
 .security-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 12px;
-  margin-bottom: 20px;
 }
 
-.security-card {
+.security-item {
   display: flex;
   gap: 12px;
   padding: 14px 16px;
-  background: rgb(var(--color-surface));
-  border: 1px solid rgb(var(--color-outline-variant));
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.security-card:hover {
-  border-color: rgb(var(--color-outline));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--ud-border);
+  border-radius: 12px;
+  background: var(--ud-surface);
 }
 
 .security-icon {
   width: 40px;
   height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
   flex-shrink: 0;
 }
+.security-icon.ok { background: rgba(16, 185, 129, 0.12); color: #059669; }
+.security-icon.warn { background: rgba(245, 158, 11, 0.14); color: #d97706; }
 
-.security-icon.success {
-  background: #ecfdf5;
-  color: #10b981;
-}
+.security-title { font-size: 0.8125rem; font-weight: 600; color: var(--ud-text); }
+.security-value { font-size: 0.8125rem; color: var(--ud-text-muted); margin-top: 2px; }
 
-.security-icon.warning {
-  background: #fff7ed;
-  color: #f59e0b;
-}
-
-.security-icon.default {
-  background: rgb(var(--color-surface-variant));
-  color: rgb(var(--color-on-surface-variant));
-}
-
-.security-info {
-  flex: 1;
-}
-
-.security-title {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: rgb(var(--color-on-surface));
-  margin: 0 0 4px 0;
-}
-
-.security-status {
-  font-size: 0.8125rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin: 0;
-  font-weight: 500;
-}
-
-/* Empty State */
-.empty-state {
+.empty-block {
   text-align: center;
-  padding: 48px 24px;
-}
-
-.empty-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgb(var(--color-on-surface-variant));
-  margin-top: 12px;
-}
-
-.empty-text {
+  padding: 40px 16px;
+  color: var(--ud-text-muted);
   font-size: 0.875rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-top: 6px;
-  opacity: 0.7;
 }
+.empty-icon { opacity: 0.4; margin-bottom: 8px; }
 
-/* Footer */
-.detail-footer {
+.detail-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgb(var(--color-outline-variant));
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ud-border);
 }
 
-@media (max-width: 768px) {
-  .user-detail-container {
-    padding: 16px;
-  }
-
-  .detail-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .user-name {
-    font-size: 1.25rem;
-  }
-
-  .info-grid,
-  .security-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .detail-footer {
-    flex-direction: column;
-  }
-
-  .detail-footer .ui-btn {
-    width: 100%;
-  }
+@media (max-width: 640px) {
+  .profile-body { flex-direction: column; align-items: flex-start; }
+  .detail-actions { flex-direction: column; }
+  .detail-actions .ui-btn { width: 100%; }
 }
+</style>
+
+<style>
+/* Koyu tema: açık zemin için seçilen koyu rozet yazıları koyu zeminde okunmuyor */
+.dark .user-detail .badge--success { color: #4ade80; }
+.dark .user-detail .badge--danger { color: #f87171; }
+.dark .user-detail .badge--warn { color: #fbbf24; }
+.dark .user-detail .badge--info { color: #93c5fd; }
 </style>

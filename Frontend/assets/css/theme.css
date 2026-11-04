@@ -55,7 +55,9 @@
    *   #002113 = 0 33 19
    *   #005236 = 0 82 54
    */
-  --color-primary: 0 108 73;
+  /* Ana renk markadan (data.json → plugins/brand.client.ts) gelir; yoksa varsayılan yeşil.
+     Böylece text-primary, bg-primary, çekmece başlığı, sekmeler… hepsi marka rengini izler. */
+  --color-primary: var(--color-brand-light, 0 108 73);
   --color-on-primary: 255 255 255;
   --color-primary-container: 16 185 129;
   --color-on-primary-container: 0 66 43;
@@ -159,7 +161,7 @@
   --color-on-background: 255 255 255;
 
   /* Primary (dark mode'da daha açık yeşil ön planda) */
-  --color-primary: 78 222 163;
+  --color-primary: var(--color-brand-dark, 78 222 163);
   --color-on-primary: 0 33 19;
   --color-primary-container: 16 185 129;
   --color-on-primary-container: 0 66 43;
@@ -220,11 +222,9 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Marka rengi (UI kitinde color="primary"): data.json'dan plugins/brand.client.ts ile gelir,
- * yoksa tema primary'si. */
-:root {
-  --color-brand: var(--color-brand-light, var(--color-primary));
-}
+/* Marka rengi (UI kitinde color="primary"): tema primary'si ile aynı; o da data.json'dan
+ * plugins/brand.client.ts ile gelir (yoksa varsayılan). */
+:root,
 .dark {
-  --color-brand: var(--color-brand-dark, var(--color-primary));
+  --color-brand: var(--color-primary);
 }

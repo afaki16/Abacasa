@@ -8,7 +8,7 @@
       { 'ui-btn--block': block, 'ui-btn--icon': iconOnly, 'ui-btn--loading': loading, 'ui-btn--colored': !!color, 'ui-btn--disabled': disabled },
     ]"
     :style="[
-      color ? { '--ui-btn-color': uiColor(color), '--ui-btn-on': lightColor ? 'rgba(0,0,0,.87)' : '#fff' } : {},
+      color ? { '--ui-btn-color': uiColor(color), '--ui-btn-on': onColor } : {},
       elevation !== undefined ? { boxShadow: shadow } : {},
     ]"
     :disabled="disabled || loading"
@@ -52,6 +52,8 @@ const props = withDefaults(defineProps<{
 
 // Açık renk zeminde (white, grey-lighten-*) koyu yazı — Vuetify'nın on-color davranışı
 const lightColor = computed(() => /^(white|grey-lighten-[1-5])$/.test(props.color ?? ''))
+// Marka rengi (primary) koyu temada açık ton olur; yazı tema on-primary'sinden gelir (açıkta beyaz, koyuda koyu)
+const onColor = computed(() => (lightColor.value ? 'rgba(0,0,0,.87)' : props.color === 'primary' ? 'rgb(var(--color-on-primary))' : '#fff'))
 const iconOnly = computed(() => !!props.icon)
 const SHADOWS: Record<number, string> = {
   0: 'none',

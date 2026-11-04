@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Ad"
+            placeholder="Örn. Aile arabası"
             :disabled="loading"
             prepend-inner-icon="mdi-car"
             density="comfortable"
@@ -19,6 +20,7 @@
           <UiTextField
             v-model="formData.plate"
             label="Plaka"
+            placeholder="34 ABC 123"
             :disabled="loading"
             prepend-inner-icon="mdi-card-text-outline"
             density="comfortable"

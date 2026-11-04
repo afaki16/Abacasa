@@ -1,10 +1,10 @@
 <template>
   <div class="modern-data-table">
     <!-- Header Section -->
-    <div class="table-header glassmorphism-header">
+    <div class="table-header glassmorphism-header" :class="{ 'table-header--compact': hidePageHeader }">
       <div class="header-content">
-        <!-- Title & Description -->
-        <div class="header-left animate-fade-in">
+        <!-- Title & Description (sayfada PageHero varsa gizlenir) -->
+        <div v-if="!hidePageHeader" class="header-left animate-fade-in">
           <div class="title-section">
             <div class="title-wrapper">
               <div class="title-icon modern-icon">
@@ -436,6 +436,11 @@ const props = defineProps({
   description: {
     type: String,
     default: ''
+  },
+  // Başlık sayfadaki PageHero'da gösteriliyorsa tablonun kendi başlığını gizle
+  hidePageHeader: {
+    type: Boolean,
+    default: false
   },
   toolbarIcon: {
     type: String,
@@ -964,6 +969,10 @@ watch(() => props.itemsPerPage, (newValue) => {
   @apply px-8 py-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6;
 }
 
+.table-header--compact .header-content {
+  @apply py-4;
+}
+
 .header-left {
   @apply flex-1;
 }
@@ -1102,14 +1111,18 @@ watch(() => props.itemsPerPage, (newValue) => {
   @apply absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-on-surface-variant/60;
 }
 
+/* Dernify'daki alanlarla aynı: ince açık kenarlık, 10px köşe, odakta marka rengi + yumuşak halka */
 .search-input {
-  @apply w-full pl-10 pr-10 py-2.5 rounded-xl focus:ring-2 bg-surface-container-lowest transition-colors placeholder-on-surface-variant/60 text-on-surface;
-  border: 2px solid rgb(var(--color-outline-variant)) !important;
-  --tw-ring-color: rgb(var(--color-primary));
+  @apply w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest transition-colors placeholder-on-surface-variant/60 text-on-surface;
+  font-size: 0.875rem;
+  border: 1.5px solid rgb(var(--color-outline-variant) / 0.7) !important;
+  border-radius: 10px !important;
+  outline: none;
 }
 
 .search-input:focus {
-  border-color: rgb(var(--color-primary)) !important;
+  border-color: rgb(var(--color-brand)) !important;
+  box-shadow: 0 0 0 3px rgb(var(--color-brand) / 0.12);
 }
 
 .clear-search-btn {

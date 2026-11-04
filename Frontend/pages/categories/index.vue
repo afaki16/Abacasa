@@ -6,7 +6,15 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-shape-outline"
+    title="Kategoriler"
+    subtitle="Harcama ve bağış kategorilerini yönetin."
+    :count="items.length"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Kategoriler"

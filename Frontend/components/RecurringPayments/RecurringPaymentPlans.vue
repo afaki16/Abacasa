@@ -16,6 +16,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Planlar"

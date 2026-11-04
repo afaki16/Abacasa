@@ -8,7 +8,15 @@
     </div>
 
      <!-- DataTable -->
+     <PageHero
+       icon="mdi-shield-account-outline"
+       title="Roller"
+       subtitle="Rolleri ve rollere bağlı yetkileri yönetin."
+       :count="totalCount"
+     />
+
      <BaseDataTable
+       :hide-page-header="true"
       :items="items"
       :columns="tableColumns"
       title="Roller"
@@ -43,15 +51,11 @@
     >
        <!-- For RoleName -->
     <template #cell-name="{ value }">
-  <UiChip
-    color="primary"
-    variant="tonal"
-    size="default"
-    prepend-icon="mdi-shield-account"
-  >
-    {{ value }}
-  </UiChip>
-</template>
+      <span class="name-cell">
+        <UiIcon icon="mdi-shield-account-outline" :size="20" class="name-cell__icon" />
+        <span>{{ value }}</span>
+      </span>
+    </template>
 
     <!-- For isSystemRole -->
   <template #cell-isSystemRole="{ value }">
@@ -92,8 +96,8 @@
     <!-- View Role Drawer (salt okunur; sistem rolünün yetkilerini görmenin tek yolu) -->
     <ResizableDrawer
       v-model="dialogs.view"
-      title="Rol Detayları"
-      subtitle="Rol bilgilerini ve yetkilerini görüntüleyin"
+      title="Rol Detayı"
+      subtitle="Rol bilgileri ve yetkileri"
       icon="mdi-shield-account"
       :default-width="600"
       :min-width="400"
@@ -285,3 +289,9 @@ onMounted(async () => {
 })
 //#endregion
 </script>
+
+<style scoped>
+/* Ad hücresi: ikon + düz metin (Dernify) */
+.name-cell { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.name-cell__icon { color: rgb(var(--color-on-surface-variant)); flex-shrink: 0; }
+</style>

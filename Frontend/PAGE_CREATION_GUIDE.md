@@ -236,110 +236,164 @@ export const useProducts = () => {
 
 **Dosya:** `components/Products/ProductForm.vue`
 
-`TenantForm.vue`'yu birebir referans al (en sade form). Karmaşık tablı form için `UserForm.vue` referans:
+### Görünüm standardı (yeni modül ve sayfalarda zorunlu)
+
+Yeni bir modülün oluştur/düzenle formu, drawer içinde **bölümlere ayrılmış kartlar** olarak yazılır.
+Referans: Dernify'daki reklam formu (`Dernify/Frontend/components/Advertisements/AdvertisementForm.vue`).
+Mevcut `UserForm` / `RoleForm` / `TenantForm` sekmeli eski düzendedir; yeni formlarda onları değil bu standardı örnek al.
+
+```
+┌ Drawer başlığı (ResizableDrawer: ikon + "Yeni Ürün") ─────────────┐
+│ ┌ Bölüm kartı ─────────────────────────────────────────────────┐ │
+│ │ [■] Temel Bilgiler                 ← renkli ikon kutusu        │ │
+│ │     Ürünün adı, kategorisi ve açıklaması  ← kısa alt başlık    │ │
+│ ├──────────────────────────────────────────────────────────────┤ │
+│ │ Ürün Adı *                                                    │ │
+│ │ [ikon  Ürün adını girin                                    ]  │ │
+│ │ Kategori              │ Fiyat (isteğe bağlı)                  │ │
+│ │ [ikon  ...         ]  │ [ikon  ...                         ]  │ │
+│ │ Açıklama (isteğe bağlı)                                       │ │
+│ │ [                                                          ]  │ │
+│ └──────────────────────────────────────────────────────────────┘ │
+│ ┌ Bölüm kartı: Ayarlar ────────────────────────────────────────┐ │
+│ │ Tür *   [▣ Seçenek A  açıklama  ✓]  [□ Seçenek B  açıklama]   │ │
+│ │ [ Aktif  — Kapalıysa listede görünmez              (●──) ]    │ │
+│ └──────────────────────────────────────────────────────────────┘ │
+│                                           [ İptal ] [ Kaydet ]    │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+**Kurallar:**
+
+| Öğe | Kural |
+|---|---|
+| Bölüm | Her mantıksal grup ayrı bir kart (`.form-section`): Temel Bilgiler, Medya, Yerleşim & Zamanlama, Ayarlar… Bir formda 2–4 bölüm olur; tek alanlık bölüm açma. |
+| Bölüm başlığı | Solda 38px renkli ikon kutusu, yanında başlık (15px, 700) ve tek satırlık alt başlık (12.5px, gri). Başlık bandı açık gri degrade, altında ince çizgi. |
+| İkon kutusu rengi | İlk bölüm marka degradesi (`--theme-gradient`); diğerleri `--info` (mavi) / `--success` (yeşil) ile ayırt edilir. |
+| Etiket | Alanın **üstünde** (13px, 600). Zorunluysa kırmızı `*`; zorunlu değilse etiketin yanında gri `(isteğe bağlı)`. Etiket hiçbir zaman çerçevenin içinde değil. |
+| Alan | `UiTextField` / `UiSelect` (varsayılan üstte etiketli görünüm): 42px, 10px köşe, ince açık kenarlık. Bölüm içinde zemin hafif gri, ikon marka renginde. Her alanda anlamlı bir `prepend-inner-icon` ve örnek `placeholder` olur. |
+| Yerleşim | Kısa alanlar ikişer yan yana (`.form-grid`, mobilde tek sütun); uzun alanlar (başlık, açıklama, URL) tam genişlik. Alanlar arası 14px. |
+| Yardım metni | Alanın altında küçük gri metin (`hint` + `persistent-hint`), ör. "Tam görsel adresi (https://…)". |
+| Seçenek (2–4 tane) | Açılır liste yerine **kart seçici** (`.card-radio`): ikon + başlık + tek satır açıklama; seçili kart marka renginde kenarlık, hafif zemin ve sağ üstte ✓. |
+| Aç/kapa | Çıplak switch yerine **switch kartı** (`.toggle-card`): solda başlık + açıklama, sağda `UiSwitch`. |
+| Düzenleme modunda salt okunur bilgi | Formun en üstünde ince bir bilgi çubuğu (durum etiketi, sayaçlar). |
+| Butonlar | En altta sağda `İptal` (`btn-gradient-dark`) + `Kaydet`/`Güncelle` (`btn-gradient-primary`); mobilde alt alta, tam genişlik. |
+| Renkler | Sabit hex yok: tema değişkenleri (`--color-*`, `--theme-gradient`) kullanılır, böylece koyu tema ve marka rengi (data.json) kendiliğinden çalışır. |
+
+### Örnek form
 
 ```vue
 <template>
-  <UiForm ref="formRef" @submit="handleSubmit">
-    <div class="ui-container">
-      <div class="ui-row">
-        <div class="ui-col ui-col-12">
-          <UiTextField
-            v-model="formData.name"
-            label="Ürün Adı"
-            variant="outlined"
-            :disabled="loading"
-            prepend-inner-icon="mdi-package-variant"
-            density="comfortable"
-            hide-details="auto"
-            :rules="[rules.required, rules.minLength(2)]"
-            class="modern-input"
-          />
+  <UiForm ref="formRef" v-model="isFormValid" class="section-form" @submit="handleSubmit">
+    <!-- Bölüm 1: Temel Bilgiler -->
+    <section class="form-section">
+      <div class="section-header">
+        <div class="section-icon"><UiIcon icon="mdi-information-outline" :size="20" /></div>
+        <div>
+          <h3 class="section-title">Temel Bilgiler</h3>
+          <p class="section-subtitle">Ürünün adı, kategorisi ve açıklaması</p>
         </div>
       </div>
 
-      <div class="ui-row">
-        <div class="ui-col ui-col-12">
-          <UiTextField multiline
-            v-model="formData.description"
-            label="Açıklama"
-            variant="outlined"
-            :disabled="loading"
-            rows="3"
-            auto-grow
-            prepend-inner-icon="mdi-text"
-            density="comfortable"
-            hide-details="auto"
-            :rules="[rules.maxLength(500)]"
-            class="modern-input"
-          />
-        </div>
-      </div>
+      <div class="section-body">
+        <UiTextField
+          v-model="formData.name"
+          label="Ürün Adı"
+          required
+          placeholder="Ürün adını girin"
+          prepend-inner-icon="mdi-package-variant"
+          :disabled="loading"
+          hide-details="auto"
+          :rules="[rules.required, rules.minLength(2)]"
+        />
 
-      <div class="ui-row">
-        <div class="ui-col ui-col-12 ui-col-sm-6">
-          <UiTextField
-            v-model.number="formData.price"
-            label="Fiyat"
-            type="number"
-            variant="outlined"
-            :disabled="loading"
-            prepend-inner-icon="mdi-currency-try"
-            density="comfortable"
-            hide-details="auto"
-            :rules="[rules.required]"
-            class="modern-input"
-          />
-        </div>
-        <div class="ui-col ui-col-12 ui-col-sm-6">
+        <div class="form-grid">
           <UiSelect
             v-model="formData.categoryId"
             :items="categories"
             item-title="name"
             item-value="id"
             label="Kategori"
-            variant="outlined"
+            required
+            placeholder="Kategori seçin"
+            prepend-inner-icon="mdi-shape-outline"
             :disabled="loading"
-            prepend-inner-icon="mdi-shape"
-            density="comfortable"
             hide-details="auto"
             :rules="[rules.required]"
-            class="modern-input"
           />
+          <UiTextField
+            v-model.number="formData.price"
+            label="Fiyat (isteğe bağlı)"
+            type="number"
+            placeholder="0,00"
+            prepend-inner-icon="mdi-currency-try"
+            :disabled="loading"
+            hide-details="auto"
+          />
+        </div>
+
+        <UiTextField
+          v-model="formData.description"
+          label="Açıklama (isteğe bağlı)"
+          multiline
+          rows="2"
+          auto-grow
+          placeholder="Ürün hakkında kısa açıklama..."
+          :disabled="loading"
+          hide-details="auto"
+          :rules="[rules.maxLength(500)]"
+        />
+      </div>
+    </section>
+
+    <!-- Bölüm 2: Ayarlar -->
+    <section class="form-section">
+      <div class="section-header">
+        <div class="section-icon section-icon--success"><UiIcon icon="mdi-tune-variant" :size="20" /></div>
+        <div>
+          <h3 class="section-title">Ayarlar</h3>
+          <p class="section-subtitle">Ürünün türü ve yayın durumu</p>
         </div>
       </div>
 
-      <div class="ui-row">
-        <div class="ui-col ui-col-12">
-          <UiSwitch
-            v-model="formData.isActive"
-            label="Aktif"
-            color="primary"
-            :disabled="loading"
-            hide-details
-          />
+      <div class="section-body">
+        <div>
+          <div class="field-label">Tür <span class="req">*</span></div>
+          <div class="card-radio-grid">
+            <button
+              v-for="opt in typeOptions"
+              :key="opt.value"
+              type="button"
+              class="card-radio"
+              :class="{ selected: formData.type === opt.value }"
+              :disabled="loading"
+              @click="formData.type = opt.value"
+            >
+              <span class="card-radio-icon"><UiIcon :icon="opt.icon" :size="22" /></span>
+              <span class="card-radio-info">
+                <span class="card-radio-title">{{ opt.label }}</span>
+                <span class="card-radio-desc">{{ opt.description }}</span>
+              </span>
+              <UiIcon v-if="formData.type === opt.value" icon="mdi-check-circle" :size="20" class="card-radio-check" />
+            </button>
+          </div>
+        </div>
+
+        <div class="toggle-card">
+          <div>
+            <div class="toggle-card-title">Aktif</div>
+            <div class="toggle-card-sub">Kapalıysa ürün listede görünmez</div>
+          </div>
+          <UiSwitch v-model="formData.isActive" color="primary" hide-details :disabled="loading" />
         </div>
       </div>
-    </div>
+    </section>
 
     <div class="form-actions">
-      <UiBtn
-        variant="outlined"
-        size="large"
-        @click="$emit('cancel')"
-        :disabled="loading"
-        class="btn-gradient-dark"
-      >
+      <UiBtn variant="outlined" size="large" class="btn-gradient-dark" :disabled="loading" @click="$emit('cancel')">
         İptal
       </UiBtn>
-
-      <UiBtn
-        size="large"
-        :loading="loading"
-        :disabled="loading || !isFormValid"
-        type="submit"
-        class="btn-gradient-primary"
-      >
+      <UiBtn size="large" type="submit" class="btn-gradient-primary" :loading="loading" :disabled="loading || !isFormValid">
         {{ product ? 'Güncelle' : 'Kaydet' }}
       </UiBtn>
     </div>
@@ -348,7 +402,7 @@ export const useProducts = () => {
 
 <script setup lang="ts">
 import type { Product, CreateProductRequest, UpdateProductRequest } from '~/types'
-import { ref, reactive, watch, computed } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
 const props = defineProps<{
   product?: Product | null
@@ -364,60 +418,127 @@ const emit = defineEmits<{
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()
-const formData = reactive<CreateProductRequest>({
-  name: '',
-  description: '',
-  price: 0,
-  categoryId: 0 as number,
-  isActive: true as any   // CreateProductRequest'te yoksa Update için
-})
+const isFormValid = ref(false)
 
-const isFormValid = computed(() => formRef.value?.isValid ?? false)
+const typeOptions = [
+  { value: 'physical', label: 'Fiziksel', description: 'Kargo ile gönderilir', icon: 'mdi-package-variant-closed' },
+  { value: 'digital', label: 'Dijital', description: 'İndirme bağlantısı verilir', icon: 'mdi-download-outline' },
+]
+
+const emptyForm = () => ({ name: '', description: '', price: 0, categoryId: null as number | null, type: 'physical', isActive: true })
+const formData = reactive(emptyForm())
 
 watch(
   () => props.product,
-  (newVal) => {
-    if (newVal) {
-      Object.assign(formData, {
-        name: newVal.name || '',
-        description: newVal.description || '',
-        price: newVal.price ?? 0,
-        categoryId: newVal.categoryId ?? 0,
-        isActive: newVal.isActive ?? true,
-      })
-    } else {
-      Object.assign(formData, {
-        name: '',
-        description: '',
-        price: 0,
-        categoryId: 0,
-        isActive: true,
-      })
-    }
-  },
+  (p) => Object.assign(formData, p
+    ? { name: p.name || '', description: p.description || '', price: p.price ?? 0, categoryId: p.categoryId ?? null, type: p.type ?? 'physical', isActive: p.isActive ?? true }
+    : emptyForm()),
   { immediate: true }
 )
 
+// UiForm "submit"i önce validate() çalıştırıp yayar; yine de geçersizse gönderme
 const handleSubmit = async () => {
-  const { valid } = await formRef.value?.validate()
+  const { valid } = await formRef.value.validate()
   if (!valid) return
-
-  const submitData = {
-    name: formData.name,
-    description: formData.description || undefined,
-    price: formData.price,
-    categoryId: formData.categoryId,
-    isActive: formData.isActive,
-  }
-
-  if (props.product) {
-    emit('submit', { ...submitData, id: props.product.id } as UpdateProductRequest)
-  } else {
-    emit('submit', submitData as CreateProductRequest)
-  }
+  const data = { ...formData, description: formData.description || undefined }
+  emit('submit', props.product ? { ...data, id: props.product.id } as UpdateProductRequest : data as CreateProductRequest)
 }
 </script>
 ```
+
+### Stiller
+
+Aşağıdaki sınıflar ortaktır: ilk yeni modül yazılırken **bir kez** `assets/css/global-admin.css`'e eklenir,
+sonraki formlar yalnızca sınıfları kullanır (forma kopyalanmaz). Değerler Dernify'daki reklam formundan
+alınmış, renkler tema değişkenlerine çevrilmiştir.
+
+```css
+/* ── Bölümlü form (yeni modül formları) ── */
+.section-form { display: flex; flex-direction: column; gap: 18px; padding: 16px 20px 8px; }
+
+.form-section {
+  background: rgb(var(--color-surface-container-lowest));
+  border: 1px solid rgb(var(--color-outline-variant) / 0.6);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s;
+}
+.form-section:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); }
+
+.form-section .section-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgb(var(--color-surface-container-low)) 0%, rgb(var(--color-surface-container)) 100%);
+  border-bottom: 1px solid rgb(var(--color-outline-variant) / 0.6);
+}
+.form-section .section-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #fff;
+  background: var(--theme-gradient, rgb(var(--color-brand)));
+  box-shadow: 0 4px 10px rgb(var(--color-brand) / 0.25);
+}
+.form-section .section-icon--info { background: linear-gradient(135deg, #0ea5e9, #2563eb); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); }
+.form-section .section-icon--success { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
+.form-section .section-title { margin: 0; font-size: 0.95rem; font-weight: 700; line-height: 1.2; color: rgb(var(--color-on-surface)); }
+.form-section .section-subtitle { margin: 2px 0 0; font-size: 0.78rem; line-height: 1.3; color: rgb(var(--color-on-surface-variant)); }
+.form-section .section-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Vurgu rengi (ikon, seçili kart) */
+.section-form { --fs-accent: rgb(var(--color-brand)); }
+
+/* Bölüm içindeki alanlar: hafif gri zemin, marka renginde ikon (Dernify reklam formu) */
+.form-section .ui-field.ui-field { --ui-field-bg: rgb(var(--color-surface-container-low)); }
+.form-section .ui-field.ui-field .ui-field__icon--prepend { color: var(--fs-accent); opacity: 1; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.field-label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: rgb(var(--color-on-surface) / 0.85); }
+.field-label .req { color: rgb(var(--color-error)); }
+.field-label .opt { font-weight: 400; font-size: 12px; color: rgb(var(--color-on-surface-variant)); }
+
+/* Kart seçici (2–4 seçenek) */
+.card-radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.card-radio {
+  position: relative; display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 16px; text-align: left; cursor: pointer; font: inherit;
+  background: rgb(var(--color-surface-container-lowest));
+  border: 2px solid rgb(var(--color-outline-variant) / 0.6); border-radius: 12px;
+  transition: all 0.18s;
+}
+.card-radio:hover { border-color: rgb(var(--color-outline-variant)); background: rgb(var(--color-surface-container-low)); }
+.card-radio.selected {
+  border-color: var(--fs-accent);
+  background: rgb(var(--color-brand) / 0.06);
+  box-shadow: 0 0 0 3px rgb(var(--color-brand) / 0.12);
+}
+.card-radio:disabled { opacity: 0.6; cursor: not-allowed; }
+.card-radio-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgb(var(--color-surface-container)); color: rgb(var(--color-on-surface-variant));
+}
+.card-radio.selected .card-radio-icon { background: rgb(var(--color-brand) / 0.12); color: var(--fs-accent); }
+.card-radio-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.card-radio-title { font-size: 0.86rem; font-weight: 600; line-height: 1.2; margin-bottom: 2px; color: rgb(var(--color-on-surface)); }
+.card-radio-desc { font-size: 0.72rem; line-height: 1.4; color: rgb(var(--color-on-surface-variant)); }
+.card-radio-check { position: absolute; top: 10px; right: 10px; color: var(--fs-accent); }
+
+/* Switch kartı (.toggle-card, .toggle-card-title, .toggle-card-sub, --on/--off/--warn) global-admin.css'te hazır; tekrar tanımlama */
+
+@media (max-width: 600px) {
+  .section-form { padding: 12px 14px 8px; gap: 14px; }
+  .form-section .section-header { padding: 14px 16px; }
+  .form-section .section-body { padding: 14px 16px 16px; }
+  .form-grid, .card-radio-grid { grid-template-columns: 1fr; }
+}
+```
+
+> Alanlarda `hide-details="auto"` kullan: hata metni için boşluk yalnızca hata olunca açılır, aralıklar 14px kalır.
+> Renkler: sabit hex yerine `rgb(var(--color-primary))` / `rgb(var(--color-brand))` (ikisi aynı, data.json'daki
+> marka rengi). Koyu temada bu renk otomatik olarak açık tona geçer (`plugins/brand.client.ts`), ayrıca ayar gerekmez.
+> Vue scoped stilde `:global(.dark) .x` yazma: seçicinin ikinci kısmı düşer. Koyu tema kurallarını
+> scoped olmayan bir `<style>` bloğuna `.dark .x` olarak yaz.
 
 **`useValidators` ile mevcut kurallar:**
 
@@ -430,7 +551,8 @@ const handleSubmit = async () => {
 | `rules.password` | Şifre güçlülüğü |
 | `rules.confirmPassword(password)` | Şifre eşleşme |
 
-> Form CSS class'ları (`modern-input`, `btn-gradient-primary`, `btn-gradient-dark`, `form-actions`) `assets/css/global-admin.css` ve `assets/scss/main.scss`'te tanımlıdır — değiştirme.
+> UI kiti: `components/UI/Ui*.vue` (Vuetify kaldırıldı; `v-*` bileşeni yazma). Tüm bileşenlerin canlı
+> örnekleri dev ortamında `/dev/ui-kit` sayfasında.
 
 ---
 
@@ -464,7 +586,16 @@ Eğer detay modal'ı istemiyorsan:
     ]" />
   </div>
 
+  <!-- Liste sayfası başlığı: ikon, başlık, kısa açıklama, toplam kayıt (tablonun kendi başlığı gizlenir) -->
+  <PageHero
+    icon="mdi-package-variant"
+    title="Ürünler"
+    subtitle="Ürünleri görüntüleyin, oluşturun ve yönetin."
+    :count="totalCount"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Ürünler"
@@ -694,7 +825,7 @@ onMounted(async () => {
 
 Eğer kayıt sayısı az ve listeleme tek seferde yapılabilir (1000 kayıttan az):
 - `useCrudOperations`'da `serverSidePagination: false` yap
-- Sayfa template'inden `:server-*` ve `@page-*` event'lerini, `currentPage`/`totalCount` kullanımını çıkar
+- Sayfa template'inden `:server-*` ve `@page-*` event'lerini, `currentPage`/`totalCount` kullanımını çıkar (`PageHero`'da `:count="items.length"`)
 - `useAsyncData` yapma — sadece `onMounted` içinde `await loadItemsData()` çağır
 - `composables/useProducts.ts`'de `getProducts` default `pageSize = 1000` ver
 
@@ -889,6 +1020,7 @@ const {
 | `items` | `any[]` | Listelenecek veri |
 | `columns` | `Column[]` | `{ label, key, sortable?, filterable?, filterType?, width?, formatter? }` |
 | `title` | `string` | Üst başlık |
+| `hide-page-header` | `boolean` | Sayfada `PageHero` varsa tablonun kendi başlığını gizler (arama ve ekle butonu kalır) |
 | `toolbar-icon` | `string` | MDI icon adı |
 | `search-placeholder` | `string` | Arama input placeholder'ı |
 | `add-button-text` | `string` | Ekleme butonu metni |
@@ -922,11 +1054,11 @@ const {
 - [ ] `composables/useProducts.ts` — get/getById/create/update/delete fonksiyonları
 
 ### Bileşenler
-- [ ] `components/Products/ProductForm.vue` — form bileşeni (`product?`, `loading?` prop, `submit`/`cancel` emit)
+- [ ] `components/Products/ProductForm.vue` — form bileşeni (`product?`, `loading?` prop, `submit`/`cancel` emit), **bölümlü görünüm standardına** uygun (ADIM 5)
 - [ ] `components/Products/ProductDetail.vue` — detay bileşeni (opsiyonel)
 
 ### Sayfa
-- [ ] `pages/products/index.vue` — `BaseDataTable` + `useCrudOperations` + drawer'lar
+- [ ] `pages/products/index.vue` — `PageHero` + `BaseDataTable` (`:hide-page-header="true"`) + `useCrudOperations` + drawer'lar
 - [ ] `definePageMeta` ile permission/role tanımlandı
 - [ ] Server-side veya client-side pagination doğru seçildi
 

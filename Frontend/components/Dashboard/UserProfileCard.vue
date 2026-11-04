@@ -51,7 +51,7 @@
       <!-- Action Button -->
       <button
         @click="$router.push('/profile')"
-        class="w-full mt-md py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-all text-body-sm"
+        class="w-full mt-md py-2.5 bg-primary text-on-primary font-bold rounded-[10px] hover:opacity-90 transition-all text-body-sm"
       >
         Profili Düzenle
       </button>

@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-safe"
+    title="Emanetler"
+    subtitle="Size emanet edilen bağış paralarını ve dağıtımlarını izleyin."
+  />
+
   <!-- Özet: açık emanetlerin toplamı -->
   <div class="ui-row !mb-2">
     <div class="ui-col ui-col-12 ui-col-md-4">
@@ -50,6 +56,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Emanetler"

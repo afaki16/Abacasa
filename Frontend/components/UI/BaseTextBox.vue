@@ -40,11 +40,15 @@
         </div>
       </template>
       <template v-if="type == 'password' && !appendInnerIcon" #append-inner>
-        <UiBtn
-          variant="plain"
-          :icon="(isPasswordVisible || showPassword) ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+        <button
+          type="button"
+          tabindex="-1"
+          class="password-eye"
+          :aria-label="(isPasswordVisible || showPassword) ? 'Şifreyi gizle' : 'Şifreyi göster'"
           @click.prevent="togglePssword"
-        />
+        >
+          <UiIcon :icon="(isPasswordVisible || showPassword) ? 'mdi-eye-outline' : 'mdi-eye-off-outline'" :size="16" />
+        </button>
       </template>
       <template v-if="appendImg" #append-inner>
         <Transition name="fade" mode="out-in">
@@ -387,4 +391,18 @@ function checkIfStepValid(step: string) {
 .base-text-box__step--valid { color: rgb(var(--color-primary)); }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+/* Şifre göster/gizle: alan yüksekliğini büyütmeyen küçük ikon butonu */
+.password-eye {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.password-eye:hover { opacity: 1; }
 </style>

@@ -1,20 +1,21 @@
 <template>
   <UiDialog :model-value="modelValue" max-width="440" persistent @update:model-value="$emit('update:modelValue', $event)">
-    <UiCard>
-      <div class="ui-card-title">
-        <div class="flex items-center">
-          <UiIcon icon="mdi-home-plus" class="mr-2" />
-          Yeni hane oluştur
-          <div class="flex-1" />
-          <UiBtn icon="mdi-close" variant="text" size="small" :disabled="isBusy" @click="close" />
+    <UiCard rounded="xl">
+      <div class="dialog-head">
+        <div class="dialog-head__icon"><UiIcon icon="mdi-home-plus-outline" :size="20" /></div>
+        <div class="flex-1">
+          <h3 class="dialog-head__title">Yeni hane oluştur</h3>
+          <p class="dialog-head__sub">Yöneticisi siz olursunuz.</p>
         </div>
+        <UiBtn icon="mdi-close" variant="text" size="small" :disabled="isBusy" @click="close" />
       </div>
 
-      <div class="ui-card-text">
-        <UiForm ref="formRef" @submit="save">
+      <UiForm ref="formRef" @submit="save">
+        <div class="dialog-body">
           <UiTextField
             v-model="name"
             label="Hane adı"
+            placeholder="Örn. Yılmaz ailesi"
             density="compact"
             hide-details="auto"
             counter="100"
@@ -28,12 +29,12 @@
             <div v-for="(e, i) in errors" :key="i">{{ e }}</div>
           </UiAlert>
 
-          <div class="flex justify-end gap-2 mt-4">
-            <UiBtn variant="text" :disabled="isBusy" @click="close">İptal</UiBtn>
-            <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy">Oluştur</UiBtn>
-          </div>
-        </UiForm>
-      </div>
+        </div>
+        <div class="dialog-actions">
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="isBusy" @click="close">İptal</UiBtn>
+          <UiBtn class="btn-gradient-primary" type="submit" :loading="isBusy" :disabled="isBusy">Oluştur</UiBtn>
+        </div>
+      </UiForm>
     </UiCard>
   </UiDialog>
 </template>

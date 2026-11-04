@@ -41,7 +41,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Ara..."
-            class="w-full bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[24px] py-2 pl-10 pr-4 text-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder-on-surface-variant/50 outline-none"
+            class="w-full bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[10px] py-2 pl-10 pr-4 text-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder-on-surface-variant/50 outline-none"
           />
         </div>
       </div>
@@ -53,7 +53,7 @@
           <NuxtLink
             v-if="!item.children && item.to"
             :to="item.to"
-            class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[24px] transition-all"
+            class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[10px] transition-all"
             :class="[
               isActive(item.to)
                 ? 'sidebar-active-pill'
@@ -80,7 +80,7 @@
               v-for="child in item.children"
               :key="child.title"
               :to="child.to"
-              class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[24px] transition-all"
+              class="flex items-center gap-3 mx-4 px-4 py-3 rounded-[10px] transition-all"
               :class="[
                 isActive(child.to)
                   ? 'sidebar-active-pill'
@@ -96,13 +96,14 @@
         </template>
       </nav>
 
-      <!-- Sidebar Footer: User Dropdown + Logout (sabit) -->
+      <!-- Sidebar Footer: User + dropdown (profil, hane, gizlilik, çıkış) -->
       <div class="px-4 py-4 mt-auto border-t border-solid border-outline-variant/[0.12] relative">
         <!-- User Card — Dropdown Trigger -->
-        <div class="relative">
+        <div class="relative user-menu-root">
           <button
+            type="button"
             @click="toggleUserDropdown"
-            class="w-full flex items-center gap-3 rounded-[24px] hover:bg-surface-container-high transition-all"
+            class="w-full flex items-center gap-3 rounded-[10px] hover:bg-surface-container-high transition-all"
             :class="isSidebarOpen ? 'px-2 py-2' : 'justify-center p-2'"
             :title="!isSidebarOpen ? userInfo.name : undefined"
           >
@@ -136,7 +137,7 @@
           >
             <div
               v-if="showUserDropdown"
-              class="user-dropdown-menu absolute bottom-full mb-2 bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[24px] shadow-xl z-50 overflow-hidden"
+              class="user-dropdown-menu absolute bottom-full mb-2 bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[10px] shadow-xl z-50 overflow-hidden"
               :class="isSidebarOpen ? 'left-0 right-0' : 'left-full ml-2 w-48'"
             >
               <NuxtLink
@@ -167,29 +168,18 @@
                 <span class="text-body-sm font-medium">Gizlilik ve koşullar</span>
               </NuxtLink>
 
-              <!-- Backend'deki RequireAdminRole ile aynı: yalnızca SuperAdmin ya da Admin sistem rolü -->
-              <NuxtLink
-                v-if="canSeeSettings"
-                to="/settings"
-                @click="closeUserDropdown"
-                class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
+              <!-- Ayarlar sol menüde (Admin/SuperAdmin); çıkış artık bu menüde -->
+              <button
+                type="button"
+                class="w-full flex items-center gap-3 px-4 py-3 text-error/80 hover:text-error hover:bg-error/10 transition-colors border-t border-solid border-outline-variant/[0.12]"
+                @click="handleLogoutFromMenu"
               >
-                <Icon name="mdi:cog" class="w-5 h-5 text-on-surface-variant" />
-                <span class="text-body-sm font-medium">{{ $t('sidebar.menu.settings') }}</span>
-              </NuxtLink>
+                <Icon name="mdi:logout" class="w-5 h-5 flex-shrink-0" />
+                <span class="text-body-sm font-medium">{{ $t('sidebar.actions.logout') }}</span>
+              </button>
             </div>
           </Transition>
         </div>
-
-        <!-- Logout — Sabit, dropdown'dan bağımsız -->
-        <button
-          @click="handleLogout"
-          class="w-full flex items-center gap-3 mt-2 px-4 py-2 rounded-[24px] text-error/80 hover:text-error hover:bg-error/10 transition-colors"
-          :class="!isSidebarOpen && 'justify-center px-0'"
-        >
-          <Icon name="mdi:logout" class="w-5 h-5 flex-shrink-0" />
-          <span v-if="isSidebarOpen" class="font-body-md">{{ $t('sidebar.actions.logout') }}</span>
-        </button>
       </div>
     </aside>
 
@@ -276,8 +266,6 @@ const userInfo = computed(() => ({
   household: activeTenant.value ? `${activeTenant.value.name} · ${getRoleLabel(activeTenant.value.role)}` : 'Hane yok'
 }))
 
-const canSeeSettings = computed(() => authStore.hasRole('SuperAdmin') || authStore.hasRole('Admin'))
-
 // Yetkiye göre menüleri filtrele; öğesi kalmayan grup tamamen gizlenir
 const visibleMenus = computed(() =>
   filterNavigationByPermissions(
@@ -342,10 +330,14 @@ const closeUserDropdown = () => {
 const handleDocumentClickForUserDropdown = (e: MouseEvent) => {
   const target = e.target as HTMLElement | null
   if (!target) return
-  // Dropdown menüsünün veya trigger butonunun içine tıklanmadıysa kapat
-  if (!target.closest('.user-dropdown-menu') && !target.closest('button')) {
+  if (!target.closest('.user-menu-root')) {
     showUserDropdown.value = false
   }
+}
+
+const handleLogoutFromMenu = async () => {
+  closeUserDropdown()
+  await handleLogout()
 }
 
 // Logout
@@ -374,16 +366,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Active menu item — turuncu gradient pill */
+/* Active menu item — marka renginin hafif tonu (Dernify'daki gibi; renk data.json'daki primary'den gelir) */
 .sidebar-active-pill {
-  background: linear-gradient(90deg, #fea619, #ff8c00);
-  color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(254, 166, 25, 0.3);
+  --pill-accent: rgb(var(--color-brand));
+  background: rgb(var(--color-brand) / 0.1);
+  color: var(--pill-accent) !important;
+  box-shadow: none;
+  border: 1px solid rgb(var(--color-brand) / 0.14);
 }
 
 .sidebar-active-pill :deep(.iconify),
 .sidebar-active-pill span {
-  color: #ffffff !important;
+  color: var(--pill-accent) !important;
 }
 
 /* Custom scrollbar */

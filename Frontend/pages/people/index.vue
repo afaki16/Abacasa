@@ -6,7 +6,15 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-account-heart-outline"
+    title="Kişiler"
+    subtitle="Hanedeki kişileri yönetin."
+    :count="items.length"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Kişiler"

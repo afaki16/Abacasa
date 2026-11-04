@@ -1,91 +1,68 @@
 <template>
   <div class="superadmin-settings">
-
-    <!-- Başlık -->
-    <div class="section-header mb-6">
-      <div class="flex items-center gap-3">
-        <UiAvatar color="deep-purple" variant="tonal" :size="44" rounded="lg">
-          <UiIcon icon="mdi-shield-crown-outline" />
-        </UiAvatar>
+    <!-- İstatistik + tenant filtresi -->
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-tile__icon"><UiIcon icon="mdi-account-group-outline" :size="20" /></div>
         <div>
-          <h2 class="section-title">Sistem Ayarları</h2>
-          <p class="section-desc">Tüm tenant'ları kapsayan global oturum ve kullanıcı yönetimi</p>
+          <div class="stat-tile__val">
+            <UiProgressCircular v-if="loadingCount" indeterminate :size="18" :width="2" />
+            <template v-else>{{ activeUserCount }}</template>
+          </div>
+          <div class="stat-tile__lbl">{{ selectedTenantId ? 'Tenant aktif kullanıcı' : 'Toplam aktif kullanıcı' }}</div>
         </div>
       </div>
-    </div>
-
-    <!-- Stat Kartlar + Tenant Filtresi -->
-    <div class="ui-row ui-row--dense !mb-5">
-      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4">
-        <UiCard class="stat-card" rounded="xl" elevation="0" border>
-          <div class="ui-card-text flex items-center gap-4 !p-5">
-            <UiAvatar color="deep-purple" variant="tonal" :size="52" rounded="lg">
-              <UiIcon icon="mdi-account-group" :size="26" />
-            </UiAvatar>
-            <div>
-              <div class="stat-value">
-                <UiProgressCircular v-if="loadingCount" indeterminate :size="20" :width="2" />
-                <template v-else>{{ activeUserCount }}</template>
-              </div>
-              <div class="stat-label">
-                {{ selectedTenantId ? 'Tenant Aktif Kullanıcı' : 'Toplam Aktif Kullanıcı' }}
-              </div>
-            </div>
-          </div>
-        </UiCard>
+      <div class="stat-tile">
+        <div class="stat-tile__icon"><UiIcon icon="mdi-account-multiple-check-outline" :size="20" /></div>
+        <div>
+          <div class="stat-tile__val">{{ loadingActiveUsers ? '—' : activeUsers.length }}</div>
+          <div class="stat-tile__lbl">Şu an çevrimiçi</div>
+        </div>
       </div>
-
-      <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-4" v-if="tenants.length">
-        <UiCard rounded="xl" elevation="0" border height="100%">
-          <div class="ui-card-text flex items-center !p-4" style="height:100%">
-            <UiSelect
-              v-model="selectedTenantId"
-              :items="tenantOptions"
-              item-title="label"
-              item-value="value"
-              label="Tenant Filtresi"
-              clearable
-              hide-details
-              density="comfortable"
-              prepend-inner-icon="mdi-domain"
-              @update:model-value="onTenantChange"
-            />
-          </div>
-        </UiCard>
+      <div v-if="tenants.length" class="stat-tile stat-tile--filter">
+        <UiSelect
+          v-model="selectedTenantId"
+          :items="tenantOptions"
+          item-title="label"
+          item-value="value"
+          label="Tenant filtresi"
+          clearable
+          hide-details
+          density="comfortable"
+          prepend-inner-icon="mdi-domain"
+          class="w-full"
+          @update:model-value="onTenantChange"
+        />
       </div>
     </div>
 
     <!-- Çevrimiçi Kullanıcılar -->
-    <UiCard rounded="xl" elevation="0" border class="mb-5">
-      <div class="ui-card-title !p-5">
-        <div class="flex items-center flex-wrap gap-2">
-        <div class="flex items-center gap-2">
-          <UiIcon icon="mdi-account-multiple-check-outline" color="deep-purple" />
-          <span class="table-title">Şu An Çevrimiçi</span>
-          <UiChip v-if="selectedTenantId" size="x-small" color="deep-purple" variant="tonal">
-            {{ selectedTenantLabel }}
-          </UiChip>
-        </div>
-        <div class="flex-1" />
-        <UiBtn
-          size="small"
-          variant="text"
-          prepend-icon="mdi-refresh"
-          :loading="loadingActiveUsers"
-          @click="loadActiveUsers"
-        >
-          Yenile
-        </UiBtn>
+    <div class="panel-card">
+      <div class="panel-card__header">
+        <div class="panel-card__icon"><UiIcon icon="mdi-account-multiple-check-outline" :size="16" /></div>
+        <span>Şu An Çevrimiçi</span>
+        <span v-if="selectedTenantId" class="panel-card__badge">{{ selectedTenantLabel }}</span>
+        <div class="panel-card__actions">
+          <UiBtn
+            size="small"
+            variant="text"
+            color="primary"
+            prepend-icon="mdi-refresh"
+            :loading="loadingActiveUsers"
+            @click="loadActiveUsers"
+          >
+            Yenile
+          </UiBtn>
         </div>
       </div>
-      <hr class="ui-divider" />
-      <div class="ui-card-text !p-0">
-        <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 px-5 pt-4 pb-2">
-          En az bir geçerli oturumu olan kullanıcılar.
-          {{ selectedTenantId ? 'Seçili tenant filtrelenmiş.' : 'Tüm tenant\'lar gösteriliyor.' }}
-        </p>
-        <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="deep-purple" />
-        <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table"><table class="ui-table ui-table--comfortable">
+      <div class="panel-card__divider" />
+      <p class="panel-card__hint px-5 pt-4">
+        En az bir geçerli oturumu olan kullanıcılar.
+        {{ selectedTenantId ? 'Seçili tenant filtrelenmiş.' : 'Tüm tenant\'lar gösteriliyor.' }}
+      </p>
+      <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="primary" />
+      <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table">
+        <table class="ui-table ui-table--comfortable soft-table">
           <thead>
             <tr>
               <th>Kullanıcı</th>
@@ -97,53 +74,44 @@
           <tbody>
             <tr v-for="row in activeUsers" :key="row.userId + '-' + (row.tenantId ?? 'x')">
               <td>
-                <div class="flex items-center gap-3 py-1">
-                  <UiAvatar color="deep-purple" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-bold">
+                <div class="user-cell">
+                  <UiAvatar color="primary" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal font-bold">
                     {{ initials(row.fullName) }}
                   </UiAvatar>
-                  <div>
-                    <div class="font-medium">{{ row.fullName }}</div>
-                    <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ row.email }}</div>
+                  <div class="min-w-0">
+                    <div class="user-cell__name">{{ row.fullName }}</div>
+                    <div class="user-cell__mail">{{ row.email }}</div>
                   </div>
                 </div>
               </td>
               <td>
-                <UiChip size="small" variant="tonal" color="grey">
-                  <UiIcon icon="mdi-domain" start :size="12" />
+                <span class="tenant-cell">
+                  <UiIcon icon="mdi-domain" :size="16" />
                   {{ row.tenantName || '—' }}
-                </UiChip>
+                </span>
               </td>
-              <td>
-                <UiChip size="small" color="success" variant="tonal">
-                  <UiIcon icon="mdi-circle" start :size="12" />
-                  {{ row.activeSessionCount }} oturum
-                </UiChip>
-              </td>
-              <td class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ formatActivity(row.lastActivityAt) }}</td>
+              <td><span class="status-pill">{{ row.activeSessionCount }} oturum</span></td>
+              <td class="muted-cell">{{ formatActivity(row.lastActivityAt) }}</td>
             </tr>
           </tbody>
-        </table></div>
-        <div v-if="!loadingActiveUsers && activeUsers.length === 0" class="empty-table p-8 text-center">
-          <UiIcon icon="mdi-account-off-outline" :size="40" color="grey-lighten-1" />
-          <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-2">Şu anda çevrimiçi kullanıcı yok.</p>
-        </div>
+        </table>
       </div>
-    </UiCard>
+      <div v-if="!loadingActiveUsers && activeUsers.length === 0" class="empty-table">
+        <UiIcon icon="mdi-account-off-outline" :size="32" />
+        <p>Şu anda çevrimiçi kullanıcı yok.</p>
+      </div>
+    </div>
 
     <!-- Uzaktan Kullanıcı Çıkışı -->
-    <UiCard rounded="xl" elevation="0" border>
-      <div class="ui-card-title !p-5">
-        <div class="flex items-center gap-2">
-        <UiIcon icon="mdi-account-off-outline" color="error" />
-        <span class="table-title">Uzaktan Kullanıcı Çıkışı</span>
-        </div>
+    <div class="panel-card">
+      <div class="panel-card__header">
+        <div class="panel-card__icon panel-card__icon--danger"><UiIcon icon="mdi-account-off-outline" :size="16" /></div>
+        <span>Uzaktan Kullanıcı Çıkışı</span>
       </div>
-      <hr class="ui-divider" />
-      <div class="ui-card-text !p-5">
-        <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-4">
-          Herhangi bir kullanıcıyı tüm cihazlarından çıkış yaptırabilirsiniz.
-        </p>
-        <div class="flex items-start gap-3 flex-wrap">
+      <div class="panel-card__divider" />
+      <div class="panel-card__body">
+        <p class="panel-card__hint">Herhangi bir kullanıcıyı tüm cihazlarından çıkış yaptırabilirsiniz.</p>
+        <div class="revoke-row">
           <UiSelect autocomplete
             v-model="selectedUser"
             :items="users"
@@ -152,15 +120,16 @@
             :filter-keys="['fullName', 'email']"
             label="Kullanıcı seçin"
             placeholder="İsim veya e-posta ile ara..."
+            prepend-inner-icon="mdi-account-search-outline"
             :loading="loadingUsers"
             clearable
             hide-details
             density="comfortable"
-            style="min-width: 280px; flex: 1"
+            class="revoke-select"
           >
             <template #item="{ item }">
               <div class="flex items-center gap-4 min-w-0">
-                <UiAvatar color="deep-purple" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-bold shrink-0">
+                <UiAvatar color="primary" variant="tonal" :size="32" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal font-bold flex-shrink-0">
                   {{ initials(item.fullName) }}
                 </UiAvatar>
                 <div class="min-w-0">
@@ -172,18 +141,17 @@
           </UiSelect>
           <UiBtn
             color="error"
-            variant="tonal"
             :disabled="!selectedUser"
             :loading="revoking"
             prepend-icon="mdi-logout"
+            class="revoke-btn"
             @click="revokeSessions"
           >
             Çıkış Yaptır
           </UiBtn>
         </div>
       </div>
-    </UiCard>
-
+    </div>
   </div>
 </template>
 
@@ -275,66 +243,30 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.superadmin-settings {
-  max-width: 960px;
-}
-
-.section-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: rgb(var(--color-on-surface));
-  margin: 0;
-}
-
-.section-desc {
-  font-size: 0.85rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin: 0;
-}
-
-.stat-card {
-  transition: box-shadow 0.2s;
-}
-.stat-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-}
-
-.stat-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: rgb(var(--color-on-surface));
-  line-height: 1.2;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-top: 2px;
-}
-
-.table-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.online-table :deep(th) {
-  font-weight: 600;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgb(var(--color-on-surface-variant)) !important;
-  background: rgb(var(--color-surface-variant));
-}
-
-.online-table :deep(tr:hover td) {
-  background: rgba(103, 58, 183, 0.08);
-}
+.user-cell { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+.user-cell__name { font-weight: 600; font-size: 0.875rem; color: rgb(var(--color-on-surface)); }
+.user-cell__mail { font-size: 0.75rem; color: rgb(var(--color-on-surface-variant)); }
+.muted-cell { font-size: 0.8125rem; color: rgb(var(--color-on-surface-variant)); }
+.min-w-0 { min-width: 0; }
 
 .empty-table {
-  min-height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 24px;
+  font-size: 0.85rem;
+  color: rgb(var(--color-on-surface-variant));
 }
+.empty-table p { margin: 0; }
+
+/* Seçici + buton aynı satırda, buton alanın alt çizgisine hizalı */
+.revoke-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.revoke-select { flex: 1; min-width: 260px; }
+.revoke-btn { height: 42px !important; border-radius: 10px !important; padding: 0 18px !important; }
+.tenant-cell { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: rgb(var(--color-on-surface-variant)); }
+.stat-tile--filter { padding: 8px 12px; }
+.w-full { width: 100%; }
 </style>

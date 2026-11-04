@@ -37,6 +37,7 @@
           <UiTextField
             v-model="formData.description"
             label="Açıklama"
+            placeholder="Örn. Haftalık market alışverişi"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"

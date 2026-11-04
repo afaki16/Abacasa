@@ -6,7 +6,15 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-credit-card-multiple-outline"
+    title="Ödeme araçları"
+    subtitle="Kart, hesap ve nakit gibi ödeme araçlarını yönetin."
+    :count="items.length"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Ödeme araçları"

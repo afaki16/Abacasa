@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Tenant Adı"
+            placeholder="Tenant adını girin"
             :disabled="loading"
             prepend-inner-icon="mdi-domain"
             density="comfortable"
@@ -21,6 +22,7 @@
           <UiTextField
             v-model="formData.domain"
             label="Domain"
+            placeholder="ornek-tenant"
             :disabled="loading"
             prepend-inner-icon="mdi-web"
             density="comfortable"
@@ -36,6 +38,7 @@
           <UiTextField multiline
             v-model="formData.description"
             label="Açıklama"
+            placeholder="Tenant hakkında kısa açıklama"
             :disabled="loading"
             rows="3"
             auto-grow
@@ -53,6 +56,7 @@
           <UiTextField
             v-model="formData.contactEmail"
             label="İletişim E-postası"
+            placeholder="iletisim@ornek.com"
             :disabled="loading"
             prepend-inner-icon="mdi-email"
             density="comfortable"
@@ -66,6 +70,7 @@
           <UiTextField
             v-model="formData.contactPhone"
             label="İletişim Telefonu"
+            placeholder="0212 000 00 00"
             :disabled="loading"
             prepend-inner-icon="mdi-phone"
             density="comfortable"

@@ -70,15 +70,20 @@
   <UiCard v-if="canUpdateHousehold" elevation="0" border class="mb-6">
     <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Modüller</div>
     <div class="ui-card-text">
-      <UiSwitch
-        :model-value="donationExtras"
-        color="primary"
-        hide-details
-        :disabled="savingModules"
-        label="Bağış hedefleri ve emanetler"
-        @update:model-value="toggleDonationExtras"
-      />
-      <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</div>
+      <div class="toggle-card">
+        <div>
+          <span class="toggle-card-title">Bağış hedefleri ve emanetler</span>
+          <span class="toggle-card-sub">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</span>
+        </div>
+        <UiSwitch
+          :model-value="donationExtras"
+          color="primary"
+          hide-details
+          :disabled="savingModules"
+          aria-label="Bağış hedefleri ve emanetler"
+          @update:model-value="toggleDonationExtras"
+        />
+      </div>
     </div>
   </UiCard>
 
@@ -173,33 +178,46 @@
 
   <!-- Hane adı -->
   <UiDialog v-model="renameDialog" max-width="440">
-    <UiCard>
-      <div class="ui-card-title">Hane adını düzenle</div>
-      <div class="ui-card-text">
-        <UiForm ref="renameFormRef" @submit="saveRename">
+    <UiCard rounded="xl">
+      <div class="dialog-head">
+        <div class="dialog-head__icon"><UiIcon icon="mdi-home-edit-outline" :size="20" /></div>
+        <div>
+          <h3 class="dialog-head__title">Hane adını düzenle</h3>
+          <p class="dialog-head__sub">Hane adı tüm üyelere görünür.</p>
+        </div>
+      </div>
+      <UiForm ref="renameFormRef" @submit="saveRename">
+        <div class="dialog-body">
           <UiTextField
             v-model="renameValue"
             label="Hane adı"
+            placeholder="Örn. Yılmaz ailesi"
             density="compact"
             counter="100"
             autofocus
             :rules="[requiredRule('Hane adı'), maxRule('Hane adı', 100)]"
             :disabled="busy"
           />
-          <div class="flex justify-end gap-2 mt-2">
-            <UiBtn variant="text" :disabled="busy" @click="renameDialog = false">İptal</UiBtn>
-            <UiBtn color="primary" type="submit" :loading="busy">Kaydet</UiBtn>
-          </div>
-        </UiForm>
-      </div>
+        </div>
+        <div class="dialog-actions">
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="renameDialog = false">İptal</UiBtn>
+          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">Kaydet</UiBtn>
+        </div>
+      </UiForm>
     </UiCard>
   </UiDialog>
 
   <!-- Rol ve kişi -->
   <UiDialog v-model="memberDialog" max-width="480">
-    <UiCard v-if="editingMember">
-      <div class="ui-card-title">{{ editingMember.fullName }}</div>
-      <div class="ui-card-text">
+    <UiCard v-if="editingMember" rounded="xl">
+      <div class="dialog-head">
+        <div class="dialog-head__icon"><UiIcon icon="mdi-account-edit-outline" :size="20" /></div>
+        <div>
+          <h3 class="dialog-head__title">{{ editingMember.fullName }}</h3>
+          <p class="dialog-head__sub">Hanedeki rolü ve bağlı kişi</p>
+        </div>
+      </div>
+      <div class="dialog-body">
         <UiSelect v-model="memberRole" :items="roleItems" label="Rol" density="compact" class="mb-3" :disabled="busy" />
         <UiSelect
           v-model="memberPersonId"
@@ -212,23 +230,30 @@
         <UiAlert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
           <div v-for="(e, idx) in dialogErrors" :key="idx">{{ e }}</div>
         </UiAlert>
-        <div class="flex justify-end gap-2 mt-4">
-          <UiBtn variant="text" :disabled="busy" @click="memberDialog = false">İptal</UiBtn>
-          <UiBtn color="primary" :loading="busy" @click="saveMember">Kaydet</UiBtn>
-        </div>
+      </div>
+      <div class="dialog-actions">
+        <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="memberDialog = false">İptal</UiBtn>
+        <UiBtn class="btn-gradient-primary" :loading="busy" @click="saveMember">Kaydet</UiBtn>
       </div>
     </UiCard>
   </UiDialog>
 
   <!-- Davet et -->
   <UiDialog v-model="inviteDialog" max-width="480">
-    <UiCard>
-      <div class="ui-card-title">Davet et</div>
-      <div class="ui-card-text">
-        <UiForm ref="inviteFormRef" @submit="sendInvite">
+    <UiCard rounded="xl">
+      <div class="dialog-head">
+        <div class="dialog-head__icon"><UiIcon icon="mdi-email-plus-outline" :size="20" /></div>
+        <div>
+          <h3 class="dialog-head__title">Davet et</h3>
+          <p class="dialog-head__sub">Davet bağlantısı 7 gün geçerlidir.</p>
+        </div>
+      </div>
+      <UiForm ref="inviteFormRef" @submit="sendInvite">
+        <div class="dialog-body">
           <UiTextField
             v-model="inviteEmail"
             label="E-posta"
+            placeholder="ornek@sirket.com"
             type="email"
             density="compact"
             class="mb-3"
@@ -248,12 +273,12 @@
           <UiAlert v-if="dialogErrors.length" type="error" variant="tonal" density="compact" class="mt-3">
             <div v-for="(e, idx) in dialogErrors" :key="idx">{{ e }}</div>
           </UiAlert>
-          <div class="flex justify-end gap-2 mt-4">
-            <UiBtn variant="text" :disabled="busy" @click="inviteDialog = false">İptal</UiBtn>
-            <UiBtn color="primary" type="submit" :loading="busy">Gönder</UiBtn>
-          </div>
-        </UiForm>
-      </div>
+        </div>
+        <div class="dialog-actions">
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="inviteDialog = false">İptal</UiBtn>
+          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">Gönder</UiBtn>
+        </div>
+      </UiForm>
     </UiCard>
   </UiDialog>
   <ConfirmDialog

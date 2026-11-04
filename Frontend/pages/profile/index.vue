@@ -7,67 +7,40 @@
     </div>
 
     <!-- ═══════════════ HERO ═══════════════ -->
-    <UiCard class="hero-card mb-6" rounded="xl" elevation="0" border>
-      <!-- Gradient banner with decorative blobs -->
+    <div class="page-hero">
       <div class="hero-banner">
-        <div class="blob blob-1" />
-        <div class="blob blob-2" />
-        <div class="blob blob-3" />
-      </div>
-
-      <div class="ui-card-text hero-body !pt-0 !px-6 !pb-0">
-        <div class="hero-top">
-          <!-- Avatar -->
-          <div class="avatar-wrap">
-            <ProfilePhotoEditor
-              :url="user?.profileImageUrl"
-              :initials="initials"
-              :size="108"
-              class="profile-avatar"
-            />
-            <span class="online-dot" />
-          </div>
-
-          <!-- Name & email -->
-          <div class="hero-meta">
-            <h1 class="profile-name">{{ user?.fullName }}</h1>
-            <p class="profile-email !mt-1">
-              <UiIcon icon="mdi-email-outline" :size="13" class="me-1" />
-              {{ user?.email }}
-            </p>
-          </div>
-
-          <!-- Status chip -->
-          <UiChip
-            class="hero-status ml-auto"
-            :color="statusColor"
-            variant="tonal"
-            size="small"
-            :prepend-icon="
-              statusColor === 'success'
-                ? 'mdi-check-circle-outline'
-                : 'mdi-alert-circle-outline'
-            "
-          >
-            {{ statusLabel }}
-          </UiChip>
+        <div class="hero-status" :class="`status-${statusColor}`">
+          <UiIcon
+            :icon="statusColor === 'success' ? 'mdi-check-circle-outline' : 'mdi-alert-circle-outline'"
+            :size="13"
+          />
+          {{ statusLabel }}
         </div>
       </div>
 
-      <!-- Stats strip -->
+      <!-- Avatar kapak sınırının üstüne taşar, isim/e-posta hemen yanında -->
+      <div class="hero-body">
+        <div class="avatar-wrap">
+          <ProfilePhotoEditor
+            :url="user?.profileImageUrl"
+            :initials="initials"
+            :size="80"
+            class="profile-avatar"
+          />
+          <span class="online-dot" />
+        </div>
+        <div class="hero-meta">
+          <h1 class="hero-name">{{ user?.fullName || "—" }}</h1>
+          <p class="hero-email">
+            <UiIcon icon="mdi-email-outline" :size="13" />
+            {{ user?.email }}
+          </p>
+        </div>
+      </div>
+
       <div class="stats-strip">
         <div class="stat-pill">
-          <UiIcon icon="mdi-monitor-multiple" :size="16" color="primary" />
-          <div>
-            <div class="stat-val">
-              {{ loadingSessions ? "—" : activeSessions.length }}
-            </div>
-            <div class="stat-lbl">Aktif Oturum</div>
-          </div>
-        </div>
-        <div class="stat-sep" />
-        <div class="stat-pill">
-          <UiIcon icon="mdi-calendar-account-outline" :size="16" color="primary" />
+          <UiIcon icon="mdi-calendar-account-outline" :size="18" class="stat-icon" />
           <div>
             <div class="stat-val">{{ memberDays }}</div>
             <div class="stat-lbl">Gün Üye</div>
@@ -75,455 +48,367 @@
         </div>
         <div class="stat-sep" />
         <div class="stat-pill">
-          <UiIcon icon="mdi-login-variant" :size="16" color="primary" />
+          <UiIcon icon="mdi-login-variant" :size="18" class="stat-icon" />
           <div>
-            <div class="stat-val">
-              {{ user?.lastLoginDate ? lastLoginShort : "—" }}
-            </div>
+            <div class="stat-val">{{ lastLoginShort }}</div>
             <div class="stat-lbl">Son Giriş</div>
           </div>
         </div>
       </div>
-    </UiCard>
+    </div>
 
-    <!-- ═══════════════ MAIN ═══════════════ -->
-    <div class="ui-row">
-      <!-- ── Left: Account Info ── -->
-      <div class="ui-col ui-col-12 ui-col-md-4">
-        <UiCard rounded="xl" elevation="0" border height="100%">
-          <div class="ui-card-title section-title !p-5">
-            <UiAvatar
-              color="primary"
-              variant="tonal"
-              :size="32"
-              rounded="lg"
-              class="mr-3"
-            >
-              <UiIcon icon="mdi-account-circle-outline" :size="16" />
-            </UiAvatar>
-            Hesap Bilgileri
-            <div class="flex-1" />
-            <UiBtn
-              size="small"
-              variant="text"
-              color="primary"
-              prepend-icon="mdi-pencil-outline"
-              @click="openProfileDialog"
-            >
-              Düzenle
-            </UiBtn>
+    <!-- ═══════════════ TABS ═══════════════ -->
+    <nav class="profile-tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.key"
+        type="button"
+        class="profile-tab"
+        :class="{ 'profile-tab--active': activeTab === tab.key }"
+        @click="activeTab = tab.key"
+      >
+        <UiIcon :icon="tab.icon" :size="16" />
+        {{ tab.label }}
+      </button>
+    </nav>
+
+    <!-- ═══════════════ TAB: PROFİL ═══════════════ -->
+    <div v-if="activeTab === 'profile'" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><UiIcon icon="mdi-account-circle-outline" :size="16" /></div>
+          <span>Hesap Bilgileri</span>
+          <button type="button" class="edit-btn" @click="openProfileDialog">
+            <UiIcon icon="mdi-pencil-outline" :size="14" /> Düzenle
+          </button>
+        </div>
+        <div class="card-divider" />
+
+        <div class="info-grid">
+          <div class="info-tile">
+            <span class="tile-lbl">Ad</span>
+            <span class="tile-val">{{ user?.firstName || "—" }}</span>
           </div>
-          <hr class="ui-divider" />
+          <div class="info-tile">
+            <span class="tile-lbl">Soyad</span>
+            <span class="tile-val">{{ user?.lastName || "—" }}</span>
+          </div>
 
-          <div class="ui-card-text !p-4">
-            <div class="info-grid">
-              <div class="info-tile">
-                <span class="tile-lbl">Ad</span>
-                <span class="tile-val">{{ user?.firstName || "—" }}</span>
-              </div>
-
-              <div class="info-tile">
-                <span class="tile-lbl">Soyad</span>
-                <span class="tile-val">{{ user?.lastName || "—" }}</span>
-              </div>
-
-              <div class="info-tile info-tile--wide">
-                <span class="tile-lbl">E-posta</span>
-                <div class="flex items-center gap-1">
-                  <span class="tile-val">{{ user?.email }}</span>
-                  <UiTooltip
-                    :text="user?.emailConfirmed ? 'Doğrulandı' : 'Doğrulanmadı'"
-                    location="top"
-                  >
-                    <UiIcon
-                      :icon="user?.emailConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'"
-                      :size="14"
-                      :color="user?.emailConfirmed ? 'success' : 'warning'"
-                    />
-                  </UiTooltip>
-                  <UiBtn
-                    size="x-small"
-                    variant="text"
-                    color="primary"
-                    class="ml-auto"
-                    @click="openEmailDialog"
-                  >
-                    Değiştir
-                  </UiBtn>
-                </div>
-              </div>
-
-              <div v-if="user?.phoneNumber" class="info-tile info-tile--wide">
-                <span class="tile-lbl">Telefon</span>
-                <div class="flex items-center gap-1">
-                  <span class="tile-val">{{ user.phoneNumber }}</span>
-                  <UiTooltip
-                    :text="user?.phoneConfirmed ? 'Doğrulandı' : 'Doğrulanmadı'"
-                    location="top"
-                  >
-                    <UiIcon
-                      :icon="user?.phoneConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'"
-                      :size="14"
-                      :color="user?.phoneConfirmed ? 'success' : 'warning'"
-                    />
-                  </UiTooltip>
-                </div>
-              </div>
-
-              <div class="info-tile">
-                <span class="tile-lbl">Kayıt Tarihi</span>
-                <span class="tile-val">{{
-                  user?.createdDate ? dateFormat(user.createdDate) : "—"
-                }}</span>
-              </div>
-
-              <div class="info-tile">
-                <span class="tile-lbl">Son Giriş</span>
-                <span class="tile-val tile-val--sm">{{
-                  user?.lastLoginDate ? dateTimeFormat(user.lastLoginDate) : "—"
-                }}</span>
-              </div>
+          <div class="info-tile info-tile--wide">
+            <span class="tile-lbl">E-posta</span>
+            <div class="tile-val-row">
+              <span class="tile-val">{{ user?.email }}</span>
+              <span class="confirm-badge" :class="user?.emailConfirmed ? 'confirm-ok' : 'confirm-warn'">
+                <UiIcon :icon="user?.emailConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'" :size="12" />
+                {{ user?.emailConfirmed ? "Doğrulandı" : "Doğrulanmadı" }}
+              </span>
+              <button type="button" class="link-inline-btn" @click="openEmailDialog">
+                E-postayı değiştir
+              </button>
             </div>
           </div>
-        </UiCard>
-      </div>
 
-      <!-- ── Right: Sessions ── -->
-      <div class="ui-col ui-col-12 ui-col-md-8">
-        <UiCard rounded="xl" elevation="0" border>
-          <div class="ui-card-title section-title !p-5">
-            <UiAvatar
-              color="primary"
-              variant="tonal"
-              :size="32"
-              rounded="lg"
-              class="mr-3"
-            >
-              <UiIcon icon="mdi-monitor-multiple" :size="16" />
-            </UiAvatar>
-            <span>Oturumlarım</span>
-            <UiChip
-              v-if="!loadingSessions && activeSessions.length"
-              size="x-small"
-              color="primary"
-              variant="tonal"
-              class="ml-2"
-            >
-              {{ activeSessions.length }} aktif
-            </UiChip>
-            <div class="flex-1" />
-            <UiBtn
-              size="small"
-              variant="text"
-              color="primary"
-              prepend-icon="mdi-refresh"
-              :loading="loadingSessions"
-              @click="loadSessions"
-            >
-              Yenile
-            </UiBtn>
-            <UiBtn
-              v-if="activeSessions.length"
-              size="small"
-              variant="tonal"
-              color="error"
-              prepend-icon="mdi-logout-variant"
-              class="ml-2"
-              :loading="loggingOutAll"
-              @click="confirmLogoutAll = true"
-            >
-              Tümünden Çık
-            </UiBtn>
+          <div class="info-tile info-tile--wide">
+            <span class="tile-lbl">Telefon</span>
+            <div v-if="user?.phoneNumber" class="tile-val-row">
+              <span class="tile-val">{{ user.phoneNumber }}</span>
+              <span class="confirm-badge" :class="user?.phoneConfirmed ? 'confirm-ok' : 'confirm-warn'">
+                <UiIcon :icon="user?.phoneConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'" :size="12" />
+                {{ user?.phoneConfirmed ? "Doğrulandı" : "Doğrulanmadı" }}
+              </span>
+            </div>
+            <span v-else class="tile-val tile-val--muted">Belirtilmemiş</span>
           </div>
-          <hr class="ui-divider" />
 
-          <div class="ui-card-text !p-0">
-            <UiProgressLinear
-              v-if="loadingSessions"
-              indeterminate
-              color="primary"
-            />
-
-            <!-- Empty -->
-            <div
-              v-if="!loadingSessions && !sessions.length"
-              class="empty-state p-10"
-            >
-              <UiAvatar color="grey-lighten-3" :size="64" class="mb-4">
-                <UiIcon icon="mdi-monitor-off" :size="30" color="grey" />
-              </UiAvatar>
-              <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">
-                Aktif oturum bulunamadı.
-              </p>
-            </div>
-
-            <!-- Active sessions -->
-            <div
-              v-if="!loadingSessions && activeSessions.length"
-              class="p-4 flex flex-col gap-2"
-            >
-              <div
-                v-for="session in activeSessions"
-                :key="session.id"
-                class="session-card"
-                :class="{ 'session-card--current': session.isCurrentSession }"
-              >
-                <div
-                  class="session-accent"
-                  :class="{
-                    'session-accent--current': session.isCurrentSession,
-                  }"
-                />
-
-                <UiAvatar
-                  :color="session.isCurrentSession ? 'primary' : 'grey'"
-                  variant="tonal"
-                  :size="44"
-                  rounded="lg"
-                  class="flex-shrink-0"
-                >
-                  <UiIcon :icon="deviceIcon(session.deviceType)" :size="22" />
-                </UiAvatar>
-
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="session-name">{{ session.deviceName }}</span>
-                    <UiChip
-                      v-if="session.isCurrentSession"
-                      size="x-small"
-                      color="primary"
-                      variant="flat"
-                      rounded
-                    >
-                      Bu cihaz
-                    </UiChip>
-                    <UiChip
-                      size="x-small"
-                      color="success"
-                      variant="tonal"
-                      rounded
-                    >
-                      <UiIcon icon="mdi-circle" start :size="9" />
-                      Aktif
-                    </UiChip>
-                  </div>
-                  <div class="session-meta mt-1">
-                    <span>
-                      <UiIcon icon="mdi-ip-network-outline" :size="11" />
-                      {{ session.ipAddress }}
-                    </span>
-                    <span class="mx-1 opacity-30">·</span>
-                    <span>
-                      <UiIcon icon="mdi-calendar-outline" :size="11" />
-                      {{ formatDate(session.createdDate) }}
-                    </span>
-                    <span class="mx-1 opacity-30">·</span>
-                    <span class="text-primary font-medium">
-                      <UiIcon icon="mdi-clock-outline" :size="11" color="success" />
-                      {{ remainingLabel(session) }} kaldı
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Inactive (collapsible) -->
-            <div
-              v-if="!loadingSessions && inactiveSessions.length"
-              class="px-4 pb-4"
-            >
-              <hr class="ui-divider !mb-3" />
-              <div
-                class="history-toggle flex items-center gap-2 mb-3"
-                @click="showHistory = !showHistory"
-              >
-                <UiIcon :icon="showHistory ? 'mdi-chevron-up' : 'mdi-chevron-down'" :size="16" color="grey" />
-                <span class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">
-                  Geçmiş oturumlar ({{ inactiveSessions.length }})
-                </span>
-              </div>
-
-              <div v-if="showHistory" class="flex flex-col gap-2">
-                <div
-                  v-for="session in inactiveSessions"
-                  :key="session.id"
-                  class="session-card session-card--inactive"
-                >
-                  <div class="session-accent session-accent--error" />
-                  <UiAvatar
-                    color="grey"
-                    variant="tonal"
-                    :size="44"
-                    rounded="lg"
-                    class="flex-shrink-0"
-                  >
-                    <UiIcon :icon="deviceIcon(session.deviceType)" :size="22" color="grey" />
-                  </UiAvatar>
-                  <div class="flex-1 min-w-0">
-                    <span class="session-name !text-black/60 dark:!text-white/70">{{
-                      session.deviceName
-                    }}</span>
-                    <div class="session-meta mt-1">
-                      <span>
-                        <UiIcon icon="mdi-ip-network-outline" :size="11" />
-                        {{ session.ipAddress }}
-                      </span>
-                      <span class="mx-1 opacity-30">·</span>
-                      <span>
-                        <UiIcon icon="mdi-calendar-outline" :size="11" />
-                        {{ formatDate(session.createdDate) }}
-                      </span>
-                      <span class="mx-1 opacity-30">·</span>
-                      <span class="text-error">Sona erdi</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="info-tile">
+            <span class="tile-lbl">Kayıt Tarihi</span>
+            <span class="tile-val">{{ user?.createdDate ? dateFormat(user.createdDate) : "—" }}</span>
           </div>
-        </UiCard>
+          <div class="info-tile">
+            <span class="tile-lbl">Son Giriş</span>
+            <span class="tile-val tile-val--sm">{{ user?.lastLoginDate ? dateTimeFormat(user.lastLoginDate) : "—" }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ═══════════════ CHANGE PASSWORD ═══════════════ -->
-    <div class="ui-row !mt-0">
-      <div class="ui-col ui-col-12 ui-col-md-6">
-        <UiCard rounded="xl" elevation="0" border>
-          <div class="ui-card-title section-title !p-5">
-            <UiAvatar
-              color="primary"
-              variant="tonal"
-              :size="32"
-              rounded="lg"
-              class="mr-3"
-            >
-              <UiIcon icon="mdi-lock-reset" :size="16" />
-            </UiAvatar>
-            Şifre Değiştir
-          </div>
-          <hr class="ui-divider" />
+    <!-- ═══════════════ TAB: GÜVENLİK ═══════════════ -->
+    <div v-if="activeTab === 'security'" class="tab-content">
+      <!-- Şifre değiştir -->
+      <div class="card security-card mb-4">
+        <div class="card-header">
+          <div class="card-icon"><UiIcon icon="mdi-lock-reset" :size="16" /></div>
+          <span>Şifre Değiştir</span>
+        </div>
+        <div class="card-divider" />
 
-          <div class="ui-card-text !p-5">
-            <UiForm
-              ref="passwordFormRef"
-              @submit="submitChangePassword"
-            >
-              <template v-if="!useCode">
-                <UiTextField
-                  v-model="currentPassword"
-                  label="Mevcut Şifre"
-                  :type="showCurrent ? 'text' : 'password'"
-                  :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
-                  :rules="[validationRules.required]"
-                  density="comfortable"
-                  class="mb-1"
-                  @click:append-inner="showCurrent = !showCurrent"
-                />
-                <div class="flex justify-end mb-3">
-                  <UiBtn size="small" variant="text" color="primary" @click="switchToCode">
-                    Mevcut şifremi hatırlamıyorum
-                  </UiBtn>
-                </div>
-              </template>
+        <!-- Mevcut şifre ya da e-postaya gelen 6 haneli kod -->
+        <div class="pwd-mode-tabs">
+          <button type="button" class="pwd-mode-btn" :class="{ active: !useCode }" @click="useCode = false">
+            <UiIcon icon="mdi-key-outline" :size="14" /> Mevcut şifremi biliyorum
+          </button>
+          <button type="button" class="pwd-mode-btn" :class="{ active: useCode }" @click="switchToCode">
+            <UiIcon icon="mdi-email-lock-outline" :size="14" /> Şifremi unuttum
+          </button>
+        </div>
 
-              <!-- Mevcut şifre yerine e-postaya gelen 6 haneli kod -->
-              <template v-else>
-                <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-3">
-                  <strong>{{ user?.email }}</strong> adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.
-                </p>
-                <div class="flex gap-2 items-start mb-1">
-                  <UiTextField
-                    v-model="passwordCode"
-                    label="Doğrulama Kodu"
-                    inputmode="numeric"
-                    maxlength="6"
-                    autocomplete="one-time-code"
-                    :rules="[validationRules.required]"
-                    density="comfortable"
-                    class="flex-1"
-                  />
-                  <!-- Etiket alanın üstünde: düğme giriş kutusuyla aynı hizada başlasın -->
-                  <UiBtn
-                    variant="tonal"
-                    color="primary"
-                    class="mt-[23px]"
-                    style="height: 48px"
-                    :loading="sendingCode"
-                    :disabled="codeCooldown > 0"
-                    @click="sendCode"
-                  >
-                    {{ codeCooldown > 0 ? `${codeCooldown} sn` : codeSent ? "Tekrar Gönder" : "Kod Gönder" }}
-                  </UiBtn>
-                </div>
-                <div class="flex justify-end mb-3">
-                  <UiBtn size="small" variant="text" @click="useCode = false">Mevcut şifremle değiştir</UiBtn>
-                </div>
-              </template>
+        <div class="p-4">
+          <UiForm
+            ref="passwordFormRef"
+            @submit="submitChangePassword"
+          >
+            <template v-if="!useCode">
               <UiTextField
-                v-model="newPassword"
-                label="Yeni Şifre"
-                :type="showNew ? 'text' : 'password'"
-                :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
-                :rules="[validationRules.password]"
+                v-model="currentPassword"
+                label="Mevcut Şifre"
+                placeholder="••••••••"
+                :type="showCurrent ? 'text' : 'password'"
+                :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
+                :rules="[validationRules.required]"
                 density="comfortable"
                 class="mb-3"
-                @click:append-inner="showNew = !showNew"
+                @click:append-inner="showCurrent = !showCurrent"
               />
-              <UiTextField
-                v-model="confirmNewPassword"
-                label="Yeni Şifre Tekrar"
-                :type="showConfirm ? 'text' : 'password'"
-                :append-inner-icon="showConfirm ? 'mdi-eye-off' : 'mdi-eye'"
-                :rules="[validationRules.confirmPassword(newPassword)]"
-                density="comfortable"
-                class="mb-4"
-                @click:append-inner="showConfirm = !showConfirm"
-              />
-              <UiBtn
-                type="submit"
-                color="primary"
-                :loading="isChangingPassword"
-                block
-              >
-                Şifreyi Güncelle
-              </UiBtn>
-            </UiForm>
-          </div>
-        </UiCard>
-      </div>
-    </div>
+            </template>
 
-    <!-- ═══════════════ VERİLERİM / DELETE ACCOUNT ═══════════════ -->
-    <div class="ui-row !mt-0">
-      <div class="ui-col ui-col-12 ui-col-md-6">
-        <UiCard rounded="xl" elevation="0" border class="mb-6">
-          <div class="ui-card-title section-title !p-5">
-            <UiAvatar color="primary" variant="tonal" :size="32" rounded="lg" class="mr-3">
-              <UiIcon icon="mdi-microsoft-excel" :size="16" />
-            </UiAvatar>
-            Verilerim
-          </div>
-          <hr class="ui-divider" />
-          <div class="ui-card-text !p-5">
-            <p class="mb-4">Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.</p>
-            <UiBtn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
-              Verilerimi indir (Excel)
+            <template v-else>
+              <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-3">
+                <strong>{{ user?.email }}</strong> adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.
+              </p>
+              <div class="flex gap-2 items-start mb-3">
+                <UiTextField
+                  v-model="passwordCode"
+                  label="Doğrulama Kodu"
+                  placeholder="6 haneli kod"
+                  inputmode="numeric"
+                  maxlength="6"
+                  autocomplete="one-time-code"
+                  :rules="[validationRules.required]"
+                  density="comfortable"
+                  class="flex-1"
+                />
+                <!-- Etiket alanın üstünde: düğme giriş kutusuyla aynı hizada başlasın -->
+                <UiBtn
+                  variant="tonal"
+                  color="primary"
+                  class="code-btn mt-[23px]"
+                  style="height: 42px"
+                  :loading="sendingCode"
+                  :disabled="codeCooldown > 0"
+                  @click="sendCode"
+                >
+                  {{ codeCooldown > 0 ? `${codeCooldown} sn` : codeSent ? "Tekrar Gönder" : "Kod Gönder" }}
+                </UiBtn>
+              </div>
+            </template>
+            <UiTextField
+              v-model="newPassword"
+              label="Yeni Şifre"
+              placeholder="••••••••"
+              :type="showNew ? 'text' : 'password'"
+              :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
+              :rules="[validationRules.password]"
+              density="comfortable"
+              class="mb-3"
+              @click:append-inner="showNew = !showNew"
+            />
+            <UiTextField
+              v-model="confirmNewPassword"
+              label="Yeni Şifre Tekrar"
+              placeholder="••••••••"
+              required
+              :type="showConfirm ? 'text' : 'password'"
+              :append-inner-icon="showConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+              :rules="[validationRules.confirmPassword(newPassword)]"
+              density="comfortable"
+              class="mb-4"
+              @click:append-inner="showConfirm = !showConfirm"
+            />
+            <UiBtn
+              type="submit"
+              color="primary"
+              :loading="isChangingPassword"
+              block
+            >
+              Şifreyi Güncelle
             </UiBtn>
-          </div>
-        </UiCard>
-        <DeleteAccountSection />
+          </UiForm>
+        </div>
       </div>
+
+      <!-- Oturumlar -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><UiIcon icon="mdi-monitor-multiple" :size="16" /></div>
+          <span>Aktif Oturumlarım</span>
+          <span v-if="!loadingSessions && activeSessions.length" class="count-badge">
+            {{ activeSessions.length }}
+          </span>
+          <div class="flex-1" />
+          <UiBtn
+            size="small"
+            variant="text"
+            color="primary"
+            prepend-icon="mdi-refresh"
+            :loading="loadingSessions"
+            @click="loadSessions"
+          >
+            Yenile
+          </UiBtn>
+          <UiBtn
+            v-if="activeSessions.length"
+            size="small"
+            variant="tonal"
+            color="error"
+            prepend-icon="mdi-logout-variant"
+            :loading="loggingOutAll"
+            @click="confirmLogoutAll = true"
+          >
+            Tümünden Çık
+          </UiBtn>
+        </div>
+        <div class="card-divider" />
+
+        <UiProgressLinear
+          v-if="loadingSessions"
+          indeterminate
+          color="primary"
+        />
+
+        <!-- Empty -->
+        <div
+          v-if="!loadingSessions && !sessions.length"
+          class="empty-state"
+        >
+          <UiIcon icon="mdi-monitor-off" :size="24" />
+          Aktif oturum bulunamadı.
+        </div>
+
+        <!-- Active sessions -->
+        <div
+          v-if="!loadingSessions && activeSessions.length"
+          class="session-list"
+        >
+          <div
+            v-for="session in activeSessions"
+            :key="session.id"
+            class="session-card"
+            :class="{ 'session-card--current': session.isCurrentSession }"
+          >
+            <div class="session-icon" :class="{ 'session-icon--current': session.isCurrentSession }">
+              <UiIcon :icon="deviceIcon(session.deviceType)" :size="20" />
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="session-name">{{ session.deviceName }}</span>
+                <UiChip
+                  v-if="session.isCurrentSession"
+                  size="x-small"
+                  color="primary"
+                  variant="flat"
+                  rounded
+                >
+                  Bu cihaz
+                </UiChip>
+              </div>
+              <div class="session-meta mt-1">
+                <span>
+                  <UiIcon icon="mdi-ip-network-outline" :size="11" />
+                  {{ session.ipAddress }}
+                </span>
+                <span class="mx-1 opacity-30">·</span>
+                <span>
+                  <UiIcon icon="mdi-calendar-outline" :size="11" />
+                  {{ formatDate(session.createdDate) }}
+                </span>
+                <span class="mx-1 opacity-30">·</span>
+                <span class="session-remaining">
+                  <UiIcon icon="mdi-clock-outline" :size="11" />
+                  {{ remainingLabel(session) }} kaldı
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inactive (collapsible) -->
+        <div
+          v-if="!loadingSessions && inactiveSessions.length"
+          class="history-wrap"
+        >
+          <div
+            class="history-toggle"
+            @click="showHistory = !showHistory"
+          >
+            <UiIcon :icon="showHistory ? 'mdi-chevron-up' : 'mdi-chevron-down'" :size="16" />
+            Geçmiş oturumlar ({{ inactiveSessions.length }})
+          </div>
+
+          <div v-if="showHistory" class="session-list session-list--history">
+            <div
+              v-for="session in inactiveSessions"
+              :key="session.id"
+              class="session-card session-card--inactive"
+            >
+              <div class="session-icon">
+                <UiIcon :icon="deviceIcon(session.deviceType)" :size="20" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="session-name">{{ session.deviceName }}</span>
+                <div class="session-meta mt-1">
+                  <span>
+                    <UiIcon icon="mdi-ip-network-outline" :size="11" />
+                    {{ session.ipAddress }}
+                  </span>
+                  <span class="mx-1 opacity-30">·</span>
+                  <span>
+                    <UiIcon icon="mdi-calendar-outline" :size="11" />
+                    {{ formatDate(session.createdDate) }}
+                  </span>
+                  <span class="mx-1 opacity-30">·</span>
+                  <span class="session-ended">Sona erdi</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hesap ve veriler: kişisel veri indirme (KVKK) ve hesabı silme -->
+      <h2 class="group-title">Hesap ve veriler</h2>
+      <div class="panel-card">
+        <div class="panel-card__header">
+          <div class="panel-card__icon"><UiIcon icon="mdi-microsoft-excel" :size="16" /></div>
+          <span>Verilerim</span>
+        </div>
+        <div class="panel-card__divider" />
+        <div class="panel-card__body">
+          <p class="panel-card__hint">Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.</p>
+          <UiBtn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
+            Verilerimi indir (Excel)
+          </UiBtn>
+        </div>
+      </div>
+      <DeleteAccountSection />
     </div>
 
     <!-- Bilgilerimi düzenle -->
     <UiDialog v-model="profileDialog" max-width="460">
       <UiCard rounded="xl">
-        <div class="ui-card-title !pt-5 !px-5">Bilgilerimi Düzenle</div>
-        <div class="ui-card-text !px-5">
+        <div class="dialog-head">
+          <div class="dialog-head__icon"><UiIcon icon="mdi-account-edit-outline" :size="20" /></div>
+          <div>
+            <h3 class="dialog-head__title">Bilgilerimi Düzenle</h3>
+            <p class="dialog-head__sub">Ad, soyad ve telefon bilgileriniz</p>
+          </div>
+        </div>
+        <div class="dialog-body">
           <UiForm ref="profileFormRef" @submit="saveProfile">
             <UiTextField
               v-model="profileForm.firstName"
               label="Ad"
+              placeholder="Adınız"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
@@ -532,6 +417,7 @@
             <UiTextField
               v-model="profileForm.lastName"
               label="Soyad"
+              placeholder="Soyadınız"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
@@ -540,6 +426,7 @@
             <UiTextField
               v-model="profileForm.phoneNumber"
               label="Telefon"
+              placeholder="0555 000 00 00"
               density="comfortable"
               type="tel"
               :rules="[validationRules.phone]"
@@ -550,10 +437,9 @@
             </UiAlert>
           </UiForm>
         </div>
-        <div class="ui-card-actions !px-5 !pb-5">
-          <div class="flex-1" />
-          <UiBtn variant="text" :disabled="savingProfile" @click="profileDialog = false">İptal</UiBtn>
-          <UiBtn color="primary" variant="flat" :loading="savingProfile" @click="saveProfile">Kaydet</UiBtn>
+        <div class="dialog-actions">
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="savingProfile" @click="profileDialog = false">İptal</UiBtn>
+          <UiBtn class="btn-gradient-primary" :loading="savingProfile" @click="saveProfile">Kaydet</UiBtn>
         </div>
       </UiCard>
     </UiDialog>
@@ -561,8 +447,14 @@
     <!-- E-posta değiştir: değişiklik yeni adrese giden link onaylanınca uygulanır -->
     <UiDialog v-model="emailDialog" max-width="460">
       <UiCard rounded="xl">
-        <div class="ui-card-title !pt-5 !px-5">E-posta Adresini Değiştir</div>
-        <div class="ui-card-text !px-5">
+        <div class="dialog-head">
+          <div class="dialog-head__icon"><UiIcon icon="mdi-email-edit-outline" :size="20" /></div>
+          <div>
+            <h3 class="dialog-head__title">E-posta Adresini Değiştir</h3>
+            <p class="dialog-head__sub">Yeni adres, onay bağlantısıyla değişir</p>
+          </div>
+        </div>
+        <div class="dialog-body">
           <template v-if="emailSentTo">
             <UiAlert type="success" variant="tonal" class="mb-2">
               <strong>{{ emailSentTo }}</strong> adresine bir onay bağlantısı gönderdik. Bağlantıya
@@ -577,6 +469,7 @@
             <UiTextField
               v-model="emailForm.newEmail"
               label="Yeni e-posta"
+              placeholder="yeni@ornek.com"
               density="comfortable"
               type="email"
               autocomplete="email"
@@ -587,6 +480,7 @@
             <UiTextField
               v-model="emailForm.currentPassword"
               label="Mevcut şifre"
+              placeholder="••••••••"
               density="comfortable"
               :type="showEmailPassword ? 'text' : 'password'"
               :append-inner-icon="showEmailPassword ? 'mdi-eye-off' : 'mdi-eye'"
@@ -600,14 +494,13 @@
             </UiAlert>
           </UiForm>
         </div>
-        <div class="ui-card-actions !px-5 !pb-5">
-          <div class="flex-1" />
+        <div class="dialog-actions">
           <template v-if="emailSentTo">
-            <UiBtn color="primary" variant="flat" @click="emailDialog = false">Tamam</UiBtn>
+            <UiBtn class="btn-gradient-primary" @click="emailDialog = false">Tamam</UiBtn>
           </template>
           <template v-else>
-            <UiBtn variant="text" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</UiBtn>
-            <UiBtn color="primary" variant="flat" :loading="sendingEmailChange" @click="submitEmailChange">
+            <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</UiBtn>
+            <UiBtn class="btn-gradient-primary" :loading="sendingEmailChange" @click="submitEmailChange">
               Onay Bağlantısı Gönder
             </UiBtn>
           </template>
@@ -633,12 +526,12 @@ import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
 import { parseApiErrorMessages } from "~/utils/apiError";
 import type { Session } from "~/types";
 import { UserStatus } from "~/types";
-import { API_ENDPOINTS } from "~/utils/apiEndpoints";
 import { dateFormat, dateTimeFormat } from "~/utils/datesFormat";
 import BreadCrumb from "~/components/BreadCrumb.vue";
+import { useValidators } from "~/composables/useValidators";
+import { API_ENDPOINTS } from "~/utils/apiEndpoints";
 import DeleteAccountSection from "~/components/Account/DeleteAccountSection.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
-import { useValidators } from "~/composables/useValidators";
 
 definePageMeta({
   title: "Profilim",
@@ -651,13 +544,14 @@ const authStore = useAuthStore();
 const {
   getUserSessions,
   changePassword,
+  logoutAllDevices,
   updateProfile,
   requestEmailChange,
   sendPasswordChangeCode,
   changePasswordWithCode,
-  logoutAllDevices,
 } = useAuth();
 const { validationRules } = useValidators();
+const toast = useToast();
 
 // Bilgilerimi düzenle
 const profileDialog = ref(false);
@@ -730,15 +624,8 @@ const submitEmailChange = async () => {
 
 const user = computed(() => authStore.user);
 
-const initials = computed(() => {
-  const u = authStore.user;
-  if (!u) return "?";
-  return `${u.firstName?.charAt(0) ?? ""}${u.lastName?.charAt(0) ?? ""}`.toUpperCase();
-});
-
 // Kişisel veri indirme; sürerken düğme kilitli
 const { download } = useDownload();
-const toast = useToast();
 const exporting = ref(false);
 const exportMyData = async () => {
   exporting.value = true;
@@ -752,6 +639,13 @@ const exportMyData = async () => {
 };
 
 // Değerler backend UserStatus ile aynı (isim olarak gelir: Inactive, Active, Banned, PendingVerification)
+
+const initials = computed(() => {
+  const u = authStore.user;
+  if (!u) return "?";
+  return `${u.firstName?.charAt(0) ?? ""}${u.lastName?.charAt(0) ?? ""}`.toUpperCase();
+});
+
 const statusColor = computed(() => {
   switch (authStore.user?.status) {
     case UserStatus.Active:
@@ -804,6 +698,13 @@ const lastLoginShort = computed(() => {
 const sessions = ref<Session[]>([]);
 const loadingSessions = ref(false);
 const showHistory = ref(false);
+
+// Tabs
+const tabs = [
+  { key: "profile", label: "Profil", icon: "mdi-account-circle-outline" },
+  { key: "security", label: "Güvenlik", icon: "mdi-shield-lock-outline" },
+] as const;
+const activeTab = ref<(typeof tabs)[number]["key"]>("profile");
 
 const activeSessions = computed(() =>
   sessions.value.filter((s: Session) => s.isActive),
@@ -946,6 +847,14 @@ onMounted(loadSessions);
 
 <style scoped>
 .profile-page {
+  --pf-brand: rgb(var(--color-brand));
+  --pf-surface: rgb(var(--color-surface-container-lowest));
+  --pf-surface-muted: rgb(var(--color-surface-container-low));
+  --pf-border: rgb(var(--color-outline-variant) / 0.6);
+  --pf-text: rgb(var(--color-on-surface));
+  --pf-text-muted: rgb(var(--color-on-surface-variant));
+  /* Yazı/ikon vurgusu (koyu temada marka rengi zaten açık tondur, bkz. plugins/brand.client.ts) */
+  --pf-accent: var(--pf-brand);
   max-width: 1080px;
   padding: 24px;
 }
@@ -953,121 +862,136 @@ onMounted(loadSessions);
 /* ══════════════════════════════════════════
    HERO
 ══════════════════════════════════════════ */
-.hero-card {
-  overflow: visible;
+.page-hero {
+  border: 1px solid var(--pf-border);
+  border-radius: 20px;
+  margin-bottom: 18px;
+  background: var(--pf-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+/* Marka renginin hafif tonundan karta eriyen kapak */
 .hero-banner {
-  height: 140px;
-  border-radius: 12px 12px 0 0;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #a855f7 100%);
+  height: 64px;
   position: relative;
   overflow: hidden;
+  border-radius: 19px 19px 0 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--pf-brand) 12%, var(--pf-surface)) 0%,
+    color-mix(in srgb, var(--pf-brand) 4%, var(--pf-surface)) 55%,
+    var(--pf-surface) 100%
+  );
 }
 
-.blob {
+.hero-banner::before {
+  content: '';
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.18;
-  filter: blur(2px);
-  background: white;
+  inset: 0;
+  background-image:
+    radial-gradient(85% 130% at 85% -25%, color-mix(in srgb, var(--pf-brand) 16%, transparent) 0%, transparent 60%),
+    radial-gradient(65% 110% at 12% -30%, color-mix(in srgb, var(--pf-brand) 10%, transparent) 0%, transparent 55%);
+  pointer-events: none;
 }
-.blob-1 {
-  width: 160px;
-  height: 160px;
-  top: -60px;
-  left: -40px;
+
+.hero-status {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 1;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-.blob-2 {
-  width: 100px;
-  height: 100px;
-  top: 20px;
-  right: 80px;
-  opacity: 0.12;
-}
-.blob-3 {
-  width: 200px;
-  height: 200px;
-  bottom: -100px;
-  right: -60px;
-  opacity: 0.08;
-}
+.status-success { background: rgba(34, 197, 94, 0.12); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.25); }
+.status-warning { background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.25); }
+.status-error { background: rgba(239, 68, 68, 0.1); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.25); }
+.status-info { background: rgba(59, 130, 246, 0.1); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.25); }
+.status-grey { background: var(--pf-surface-muted); color: var(--pf-text-muted); border: 1px solid var(--pf-border); }
 
 .hero-body {
-  overflow: visible;
-}
-
-.hero-top {
+  padding: 0 24px 16px;
   display: flex;
   align-items: flex-end;
-  gap: 18px;
-  margin-top: -54px;
+  gap: 16px;
   flex-wrap: wrap;
-  padding-bottom: 16px;
 }
 
 .avatar-wrap {
   position: relative;
   flex-shrink: 0;
+  margin-top: -36px; /* avatar kapak sınırının üstüne taşar */
 }
 
 .profile-avatar :deep(.user-avatar) {
-  border: 4px solid white !important;
-  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3) !important;
+  border: 3px solid var(--pf-surface) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
 }
 
-.avatar-initials {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -1px;
+/* Kamera sol altta, kaldır sağ üstte; sağ alt köşe çevrimiçi noktasının */
+.profile-avatar :deep(.photo-editor__btn) {
+  width: 26px;
+  height: 26px;
+  border-color: var(--pf-surface);
+}
+.profile-avatar :deep(.photo-editor__btn svg) {
+  width: 14px;
+  height: 14px;
+}
+.profile-avatar :deep(.photo-editor__btn--upload) {
+  left: -2px;
+  right: auto;
+  background: var(--pf-brand);
+}
+.profile-avatar :deep(.photo-editor__btn--remove) {
+  left: auto;
+  right: -4px;
+  top: -2px;
+  bottom: auto;
 }
 
 .online-dot {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 16px;
-  height: 16px;
+  bottom: 4px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
   background: #22c55e;
-  border: 3px solid white;
+  border: 2px solid var(--pf-surface);
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
 }
 
 .hero-meta {
-  padding-bottom: 4px;
+  padding-bottom: 2px;
+  min-width: 0;
 }
 
-.profile-name {
-  font-size: 1.5rem;
+.hero-name {
+  font-size: 1.2rem;
   font-weight: 800;
-  color: #111827;
-  line-height: 1.15;
-  letter-spacing: -0.4px;
+  color: var(--pf-text);
+  margin: 0 0 4px;
+  line-height: 1.2;
 }
 
-.profile-email {
-  font-size: 0.82rem;
-  color: #6b7280;
+.hero-email {
+  font-size: 0.8rem;
+  color: var(--pf-text-muted);
+  margin: 2px 0 0;
   display: flex;
   align-items: center;
-  margin: 0;
+  gap: 4px;
 }
 
-.hero-status {
-  margin-bottom: 4px;
-}
-
-/* Stats strip */
 .stats-strip {
   display: flex;
-  align-items: center;
-  gap: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.07);
-  background: #fafafa;
-  border-radius: 0 0 12px 12px;
-  overflow: hidden;
+  border-top: 1px solid var(--pf-border);
+  background: var(--pf-surface-muted);
+  border-radius: 0 0 20px 20px;
 }
 
 .stat-pill {
@@ -1075,38 +999,157 @@ onMounted(loadSessions);
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 12px 20px;
 }
 
 .stat-sep {
   width: 1px;
-  height: 36px;
-  background: rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
+  background: var(--pf-border);
+}
+
+.stat-icon {
+  color: var(--pf-accent);
 }
 
 .stat-val {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--pf-text);
   line-height: 1;
 }
 
 .stat-lbl {
-  font-size: 0.7rem;
-  color: #9ca3af;
+  font-size: 0.67rem;
+  color: var(--pf-text-muted);
   margin-top: 2px;
 }
 
 /* ══════════════════════════════════════════
-   SECTION TITLES
+   TABS
 ══════════════════════════════════════════ */
-.section-title {
-  font-size: 0.88rem !important;
-  font-weight: 700 !important;
-  color: #111827 !important;
+.profile-tabs {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 6px;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.profile-tab {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--pf-text-muted);
+  background: transparent;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.profile-tab:hover {
+  background: var(--pf-surface-muted);
+  color: var(--pf-accent);
+}
+
+.profile-tab--active {
+  background: color-mix(in srgb, var(--pf-brand) 8%, var(--pf-surface));
+  border-color: color-mix(in srgb, var(--pf-brand) 16%, transparent);
+  color: var(--pf-accent);
+}
+
+.tab-content {
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ══════════════════════════════════════════
+   CARD
+══════════════════════════════════════════ */
+.card {
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.security-card {
+  max-width: 520px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--pf-text);
+  flex-wrap: wrap;
+}
+
+.card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--pf-brand) 10%, transparent);
+  color: var(--pf-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-divider {
+  height: 1px;
+  background: var(--pf-border);
+  opacity: 0.6;
+}
+
+.count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pf-brand) 10%, transparent);
+  color: var(--pf-accent);
+}
+
+.edit-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--pf-border);
+  background: var(--pf-surface);
+  color: var(--pf-accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.edit-btn:hover {
+  border-color: var(--pf-accent);
+  background: color-mix(in srgb, var(--pf-brand) 4%, transparent);
 }
 
 /* ══════════════════════════════════════════
@@ -1116,21 +1159,22 @@ onMounted(loadSessions);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  padding: 16px;
 }
 
 .info-tile {
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: var(--pf-surface-muted);
+  border: 1px solid color-mix(in srgb, var(--pf-border) 60%, transparent);
   border-radius: 10px;
   padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   transition: border-color 0.15s;
 }
 
 .info-tile:hover {
-  border-color: rgba(79, 70, 229, 0.25);
+  border-color: color-mix(in srgb, var(--pf-brand) 25%, transparent);
 }
 
 .info-tile--wide {
@@ -1138,8 +1182,8 @@ onMounted(loadSessions);
 }
 
 .tile-lbl {
-  font-size: 0.68rem;
-  color: #9ca3af;
+  font-size: 0.67rem;
+  color: var(--pf-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
@@ -1148,67 +1192,151 @@ onMounted(loadSessions);
 .tile-val {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--pf-text);
   word-break: break-all;
 }
 
-.tile-val--sm {
-  font-size: 0.8rem;
+.tile-val--sm { font-size: 0.8rem; }
+.tile-val--muted { color: var(--pf-text-muted); font-weight: 400; }
+
+.tile-val-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.confirm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.confirm-ok { background: rgba(34, 197, 94, 0.1); color: #15803d; }
+.confirm-warn { background: rgba(245, 158, 11, 0.1); color: #b45309; }
+
+/* Altı çizili link yerine küçük hap buton — tıklanabilir olduğu belli olsun */
+.link-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--pf-brand) 22%, transparent);
+  background: color-mix(in srgb, var(--pf-brand) 8%, transparent);
+  color: var(--pf-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 10px;
+  border-radius: 999px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.link-inline-btn:hover {
+  background: color-mix(in srgb, var(--pf-brand) 14%, transparent);
+  border-color: color-mix(in srgb, var(--pf-brand) 32%, transparent);
 }
 
 /* ══════════════════════════════════════════
-   SESSION CARDS
+   PASSWORD
 ══════════════════════════════════════════ */
+.pwd-mode-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px 0;
+}
+
+.pwd-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--pf-border);
+  background: var(--pf-surface-muted);
+  color: var(--pf-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.pwd-mode-btn.active {
+  border-color: var(--pf-accent);
+  background: color-mix(in srgb, var(--pf-brand) 6%, transparent);
+  color: var(--pf-accent);
+}
+
+.code-btn {
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   SESSIONS
+══════════════════════════════════════════ */
+.session-list {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-list--history {
+  padding: 0;
+}
+
 .session-card {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid #f3f4f6;
-  background: #fafafa;
-  position: relative;
-  overflow: hidden;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  border: 1px solid color-mix(in srgb, var(--pf-border) 60%, transparent);
+  background: var(--pf-surface-muted);
+  transition: border-color 0.15s;
 }
 
 .session-card:hover {
-  border-color: rgba(79, 70, 229, 0.2);
-  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.06);
+  border-color: color-mix(in srgb, var(--pf-brand) 20%, transparent);
 }
 
 .session-card--current {
-  background: rgba(79, 70, 229, 0.03);
-  border-color: rgba(79, 70, 229, 0.2);
+  background: color-mix(in srgb, var(--pf-brand) 4%, var(--pf-surface));
+  border-color: color-mix(in srgb, var(--pf-brand) 20%, transparent);
 }
 
 .session-card--inactive {
   opacity: 0.6;
 }
 
-.session-accent {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #e5e7eb;
-  border-radius: 3px 0 0 3px;
+.session-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
+  color: var(--pf-text-muted);
 }
 
-.session-accent--current {
-  background: #4f46e5;
-}
-.session-accent--error {
-  background: #ef4444;
+.session-icon--current {
+  background: color-mix(in srgb, var(--pf-brand) 10%, transparent);
+  border-color: transparent;
+  color: var(--pf-accent);
 }
 
 .session-name {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--pf-text);
 }
 
 .session-meta {
@@ -1216,27 +1344,66 @@ onMounted(loadSessions);
   align-items: center;
   gap: 2px;
   font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--pf-text-muted);
   flex-wrap: wrap;
 }
 
+/* Kalan süre marka renginde (aşama 4'teki gibi) */
+.session-remaining { color: var(--pf-accent); font-weight: 500; }
+.session-ended { color: rgb(var(--color-error)); }
+
+.history-wrap {
+  padding: 0 16px 16px;
+}
+
 .history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid color-mix(in srgb, var(--pf-border) 60%, transparent);
+  font-size: 0.75rem;
+  color: var(--pf-text-muted);
   cursor: pointer;
   user-select: none;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 160px;
+/* Güvenlik sekmesindeki alt grup başlığı */
+.group-title {
+  margin: 24px 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pf-text-muted);
 }
 
-.min-w-0 {
-  min-width: 0;
+.empty-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  color: var(--pf-text-muted);
+  font-size: 0.85rem;
 }
-.flex-1 {
-  flex: 1;
+
+.min-w-0 { min-width: 0; }
+.flex-1 { flex: 1; }
+
+@media (max-width: 700px) {
+  .profile-page { padding: 12px; }
+  .stat-pill { padding: 10px 12px; gap: 6px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .info-tile--wide { grid-column: span 1; }
 }
+</style>
+
+<style>
+/* Koyu tema: scoped stilde :global(.dark) .x seçicisinin ikinci kısmı düşüyor, bu yüzden burada */
+.dark .profile-page .status-success,
+.dark .profile-page .confirm-ok { color: #4ade80; }
+.dark .profile-page .status-warning,
+.dark .profile-page .confirm-warn { color: #fbbf24; }
+.dark .profile-page .status-error { color: #f87171; }
+.dark .profile-page .status-info { color: #93c5fd; }
 </style>

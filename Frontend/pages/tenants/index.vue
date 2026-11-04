@@ -6,7 +6,15 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-domain"
+    title="Tenant'lar"
+    subtitle="Haneleri (tenant'ları) oluşturun, düzenleyin ve yönetin."
+    :count="items.length"
+  />
+
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Tenant'lar"
@@ -31,14 +39,10 @@
     @refresh="refreshData"
   >
     <template #cell-name="{ value }">
-      <UiChip
-        color="primary"
-        variant="tonal"
-        size="default"
-        prepend-icon="mdi-domain"
-      >
-        {{ value }}
-      </UiChip>
+      <span class="name-cell">
+        <UiIcon icon="mdi-domain" :size="20" class="name-cell__icon" />
+        <span>{{ value }}</span>
+      </span>
     </template>
 
     <template #cell-isActive="{ value }">
@@ -186,3 +190,9 @@ onMounted(async () => {
 });
 //#endregion
 </script>
+
+<style scoped>
+/* Ad hücresi: ikon + düz metin (Dernify) */
+.name-cell { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.name-cell__icon { color: rgb(var(--color-on-surface-variant)); flex-shrink: 0; }
+</style>

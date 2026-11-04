@@ -6,6 +6,7 @@
           <UiTextField
             v-model="formData.name"
             label="Ad"
+            placeholder="Örn. Kira"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"

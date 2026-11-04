@@ -309,7 +309,6 @@ defineExpose({
   --ui-field-border: rgba(255, 255, 255, 0.2);
   --ui-field-border-hover: rgba(255, 255, 255, 0.45);
   --ui-field-accent: #fff;
-  --ui-field-radius: 12px;
 }
 
 .input-group :deep(.ui-field__input) {

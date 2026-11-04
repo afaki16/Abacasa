@@ -68,6 +68,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="tableItems"
     :columns="tableColumns"
     title="Vadeler"

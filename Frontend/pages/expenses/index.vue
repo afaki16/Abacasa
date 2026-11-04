@@ -6,6 +6,12 @@
     />
   </div>
 
+  <PageHero
+    icon="mdi-cash-minus"
+    title="Harcamalar"
+    subtitle="Dönemdeki harcamalarınızı kaydedin ve izleyin."
+  />
+
   <!-- Dönem seçici -->
   <PeriodSelector
     ref="periodSelectorRef"
@@ -123,6 +129,7 @@
   </div>
 
   <BaseDataTable
+    :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
     title="Harcamalar"

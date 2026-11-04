@@ -1,54 +1,39 @@
 <template>
-  <div class="settings-container">
-    <!-- Breadcrumb -->
+  <div class="settings-page">
     <div class="mb-6">
       <BreadCrumb
         :items="[{ text: 'Ana Sayfa', to: '/dashboard' }, { text: 'Ayarlar' }]"
       />
     </div>
 
-    <!-- Page Header -->
-    <div class="settings-header mb-8">
-      <h1 class="settings-title">Ayarlar</h1>
-      <p class="settings-subtitle">Sistem ve tenant ayarlarını yönetin</p>
-    </div>
+    <PageHero
+      icon="mdi-cog-outline"
+      title="Ayarlar"
+      :subtitle="heroSubtitle"
+    />
 
-    <!-- Tabs: Admin / SuperAdmin (sadece her iki rol varsa göster) -->
-    <UiCard class="settings-card" elevation="2">
-      <template v-if="hasMultipleTabs">
-        <UiTabs
-          v-model="activeTab"
-          bg-color="transparent"
-          color="primary"
-          grow
-          class="settings-tabs"
-        >
-          <UiTab value="admin" prepend-icon="mdi-shield-account-outline">
-            Admin Ayarları
-          </UiTab>
-          <UiTab value="superadmin" prepend-icon="mdi-shield-crown-outline">
-            SuperAdmin Ayarları
-          </UiTab>
-        </UiTabs>
-        <hr class="ui-divider" />
-      </template>
+    <!-- Admin / SuperAdmin sekmeleri (yalnızca iki rol birden varsa) -->
+    <nav v-if="hasMultipleTabs" class="pill-tabs">
+      <button
+        type="button"
+        class="pill-tab"
+        :class="{ 'pill-tab--active': activeTab === 'admin' }"
+        @click="activeTab = 'admin'"
+      >
+        <UiIcon icon="mdi-shield-account-outline" :size="16" /> Tenant Ayarları
+      </button>
+      <button
+        type="button"
+        class="pill-tab"
+        :class="{ 'pill-tab--active': activeTab === 'superadmin' }"
+        @click="activeTab = 'superadmin'"
+      >
+        <UiIcon icon="mdi-shield-crown-outline" :size="16" /> Sistem Ayarları
+      </button>
+    </nav>
 
-      <UiWindow v-model="activeTab" class="settings-window">
-        <!-- Admin Tab Content -->
-        <UiWindowItem value="admin" v-if="showAdminTab">
-          <div class="p-6">
-            <SettingsAdminSection />
-          </div>
-        </UiWindowItem>
-
-        <!-- SuperAdmin Tab Content -->
-        <UiWindowItem value="superadmin" v-if="showSuperAdminTab">
-          <div class="p-6">
-            <SettingsSuperAdminSection />
-          </div>
-        </UiWindowItem>
-      </UiWindow>
-    </UiCard>
+    <SettingsAdminSection v-if="showAdminTab && activeTab === 'admin'" />
+    <SettingsSuperAdminSection v-if="showSuperAdminTab && activeTab === 'superadmin'" />
   </div>
 </template>
 
@@ -85,6 +70,12 @@ const hasMultipleTabs = computed(
 
 const activeTab = ref<"admin" | "superadmin">("admin");
 
+const heroSubtitle = computed(() =>
+  activeTab.value === "superadmin"
+    ? "Tüm tenant'ları kapsayan oturum ve kullanıcı yönetimi"
+    : "Kendi tenant'ınıza ait oturum ve kullanıcı yönetimi",
+);
+
 watch(
   [showAdminTab, showSuperAdminTab],
   ([admin, superAdmin]) => {
@@ -97,43 +88,8 @@ watch(
 </script>
 
 <style scoped>
-.settings-container {
+.settings-page {
+  max-width: 1080px;
   padding: 24px;
-  background: rgb(var(--color-background));
-  min-height: 100vh;
-}
-
-.settings-header {
-  background: rgb(var(--color-surface));
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.settings-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: rgb(var(--color-on-surface));
-  margin: 0;
-}
-
-.settings-subtitle {
-  font-size: 0.95rem;
-  color: rgb(var(--color-on-surface-variant));
-  margin-top: 8px;
-}
-
-.settings-card {
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.settings-tabs :deep(.ui-tab) {
-  text-transform: none;
-  font-weight: 600;
-}
-
-.settings-window {
-  min-height: 300px;
 }
 </style>
