@@ -1,13 +1,20 @@
 <template>
   <div class="flex h-[100dvh] w-full bg-background font-body-md text-on-surface antialiased overflow-hidden">
-    <!-- Sidebar Navigation -->
+    <!-- Mobilde menü arka planı: dokununca menü kapanır -->
+    <Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0" leave-active-class="transition-opacity duration-200" leave-to-class="opacity-0">
+      <div v-if="isMobile && isMobileMenuOpen" class="fixed inset-0 z-40 bg-black/40" @click="isMobileMenuOpen = false" />
+    </Transition>
+
+    <!-- Sidebar Navigation: masaüstünde sabit (daraltılabilir), mobilde (<1024px) soldan açılan çekmece -->
     <aside
-      class="flex flex-col h-full border-r border-outline-variant bg-surface py-base z-30 transition-all duration-300"
-      :class="isSidebarOpen ? 'w-64' : 'w-20'"
+      class="flex flex-col h-full border-r border-outline-variant bg-surface py-base transition-all duration-300"
+      :class="isMobile
+        ? ['fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] shadow-xl', isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full']
+        : ['z-30 flex-shrink-0', expanded ? 'w-64' : 'w-20']"
     >
       <!-- Logo + Brand + Toggle -->
-      <div class="px-md py-md mb-md flex items-center" :class="isSidebarOpen ? 'justify-between' : 'justify-center'">
-        <div v-if="isSidebarOpen" class="flex items-center gap-3 min-w-0">
+      <div class="px-md py-md mb-md flex items-center" :class="expanded ? 'justify-between' : 'justify-center'">
+        <div v-if="expanded" class="flex items-center gap-3 min-w-0">
           <img
             v-if="appData?.app?.logo?.src"
             :src="appData.app.logo.src"
@@ -27,14 +34,14 @@
         <button
           @click="toggleSidebar"
           class="flex items-center justify-center w-10 h-10 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
-          :title="isSidebarOpen ? 'Daralt' : 'Genişlet'"
+          :title="isMobile ? 'Kapat' : (expanded ? 'Daralt' : 'Genişlet')"
         >
-          <Icon name="mdi:menu" class="w-6 h-6" />
+          <Icon :name="isMobile ? 'mdi:close' : 'mdi:menu'" class="w-6 h-6" />
         </button>
       </div>
 
       <!-- Search (opsiyonel — sadece sidebar açıkken görünür) -->
-      <div v-if="isSidebarOpen" class="px-md mb-base">
+      <div v-if="expanded" class="px-md mb-base">
         <div class="relative">
           <Icon name="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
           <input
@@ -58,18 +65,18 @@
               isActive(item.to)
                 ? 'sidebar-active-pill'
                 : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high',
-              !isSidebarOpen && 'justify-center px-0'
+              !expanded && 'justify-center px-0'
             ]"
-            :title="!isSidebarOpen ? $t(item.title) : undefined"
+            :title="!expanded ? $t(item.title) : undefined"
           >
             <Icon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
-            <span v-if="isSidebarOpen" class="font-body-md font-semibold whitespace-nowrap">{{ $t(item.title) }}</span>
+            <span v-if="expanded" class="font-body-md font-semibold whitespace-nowrap">{{ $t(item.title) }}</span>
           </NuxtLink>
 
           <!-- Group with children -->
           <div v-else-if="item.children" class="pt-2">
             <p
-              v-if="isSidebarOpen"
+              v-if="expanded"
               class="px-md py-xs text-label-sm uppercase text-on-surface-variant/40 font-bold tracking-widest"
             >
               {{ $t(item.title) }}
@@ -85,12 +92,12 @@
                 isActive(child.to)
                   ? 'sidebar-active-pill'
                   : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high',
-                !isSidebarOpen && 'justify-center px-0'
+                !expanded && 'justify-center px-0'
               ]"
-              :title="!isSidebarOpen ? $t(child.title) : undefined"
+              :title="!expanded ? $t(child.title) : undefined"
             >
               <Icon :name="child.icon" class="w-5 h-5 flex-shrink-0" />
-              <span v-if="isSidebarOpen" class="font-body-md whitespace-nowrap">{{ $t(child.title) }}</span>
+              <span v-if="expanded" class="font-body-md whitespace-nowrap">{{ $t(child.title) }}</span>
             </NuxtLink>
           </div>
         </template>
@@ -104,14 +111,14 @@
             type="button"
             @click="toggleUserDropdown"
             class="w-full flex items-center gap-3 rounded-[10px] hover:bg-surface-container-high transition-all"
-            :class="isSidebarOpen ? 'px-2 py-2' : 'justify-center p-2'"
-            :title="!isSidebarOpen ? userInfo.name : undefined"
+            :class="expanded ? 'px-2 py-2' : 'justify-center p-2'"
+            :title="!expanded ? userInfo.name : undefined"
           >
             <!-- Avatar -->
             <UserAvatar :src="authStore.user?.profileImageUrl" :initials="authStore.userInitials" :size="40" />
 
             <!-- User Info (sadece açık sidebar'da) -->
-            <div v-if="isSidebarOpen" class="flex-1 min-w-0 text-left">
+            <div v-if="expanded" class="flex-1 min-w-0 text-left">
               <p class="text-body-sm font-bold text-on-surface truncate">{{ userInfo.name }}</p>
               <p class="text-label-sm text-on-surface-variant truncate">{{ userInfo.household }}</p>
               <p class="text-label-sm text-on-surface-variant truncate">{{ userInfo.email }}</p>
@@ -119,7 +126,7 @@
 
             <!-- Caret (sadece açık sidebar'da) -->
             <Icon
-              v-if="isSidebarOpen"
+              v-if="expanded"
               name="mdi:chevron-up"
               class="w-4 h-4 text-on-surface-variant flex-shrink-0 transition-transform"
               :class="{ 'rotate-180': showUserDropdown }"
@@ -138,7 +145,7 @@
             <div
               v-if="showUserDropdown"
               class="user-dropdown-menu absolute bottom-full mb-2 bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[10px] shadow-xl z-50 overflow-hidden"
-              :class="isSidebarOpen ? 'left-0 right-0' : 'left-full ml-2 w-48'"
+              :class="expanded ? 'left-0 right-0' : 'left-full ml-2 w-48'"
             >
               <NuxtLink
                 to="/profile"
@@ -184,13 +191,26 @@
     </aside>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
       <!-- Top Bar -->
-      <header class="flex items-center justify-end gap-3 px-margin-desktop py-md border-b border-solid border-black/[0.12] dark:border-white/[0.12] bg-surface flex-shrink-0">
+      <header class="flex items-center justify-end gap-2 lg:gap-3 px-3 lg:px-margin-desktop py-2 lg:py-md border-b border-solid border-black/[0.12] dark:border-white/[0.12] bg-surface flex-shrink-0">
+        <!-- Mobilde menüyü açan düğme -->
+        <button
+          v-if="isMobile"
+          type="button"
+          class="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
+          :class="{ 'mr-auto': !isSuperAdmin }"
+          title="Menü"
+          aria-label="Menü"
+          @click="isMobileMenuOpen = true"
+        >
+          <Icon name="mdi:menu" class="w-6 h-6" />
+        </button>
+
         <!-- SuperAdmin hane filtresi: yalnızca sistem listelerini (kullanıcılar, oturumlar) süzer; bütçe verisini değiştirmez -->
         <div v-if="isSuperAdmin" class="flex items-center gap-2 mr-auto min-w-0">
           <Icon name="mdi:shield-crown-outline" class="w-4 h-4 text-on-surface-variant flex-shrink-0" />
-          <span class="text-body-sm text-on-surface-variant font-medium hidden sm:inline">{{ $t('sidebar.context.activeTenant') }}</span>
+          <span class="text-body-sm text-on-surface-variant font-medium hidden lg:inline whitespace-nowrap">{{ $t('sidebar.context.activeTenant') }}</span>
           <TenantSelector />
         </div>
 
@@ -214,7 +234,7 @@
       </header>
 
       <!-- Page Content -->
-      <main class="flex-1 overflow-y-auto px-margin-desktop py-md">
+      <main class="flex-1 overflow-y-auto px-4 lg:px-margin-desktop py-md">
         <slot />
       </main>
 
@@ -225,7 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { navigationItems, filterNavigationByPermissions } from '~/composables/useNavigation'
 import { useAuth } from '~/composables/useAuth'
@@ -254,6 +274,22 @@ const { isDark, toggleTheme } = useTheme()
 
 // Sidebar state
 const isSidebarOpen = ref(true)
+
+// Mobil (<1024px): menü çekmece olarak açılır; çekmece her zaman geniş (ikon-only daraltma yalnızca masaüstünde)
+const MOBILE_QUERY = '(max-width: 1023.98px)'
+const isMobile = ref(import.meta.client ? window.matchMedia(MOBILE_QUERY).matches : false)
+const isMobileMenuOpen = ref(false)
+const expanded = computed(() => isMobile.value || isSidebarOpen.value)
+let mobileMql: MediaQueryList | null = null
+const onMobileChange = (e: MediaQueryListEvent) => {
+  isMobile.value = e.matches
+  if (!e.matches) isMobileMenuOpen.value = false
+}
+const onEscape = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') isMobileMenuOpen.value = false
+}
+// Sayfa değişince çekmece kapanır
+watch(() => route.fullPath, () => { isMobileMenuOpen.value = false })
 const searchQuery = ref('')
 
 // Language switcher görünürlüğü — opsiyonel, app config'inden okunabilir
@@ -309,7 +345,8 @@ const isActive = (to: string | undefined) => {
 
 // Sidebar toggle
 const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value
+  if (isMobile.value) isMobileMenuOpen.value = false
+  else isSidebarOpen.value = !isSidebarOpen.value
 }
 
 // User dropdown state
@@ -355,12 +392,17 @@ onMounted(async () => {
   // Dropdown dışı tıklama listener
   if (import.meta.client) {
     document.addEventListener('click', handleDocumentClickForUserDropdown)
+    document.addEventListener('keydown', onEscape)
+    mobileMql = window.matchMedia(MOBILE_QUERY)
+    mobileMql.addEventListener('change', onMobileChange)
   }
 })
 
 onUnmounted(() => {
   if (import.meta.client) {
     document.removeEventListener('click', handleDocumentClickForUserDropdown)
+    document.removeEventListener('keydown', onEscape)
+    mobileMql?.removeEventListener('change', onMobileChange)
   }
 })
 </script>

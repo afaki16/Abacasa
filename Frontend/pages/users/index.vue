@@ -15,6 +15,7 @@
   />
 
   <BaseDataTable
+    class="users-table"
     :hide-page-header="true"
       :items="items"
       :columns="tableColumns"
@@ -157,7 +158,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { UserStatus } from '~/types'
-import { dateTimeFormatLong } from '~/utils/datesFormat.ts'
+import { dateTimeFormat } from '~/utils/datesFormat.ts'
 import BaseDataTable from '~/components/UI/BaseDataTable.vue'
 import ResizableDrawer from '~/components/UI/ResizableDrawer.vue'
 import UserForm from '~/components/Users/UserForm.vue'
@@ -230,7 +231,7 @@ const tableColumns = computed(() => {
       sortable: true,
       filterable: false,
       width: '300px',
-      formatter: dateTimeFormatLong
+      formatter: dateTimeFormat
     }
   ]
   // Platform görünümünde SuperAdmin kullanıcının üye olduğu haneleri görür; üst bardan bir hane
@@ -357,6 +358,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* SuperAdmin platform görünümünde Haneler sütunuyla 6 sütun 1366px ekrana sığsın diye hücre yan boşlukları daraltıldı */
+.users-table :deep(th),
+.users-table :deep(td) {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
 .household-pills {
   display: flex;
   flex-wrap: wrap;

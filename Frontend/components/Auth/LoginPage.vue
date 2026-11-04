@@ -572,6 +572,8 @@ onUnmounted(() => {
   padding: 40px;
   position: relative;
   z-index: 5;
+  /* Süs ışıması (::before, right: -200px) ekran dışına taşıp mobilde sayfayı genişletmesin */
+  overflow-x: clip;
 }
 
 .right-panel::before {
