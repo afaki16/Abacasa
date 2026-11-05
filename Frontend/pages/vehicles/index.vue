@@ -15,7 +15,7 @@
   <!-- Yaklaşan ve geciken -->
   <UiCard elevation="0" border class="mb-4">
     <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Yaklaşan ve geciken</div>
-    <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
+    <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
       <thead>
         <tr>
           <th>Araç</th>

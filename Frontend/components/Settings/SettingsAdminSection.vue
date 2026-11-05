@@ -45,7 +45,7 @@
       </p>
       <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="primary" />
       <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table">
-        <table class="ui-table ui-table--comfortable soft-table">
+        <table v-stack-table class="ui-table ui-table--comfortable soft-table">
           <thead>
             <tr>
               <th>Kullanıcı</th>

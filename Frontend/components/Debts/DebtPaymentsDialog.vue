@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto mb-4"><table class="ui-table ui-table--compact">
+        <div class="overflow-x-auto mb-4"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Tarih</th>

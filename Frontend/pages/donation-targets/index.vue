@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto" v-if="section.rows.length"><table class="ui-table ui-table--compact">
+      <div class="overflow-x-auto" v-if="section.rows.length"><table v-stack-table class="ui-table ui-table--compact">
         <thead>
           <tr>
             <th>Kişi</th>

@@ -349,6 +349,31 @@ hr.ui-divider {
 .ui-table--compact td { height: 36px; }
 .ui-table--compact th { height: 40px; }
 
+/* v-stack-table (plugins/stack-table.ts): telefonda satırlar kart, hücre etiketi soldadır */
+@media (max-width: 640px) {
+  /* Uzun diyalog başlığı kapat düğmesini ekran dışına itmesin: telefonda başlık alt satıra geçer */
+  .ui-card-title { white-space: normal; font-size: 1.1rem; line-height: 1.6rem; }
+
+  .ui-table--stack thead { display: none; }
+  .ui-table--stack,
+  .ui-table--stack tbody,
+  .ui-table--stack tfoot,
+  .ui-table--stack tr { display: block; width: 100%; }
+  .ui-table--stack tr { padding: 8px 0; border-bottom: 1px solid rgb(var(--color-on-surface) / 0.12); }
+  .ui-table--stack tr:last-child { border-bottom: none; }
+  .ui-table--stack td {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; height: auto !important; padding: 4px 12px !important;
+    border-bottom: none !important; text-align: right !important; white-space: normal; word-break: break-word;
+  }
+  .ui-table--stack td::before {
+    content: attr(data-label); flex-shrink: 0; max-width: 45%; text-align: left;
+    font-size: 0.75rem; font-weight: 600; color: rgb(var(--color-on-surface-variant));
+  }
+  .ui-table--stack td[data-label=""]::before { content: none; }
+  .ui-table--stack td[data-label=""] { justify-content: flex-end; }
+}
+
 /* ── v-list-item başlık/alt başlık (UiSelect #item şablonlarında) ── */
 .ui-list-title { font-size: 1rem; font-weight: 400; line-height: 1.5rem; letter-spacing: 0.009375em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ui-list-subtitle { font-size: 0.875rem; line-height: 1rem; letter-spacing: 0.0178em; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

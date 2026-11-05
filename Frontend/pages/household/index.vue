@@ -22,7 +22,7 @@
   <!-- Üyeler -->
   <UiCard elevation="0" border class="mb-6">
     <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Üyeler</div>
-    <table class="ui-table ui-table--comfortable">
+    <table v-stack-table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
           <th>Ad</th>
@@ -96,7 +96,7 @@
         <UiBtn v-if="canCreateMembers" color="primary" size="small" prepend-icon="mdi-email-plus" @click="openInvite">Davet et</UiBtn>
       </div>
     </div>
-    <table class="ui-table ui-table--comfortable">
+    <table v-stack-table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
           <th>E-posta</th>

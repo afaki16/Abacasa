@@ -77,7 +77,7 @@
     <div class="ui-col ui-col-12">
       <UiCard elevation="0" border>
         <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Alacaklıya göre</div>
-        <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
+        <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
               <th>Alacaklı</th>

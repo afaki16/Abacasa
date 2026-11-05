@@ -88,7 +88,7 @@
       <div class="ui-col ui-col-12 ui-col-md-6">
         <UiCard elevation="0" border class="h-full">
           <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
-          <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
+          <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
             <thead>
               <tr>
                 <th>Ad</th>
@@ -116,7 +116,7 @@
       <div class="ui-col ui-col-12 ui-col-md-6">
         <UiCard elevation="0" border class="h-full">
           <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kişiye göre</div>
-          <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
+          <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
             <thead>
               <tr>
                 <th>Ad</th>
@@ -158,7 +158,7 @@
           <NuxtLink to="/recurring-payments" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-[rgb(var(--color-brand))]">Sabit ödemeler'e git</NuxtLink>
         </div>
       </div>
-      <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
+      <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
         <thead>
           <tr>
             <th>Vade</th>
