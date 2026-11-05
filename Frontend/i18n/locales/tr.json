@@ -76,7 +76,16 @@
     "forceChangePasswordTitle": "Şifrenizi Değiştirin",
     "forceChangePasswordSubtitle": "Devam etmeden önce hesabınız için yeni bir şifre belirlemeniz gerekiyor",
     "currentPasswordLabel": "Mevcut Şifre",
-    "newPasswordMustDiffer": "Yeni şifre mevcut şifreden farklı olmalıdır"
+    "newPasswordMustDiffer": "Yeni şifre mevcut şifreden farklı olmalıdır",
+    "forceUseCode": "Geçici şifremi bilmiyorum, e-postama kod gönder",
+    "forceUsePassword": "Mevcut şifremle değiştir",
+    "forceCodeInfo": "{email} adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.",
+    "codeLabel": "Doğrulama kodu",
+    "sendCode": "Kod gönder",
+    "resendCode": "Tekrar gönder",
+    "codeSent": "Doğrulama kodu e-posta adresinize gönderildi.",
+    "codeSendFailed": "Kod gönderilemedi.",
+    "secondsShort": "{s} sn"
   },
   "sidebar": {
     "context": {
@@ -92,7 +101,7 @@
       "dashboard": "Anasayfa",
       "userManagement": "Kullanıcı Yönetimi",
       "users": "Kullanıcılar",
-      "tenants": "Kiracılar",
+      "tenants": "Haneler",
       "roles": "Roller",
       "permissions": "İzinler",
       "budget": "Bütçe",

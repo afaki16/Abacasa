@@ -41,7 +41,7 @@
       </div>
       <div class="panel-card__divider" />
       <p class="panel-card__hint px-5 pt-4">
-        En az bir geçerli oturumu olan kullanıcılar — yalnızca kendi tenant'ınız.
+        En az bir geçerli oturumu olan kullanıcılar — yalnızca kendi haneniz.
       </p>
       <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="primary" />
       <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table">

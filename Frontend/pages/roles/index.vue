@@ -178,7 +178,7 @@ const tableColumns = computed(() => {
   ]
   if (isSuperAdmin.value) {
     base.splice(2, 0, {
-      label: 'Tenant',
+      label: 'Hane',
       key: 'tenantId',
       sortable: true,
       filterable: false,

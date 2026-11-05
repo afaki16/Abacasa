@@ -2,7 +2,7 @@
   "auth": {
     "invalidCredentials": "Invalid email or password",
     "emailNotConfirmed": "Please verify your email address. A verification link has been sent to your email.",
-    "multipleAccountsFound": "Multiple accounts found with this email. Please specify a tenant id.",
+    "multipleAccountsFound": "Multiple accounts found with this email. Please specify a household id.",
     "accessTokenGenerationFailed": "Failed to generate access token",
     "refreshTokenGenerationFailed": "Failed to generate refresh token",
     "invalidRefreshToken": "Invalid refresh token",
@@ -33,8 +33,8 @@
     "notFound": "User not found",
     "emailExists": "Email already exists",
     "phoneExists": "Phone number already exists",
-    "onlySuperAdminCanSpecifyTenant": "Only SuperAdmin can create users in a specific tenant",
-    "noTenantScope": "You must belong to a tenant to perform this action",
+    "onlySuperAdminCanSpecifyTenant": "Only SuperAdmin can create users in a specific household",
+    "noTenantScope": "You must belong to a household to perform this action",
     "cannotAssignSuperAdmin": "You cannot assign the SuperAdmin role",
     "cannotAssignRole": "You cannot assign a role with permissions beyond your own.",
     "noAccessToUpdate": "You do not have access to update this user",
@@ -62,10 +62,10 @@
     "updateFailed": "An unexpected error occurred while updating the role"
   },
   "tenants": {
-    "notFound": "Tenant not found",
-    "nameExists": "Tenant name already exists",
-    "domainExists": "Tenant domain already exists",
-    "hasSuperAdmin": "This tenant cannot be deactivated or deleted because it contains a SuperAdmin user."
+    "notFound": "Household not found",
+    "nameExists": "Household name already exists",
+    "domainExists": "Household domain already exists",
+    "hasSuperAdmin": "This household cannot be deactivated or deleted because it contains a SuperAdmin user."
   },
   "categories": {
     "notFound": "Category not found",
@@ -236,7 +236,7 @@
       "id": "ID",
       "userId": "User ID",
       "roleId": "Role ID",
-      "tenantId": "Tenant ID",
+      "tenantId": "Household ID",
       "email": "Email",
       "password": "Password",
       "currentPassword": "Current password",
@@ -250,7 +250,7 @@
       "accessToken": "Access token",
       "refreshToken": "Refresh token",
       "roleName": "Role name",
-      "tenantName": "Tenant name",
+      "tenantName": "Household name",
       "householdName": "Household name",
       "role": "Role",
       "categoryId": "Category ID",

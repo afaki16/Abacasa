@@ -20,7 +20,7 @@
         :class="{ 'pill-tab--active': activeTab === 'admin' }"
         @click="activeTab = 'admin'"
       >
-        <UiIcon icon="mdi-shield-account-outline" :size="16" /> Tenant Ayarları
+        <UiIcon icon="mdi-shield-account-outline" :size="16" /> Hane Oturumları
       </button>
       <button
         type="button"
@@ -72,8 +72,8 @@ const activeTab = ref<"admin" | "superadmin">("admin");
 
 const heroSubtitle = computed(() =>
   activeTab.value === "superadmin"
-    ? "Tüm tenant'ları kapsayan oturum ve kullanıcı yönetimi"
-    : "Kendi tenant'ınıza ait oturum ve kullanıcı yönetimi",
+    ? "Tüm haneleri kapsayan oturum ve kullanıcı yönetimi"
+    : "Kendi hanenize ait oturum ve kullanıcı yönetimi",
 );
 
 watch(

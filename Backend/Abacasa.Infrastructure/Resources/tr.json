@@ -2,7 +2,7 @@
   "auth": {
     "invalidCredentials": "Email veya şifre hatalı",
     "emailNotConfirmed": "Lütfen email adresinizi doğrulayın. Doğrulama bağlantısı email adresinize gönderildi.",
-    "multipleAccountsFound": "Bu email adresine ait birden fazla hesap bulundu. Lütfen tenant kimliğini belirtin.",
+    "multipleAccountsFound": "Bu email adresine ait birden fazla hesap bulundu. Lütfen hane kimliğini belirtin.",
     "accessTokenGenerationFailed": "Erişim tokeni oluşturulamadı",
     "refreshTokenGenerationFailed": "Yenileme tokeni oluşturulamadı",
     "invalidRefreshToken": "Geçersiz yenileme tokeni",
@@ -33,8 +33,8 @@
     "notFound": "Kullanıcı bulunamadı",
     "emailExists": "Bu email adresi zaten kullanılıyor",
     "phoneExists": "Bu telefon numarası zaten kullanılıyor",
-    "onlySuperAdminCanSpecifyTenant": "Sadece SuperAdmin başka bir tenant için kullanıcı oluşturabilir",
-    "noTenantScope": "Bu işlemi yapabilmeniz için bir tenant'a bağlı olmanız gerekir",
+    "onlySuperAdminCanSpecifyTenant": "Sadece SuperAdmin başka bir hane için kullanıcı oluşturabilir",
+    "noTenantScope": "Bu işlemi yapabilmeniz için bir haneye bağlı olmanız gerekir",
     "cannotAssignSuperAdmin": "SuperAdmin rolü atayamazsınız",
     "cannotAssignRole": "Kendi yetkinizi aşan bir rol atayamazsınız.",
     "noAccessToUpdate": "Bu kullanıcıyı güncelleme yetkiniz yok",
@@ -62,10 +62,10 @@
     "updateFailed": "Rol güncellenirken beklenmeyen bir hata oluştu"
   },
   "tenants": {
-    "notFound": "Tenant bulunamadı",
-    "nameExists": "Bu tenant adı zaten kullanılıyor",
-    "domainExists": "Bu tenant domaini zaten kullanılıyor",
-    "hasSuperAdmin": "Bu tenant'ta SuperAdmin kullanıcısı olduğu için pasif yapılamaz veya silinemez."
+    "notFound": "Hane bulunamadı",
+    "nameExists": "Bu hane adı zaten kullanılıyor",
+    "domainExists": "Bu hane domaini zaten kullanılıyor",
+    "hasSuperAdmin": "Bu hanede SuperAdmin kullanıcısı olduğu için pasif yapılamaz veya silinemez."
   },
   "categories": {
     "notFound": "Kategori bulunamadı",
@@ -236,7 +236,7 @@
       "id": "Kimlik",
       "userId": "Kullanıcı kimliği",
       "roleId": "Rol kimliği",
-      "tenantId": "Tenant kimliği",
+      "tenantId": "Hane kimliği",
       "email": "E-posta",
       "password": "Şifre",
       "currentPassword": "Mevcut şifre",
@@ -250,7 +250,7 @@
       "accessToken": "Erişim tokeni",
       "refreshToken": "Yenileme tokeni",
       "roleName": "Rol adı",
-      "tenantName": "Tenant adı",
+      "tenantName": "Hane adı",
       "householdName": "Hane adı",
       "role": "Rol",
       "categoryId": "Kategori kimliği",

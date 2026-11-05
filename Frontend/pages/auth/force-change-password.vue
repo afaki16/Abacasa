@@ -8,6 +8,7 @@
 
       <UiForm ref="formRef" v-model="isValid" class="auth-form" @submit="onSubmit">
         <UiTextField
+          v-if="!useCode"
           v-model="currentPassword"
           :label="t('auth.currentPasswordLabel')"
           :type="showPassword ? 'text' : 'password'"
@@ -20,6 +21,36 @@
           :disabled="loading"
           class="mb-2"
         />
+
+        <!-- Geçici şifresini bilmeyen kullanıcı: e-postaya gelen 6 haneli kodla değiştirir -->
+        <template v-else>
+          <p class="code-info">{{ t('auth.forceCodeInfo', { email: userEmail }) }}</p>
+          <div class="code-row mb-2">
+            <UiTextField
+              v-model="code"
+              :label="t('auth.codeLabel')"
+              prepend-inner-icon="mdi-email-lock-outline"
+              bg-color="white"
+              rounded="lg"
+              inputmode="numeric"
+              maxlength="6"
+              autocomplete="one-time-code"
+              :rules="[rules.required]"
+              :disabled="loading"
+              class="flex-1"
+            />
+            <UiBtn
+              color="white"
+              variant="outlined"
+              class="code-btn"
+              :loading="sendingCode"
+              :disabled="loading || codeCooldown > 0"
+              @click="sendCode"
+            >
+              {{ codeCooldown > 0 ? t('auth.secondsShort', { s: codeCooldown }) : codeSent ? t('auth.resendCode') : t('auth.sendCode') }}
+            </UiBtn>
+          </div>
+        </template>
 
         <UiTextField
           v-model="newPassword"
@@ -68,6 +99,9 @@
       </UiForm>
 
       <div class="actions">
+        <button type="button" class="mode-link" :disabled="loading" @click="toggleMode">
+          {{ useCode ? t('auth.forceUsePassword') : t('auth.forceUseCode') }}
+        </button>
         <UiBtn variant="text" color="white" class="link-btn" prepend-icon="mdi-logout" :disabled="loading" @click="onLogout">
           {{ t('auth.logout') }}
         </UiBtn>
@@ -99,12 +133,62 @@ const errorMessages = ref<string[]>([])
 const differsFromCurrent = (value: string) =>
   value !== currentPassword.value || t('auth.newPasswordMustDiffer')
 
+// Mevcut şifre yerine e-posta kodu (backend: password-change/code + /confirm; kilitliyken de açık)
+const authStore = useAuthStore()
+const userEmail = computed(() => authStore.user?.email ?? '')
+const useCode = ref(false)
+const code = ref('')
+const sendingCode = ref(false)
+const codeSent = ref(false)
+const codeCooldown = ref(0)
+let cooldownTimer: ReturnType<typeof setInterval> | null = null
+
+const startCooldown = (seconds: number) => {
+  codeCooldown.value = seconds
+  if (cooldownTimer) clearInterval(cooldownTimer)
+  cooldownTimer = setInterval(() => {
+    codeCooldown.value = Math.max(0, codeCooldown.value - 1)
+    if (codeCooldown.value === 0 && cooldownTimer) clearInterval(cooldownTimer)
+  }, 1000)
+}
+
+const toggleMode = () => {
+  useCode.value = !useCode.value
+  currentPassword.value = ''
+  code.value = ''
+  errorMessages.value = []
+}
+
+const sendCode = async () => {
+  sendingCode.value = true
+  errorMessages.value = []
+  try {
+    await auth.sendPasswordChangeCode()
+    codeSent.value = true
+    useToast().success(t('auth.codeSent'))
+    startCooldown(60)
+  } catch (error) {
+    const message = parseApiErrorMessages(error, t('auth.codeSendFailed'))[0]
+    errorMessages.value = [message]
+    // Backend bekleme süresini mesajda bildirir ("... 42 saniye bekleyin")
+    const seconds = Number(message.match(/\d+/)?.[0])
+    if (seconds > 0) startCooldown(seconds)
+  } finally {
+    sendingCode.value = false
+  }
+}
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
 const onSubmit = async () => {
   if (!isValid.value || loading.value) return
   loading.value = true
   errorMessages.value = []
   try {
-    await auth.completeForcedPasswordChange(currentPassword.value, newPassword.value)
+    const proof = useCode.value ? { code: code.value.trim() } : { currentPassword: currentPassword.value }
+    await auth.completeForcedPasswordChange(proof, newPassword.value)
   } catch (error) {
     errorMessages.value = parseApiErrorMessages(error, t('auth.resetPasswordFailed'))
   } finally {
@@ -183,6 +267,44 @@ useHead({
 .link-btn {
   text-transform: none !important;
   font-weight: 500 !important;
+}
+
+.code-info {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+
+.code-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Etiket alanın üstünde; düğme giriş kutusuyla aynı hizada */
+.code-btn {
+  height: 42px !important;
+  margin-bottom: 22px;
+  border-radius: 10px !important;
+  text-transform: none !important;
+  white-space: nowrap;
+}
+
+.mode-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.mode-link:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 @media (max-width: 480px) {

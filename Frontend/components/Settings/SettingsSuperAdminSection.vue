@@ -9,7 +9,7 @@
             <UiProgressCircular v-if="loadingCount" indeterminate :size="18" :width="2" />
             <template v-else>{{ activeUserCount }}</template>
           </div>
-          <div class="stat-tile__lbl">{{ selectedTenantId ? 'Tenant aktif kullanıcı' : 'Toplam aktif kullanıcı' }}</div>
+          <div class="stat-tile__lbl">{{ selectedTenantId ? 'Hanede aktif kullanıcı' : 'Toplam aktif kullanıcı' }}</div>
         </div>
       </div>
       <div class="stat-tile">
@@ -25,7 +25,7 @@
           :items="tenantOptions"
           item-title="label"
           item-value="value"
-          label="Tenant filtresi"
+          label="Hane filtresi"
           clearable
           hide-details
           density="comfortable"
@@ -58,7 +58,7 @@
       <div class="panel-card__divider" />
       <p class="panel-card__hint px-5 pt-4">
         En az bir geçerli oturumu olan kullanıcılar.
-        {{ selectedTenantId ? 'Seçili tenant filtrelenmiş.' : 'Tüm tenant\'lar gösteriliyor.' }}
+        {{ selectedTenantId ? 'Seçili haneye göre süzüldü.' : 'Tüm haneler gösteriliyor.' }}
       </p>
       <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="primary" />
       <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table">
@@ -66,7 +66,7 @@
           <thead>
             <tr>
               <th>Kullanıcı</th>
-              <th>Tenant</th>
+              <th>Hane</th>
               <th>Oturum</th>
               <th>Son Aktivite</th>
             </tr>
@@ -180,7 +180,7 @@ const initials = (name: string) =>
 const formatActivity = (iso: string | null) => iso ? dateTimeFormat(iso) : '—'
 
 const tenantOptions = computed(() => [
-  { label: 'Tüm tenant\'lar', value: null },
+  { label: 'Tüm haneler', value: null },
   ...tenants.value.map(t => ({ label: t.name, value: t.id }))
 ])
 

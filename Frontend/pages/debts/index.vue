@@ -141,6 +141,7 @@
   </div>
 
   <BaseDataTable
+    class="debts-table"
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
@@ -186,11 +187,14 @@
       {{ money(item.paidAmount, item) }}
     </template>
 
+    <!-- Döviz/çeyrek borçta TL karşılığı alt satırda: tablo 1366px ekrana sığsın -->
     <template #cell-remaining="{ item }">
-      <span class="font-medium">{{ money(item.remaining, item) }}</span>
-      <span v-if="item.currency !== Currency.TRY && item.remainingInTry !== null" class="text-black/60 dark:text-white/70">
-        ≈ {{ formatMoney(item.remainingInTry) }}
-      </span>
+      <div class="leading-tight">
+        <div class="font-medium">{{ money(item.remaining, item) }}</div>
+        <div v-if="item.currency !== Currency.TRY && item.remainingInTry !== null" class="text-xs text-black/60 dark:text-white/70">
+          ≈ {{ formatMoney(item.remainingInTry) }}
+        </div>
+      </div>
     </template>
 
     <template #cell-status="{ item }">
@@ -200,8 +204,17 @@
 
     <template #actions="{ item }">
       <div class="flex items-center gap-1">
-        <UiBtn size="small" variant="tonal" color="primary" @click="openPayments(item)">
-          Ödemeler ({{ item.paymentCount }})
+        <!-- Kısa düğme (ikon + ödeme sayısı): 9 sütunlu tablo 1366px ekrana sığsın -->
+        <UiBtn
+          size="small"
+          variant="tonal"
+          color="primary"
+          prepend-icon="mdi-cash-multiple"
+          title="Ödemeler"
+          :aria-label="`Ödemeler (${item.paymentCount})`"
+          @click="openPayments(item)"
+        >
+          {{ item.paymentCount }}
         </UiBtn>
         <UiBtn
           v-if="canUpdate"
@@ -298,9 +311,9 @@ const tableColumns = [
   { label: "Borçlu", key: "debtorName", sortable: false, width: "120px" },
   { label: "Tutar", key: "amount", sortable: false, width: "140px" },
   { label: "Ödenen", key: "paidAmount", sortable: false, width: "140px" },
-  { label: "Kalan", key: "remaining", sortable: false, width: "220px" },
+  { label: "Kalan", key: "remaining", sortable: false, width: "140px" },
   { label: "Durum", key: "status", sortable: false, width: "100px" },
-  { label: "Not", key: "note", sortable: false, width: "180px" },
+  { label: "Not", key: "note", sortable: false, width: "180px", cellClass: "whitespace-normal" },
 ];
 //#endregion
 
@@ -432,3 +445,14 @@ onMounted(async () => {
 });
 //#endregion
 </script>
+
+<style scoped>
+/* 9 sütun 1366px ekrana sığsın diye masaüstünde hücre yan boşlukları daraltıldı (telefonda kart görünümü) */
+@media (min-width: 641px) {
+  .debts-table :deep(th),
+  .debts-table :deep(td) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+</style>

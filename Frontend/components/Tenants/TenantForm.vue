@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Tenant Adı"
-            placeholder="Tenant adını girin"
+            label="Hane Adı"
+            placeholder="Hane adını girin"
             :disabled="loading"
             prepend-inner-icon="mdi-domain"
             density="comfortable"
@@ -22,7 +22,7 @@
           <UiTextField
             v-model="formData.domain"
             label="Domain"
-            placeholder="ornek-tenant"
+            placeholder="ornek-hane"
             :disabled="loading"
             prepend-inner-icon="mdi-web"
             density="comfortable"
@@ -38,7 +38,7 @@
           <UiTextField multiline
             v-model="formData.description"
             label="Açıklama"
-            placeholder="Tenant hakkında kısa açıklama"
+            placeholder="Hane hakkında kısa açıklama"
             :disabled="loading"
             rows="3"
             auto-grow

@@ -76,7 +76,16 @@
     "forceChangePasswordTitle": "Change Your Password",
     "forceChangePasswordSubtitle": "You need to set a new password for your account before continuing",
     "currentPasswordLabel": "Current Password",
-    "newPasswordMustDiffer": "The new password must be different from the current one"
+    "newPasswordMustDiffer": "The new password must be different from the current one",
+    "forceUseCode": "I don't know my temporary password, email me a code",
+    "forceUsePassword": "Change with my current password",
+    "forceCodeInfo": "A 6-digit code will be sent to {email}. The code is valid for 10 minutes.",
+    "codeLabel": "Verification code",
+    "sendCode": "Send code",
+    "resendCode": "Resend",
+    "codeSent": "A verification code has been sent to your email.",
+    "codeSendFailed": "The code could not be sent.",
+    "secondsShort": "{s}s"
   },
   "sidebar": {
     "context": {
@@ -92,7 +101,7 @@
       "dashboard": "Dashboard",
       "userManagement": "User Management",
       "users": "Users",
-      "tenants": "Tenants",
+      "tenants": "Households",
       "roles": "Roles",
       "permissions": "Permissions",
       "budget": "Budget",

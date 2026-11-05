@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Tenant\'lar' }]"
+      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Haneler' }]"
     />
   </div>
 
   <PageHero
     icon="mdi-domain"
-    title="Tenant'lar"
-    subtitle="Haneleri (tenant'ları) oluşturun, düzenleyin ve yönetin."
+    title="Haneler"
+    subtitle="Sistemdeki haneleri oluşturun, düzenleyin ve yönetin."
     :count="items.length"
   />
 
@@ -17,13 +17,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Tenant'lar"
+    title="Haneler"
     toolbar-icon="mdi-domain"
-    search-placeholder="Tenant ara..."
-    add-button-text="Yeni Tenant Ekle"
+    search-placeholder="Hane ara..."
+    add-button-text="Yeni Hane Ekle"
     :loading="isLoading"
-    loading-text="Tenant'lar yükleniyor..."
-    empty-title="Tenant bulunamadı"
+    loading-text="Haneler yükleniyor..."
+    empty-title="Hane bulunamadı"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -61,8 +61,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Tenant Düzenle' : 'Yeni Tenant Ekle'"
-    :subtitle="isEditMode ? 'Tenant bilgilerini güncelleyin' : 'Sisteme yeni tenant bilgilerini girin'"
+    :title="isEditMode ? 'Haneyi Düzenle' : 'Yeni Hane Ekle'"
+    :subtitle="isEditMode ? 'Hane bilgilerini güncelleyin' : 'Sisteme yeni hane bilgilerini girin'"
     icon="mdi-domain"
     :default-width="600"
     :min-width="400"
@@ -78,8 +78,8 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Tenant'ı Sil"
-    :message="`'${itemToDelete?.name}' tenant'ını silmek istediğinizden emin misiniz?`"
+    title="Haneyi Sil"
+    :message="`'${itemToDelete?.name}' hanesini silmek istediğinizden emin misiniz?`"
     type="error"
     confirm-text="Sil"
     :loading="isDeleting"
@@ -97,21 +97,21 @@ import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
 
 //#region Page Metadata
 definePageMeta({
-  title: "Tenant'lar",
+  title: "Haneler",
   requiresAuth: true,
   middleware: ["permission"],
   roles: ["SuperAdmin"],
 });
 
 useHead({
-  title: "Tenant'lar",
+  title: "Haneler",
 });
 //#endregion
 
 //#region DataTable Columns
 const tableColumns = [
   {
-    label: "Tenant Adı",
+    label: "Hane Adı",
     key: "name",
     sortable: true,
     filterable: true,

@@ -274,19 +274,28 @@ export const useAuth = () => {
    * Zorunlu şifre değişimi (MustChangePassword). Normal changePassword'dan farkı:
    * kullanıcı oturumdan atılmaz. Backend tüm oturumları kapatır (diğer cihazlar dahil),
    * ardından yeni şifreyle bu cihaz için otomatik olarak yeniden giriş yapılır.
+   * Kanıt mevcut şifre ya da (geçici şifresini unutan kullanıcı için) e-postaya gelen 6 haneli koddur.
    */
   const completeForcedPasswordChange = async (
-    currentPassword: string,
+    proof: { currentPassword: string } | { code: string },
     newPassword: string,
   ): Promise<void> => {
     const user = authStore.user;
     if (!user) throw new Error("Not authenticated");
 
-    await api.post(
-      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
-      { currentPassword, newPassword },
-      { silent: true },
-    );
+    if ("code" in proof) {
+      await api.post(
+        API_ENDPOINTS.AUTH.PASSWORD_CHANGE_CONFIRM,
+        { code: proof.code, newPassword },
+        { silent: true },
+      );
+    } else {
+      await api.post(
+        API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+        { currentPassword: proof.currentPassword, newPassword },
+        { silent: true },
+      );
+    }
 
     // Backend oturum iptalini (LastSessionsRevokedAt) milisaniye hassasiyetiyle,
     // JWT "iat" değerini ise saniye hassasiyetiyle tutar. Aynı saniye içinde alınan yeni

@@ -13,7 +13,7 @@
           </span>
           <span v-if="showTenant" class="badge badge--tenant">
             <UiIcon icon="mdi-domain" :size="13" />
-            {{ role?.tenantId == null ? 'Ortak' : `Tenant ${role.tenantId}` }}
+            {{ role?.tenantId == null ? 'Ortak' : `Hane ${role.tenantId}` }}
           </span>
         </div>
       </div>
