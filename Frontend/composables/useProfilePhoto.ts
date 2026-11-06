@@ -10,7 +10,7 @@ export const PROFILE_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
  * Kendi fotoğrafı değişince auth store'daki kullanıcı da güncellenir (header avatarı).
  */
 export const useProfilePhoto = () => {
-  const { $api } = useNuxtApp()
+  const { $api, $i18n } = useNuxtApp()
   const authStore = useAuthStore()
 
   const endpoint = (userId?: number | string | null) =>
@@ -23,8 +23,8 @@ export const useProfilePhoto = () => {
 
   /** Yüklemeden önce hızlı kontrol; hata mesajı ya da null döner. */
   const validatePhoto = (file: File): string | null => {
-    if (!PROFILE_PHOTO_TYPES.includes(file.type)) return 'Yalnızca JPEG, PNG veya WEBP görseller yüklenebilir.'
-    if (file.size > PROFILE_PHOTO_MAX_BYTES) return `Dosya en fazla ${PROFILE_PHOTO_MAX_BYTES / (1024 * 1024)} MB olabilir.`
+    if (!PROFILE_PHOTO_TYPES.includes(file.type)) return $i18n.t('users.photo.invalidType')
+    if (file.size > PROFILE_PHOTO_MAX_BYTES) return $i18n.t('users.photo.tooLarge', { mb: PROFILE_PHOTO_MAX_BYTES / (1024 * 1024) })
     return null
   }
 

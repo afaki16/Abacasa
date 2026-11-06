@@ -2,15 +2,15 @@
     <!-- Breadcrumb -->
     <div class="mb-6">
       <BreadCrumb :items="[
-        { text: 'Ana Sayfa', to: '/' },
-        { text: 'Kullanıcılar' }
+        { text: t('common.home'), to: '/' },
+        { text: t('users.title') }
       ]" />
     </div>
 
   <PageHero
     icon="mdi-account-group-outline"
-    title="Kullanıcılar"
-    subtitle="Sistem kullanıcılarını görüntüleyin, oluşturun ve yönetin."
+    :title="t('users.title')"
+    :subtitle="t('users.subtitle')"
     :count="totalCount"
   />
 
@@ -19,13 +19,13 @@
     :hide-page-header="true"
       :items="items"
       :columns="tableColumns"
-      title="Kullanıcılar"
+      :title="t('users.title')"
       toolbar-icon="mdi-account"
-      search-placeholder="Kullanıcı ara..."
-      add-button-text="Yeni Kullanıcı Ekle"
+      :search-placeholder="t('users.searchPlaceholder')"
+      :add-button-text="t('users.add')"
       :loading="isLoading"
-      loading-text="Kullanıcılar yükleniyor..."
-      empty-title="Kullanıcı bulunamadı"
+      :loading-text="t('users.loading')"
+      :empty-title="t('users.empty')"
       :show-add-button="true"
       :show-advanced-filters="true"
       :show-actions="true"
@@ -85,7 +85,7 @@
     <button
       v-if="canResendAccountInvitation(item)"
       class="action-button invite-button"
-      title="Daveti tekrar gönder"
+      :title="t('users.resendInvitation')"
       :disabled="resendingId === item.id"
       @click.stop="openResendDialog(item)"
     >
@@ -97,8 +97,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Kullanıcıyı Düzenle' : 'Yeni Kullanıcı Ekle'"
-    :subtitle="isEditMode ? 'Kullanıcı bilgilerini düzenleyin' : 'Sisteme yeni kullanıcı bilgilerini girin'"
+    :title="isEditMode ? t('users.editTitle') : t('users.add')"
+    :subtitle="isEditMode ? t('users.editSubtitle') : t('users.createSubtitle')"
     icon="mdi-account"
     :default-width="600"
     :min-width="400"
@@ -116,8 +116,8 @@
   <!-- View Detail Drawer -->
   <ResizableDrawer
     v-model="dialogs.view"
-    title="Kullanıcı Detayı"
-    subtitle="Hesap bilgileri ve roller"
+    :title="t('users.detailTitle')"
+    :subtitle="t('users.detailSubtitle')"
     icon="mdi-account-details-outline"
     :default-width="720"
     :min-width="520"
@@ -132,10 +132,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Kullanıcıyı Sil"
-    :message="`'${itemToDelete?.fullName || itemToDelete?.email}' kullanıcısını silmek istediğinizden emin misiniz?`"
+    :title="t('users.deleteTitle')"
+    :message="t('users.deleteConfirm', { name: itemToDelete?.fullName || itemToDelete?.email })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -144,10 +144,10 @@
   <!-- Confirm Resend Account Invitation Dialog -->
   <ConfirmDialog
     v-model="resendDialog"
-    title="Daveti Tekrar Gönder"
-    :message="`'${itemToResend?.email}' adresine yeni bir şifre belirleme linki gönderilecek. Önceki link geçersiz olur.`"
+    :title="t('users.resendTitle')"
+    :message="t('users.resendMessage', { email: itemToResend?.email })"
     type="info"
-    confirm-text="Gönder"
+    :confirm-text="t('common.send')"
     :loading="!!resendingId"
     @confirm="confirmResend"
     @cancel="resendDialog = false"
@@ -173,8 +173,10 @@ definePageMeta({
   permissions: ['Users.Read']
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: 'Kullanıcılar',
+  title: computed(() => t('users.title')),
 })
 //#endregion
 
@@ -182,25 +184,28 @@ useHead({
 const authStore = useAuthStore()
 const { selectedTenantId } = useTenantContext()
 
-const statusFilterOptions = [
-  { value: UserStatus.Active, title: 'Aktif' },
-  { value: UserStatus.Inactive, title: 'Pasif' },
-  { value: UserStatus.Banned, title: 'Yasaklı' },
-  { value: UserStatus.PendingVerification, title: 'Doğrulanmamış' }
-]
+const statusFilterOptions = computed(() => [
+  { value: UserStatus.Active, title: t('users.status.active') },
+  { value: UserStatus.Inactive, title: t('users.status.inactive') },
+  { value: UserStatus.Banned, title: t('users.status.banned') },
+  { value: UserStatus.PendingVerification, title: t('users.status.pendingVerification') }
+])
 
 const statusBadge = {
-  [UserStatus.Active]: { color: 'success', label: 'Aktif' },
-  [UserStatus.Inactive]: { color: 'grey', label: 'Pasif' },
-  [UserStatus.Banned]: { color: 'error', label: 'Yasaklı' },
-  [UserStatus.PendingVerification]: { color: 'warning', label: 'Doğrulanmamış' }
+  [UserStatus.Active]: { color: 'success', labelKey: 'users.status.active' },
+  [UserStatus.Inactive]: { color: 'grey', labelKey: 'users.status.inactive' },
+  [UserStatus.Banned]: { color: 'error', labelKey: 'users.status.banned' },
+  [UserStatus.PendingVerification]: { color: 'warning', labelKey: 'users.status.pendingVerification' }
 }
-const getStatusBadge = (status) => statusBadge[status] ?? { color: 'grey', label: 'Bilinmiyor' }
+const getStatusBadge = (status) => {
+  const badge = statusBadge[status] ?? { color: 'grey', labelKey: 'users.status.unknown' }
+  return { color: badge.color, label: t(badge.labelKey) }
+}
 
 const tableColumns = computed(() => {
   const base = [
     {
-      label: 'Ad Soyad',
+      label: t('users.columns.fullName'),
       key: 'fullName',
       sortable: true,
       filterable: true,
@@ -208,7 +213,7 @@ const tableColumns = computed(() => {
       width: '300px'
     },
     {
-      label: 'E-posta',
+      label: t('users.columns.email'),
       key: 'email',
       sortable: true,
       filterable: true,
@@ -216,17 +221,17 @@ const tableColumns = computed(() => {
       width: '300px'
     },
     {
-      label: 'Durum',
+      label: t('users.columns.status'),
       key: 'status',
       sortable: true,
       filterable: true,
       filterType: 'select',
       // Filtre backend'de uygulanır (?status=); seçenekler sabit, sayfadaki değerlerden türetilmez
-      filterOptions: statusFilterOptions,
+      filterOptions: statusFilterOptions.value,
       width: '300px'
     },
     {
-      label: 'Son Giriş Tarihi',
+      label: t('users.columns.lastLogin'),
       key: 'lastLoginDate',
       sortable: true,
       filterable: false,
@@ -238,7 +243,7 @@ const tableColumns = computed(() => {
   // seçiliyse liste zaten o hanenin üyeleri olduğundan sütun gizlenir.
   if (authStore.hasRole('SuperAdmin') && !selectedTenantId.value) {
     base.splice(2, 0, {
-      label: 'Haneler',
+      label: t('users.columns.households'),
       key: 'householdNames',
       sortable: false,
       filterable: false,
@@ -291,7 +296,7 @@ const {
   createItem: createUser,
   updateItem: updateUser,
   deleteItem: deleteUser,
-  itemName: 'kullanıcı',
+  itemName: () => t('users.itemName'),
   serverSidePagination: true,
   initialPageSize: 10,
   initialData: usersData
@@ -336,10 +341,10 @@ const confirmResend = async () => {
   resendingId.value = itemToResend.value.id
   try {
     await resendAccountInvitation(String(itemToResend.value.id))
-    toast.success('Davet e-postası gönderildi.')
+    toast.success(t('users.invitationSent'))
     resendDialog.value = false
   } catch (error) {
-    toast.showApiError(error, 'Davet gönderilemedi.')
+    toast.showApiError(error, t('users.invitationFailed'))
   } finally {
     resendingId.value = null
   }

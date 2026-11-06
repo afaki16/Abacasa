@@ -30,15 +30,15 @@
               @changed="onPhotoChanged"
             />
             <p class="text-body-sm text-on-surface-variant">
-              Profil fotoğrafı (JPEG, PNG veya WEBP, en fazla 10 MB). Değişiklik hemen kaydedilir.
+              {{ t('users.form.photoHint') }}
             </p>
           </div>
           <div class="ui-row">
             <div class="ui-col ui-col-12 ui-col-sm-6">
               <UiTextField
                 v-model="formData.firstName"
-                label="Ad"
-                placeholder="Adınız"
+                :label="t('users.form.firstName')"
+                :placeholder="t('users.form.firstNamePlaceholder')"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -50,8 +50,8 @@
             <div class="ui-col ui-col-12 ui-col-sm-6">
               <UiTextField
                 v-model="formData.lastName"
-                label="Soyad"
-                placeholder="Soyadınız"
+                :label="t('users.form.lastName')"
+                :placeholder="t('users.form.lastNamePlaceholder')"
                 :disabled="loading"
                 prepend-inner-icon="mdi-account"
                 density="comfortable"
@@ -66,8 +66,8 @@
             <div class="ui-col ui-col-12 ui-col-sm-6">
               <UiTextField
                 v-model="formData.email"
-                label="E-posta"
-                placeholder="ornek@sirket.com"
+                :label="t('users.form.email')"
+                :placeholder="t('users.form.emailPlaceholder')"
                 :disabled="loading || !!user"
                 prepend-inner-icon="mdi-email"
                 density="comfortable"
@@ -80,7 +80,7 @@
             <div class="ui-col ui-col-12 ui-col-sm-6">
               <UiTextField
                 v-model="formData.phoneNumber"
-                label="Telefon Numarası"
+                :label="t('users.form.phone')"
                 placeholder="0555 000 00 00"
                 :disabled="loading"
                 prepend-inner-icon="mdi-phone"
@@ -98,8 +98,8 @@
               :items="tenants"
               item-title="name"
               item-value="id"
-              label="Hane"
-              placeholder="Hane seçin"
+              :label="t('users.form.household')"
+              :placeholder="t('users.form.householdPlaceholder')"
               :disabled="loading"
               prepend-inner-icon="mdi-domain"
               density="comfortable"
@@ -115,12 +115,12 @@
           <div class="ui-col ui-col-12">
             <div class="toggle-card">
               <div>
-                <span class="toggle-card-title">Kullanıcı Durumu</span>
+                <span class="toggle-card-title">{{ t('users.form.statusTitle') }}</span>
                 <span
                   class="toggle-card-sub"
                   :class="formData.status === UserStatus.Active ? 'toggle-card-sub--on' : 'toggle-card-sub--off'"
                 >
-                  {{ formData.status === UserStatus.Active ? 'Aktif' : 'Pasif' }}
+                  {{ formData.status === UserStatus.Active ? t('common.active') : t('common.inactive') }}
                 </span>
               </div>
               <UiSwitch
@@ -134,8 +134,8 @@
             </div>
             <p class="status-description !mt-2">
               {{ formData.status === UserStatus.Active
-                  ? 'Kullanıcı sisteme giriş yapabilir ve tüm yetkilerini kullanabilir.'
-                  : 'Kullanıcı sisteme giriş yapamaz ve hesabı devre dışıdır.'
+                  ? t('users.form.statusActiveDesc')
+                  : t('users.form.statusInactiveDesc')
               }}
             </p>
           </div>
@@ -146,12 +146,12 @@
           <div class="ui-col ui-col-12">
             <div class="toggle-card">
               <div>
-                <span class="toggle-card-title">Bir sonraki girişte şifre değiştirsin</span>
+                <span class="toggle-card-title">{{ t('users.form.mustChangeTitle') }}</span>
                 <span
                   class="toggle-card-sub"
                   :class="formData.mustChangePassword ? 'toggle-card-sub--warn' : ''"
                 >
-                  {{ formData.mustChangePassword ? 'Zorunlu' : 'Kapalı' }}
+                  {{ formData.mustChangePassword ? t('users.form.mustChangeOn') : t('users.form.mustChangeOff') }}
                 </span>
               </div>
               <UiSwitch
@@ -163,8 +163,8 @@
             </div>
             <p class="status-description !mt-2">
               {{ formData.mustChangePassword
-                  ? 'Kullanıcı giriş yaptığında şifresini değiştirmeden uygulamayı kullanamaz.'
-                  : 'Kullanıcı mevcut şifresiyle normal şekilde giriş yapar.'
+                  ? t('users.form.mustChangeOnDesc')
+                  : t('users.form.mustChangeOffDesc')
               }}
             </p>
           </div>
@@ -198,12 +198,9 @@
         <!-- Hesap daveti yalnızca şifre belirleme linkidir; haneye üyelik açmaz (hane daveti ayrıdır) -->
         <div class="ui-row" v-if="formData.sendAccountInvitation">
           <div class="ui-col ui-col-12">
-            <p class="status-description">
-              Kullanıcının e-posta adresine<template v-if="formData.email"> (<strong>{{ formData.email }}</strong>)</template>
-              şifresini belirleyebileceği bir link gönderilir.
-              Link 72 saat geçerlidir; süresi dolarsa kullanıcı listesinden daveti tekrar gönderebilirsiniz.
-              Hesap hanesiz oluşur; haneye hane daveti ile katılır.
-            </p>
+            <i18n-t keypath="users.form.invitationInfo" tag="p" class="status-description" scope="global">
+              <template #email><template v-if="formData.email"> (<strong>{{ formData.email }}</strong>)</template></template>
+            </i18n-t>
           </div>
         </div>
 
@@ -212,7 +209,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="formData.password"
-              label="Şifre"
+              :label="t('users.form.password')"
               placeholder="••••••••"
               :disabled="loading"
               :type="showPassword ? 'text' : 'password'"
@@ -231,7 +228,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="formData.confirmPassword"
-              label="Şifre Tekrar"
+              :label="t('users.form.passwordRepeat')"
               placeholder="••••••••"
               required
               :disabled="loading"
@@ -257,7 +254,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="searchQuery"
-              placeholder="Rol ara..."
+              :placeholder="t('users.form.searchRoles')"
               prepend-inner-icon="mdi-magnify"
               density="compact"
               hide-details
@@ -273,10 +270,10 @@
                 color="primary"
                 hide-details
                 density="compact"
-                label="Tümünü seç"
+                :label="t('common.selectAll')"
                 @update:model-value="toggleAllRoles"
               />
-              <span class="select-all-count">{{ formData.roleIds.length }} / {{ assignableRoles.length }} seçili</span>
+              <span class="select-all-count">{{ t('common.selectedCount', { selected: formData.roleIds.length, total: assignableRoles.length }) }}</span>
             </div>
 
             <div class="roles-grid">
@@ -303,7 +300,7 @@
                       color="orange"
                       variant="tonal"
                     >
-                      Sistem
+                      {{ t('users.form.systemRole') }}
                     </UiChip>
                   </div>
                   <p v-if="role.description" class="role-description">
@@ -319,8 +316,8 @@
           <div class="ui-col ui-col-12">
             <div class="empty-state">
               <UiIcon icon="mdi-shield-off" :size="64" color="grey-400" />
-              <h3 class="empty-title">Rol Bulunamadı</h3>
-              <p class="empty-text">Atanabilir rol bulunmuyor</p>
+              <h3 class="empty-title">{{ t('users.form.noRolesTitle') }}</h3>
+              <p class="empty-text">{{ t('users.form.noRolesText') }}</p>
             </div>
           </div>
         </div>
@@ -337,7 +334,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
       <UiBtn
         size="large"
@@ -346,7 +343,7 @@
         @click="handleSubmit"
         class="btn-gradient-primary"
       >
-        {{ user ? 'Güncelle' : 'Kaydet' }}
+        {{ user ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -358,6 +355,7 @@ import { UserStatus } from '~/types'
 import { computed, reactive, ref, watch, watchEffect, onMounted } from 'vue'
 
 const { validationRules: rules } = useValidators()
+const { t } = useI18n()
 
 const props = defineProps<{
   user?: User | null
@@ -394,14 +392,14 @@ const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
 const tabs = computed(() => {
   const baseTabs = [
-    { value: 'personal', label: 'Kişisel Bilgiler', icon: 'mdi-account' }
+    { value: 'personal', label: t('users.form.tabPersonal'), icon: 'mdi-account' }
   ]
   
   if (!props.user) {
-    baseTabs.push({ value: 'password', label: 'Giriş Bilgisi', icon: 'mdi-lock' })
+    baseTabs.push({ value: 'password', label: t('users.form.tabLogin'), icon: 'mdi-lock' })
   }
   
-  baseTabs.push({ value: 'roles', label: 'Roller', icon: 'mdi-shield-account' })
+  baseTabs.push({ value: 'roles', label: t('users.form.tabRoles'), icon: 'mdi-shield-account' })
   
   return baseTabs
 })
@@ -420,10 +418,10 @@ const formData = reactive({
   tenantId: null as number | null
 })
 
-const loginMethodOptions = [
-  { value: true, icon: 'mdi-email-fast-outline', title: 'Davet e-postası gönder', text: 'Kullanıcı şifresini kendisi belirler' },
-  { value: false, icon: 'mdi-form-textbox-password', title: 'Şifreyi ben belirleyeceğim', text: 'Şifreyi kullanıcıya siz iletirsiniz' }
-]
+const loginMethodOptions = computed(() => [
+  { value: true, icon: 'mdi-email-fast-outline', title: t('users.form.inviteTitle'), text: t('users.form.inviteText') },
+  { value: false, icon: 'mdi-form-textbox-password', title: t('users.form.manualTitle'), text: t('users.form.manualText') }
+])
 
 // Backend de engelliyor; admin kendi hesabını şifre değişimine kilitleyemez
 const isOwnAccount = computed(

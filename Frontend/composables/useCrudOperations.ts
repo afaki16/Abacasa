@@ -2,25 +2,36 @@
 import { useToastStore } from '~/stores/toast'
 
 export const useCrudOperations = (config) => {
+  const { $i18n } = useNuxtApp()
   const {
     loadItems,
     createItem,
     updateItem,
     deleteItem,
-    itemName = 'öğe',
+    // Metin ya da (dile göre çeviri için) metin döndüren fonksiyon
+    itemName: itemNameOption,
     serverSidePagination = false,
     initialPageSize = 10,
-    initialData,
-    toastMessages = {
-      createSuccess: `${itemName} başarıyla oluşturuldu`,
-      updateSuccess: `${itemName} başarıyla güncellendi`,
-      deleteSuccess: `${itemName} başarıyla silindi`,
-      loadError: `${itemName} yüklenirken hata oluştu`,
-      createError: `${itemName} oluşturulurken hata oluştu`,
-      updateError: `${itemName} güncellenirken hata oluştu`,
-      deleteError: `${itemName} silinirken hata oluştu`
-    }
+    initialData
   } = config
+
+  const resolveItemName = () => {
+    const name = typeof itemNameOption === 'function' ? itemNameOption() : itemNameOption
+    return name ?? $i18n.t('crud.defaultItem')
+  }
+  const itemName = resolveItemName()
+
+  // Mesajlar gösterildiği anda üretilir; böylece dil değişikliği yansır
+  const crudMessage = (key) => $i18n.t(`crud.${key}`, { item: resolveItemName() })
+  const toastMessages = config.toastMessages ?? {
+    get createSuccess () { return crudMessage('createSuccess') },
+    get updateSuccess () { return crudMessage('updateSuccess') },
+    get deleteSuccess () { return crudMessage('deleteSuccess') },
+    get loadError () { return crudMessage('loadError') },
+    get createError () { return crudMessage('createError') },
+    get updateError () { return crudMessage('updateError') },
+    get deleteError () { return crudMessage('deleteError') }
+  }
 
   const dialogManager = useDialogManager()
   const toastStore = useToastStore()

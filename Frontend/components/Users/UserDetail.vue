@@ -16,7 +16,7 @@
           <div class="profile-badges">
             <span :class="['badge', statusBadge.cls]">{{ statusBadge.label }}</span>
             <span v-if="user?.emailConfirmed" class="badge badge--info">
-              <UiIcon icon="mdi-email-check-outline" :size="14" /> E-posta doğrulandı
+              <UiIcon icon="mdi-email-check-outline" :size="14" /> {{ t('users.detail.emailVerified') }}
             </span>
             <!-- Üye olduğu haneler (listede yalnızca SuperAdmin platform görünümünde dolu) -->
             <span v-for="name in user?.householdNames || []" :key="name" class="badge badge--tenant">
@@ -46,19 +46,19 @@
     <div v-show="currentTab === 'general'" class="detail-panel">
       <div class="info-grid">
         <div class="info-card">
-          <span class="info-label">Telefon</span>
+          <span class="info-label">{{ t('users.detail.phone') }}</span>
           <span class="info-value">{{ user?.phoneNumber || '—' }}</span>
         </div>
         <div class="info-card">
-          <span class="info-label">Kayıt tarihi</span>
+          <span class="info-label">{{ t('users.detail.createdDate') }}</span>
           <span class="info-value">{{ formatDateTime(user?.createdDate) }}</span>
         </div>
         <div class="info-card">
-          <span class="info-label">Son giriş</span>
+          <span class="info-label">{{ t('users.detail.lastLogin') }}</span>
           <span class="info-value">{{ formatDateTime(user?.lastLoginDate) }}</span>
         </div>
         <div class="info-card">
-          <span class="info-label">Kullanıcı ID</span>
+          <span class="info-label">{{ t('users.detail.userId') }}</span>
           <span class="info-value mono">{{ user?.id || '—' }}</span>
         </div>
       </div>
@@ -75,12 +75,12 @@
             <div class="role-name">{{ role.name }}</div>
             <div v-if="role.description" class="role-desc">{{ role.description }}</div>
           </div>
-          <span v-if="role.isSystemRole" class="badge badge--muted">Sistem</span>
+          <span v-if="role.isSystemRole" class="badge badge--muted">{{ t('users.detail.systemRole') }}</span>
         </div>
       </div>
       <div v-else class="empty-block">
         <UiIcon icon="mdi-shield-off-outline" :size="40" class="empty-icon" />
-        <p>Bu kullanıcıya henüz rol atanmamış.</p>
+        <p>{{ t('users.detail.noRoles') }}</p>
       </div>
     </div>
 
@@ -92,8 +92,8 @@
             <UiIcon :icon="user?.emailConfirmed ? 'mdi-email-check' : 'mdi-email-alert'" :size="20" />
           </div>
           <div>
-            <div class="security-title">E-posta doğrulama</div>
-            <div class="security-value">{{ user?.emailConfirmed ? 'Doğrulandı' : 'Bekliyor' }}</div>
+            <div class="security-title">{{ t('users.detail.emailVerification') }}</div>
+            <div class="security-value">{{ user?.emailConfirmed ? t('users.detail.verified') : t('users.detail.pending') }}</div>
           </div>
         </div>
         <div class="security-item">
@@ -101,8 +101,8 @@
             <UiIcon :icon="user?.phoneConfirmed ? 'mdi-phone-check' : 'mdi-phone-alert'" :size="20" />
           </div>
           <div>
-            <div class="security-title">Telefon doğrulama</div>
-            <div class="security-value">{{ user?.phoneConfirmed ? 'Doğrulandı' : 'Bekliyor' }}</div>
+            <div class="security-title">{{ t('users.detail.phoneVerification') }}</div>
+            <div class="security-value">{{ user?.phoneConfirmed ? t('users.detail.verified') : t('users.detail.pending') }}</div>
           </div>
         </div>
       </div>
@@ -110,9 +110,9 @@
 
     <!-- Alt butonlar -->
     <div class="detail-actions">
-      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">Kapat</UiBtn>
+      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">{{ t('common.close') }}</UiBtn>
       <UiBtn class="btn-gradient-primary" prepend-icon="mdi-pencil-outline" @click="$emit('edit', user!)">
-        Düzenle
+        {{ t('common.edit') }}
       </UiBtn>
     </div>
   </div>
@@ -133,13 +133,15 @@ defineEmits<{
   edit: [user: User]
 }>()
 
+const { t } = useI18n()
+
 const currentTab = ref('general')
 
-const tabs = [
-  { value: 'general', label: 'Genel', icon: 'mdi-information-outline' },
-  { value: 'roles', label: 'Roller', icon: 'mdi-shield-account-outline' },
-  { value: 'security', label: 'Güvenlik', icon: 'mdi-lock-outline' },
-]
+const tabs = computed(() => [
+  { value: 'general', label: t('users.detail.tabGeneral'), icon: 'mdi-information-outline' },
+  { value: 'roles', label: t('users.detail.tabRoles'), icon: 'mdi-shield-account-outline' },
+  { value: 'security', label: t('users.detail.tabSecurity'), icon: 'mdi-lock-outline' },
+])
 
 const displayName = computed(() => {
   if (!props.user) return '—'
@@ -154,10 +156,10 @@ const initials = computed(() => {
 
 const statusBadge = computed(() => {
   switch (props.user?.status) {
-    case UserStatus.Active: return { label: 'Aktif', cls: 'badge--success' }
-    case UserStatus.Banned: return { label: 'Yasaklı', cls: 'badge--danger' }
-    case UserStatus.PendingVerification: return { label: 'Doğrulanmamış', cls: 'badge--warn' }
-    default: return { label: 'Pasif', cls: 'badge--muted' }
+    case UserStatus.Active: return { label: t('users.status.active'), cls: 'badge--success' }
+    case UserStatus.Banned: return { label: t('users.status.banned'), cls: 'badge--danger' }
+    case UserStatus.PendingVerification: return { label: t('users.status.pendingVerification'), cls: 'badge--warn' }
+    default: return { label: t('users.status.inactive'), cls: 'badge--muted' }
   }
 })
 

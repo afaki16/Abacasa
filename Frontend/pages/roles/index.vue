@@ -2,16 +2,16 @@
   <!-- Breadcrumb -->
     <div class="mb-6">
       <BreadCrumb :items="[
-        { text: 'Ana Sayfa', to: '/' },
-        { text: 'Roller' }
+        { text: t('common.home'), to: '/' },
+        { text: t('roles.title') }
       ]" />
     </div>
 
      <!-- DataTable -->
      <PageHero
        icon="mdi-shield-account-outline"
-       title="Roller"
-       subtitle="Rolleri ve rollere bağlı yetkileri yönetin."
+       :title="t('roles.title')"
+       :subtitle="t('roles.subtitle')"
        :count="totalCount"
      />
 
@@ -19,13 +19,13 @@
        :hide-page-header="true"
       :items="items"
       :columns="tableColumns"
-      title="Roller"
+      :title="t('roles.title')"
       toolbar-icon="mdi-shield-account"
-      search-placeholder="Rol ara..."
-      add-button-text="Yeni Rol Ekle"
+      :search-placeholder="t('roles.searchPlaceholder')"
+      :add-button-text="t('roles.add')"
       :loading="isLoading"
-      loading-text="Roller yükleniyor..."
-      empty-title="Roller bulunamadı"
+      :loading-text="t('roles.loading')"
+      :empty-title="t('roles.empty')"
       :show-add-button="true"
       :show-advanced-filters="false"
       :show-actions="true"
@@ -64,13 +64,13 @@
     size="small"
     variant="tonal"
   >
-    {{ value == true ? 'Sistem' : 'Özel' }}
+    {{ value == true ? t('roles.system') : t('roles.custom') }}
   </UiChip>
 </template>
 
     <!-- For tenantId (SuperAdmin only) -->
   <template #cell-tenantId="{ value }">
-    {{ value == null ? 'Ortak' : value }}
+    {{ value == null ? t('roles.shared') : value }}
   </template>
 
      </BaseDataTable>
@@ -78,8 +78,8 @@
     <!-- Create/Edit Role Drawer -->
     <ResizableDrawer
       v-model="dialogs.create"
-      :title="isEditMode ? 'Rolü Düzenle' : 'Yeni Rol Ekle'"
-      :subtitle="isEditMode ? 'Rol bilgilerini ve yetkilerini düzenleyin' : 'Yeni rol ve yetkilerini tanımlayın'"
+      :title="isEditMode ? t('roles.editTitle') : t('roles.add')"
+      :subtitle="isEditMode ? t('roles.editSubtitle') : t('roles.createSubtitle')"
       icon="mdi-shield-account"
       :default-width="600"
       :min-width="400"
@@ -96,8 +96,8 @@
     <!-- View Role Drawer (salt okunur; sistem rolünün yetkilerini görmenin tek yolu) -->
     <ResizableDrawer
       v-model="dialogs.view"
-      title="Rol Detayı"
-      subtitle="Rol bilgileri ve yetkileri"
+      :title="t('roles.detailTitle')"
+      :subtitle="t('roles.detailSubtitle')"
       icon="mdi-shield-account"
       :default-width="600"
       :min-width="400"
@@ -114,10 +114,10 @@
     <!-- Confirm Delete Dialog -->
     <ConfirmDialog
       v-model="dialogs.delete"
-      title="Rolü Sil"
-      :message="`'${itemToDelete?.name}' rolünü silmek istediğinizden emin misiniz?`"
+      :title="t('roles.deleteTitle')"
+      :message="t('roles.deleteConfirm', { name: itemToDelete?.name })"
       type="error"
-      confirm-text="Sil"
+      :confirm-text="t('common.delete')"
       :loading="isDeleting"
       @confirm="confirmDelete"
       @cancel="closeDeleteDialog"
@@ -141,8 +141,10 @@ definePageMeta({
   permissions: ['Roles.Read']
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: 'Roller',
+  title: computed(() => t('roles.title')),
 })
 //#endregion
 
@@ -153,7 +155,7 @@ const isSuperAdmin = computed(() => authStore.hasRole('SuperAdmin'))
 const tableColumns = computed(() => {
   const base = [
   {
-    label: 'Rol Adı',
+    label: t('roles.columns.name'),
     key: 'name',
     sortable: true,
     filterable: true,
@@ -161,7 +163,7 @@ const tableColumns = computed(() => {
     width: '300px',
   },
   {
-    label: 'Rol Tipi',
+    label: t('roles.columns.type'),
     key: 'isSystemRole',
     sortable: true,
     filterable: false,
@@ -169,7 +171,7 @@ const tableColumns = computed(() => {
     width: '300px'
   },
   {
-    label: 'Rol Açıklaması',
+    label: t('roles.columns.description'),
     key: 'description',
     sortable: true,
     filterable: false,
@@ -178,7 +180,7 @@ const tableColumns = computed(() => {
   ]
   if (isSuperAdmin.value) {
     base.splice(2, 0, {
-      label: 'Hane',
+      label: t('roles.columns.household'),
       key: 'tenantId',
       sortable: true,
       filterable: false,
@@ -230,7 +232,7 @@ const {
   createItem: createRole,
   updateItem: updateRole,
   deleteItem: deleteRole,
-  itemName: 'rol',
+  itemName: () => t('roles.itemName'),
   serverSidePagination: true,
   initialPageSize: 10,
   initialData: rolesData

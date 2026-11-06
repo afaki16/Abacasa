@@ -9,11 +9,11 @@
         <h2 class="role-title">{{ role?.name }}</h2>
         <div class="role-badges">
           <span :class="['badge', role?.isSystemRole ? 'badge--warn' : 'badge--success']">
-            {{ role?.isSystemRole ? 'Sistem' : 'Özel' }}
+            {{ role?.isSystemRole ? t('roles.system') : t('roles.custom') }}
           </span>
           <span v-if="showTenant" class="badge badge--tenant">
             <UiIcon icon="mdi-domain" :size="13" />
-            {{ role?.tenantId == null ? 'Ortak' : `Hane ${role.tenantId}` }}
+            {{ role?.tenantId == null ? t('roles.shared') : t('roles.detail.household', { id: role.tenantId }) }}
           </span>
         </div>
       </div>
@@ -21,11 +21,11 @@
 
     <div class="info-grid">
       <div class="info-card">
-        <span class="info-label">Açıklama</span>
+        <span class="info-label">{{ t('common.description') }}</span>
         <span class="info-value">{{ role?.description || '—' }}</span>
       </div>
       <div class="info-card">
-        <span class="info-label">Oluşturulma</span>
+        <span class="info-label">{{ t('roles.detail.created') }}</span>
         <span class="info-value">{{ role?.createdDate ? dateTimeFormatLong(role.createdDate) : '—' }}</span>
       </div>
     </div>
@@ -33,9 +33,9 @@
     <!-- Yetkiler -->
     <div class="section-head">
       <h3 class="section-title">
-        <UiIcon icon="mdi-key-variant" :size="16" /> Yetkiler
+        <UiIcon icon="mdi-key-variant" :size="16" /> {{ t('roles.detail.permissions') }}
       </h3>
-      <span class="badge badge--tenant">{{ role?.permissions?.length || 0 }} yetki</span>
+      <span class="badge badge--tenant">{{ t('roles.detail.permissionCount', { count: role?.permissions?.length || 0 }) }}</span>
     </div>
 
     <div v-if="groups.length" class="group-list">
@@ -55,19 +55,19 @@
     </div>
     <div v-else class="empty-block">
       <UiIcon icon="mdi-key-remove" :size="40" class="empty-icon" />
-      <p>Bu role atanmış yetki yok.</p>
+      <p>{{ t('roles.detail.noPermissions') }}</p>
     </div>
 
     <!-- Alt butonlar -->
     <div class="detail-actions">
-      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">Kapat</UiBtn>
+      <UiBtn variant="outlined" class="btn-gradient-dark" @click="$emit('close')">{{ t('common.close') }}</UiBtn>
       <UiBtn
         v-if="canEdit"
         class="btn-gradient-primary"
         prepend-icon="mdi-pencil-outline"
         @click="$emit('edit', role)"
       >
-        Düzenle
+        {{ t('common.edit') }}
       </UiBtn>
     </div>
   </div>
@@ -88,6 +88,8 @@ defineEmits<{
   close: []
   edit: [role: Role | null]
 }>()
+
+const { t } = useI18n()
 
 // Same grouping as RoleForm (by resource), sorted for a stable read-only view
 const groups = computed(() => {

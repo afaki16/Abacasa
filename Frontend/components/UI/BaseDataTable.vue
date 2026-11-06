@@ -11,7 +11,7 @@
                 <UiIcon :icon="toolbarIcon" :size="28" />
               </div>
               <div class="title-content">
-                <h2 class="page-title modern-title">{{ title }}</h2>
+                <h2 class="page-title modern-title">{{ titleText }}</h2>
                 <p class="page-description modern-description">{{ description }}</p>
               </div>
             </div>
@@ -26,7 +26,7 @@
             <input
               type="text"
               v-model="searchQuery"
-              :placeholder="searchPlaceholder"
+              :placeholder="searchPlaceholderText"
               class="search-input"
               @input="handleSearch"
             />
@@ -53,7 +53,7 @@
             <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 2v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filtreler
+            {{ t('dataTable.filters') }}
             <span v-if="activeFiltersCount" class="filter-count">{{ activeFiltersCount }}</span>
           </button>
 
@@ -62,7 +62,7 @@
             @click="handleRefresh"
             class="refresh-btn icon-only-btn"
             :disabled="refreshing"
-            :title="refreshing ? 'Yeniliyor...' : 'Tabloyu Yenile'"
+            :title="refreshing ? t('dataTable.refreshing') : t('dataTable.refreshTable')"
           >
             <svg 
               class="btn-icon" 
@@ -84,7 +84,7 @@
             <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Dışa Aktar
+            {{ t('dataTable.export') }}
           </button>
 
           <!-- Add Button -->
@@ -96,7 +96,7 @@
             <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            {{ addButtonText }}
+            {{ addButtonTextValue }}
           </button>
         </div>
       </div>
@@ -104,9 +104,9 @@
       <!-- Advanced Filters Panel -->
       <div v-if="showAdvancedFilters && showFilters" class="filters-panel">
         <div class="filters-header">
-          <h3 class="filters-title">Gelişmiş Filtreler</h3>
+          <h3 class="filters-title">{{ t('dataTable.advancedFilters') }}</h3>
           <button @click="clearAllFilters" class="clear-filters-btn">
-            Tümünü Temizle
+            {{ t('dataTable.clearAll') }}
           </button>
         </div>
         
@@ -121,7 +121,7 @@
               :label="column.label"
               v-if="column.filterType === 'text' || !column.filterType"
               v-model="columnFilters[column.key]"
-              :placeholder="`${column.label} filtrele...`"
+              :placeholder="t('dataTable.filterPlaceholder', { label: column.label })"
               density="compact"
               hide-details
               clearable
@@ -140,7 +140,7 @@
               density="compact"
               hide-details
               clearable
-              placeholder="Tümü"
+              :placeholder="t('dataTable.all')"
               class="filter-select compact-filter"
               @update:model-value="applyFilters"
             />
@@ -201,8 +201,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <h3 class="empty-title">{{ emptyTitle }}</h3>
-        <p class="empty-description">{{ emptyDescription }}</p>
+        <h3 class="empty-title">{{ emptyTitleText }}</h3>
+        <p class="empty-description">{{ emptyDescriptionText }}</p>
       </div>
 
       <!-- Data Table -->
@@ -270,7 +270,7 @@
                   </div>
                 </th>
                 <th v-if="showActions" class="table-header-cell actions-header">
-                  <span class="header-text">İşlemler</span>
+                  <span class="header-text">{{ t('dataTable.actions') }}</span>
                 </th>
               </tr>
             </thead>
@@ -306,7 +306,7 @@
                           v-if="canRead"
                           @click.stop="handleViewClick(item)"
                           class="action-button view-button"
-                          title="Görüntüle"
+                          :title="t('dataTable.view')"
                         >
                           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -317,7 +317,7 @@
                           v-if="canUpdate && (!canEditItem || canEditItem(item))"
                           @click="$emit('edit', item)"
                           class="action-button edit-button"
-                          title="Düzenle"
+                          :title="t('common.edit')"
                         >
                           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -327,7 +327,7 @@
                           v-if="canDelete && (!canDeleteItem || canDeleteItem(item))"
                           @click="$emit('delete', item)"
                           class="action-button delete-button"
-                          title="Sil"
+                          :title="t('common.delete')"
                         >
                           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -346,7 +346,7 @@
         <div class="pagination">
           <div class="pagination-info">
             <div class="results-info">
-              <span class="results-text">Sayfa / Sonuç</span>
+              <span class="results-text">{{ t('dataTable.rowsPerPage') }}</span>
               <select v-model="itemsPerPageLocal" @change="changeItemsPerPage" class="items-per-page-select">
                 <option :value="5">5</option>
                 <option :value="10">10</option>
@@ -362,7 +362,7 @@
               @click="goToPage(1)"
               :disabled="effectiveCurrentPage === 1"
               class="pagination-button"
-              title="İlk sayfa"
+              :title="t('dataTable.firstPage')"
             >
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -373,7 +373,7 @@
               @click="goToPage(effectiveCurrentPage - 1)"
               :disabled="effectiveCurrentPage === 1"
               class="pagination-button"
-              title="Önceki sayfa"
+              :title="t('dataTable.previousPage')"
             >
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -394,7 +394,7 @@
               @click="goToPage(effectiveCurrentPage + 1)"
               :disabled="effectiveCurrentPage === totalPages"
               class="pagination-button"
-              title="Sonraki sayfa"
+              :title="t('dataTable.nextPage')"
             >
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -405,7 +405,7 @@
               @click="goToPage(totalPages)"
               :disabled="effectiveCurrentPage === totalPages"
               class="pagination-button"
-              title="Son sayfa"
+              :title="t('dataTable.lastPage')"
             >
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -432,7 +432,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Veri Tablosu'
+    default: undefined
   },
   description: {
     type: String,
@@ -449,11 +449,11 @@ const props = defineProps({
   },
   searchPlaceholder: {
     type: String,
-    default: 'Tabloda ara...'
+    default: undefined
   },
   addButtonText: {
     type: String,
-    default: 'Yeni Ekle'
+    default: undefined
   },
   loading: {
     type: Boolean,
@@ -465,11 +465,11 @@ const props = defineProps({
   },
   emptyTitle: {
     type: String,
-    default: 'Veri bulunamadı'
+    default: undefined
   },
   emptyDescription: {
     type: String,
-    default: 'Henüz hiç veri eklenmemiş veya arama kriterlerinize uygun veri bulunamadı.'
+    default: undefined
   },
   showAddButton: {
     type: Boolean,
@@ -541,6 +541,15 @@ const props = defineProps({
 const emit = defineEmits([
   'add', 'view', 'edit', 'delete', 'export', 'search', 'sort', 'row-click', 'filter', 'refresh', 'table-refresh', 'load-more', 'page-change', 'page-size-change'
 ])
+
+const { t } = useI18n()
+
+// Metin prop'ları verilmezse dile göre varsayılan kullanılır
+const titleText = computed(() => props.title ?? t('dataTable.defaultTitle'))
+const searchPlaceholderText = computed(() => props.searchPlaceholder ?? t('dataTable.searchPlaceholder'))
+const addButtonTextValue = computed(() => props.addButtonText ?? t('dataTable.addButton'))
+const emptyTitleText = computed(() => props.emptyTitle ?? t('dataTable.emptyTitle'))
+const emptyDescriptionText = computed(() => props.emptyDescription ?? t('dataTable.emptyDescription'))
 
 onMounted(() => {
   nextTick(() => {
@@ -757,9 +766,9 @@ const getColumnSelectOptions = (columnKey) => {
     
     // Enum'lar API'den isim olarak gelir (UserStatus: 'Active' / 'Inactive')
     if (value === 0 || value === '0' || value === 'Inactive') {
-      displayText = 'Pasif'
+      displayText = t('common.inactive')
     } else if (value === 1 || value === '1' || value === 'Active') {
-      displayText = 'Aktif'
+      displayText = t('common.active')
     }
     
     return {

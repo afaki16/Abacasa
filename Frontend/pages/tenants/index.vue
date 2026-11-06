@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Haneler' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('households.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-domain"
-    title="Haneler"
-    subtitle="Sistemdeki haneleri oluşturun, düzenleyin ve yönetin."
+    :title="t('households.title')"
+    :subtitle="t('households.subtitle')"
     :count="items.length"
   />
 
@@ -17,13 +17,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Haneler"
+    :title="t('households.title')"
     toolbar-icon="mdi-domain"
-    search-placeholder="Hane ara..."
-    add-button-text="Yeni Hane Ekle"
+    :search-placeholder="t('households.searchPlaceholder')"
+    :add-button-text="t('households.add')"
     :loading="isLoading"
-    loading-text="Haneler yükleniyor..."
-    empty-title="Hane bulunamadı"
+    :loading-text="t('households.loading')"
+    :empty-title="t('households.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -47,13 +47,13 @@
 
     <template #cell-isActive="{ value }">
       <UiChip :color="value ? 'success' : 'error'" size="small" variant="tonal">
-        {{ value ? "Aktif" : "Pasif" }}
+        {{ value ? t('common.active') : t('common.inactive') }}
       </UiChip>
     </template>
 
     <template #cell-userCount="{ value }">
       <UiChip size="small" variant="tonal" color="info">
-        {{ value ?? 0 }} kullanıcı
+        {{ t('households.userCount', { count: value ?? 0 }) }}
       </UiChip>
     </template>
   </BaseDataTable>
@@ -61,8 +61,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Haneyi Düzenle' : 'Yeni Hane Ekle'"
-    :subtitle="isEditMode ? 'Hane bilgilerini güncelleyin' : 'Sisteme yeni hane bilgilerini girin'"
+    :title="isEditMode ? t('households.editTitle') : t('households.add')"
+    :subtitle="isEditMode ? t('households.editSubtitle') : t('households.createSubtitle')"
     icon="mdi-domain"
     :default-width="600"
     :min-width="400"
@@ -78,10 +78,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Haneyi Sil"
-    :message="`'${itemToDelete?.name}' hanesini silmek istediğinizden emin misiniz?`"
+    :title="t('households.deleteTitle')"
+    :message="t('households.deleteConfirm', { name: itemToDelete?.name })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import TenantForm from "~/components/Tenants/TenantForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
@@ -103,15 +103,17 @@ definePageMeta({
   roles: ["SuperAdmin"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Haneler",
+  title: computed(() => t("households.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
+const tableColumns = computed(() => [
   {
-    label: "Hane Adı",
+    label: t("households.columns.name"),
     key: "name",
     sortable: true,
     filterable: true,
@@ -119,7 +121,7 @@ const tableColumns = [
     width: "250px",
   },
   {
-    label: "Domain",
+    label: t("households.columns.domain"),
     key: "domain",
     sortable: true,
     filterable: true,
@@ -127,7 +129,7 @@ const tableColumns = [
     width: "200px",
   },
   {
-    label: "İletişim E-postası",
+    label: t("households.columns.contactEmail"),
     key: "contactEmail",
     sortable: true,
     filterable: true,
@@ -135,20 +137,20 @@ const tableColumns = [
     width: "250px",
   },
   {
-    label: "Kullanıcı Sayısı",
+    label: t("households.columns.userCount"),
     key: "userCount",
     sortable: true,
     width: "120px",
   },
   {
-    label: "Durum",
+    label: t("households.columns.status"),
     key: "isActive",
     sortable: true,
     filterable: true,
     filterType: "select",
     width: "100px",
   },
-];
+]);
 //#endregion
 
 //#region Composables
@@ -178,7 +180,7 @@ const {
   createItem: createTenant,
   updateItem: updateTenant,
   deleteItem: deleteTenant,
-  itemName: "tenant",
+  itemName: () => t("households.itemName"),
   serverSidePagination: false,
   initialPageSize: 10,
 });

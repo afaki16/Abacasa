@@ -2,13 +2,13 @@
   <div class="settings-page">
     <div class="mb-6">
       <BreadCrumb
-        :items="[{ text: 'Ana Sayfa', to: '/dashboard' }, { text: 'Ayarlar' }]"
+        :items="[{ text: t('common.home'), to: '/dashboard' }, { text: t('settings.title') }]"
       />
     </div>
 
     <PageHero
       icon="mdi-cog-outline"
-      title="Ayarlar"
+      :title="t('settings.title')"
       :subtitle="heroSubtitle"
     />
 
@@ -20,7 +20,7 @@
         :class="{ 'pill-tab--active': activeTab === 'admin' }"
         @click="activeTab = 'admin'"
       >
-        <UiIcon icon="mdi-shield-account-outline" :size="16" /> Hane Oturumları
+        <UiIcon icon="mdi-shield-account-outline" :size="16" /> {{ t('settings.tabHouseholdSessions') }}
       </button>
       <button
         type="button"
@@ -28,7 +28,7 @@
         :class="{ 'pill-tab--active': activeTab === 'superadmin' }"
         @click="activeTab = 'superadmin'"
       >
-        <UiIcon icon="mdi-shield-crown-outline" :size="16" /> Sistem Ayarları
+        <UiIcon icon="mdi-shield-crown-outline" :size="16" /> {{ t('settings.tabSystem') }}
       </button>
     </nav>
 
@@ -51,8 +51,10 @@ definePageMeta({
   roles: ["Admin", "SuperAdmin"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Ayarlar - Abacasa",
+  title: computed(() => t("settings.pageTitle")),
 });
 //#endregion
 
@@ -72,8 +74,8 @@ const activeTab = ref<"admin" | "superadmin">("admin");
 
 const heroSubtitle = computed(() =>
   activeTab.value === "superadmin"
-    ? "Tüm haneleri kapsayan oturum ve kullanıcı yönetimi"
-    : "Kendi hanenize ait oturum ve kullanıcı yönetimi",
+    ? t("settings.heroSuperAdmin")
+    : t("settings.heroAdmin"),
 );
 
 watch(

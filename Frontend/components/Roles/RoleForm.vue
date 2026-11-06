@@ -24,8 +24,8 @@
             <div class="ui-col ui-col-12">
               <UiTextField
                 v-model="formData.name"
-                label="Rol Adı"
-                placeholder="Rol adını girin"
+                :label="t('roles.form.name')"
+                :placeholder="t('roles.form.namePlaceholder')"
                 :disabled="loading || (role && role.isSystemRole)"
                 prepend-inner-icon="mdi-shield-account"
                 density="comfortable"
@@ -40,8 +40,8 @@
             <div class="ui-col ui-col-12">
               <UiTextField multiline
                 v-model="formData.description"
-                label="Açıklama"
-                placeholder="Rolün kısa açıklaması"
+                :label="t('common.description')"
+                :placeholder="t('roles.form.descriptionPlaceholder')"
                 :disabled="loading"
                 rows="3"
                 auto-grow
@@ -63,7 +63,7 @@
           <div class="ui-col ui-col-12">
             <UiTextField
               v-model="searchQuery"
-              placeholder="İzin ara..."
+              :placeholder="t('roles.form.searchPermissions')"
               prepend-inner-icon="mdi-magnify"
               density="compact"
               hide-details
@@ -79,10 +79,10 @@
                 color="primary"
                 hide-details
                 density="compact"
-                label="Tümünü seç"
+                :label="t('common.selectAll')"
                 @update:model-value="toggleAllPermissions"
               />
-              <span class="select-all-count">{{ formData.permissionIds.length }} / {{ permissions.length }} seçili</span>
+              <span class="select-all-count">{{ t('common.selectedCount', { selected: formData.permissionIds.length, total: permissions.length }) }}</span>
             </div>
 
             <div class="permissions-simple-tree">
@@ -143,8 +143,8 @@
           <div class="ui-col ui-col-12">
             <div class="empty-state">
               <UiIcon icon="mdi-key-off" :size="64" color="grey-400" />
-              <h3 class="empty-title">İzin Bulunamadı</h3>
-              <p class="empty-text">Atanabilir izin bulunmuyor</p>
+              <h3 class="empty-title">{{ t('roles.form.noPermissionsTitle') }}</h3>
+              <p class="empty-text">{{ t('roles.form.noPermissionsText') }}</p>
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
       <UiBtn
         size="large"
@@ -170,7 +170,7 @@
         @click="handleSubmit"
         class="btn-gradient-primary"
       >
-        {{ role ? 'Güncelle' : 'Kaydet' }}
+        {{ role ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -181,6 +181,7 @@ import type { Role, Permission, CreateRoleRequest, UpdateRoleRequest } from '~/t
 import { onMounted, watchEffect, computed, reactive, ref } from 'vue'
 
 const { validationRules: rules } = useValidators()
+const { t } = useI18n()
 
 const props = defineProps<{
   role?: Role | null
@@ -200,10 +201,10 @@ const searchQuery = ref('')
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const tabs = [
-  { value: 'basic', label: 'Temel Bilgiler', icon: 'mdi-shield-account' },
-  { value: 'permissions', label: 'İzinler', icon: 'mdi-key-variant' }
-]
+const tabs = computed(() => [
+  { value: 'basic', label: t('roles.form.tabBasic'), icon: 'mdi-shield-account' },
+  { value: 'permissions', label: t('roles.form.tabPermissions'), icon: 'mdi-key-variant' }
+])
 
 const formData = reactive<CreateRoleRequest>({
   name: '',

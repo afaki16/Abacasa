@@ -74,14 +74,14 @@
                 <div class="drawer-header-modern__actions">
                   <button
                     class="drawer-header-modern__action-btn"
-                    :title="isFullscreen ? 'Tam ekranı kapat' : 'Tam ekran'"
+                    :title="isFullscreen ? t('common.exitFullscreen') : t('common.fullscreen')"
                     @click="toggleFullscreen"
                   >
                     <UiIcon :icon="isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'" :size="18" />
                   </button>
                   <button
                     class="drawer-header-modern__action-btn"
-                    title="Kapat"
+                    :title="t('common.close')"
                     @click="$emit('update:modelValue', false)"
                   >
                     <UiIcon icon="mdi-close" :size="18" />
@@ -102,6 +102,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {

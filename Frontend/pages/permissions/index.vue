@@ -2,15 +2,15 @@
     <!-- Breadcrumb -->
     <div class="mb-6">
       <BreadCrumb :items="[
-        { text: 'Ana Sayfa', to: '/' },
-        { text: 'İzinler' }
+        { text: t('common.home'), to: '/' },
+        { text: t('permissions.title') }
       ]" />
     </div>
 
     <PageHero
       icon="mdi-key-variant"
-      title="İzinler"
-      subtitle="Sistemde tanımlı izinleri görüntüleyin."
+      :title="t('permissions.title')"
+      :subtitle="t('permissions.subtitle')"
       :count="permissions.length"
     />
 
@@ -18,13 +18,13 @@
       :hide-page-header="true"
       :items="permissions"
       :columns="tableColumns"
-      title="İzinler"
+      :title="t('permissions.title')"
       toolbar-icon="mdi-key-variant"
-      search-placeholder="İzin ara..."
+      :search-placeholder="t('permissions.searchPlaceholder')"
       :loading="isLoading"
-      loading-text="İzinler yükleniyor..."
-      empty-title="İzin bulunamadı"
-      empty-description="Henüz hiç izin tanımlanmamış."
+      :loading-text="t('permissions.loading')"
+      :empty-title="t('permissions.empty')"
+      :empty-description="t('permissions.emptyDescription')"
       :show-add-button="false"
       :show-advanced-filters="true"
       :show-actions="false"
@@ -44,7 +44,7 @@
       <template #cell-description="{ item, value }">
         <div class="description-cell">
           <p class="description-text" :title="value">
-            {{ value || 'Açıklama bulunmuyor' }}
+            {{ value || t('permissions.noDescription') }}
           </p>
         </div>
       </template>
@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import BaseDataTable from '~/components/UI/BaseDataTable.vue'
 
 // Page metadata - Önemli !!!
@@ -64,8 +64,10 @@ definePageMeta({
   permissions: ['Permissions.Read']
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: 'İzin Yönetimi',
+  title: computed(() => t('permissions.pageTitle')),
 })
 
 // Composables
@@ -76,10 +78,10 @@ const permissions = ref([])
 const isLoading = ref(false)
 
 // Table columns for BaseDataTable
-const tableColumns = [
+const tableColumns = computed(() => [
   { 
     key: 'name',
-    label: 'İzin Adı', 
+    label: t('permissions.columns.name'),
     sortable: true,
     filterable: true,
     filterType: 'text',
@@ -87,7 +89,7 @@ const tableColumns = [
   },
   { 
     key: 'resource',
-    label: 'Kaynak', 
+    label: t('permissions.columns.resource'),
     sortable: true,
     filterable: true,
     filterType: 'select',
@@ -95,13 +97,13 @@ const tableColumns = [
   },
   { 
     key: 'description',
-    label: 'Açıklama',
+    label: t('permissions.columns.description'),
     sortable: false,
     filterable: true,
     filterType: 'text',
     width: '300px'
   }
-]
+])
 
 // Methods
 const loadPermissions = async () => {
@@ -128,9 +130,9 @@ const loadPermissions = async () => {
 // Formatting methods
 const formatResourceName = (resource) => {
   const resourceNames = {
-    'users': 'Kullanıcılar',
-    'roles': 'Roller',
-    'permissions': 'İzinler',
+    'users': t('permissions.resources.users'),
+    'roles': t('permissions.resources.roles'),
+    'permissions': t('permissions.resources.permissions'),
   }
   return resourceNames[resource?.toLowerCase()] || resource
 }

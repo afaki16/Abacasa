@@ -9,7 +9,7 @@
     </div>
     <div v-if="count !== undefined && count !== null" class="page-hero__count">
       <div class="page-hero__count-val">{{ count }}</div>
-      <div class="page-hero__count-lbl">{{ countLabel }}</div>
+      <div class="page-hero__count-lbl">{{ countLabel ?? t('common.totalRecords') }}</div>
     </div>
     <slot />
   </div>
@@ -26,7 +26,9 @@ withDefaults(defineProps<{
   subtitle?: string
   count?: number | null
   countLabel?: string
-}>(), { subtitle: '', count: undefined, countLabel: 'Toplam kayıt' })
+}>(), { subtitle: '', count: undefined, countLabel: undefined })
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

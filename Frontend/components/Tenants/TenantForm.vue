@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Hane Adı"
-            placeholder="Hane adını girin"
+            :label="t('households.form.name')"
+            :placeholder="t('households.form.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-domain"
             density="comfortable"
@@ -21,8 +21,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.domain"
-            label="Domain"
-            placeholder="ornek-hane"
+            :label="t('households.form.domain')"
+            :placeholder="t('households.form.domainPlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-web"
             density="comfortable"
@@ -37,8 +37,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField multiline
             v-model="formData.description"
-            label="Açıklama"
-            placeholder="Hane hakkında kısa açıklama"
+            :label="t('common.description')"
+            :placeholder="t('households.form.descriptionPlaceholder')"
             :disabled="loading"
             rows="3"
             auto-grow
@@ -55,8 +55,8 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.contactEmail"
-            label="İletişim E-postası"
-            placeholder="iletisim@ornek.com"
+            :label="t('households.form.contactEmail')"
+            :placeholder="t('households.form.contactEmailPlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-email"
             density="comfortable"
@@ -69,7 +69,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.contactPhone"
-            label="İletişim Telefonu"
+            :label="t('households.form.contactPhone')"
             placeholder="0212 000 00 00"
             :disabled="loading"
             prepend-inner-icon="mdi-phone"
@@ -86,7 +86,7 @@
         <div class="ui-col ui-col-12">
           <UiSwitch
             v-model="formData.isActive"
-            label="Aktif"
+            :label="t('common.active')"
             color="primary"
             :disabled="loading"
             hide-details
@@ -103,7 +103,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -113,7 +113,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ tenant ? 'Güncelle' : 'Kaydet' }}
+        {{ tenant ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -134,6 +134,7 @@ const emit = defineEmits<{
 }>()
 
 const { validationRules: rules } = useValidators()
+const { t } = useI18n()
 
 const formRef = ref()
 const formData = reactive<CreateTenantRequest>({

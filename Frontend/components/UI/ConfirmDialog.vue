@@ -14,7 +14,7 @@
             <UiIcon :icon="icon" class="confirm-icon" :size="32" />
           </div>
           <div class="header-text">
-            <h2 class="confirm-title">{{ title }}</h2>
+            <h2 class="confirm-title">{{ title ?? t('common.confirmTitle') }}</h2>
             <p class="confirm-message">{{ message }}</p>
           </div>
         </div>
@@ -29,7 +29,7 @@
           @click="$emit('cancel')"
           class="cancel-btn"
         >
-          {{ cancelText }}
+          {{ cancelText ?? t('common.cancel') }}
         </UiBtn>
         <UiBtn
           :color="confirmColor"
@@ -38,7 +38,7 @@
           class="confirm-btn"
           :class="`confirm-btn--${type}`"
         >
-          {{ type === 'warning' || type === 'success' ? 'Tamam' : confirmText }}
+          {{ type === 'warning' || type === 'success' ? t('common.ok') : (confirmText ?? t('common.confirm')) }}
         </UiBtn>
       </div>
     </div>
@@ -60,14 +60,16 @@ const props = withDefaults(defineProps<{
   persistent?: boolean
   loading?: boolean
 }>(), {
-  title: 'İşlemi Onayla',
-  confirmText: 'Onayla',
-  cancelText: 'İptal',
+  title: undefined,
+  confirmText: undefined,
+  cancelText: undefined,
   type: 'info',
   maxWidth: 480,
   persistent: false,
   loading: false
 })
+
+const { t } = useI18n()
 
 // Emits
 const emit = defineEmits<{

@@ -9,14 +9,14 @@
             <UiProgressCircular v-if="loadingCount" indeterminate :size="18" :width="2" />
             <template v-else>{{ activeUserCount }}</template>
           </div>
-          <div class="stat-tile__lbl">Aktif kullanıcı</div>
+          <div class="stat-tile__lbl">{{ t('settings.activeUsers') }}</div>
         </div>
       </div>
       <div class="stat-tile">
         <div class="stat-tile__icon"><UiIcon icon="mdi-account-multiple-check-outline" :size="20" /></div>
         <div>
           <div class="stat-tile__val">{{ loadingActiveUsers ? '—' : activeUsers.length }}</div>
-          <div class="stat-tile__lbl">Şu an çevrimiçi</div>
+          <div class="stat-tile__lbl">{{ t('settings.onlineNow') }}</div>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
     <div class="panel-card">
       <div class="panel-card__header">
         <div class="panel-card__icon"><UiIcon icon="mdi-account-multiple-check-outline" :size="16" /></div>
-        <span>Şu An Çevrimiçi</span>
+        <span>{{ t('settings.onlineNowTitle') }}</span>
         <div class="panel-card__actions">
           <UiBtn
             size="small"
@@ -35,22 +35,22 @@
             :loading="loadingActiveUsers"
             @click="loadActiveUsers"
           >
-            Yenile
+            {{ t('common.refresh') }}
           </UiBtn>
         </div>
       </div>
       <div class="panel-card__divider" />
       <p class="panel-card__hint px-5 pt-4">
-        En az bir geçerli oturumu olan kullanıcılar — yalnızca kendi haneniz.
+        {{ t('settings.adminOnlineHint') }}
       </p>
       <UiProgressLinear v-if="loadingActiveUsers" indeterminate color="primary" />
       <div v-if="!loadingActiveUsers && activeUsers.length" class="ui-table-wrap online-table">
         <table v-stack-table class="ui-table ui-table--comfortable soft-table">
           <thead>
             <tr>
-              <th>Kullanıcı</th>
-              <th>Oturum</th>
-              <th>Son Aktivite</th>
+              <th>{{ t('settings.colUser') }}</th>
+              <th>{{ t('settings.colSessions') }}</th>
+              <th>{{ t('settings.colLastActivity') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +66,7 @@
                   </div>
                 </div>
               </td>
-              <td><span class="status-pill">{{ row.activeSessionCount }} oturum</span></td>
+              <td><span class="status-pill">{{ t('settings.sessionCount', { count: row.activeSessionCount }) }}</span></td>
               <td class="muted-cell">{{ formatActivity(row.lastActivityAt) }}</td>
             </tr>
           </tbody>
@@ -74,7 +74,7 @@
       </div>
       <div v-if="!loadingActiveUsers && activeUsers.length === 0" class="empty-table">
         <UiIcon icon="mdi-account-off-outline" :size="32" />
-        <p>Şu anda çevrimiçi kullanıcı yok.</p>
+        <p>{{ t('settings.noOnlineUsers') }}</p>
       </div>
     </div>
 
@@ -82,11 +82,11 @@
     <div class="panel-card">
       <div class="panel-card__header">
         <div class="panel-card__icon panel-card__icon--danger"><UiIcon icon="mdi-account-off-outline" :size="16" /></div>
-        <span>Uzaktan Kullanıcı Çıkışı</span>
+        <span>{{ t('settings.remoteSignOut') }}</span>
       </div>
       <div class="panel-card__divider" />
       <div class="panel-card__body">
-        <p class="panel-card__hint">Seçtiğiniz kullanıcının tüm cihazlarındaki oturumları sonlandırılır.</p>
+        <p class="panel-card__hint">{{ t('settings.adminRevokeHint') }}</p>
         <div class="revoke-row">
           <UiSelect autocomplete
             v-model="selectedUser"
@@ -94,8 +94,8 @@
             item-title="fullName"
             item-value="id"
             :filter-keys="['fullName', 'email']"
-            label="Kullanıcı seçin"
-            placeholder="İsim veya e-posta ile ara..."
+            :label="t('settings.selectUser')"
+            :placeholder="t('settings.searchUser')"
             prepend-inner-icon="mdi-account-search-outline"
             :loading="loadingUsers"
             clearable
@@ -123,7 +123,7 @@
             class="revoke-btn"
             @click="revokeSessions"
           >
-            Çıkış Yaptır
+            {{ t('settings.signOutUser') }}
           </UiBtn>
         </div>
       </div>
@@ -137,6 +137,7 @@ import { dateTimeFormat } from '~/utils/datesFormat'
 import type { ActiveUserSnapshot } from '~/composables/useSettings'
 
 const { getActiveUserCount, getActiveUsersSnapshot, getRevokableUsers, revokeUserSessions } = useSettings()
+const { t } = useI18n()
 
 const activeUserCount = ref<number>(0)
 const loadingCount = ref(false)

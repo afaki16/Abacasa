@@ -10,7 +10,7 @@
       type="button"
       class="photo-editor__btn photo-editor__btn--upload"
       :disabled="busy"
-      :title="url ? 'Fotoğrafı değiştir' : 'Fotoğraf yükle'"
+      :title="url ? t('users.photo.change') : t('users.photo.upload')"
       @click="fileInput?.click()"
     >
       <Icon name="mdi:camera" class="w-4 h-4" />
@@ -20,7 +20,7 @@
       type="button"
       class="photo-editor__btn photo-editor__btn--remove"
       :disabled="busy"
-      title="Fotoğrafı kaldır"
+      :title="t('users.photo.remove')"
       @click="remove"
     >
       <Icon name="mdi:delete-outline" class="w-4 h-4" />
@@ -54,6 +54,7 @@ const emit = defineEmits<{ changed: [url: string | null] }>()
 
 const { validatePhoto, uploadPhoto, removePhoto } = useProfilePhoto()
 const toast = useToast()
+const { t } = useI18n()
 const fileInput = ref<HTMLInputElement | null>(null)
 const busy = ref(false)
 
@@ -73,9 +74,9 @@ const onFileSelected = async (event: Event) => {
   try {
     const url = await uploadPhoto(file, props.userId)
     emit('changed', url)
-    toast.success('Profil fotoğrafı güncellendi.')
+    toast.success(t('users.photo.updated'))
   } catch (err) {
-    toast.error(parseApiErrorMessages(err)[0] || 'Fotoğraf yüklenemedi.')
+    toast.error(parseApiErrorMessages(err)[0] || t('users.photo.uploadFailed'))
   } finally {
     busy.value = false
   }
@@ -86,9 +87,9 @@ const remove = async () => {
   try {
     await removePhoto(props.userId)
     emit('changed', null)
-    toast.success('Profil fotoğrafı kaldırıldı.')
+    toast.success(t('users.photo.removed'))
   } catch (err) {
-    toast.error(parseApiErrorMessages(err)[0] || 'Fotoğraf kaldırılamadı.')
+    toast.error(parseApiErrorMessages(err)[0] || t('users.photo.removeFailed'))
   } finally {
     busy.value = false
   }
