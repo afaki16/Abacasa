@@ -252,7 +252,7 @@
     "cards": {
       "periodTotal": "Period total (excluding meal card)",
       "periodBreakdown": "Expenses {expenses} · Donations {donations} · Pending {pending}",
-      "unknownAmounts": "{count} line items have no known amount",
+      "unknownAmounts": "{count} line item has no known amount | {count} line items have no known amount",
       "recurring": "Recurring payments",
       "recurringBreakdown": "Paid {paid} · Pending {pending}",
       "openDebt": "Open debt (TRY equivalent)",
@@ -280,7 +280,7 @@
       "overdue": "Overdue",
       "empty": "No upcoming payments",
       "today": "Today",
-      "daysLeft": "{days} days left"
+      "daysLeft": "{days} day left | {days} days left"
     },
     "trendVsLastWeek": "vs last week",
     "profileCard": {
@@ -505,7 +505,7 @@
       "household": "Household {id}",
       "created": "Created",
       "permissions": "Permissions",
-      "permissionCount": "{count} permissions",
+      "permissionCount": "{count} permission | {count} permissions",
       "noPermissions": "No permissions are assigned to this role."
     }
   },
@@ -517,7 +517,7 @@
     "add": "Add Household",
     "loading": "Loading households...",
     "empty": "No households found",
-    "userCount": "{count} users",
+    "userCount": "{count} user | {count} users",
     "editTitle": "Edit Household",
     "editSubtitle": "Update the household details",
     "createSubtitle": "Enter the new household's details",
@@ -563,7 +563,7 @@
     "colHousehold": "Household",
     "colSessions": "Sessions",
     "colLastActivity": "Last Activity",
-    "sessionCount": "{count} sessions",
+    "sessionCount": "{count} session | {count} sessions",
     "noOnlineUsers": "No users are online right now.",
     "remoteSignOut": "Remote Sign-out",
     "adminRevokeHint": "Ends the selected user's sessions on all of their devices.",
@@ -607,7 +607,7 @@
     "name": "Name",
     "add": "Add",
     "noRecords": "No records",
-    "recordCount": "{count} records",
+    "recordCount": "{count} record | {count} records",
     "periodTotal": "Period total",
     "byPaymentMethod": "By payment method",
     "amountPositive": "Amount must be greater than 0",
@@ -758,7 +758,7 @@
       "paid": "Paid",
       "pending": "Pending",
       "total": "Total",
-      "unknownAmount": "Amount unknown for {count} line items",
+      "unknownAmount": "Amount unknown for {count} line item | Amount unknown for {count} line items",
       "paymentMethodSummary": "Paid {paid} · Pending {pending}",
       "title": "Due dates",
       "searchPlaceholder": "Search due dates...",
@@ -841,7 +841,7 @@
     "summary": {
       "openTotal": "Open debt (TRY equivalent)",
       "missingRate": "No exchange rate entered for {currencies}",
-      "openCount": "{count} open debts",
+      "openCount": "{count} open debt | {count} open debts",
       "tryDebt": "TRY debt",
       "goldDebt": "Gold debt",
       "foreignDebt": "{currency} debt",
@@ -1044,9 +1044,9 @@
       "validUntil": "Valid until",
       "status": "Status",
       "lastAmount": "Last amount",
-      "overdue": "Overdue · {days} days",
+      "overdue": "Overdue · {days} day | Overdue · {days} days",
       "today": "Today",
-      "daysLeft": "{days} days left",
+      "daysLeft": "{days} day left | {days} days left",
       "empty": "No upcoming dates"
     },
     "form": {
@@ -1102,21 +1102,21 @@
       "undo": "Undo (Ctrl+Z)",
       "redo": "Redo (Ctrl+Y)",
       "pasteHint": "You can copy from Word and paste here — formatting is kept.",
-      "charCount": "{count} characters",
+      "charCount": "{count} character | {count} characters",
       "placeholder": "Type here or paste from Word…",
       "linkPrompt": "Link URL (https://...)"
     },
     "textBox": {
-      "minChars": "At least {n} characters",
-      "maxChars": "At most {n} characters",
+      "minChars": "At least {n} character | At least {n} characters",
+      "maxChars": "At most {n} character | At most {n} characters",
       "uppercase": "At least one uppercase letter",
       "lowercase": "At least one lowercase letter",
       "number": "At least one digit",
       "special": "At least one special character",
       "required": "This field is required.",
-      "exactLength": "{label} must be {n} characters.",
-      "maxLength": "{label} can be at most {n} characters.",
-      "minLength": "{label} must be at least {n} characters.",
+      "exactLength": "{label} must be {n} character. | {label} must be {n} characters.",
+      "maxLength": "{label} can be at most {n} character. | {label} can be at most {n} characters.",
+      "minLength": "{label} must be at least {n} character. | {label} must be at least {n} characters.",
       "maxNumber": "{label} can be at most {n}.",
       "minNumber": "{label} must be at least {n}.",
       "email": "Enter a valid email address.",
@@ -1180,7 +1180,7 @@
       "failed": "Could not switch household"
     },
     "fallbackName": "Household",
-    "memberCount": "{count} members",
+    "memberCount": "{count} member | {count} members",
     "export": "Download household data (Excel)",
     "exportFailed": "Could not download household data",
     "email": "Email",
@@ -1356,15 +1356,15 @@
     },
     "today": "Today",
     "yesterday": "Yesterday",
-    "daysAgo": "{n} days ago",
+    "daysAgo": "{n} day ago | {n} days ago",
     "tabs": {
       "profile": "Profile",
       "security": "Security"
     },
     "duration": {
-      "days": "{n} days",
-      "hours": "{n} hours",
-      "minutes": "{n} minutes",
+      "days": "{n} day | {n} days",
+      "hours": "{n} hour | {n} hours",
+      "minutes": "{n} minute | {n} minutes",
       "lessThanMinute": "< 1 minute"
     }
   },
@@ -1373,6 +1373,44 @@
     "usd": "US dollar",
     "eur": "Euro",
     "quarterGold": "Quarter gold",
-    "quarterCount": "{n} quarters"
+    "quarterCount": "{n} quarter | {n} quarters"
+  },
+  "systemTexts": {
+    "roles": {
+      "SuperAdmin": "System super administrator with full access, including sensitive operations",
+      "Admin": "System administrator with full access",
+      "User": "Standard user. No management permissions by default.",
+      "HouseholdAdmin": "Household administrator",
+      "HouseholdMember": "Household member"
+    },
+    "permissionActions": {
+      "Read": "Can view {resource}",
+      "Create": "Can add {resource}",
+      "Update": "Can edit {resource}",
+      "Delete": "Can delete {resource}"
+    },
+    "resources": {
+      "Users": "users",
+      "Roles": "roles",
+      "Permissions": "permissions",
+      "Tenants": "households (system)",
+      "Categories": "categories",
+      "People": "people",
+      "PaymentMethods": "payment methods",
+      "Expenses": "expenses",
+      "Donations": "donations",
+      "RecurringPayments": "recurring payments",
+      "Debts": "debts",
+      "ExchangeRates": "exchange rates",
+      "Dashboard": "the dashboard",
+      "Ledger": "the yearly table",
+      "DonationTargets": "donation targets",
+      "DonationFunds": "donation funds",
+      "Vehicles": "vehicles",
+      "RecurringPaymentPayments": "recurring payment payments",
+      "DebtPayments": "debt payments",
+      "Household": "the household",
+      "HouseholdMembers": "household members"
+    }
   }
 }

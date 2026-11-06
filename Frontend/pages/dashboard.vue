@@ -37,7 +37,7 @@
               {{ t('dashboard.cards.periodBreakdown', { expenses: formatMoney(data?.spent.expenses ?? 0), donations: formatMoney(data?.spent.donations ?? 0), pending: formatMoney(data?.pending.total ?? 0) }) }}
             </div>
             <div v-if="(data?.pending.unknownCount ?? 0) > 0" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-              {{ t('dashboard.cards.unknownAmounts', { count: data?.pending.unknownCount }) }}
+              {{ t('dashboard.cards.unknownAmounts', { count: data?.pending.unknownCount }, data?.pending.unknownCount ?? 0) }}
             </div>
           </div>
         </UiCard>
@@ -275,7 +275,7 @@ const personTotals = computed(() => {
 // Vadeye kalan gün; tarihler 'YYYY-MM-DD', saat dilimi etkisi olmasın diye UTC'de karşılaştırılır
 const dueLabel = (dueDate: string) => {
   const days = Math.round((Date.parse(`${dueDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
-  return days === 0 ? t("dashboard.upcoming.today") : t("dashboard.upcoming.daysLeft", { days });
+  return days === 0 ? t("dashboard.upcoming.today") : t("dashboard.upcoming.daysLeft", { days }, days);
 };
 
 //#region Lifecycle

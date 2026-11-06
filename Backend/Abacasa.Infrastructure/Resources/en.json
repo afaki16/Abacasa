@@ -325,5 +325,27 @@
     "nameFormat": "{0} can only contain letters, spaces, apostrophes, hyphens and dots",
     "passwordComplexity": "Password must contain at least one lowercase letter, one uppercase letter, and one digit",
     "passwordsDoNotMatch": "Passwords do not match"
+  },
+  "household": {
+    "defaults": {
+      "selfRelation": "Self",
+      "categories": {
+        "market": "Groceries",
+        "food": "Food",
+        "transport": "Transport",
+        "fuel": "Fuel",
+        "bills": "Bills",
+        "subscriptions": "Subscriptions",
+        "housing": "Housing",
+        "health": "Health",
+        "education": "Education",
+        "clothing": "Clothing",
+        "personalCare": "Personal care",
+        "homeGoods": "Household goods",
+        "vehicle": "Vehicle",
+        "entertainment": "Entertainment",
+        "other": "Other"
+      }
+    }
   }
 }

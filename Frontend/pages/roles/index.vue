@@ -57,6 +57,10 @@
       </span>
     </template>
 
+    <template #cell-description="{ item }">
+      <span>{{ roleDescription(item) || '—' }}</span>
+    </template>
+
     <!-- For isSystemRole -->
   <template #cell-isSystemRole="{ value }">
   <UiChip
@@ -142,6 +146,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const { roleDescription } = useSystemTexts()
 
 useHead({
   title: computed(() => t('roles.title')),

@@ -1,5 +1,102 @@
 <template>
   <LegalDocument :title="$t('legal.privacy.title')" :version="version">
+    <template v-if="locale === 'en'">
+    <p><em>This is an English translation for convenience. The Turkish version is the binding text.</em></p>
+
+    <h2>1. Data controller</h2>
+    <p>
+      Under Turkish Personal Data Protection Law No. 6698 ("KVKK"), your personal data is processed by
+      {{ legal.controllerName }}, acting as data controller, within the scope described in this notice. Address:
+      {{ legal.address }}. Email: {{ legal.contactEmail }}.
+    </p>
+
+    <h2>2. Personal data processed</h2>
+    <ul>
+      <li><strong>Identity:</strong> first name, last name.</li>
+      <li><strong>Contact:</strong> email address, phone number (optional).</li>
+      <li>
+        <strong>Customer transactions:</strong> the budget records you enter in the app (expenses, income, recurring payments,
+        debts, donations, donation funds, vehicle and licence plate details), and the names and relations of the people you
+        add to your household.
+      </li>
+      <li><strong>Transaction security:</strong> sign-in records, IP address, session details, hashed password.</li>
+      <li>
+        <strong>Legal transactions:</strong> records showing that you accepted the terms of use and read this notice.
+      </li>
+    </ul>
+    <p>
+      When you enter information about other people in your household (for example, family members), you are responsible for
+      informing them.
+    </p>
+
+    <h2>3. Purposes of processing</h2>
+    <ul>
+      <li>Creating your account and providing the service.</li>
+      <li>Enabling shared budget tracking with household members.</li>
+      <li>Keeping your account and the system secure and preventing misuse.</li>
+      <li>Sending service notifications such as email verification, password reset and invitations.</li>
+      <li>Meeting legal obligations.</li>
+    </ul>
+
+    <h2>4. Legal grounds</h2>
+    <p>Your personal data is processed on the following grounds under Article 5(2) of the KVKK:</p>
+    <ul>
+      <li>Subparagraph (c): it is directly necessary for entering into or performing a contract (providing the service).</li>
+      <li>Subparagraph (ç): it is necessary for the data controller to meet a legal obligation.</li>
+      <li>
+        Subparagraph (f): the data controller's legitimate interest, provided it does not harm your fundamental rights and
+        freedoms (security records).
+      </li>
+    </ul>
+
+    <h2>5. Transfers</h2>
+    <p>Your personal data may be shared with the following recipients:</p>
+    <ul>
+      <li>Other members of the households you belong to, within the scope of that household's records.</li>
+      <li>The hosting (server) provider in Türkiye.</li>
+      <li>{{ legal.emailProvider }}, for sending emails.</li>
+      <li>Authorised public institutions, upon request.</li>
+    </ul>
+
+    <h2>6. Collection method</h2>
+    <p>
+      Your personal data is collected electronically, through the information you enter when you register and use the app,
+      and through system records.
+    </p>
+
+    <h2>7. Retention and deletion</h2>
+    <ul>
+      <li>Your personal data is kept for as long as your account is open.</li>
+      <li>Records you delete are permanently erased within 30 days.</li>
+      <li>
+        When you delete your account, your personal details are anonymised. Households where you are the only member are
+        deleted with all their data.
+      </li>
+      <li>
+        Sign-in attempt records are kept for 90 days. Session and verification records are deleted 30 days after they expire.
+      </li>
+    </ul>
+
+    <h2>8. Your rights</h2>
+    <p>Under Article 11 of the KVKK, you have the right to:</p>
+    <ul>
+      <li>Find out whether your personal data is processed.</li>
+      <li>Request information about it if it has been processed.</li>
+      <li>Find out the purpose of processing and whether it is used for that purpose.</li>
+      <li>Know the third parties, in Türkiye or abroad, to whom it is transferred.</li>
+      <li>Ask for it to be corrected if it is incomplete or inaccurate.</li>
+      <li>Ask for it to be deleted or destroyed.</li>
+      <li>Ask for these actions to be notified to the third parties to whom the data was transferred.</li>
+      <li>Object to an outcome against you that results from analysis carried out solely by automated systems.</li>
+      <li>Claim compensation if you suffer damage because of unlawful processing.</li>
+    </ul>
+    <p>
+      From your profile page you can download your data, correct your details and delete your account. For other requests,
+      write to {{ legal.contactEmail }}. Requests are answered within 30 days at the latest.
+    </p>
+    </template>
+
+    <template v-else>
     <h2>1. Veri sorumlusu</h2>
     <p>
       6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla
@@ -92,6 +189,7 @@
       Profil sayfanızdan verilerinizi indirebilir, bilgilerinizi düzeltebilir ve hesabınızı silebilirsiniz. Diğer
       talepleriniz için {{ legal.contactEmail }} adresine yazabilirsiniz. Başvurular en geç 30 gün içinde sonuçlandırılır.
     </p>
+    </template>
   </LegalDocument>
 </template>
 
@@ -101,7 +199,7 @@ import { legal } from '~/utils/legal'
 
 // Herkese açık (auth.global'de serbest); giriş sayfası gibi yalın düzen
 definePageMeta({ layout: false })
-const { t } = useI18n()
+const { t, locale } = useI18n()
 useHead({ title: computed(() => t('legal.privacy.pageTitle')) })
 
 const { getVersions } = useLegal()

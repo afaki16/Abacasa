@@ -31,8 +31,8 @@
           <td>{{ getTypeLabel(r.type) }}</td>
           <td>{{ formatDisplayDate(r.validUntil) }}</td>
           <td>
-            <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">{{ t('vehicles.upcoming.overdue', { days: -r.daysLeft }) }}</UiChip>
-            <span v-else>{{ r.daysLeft === 0 ? t('vehicles.upcoming.today') : t('vehicles.upcoming.daysLeft', { days: r.daysLeft }) }}</span>
+            <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">{{ t('vehicles.upcoming.overdue', { days: -r.daysLeft }, -r.daysLeft) }}</UiChip>
+            <span v-else>{{ r.daysLeft === 0 ? t('vehicles.upcoming.today') : t('vehicles.upcoming.daysLeft', { days: r.daysLeft }, r.daysLeft) }}</span>
           </td>
           <td class="!text-right">{{ formatMoney(r.lastAmount) }}</td>
         </tr>

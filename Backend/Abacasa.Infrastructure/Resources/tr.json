@@ -325,5 +325,27 @@
     "nameFormat": "{0} yalnızca harf, boşluk, kesme işareti, tire ve nokta içerebilir",
     "passwordComplexity": "Şifre en az bir küçük harf, bir büyük harf ve bir rakam içermelidir",
     "passwordsDoNotMatch": "Şifreler eşleşmiyor"
+  },
+  "household": {
+    "defaults": {
+      "selfRelation": "Kendisi",
+      "categories": {
+        "market": "Market",
+        "food": "Yemek",
+        "transport": "Ulaşım",
+        "fuel": "Benzin",
+        "bills": "Faturalar",
+        "subscriptions": "Abonelikler",
+        "housing": "Konut",
+        "health": "Sağlık",
+        "education": "Eğitim",
+        "clothing": "Giyim",
+        "personalCare": "Kişisel bakım",
+        "homeGoods": "Ev eşyası",
+        "vehicle": "Araç",
+        "entertainment": "Eğlence",
+        "other": "Diğer"
+      }
+    }
   }
 }

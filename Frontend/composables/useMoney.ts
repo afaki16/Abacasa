@@ -40,7 +40,7 @@ export const useMoney = () => {
   // Tutar kendi biriminde: TL/Dolar/Euro para biçimi; çeyrek altın "{n} çeyrek" (Türkçe sayı, ondalıksız)
   const formatAmount = (amount: number | null | undefined, currency: Currency): string => {
     if (amount === null || amount === undefined) return '—'
-    if (currency === Currency.QuarterGold) return String(useNuxtApp().$i18n.t('currencies.quarterCount', { n: quarterFormatter.format(amount) }))
+    if (currency === Currency.QuarterGold) return String(useNuxtApp().$i18n.t('currencies.quarterCount', { n: quarterFormatter.format(amount) }, Math.abs(amount)))
     return formatMoney(amount, moneyCodes[currency] ?? 'TRY')
   }
 

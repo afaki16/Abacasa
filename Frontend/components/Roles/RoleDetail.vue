@@ -22,7 +22,7 @@
     <div class="info-grid">
       <div class="info-card">
         <span class="info-label">{{ t('common.description') }}</span>
-        <span class="info-value">{{ role?.description || '—' }}</span>
+        <span class="info-value">{{ roleDescription(role) || '—' }}</span>
       </div>
       <div class="info-card">
         <span class="info-label">{{ t('roles.detail.created') }}</span>
@@ -35,7 +35,7 @@
       <h3 class="section-title">
         <UiIcon icon="mdi-key-variant" :size="16" /> {{ t('roles.detail.permissions') }}
       </h3>
-      <span class="badge badge--tenant">{{ t('roles.detail.permissionCount', { count: role?.permissions?.length || 0 }) }}</span>
+      <span class="badge badge--tenant">{{ t('roles.detail.permissionCount', { count: role?.permissions?.length || 0 }, role?.permissions?.length || 0) }}</span>
     </div>
 
     <div v-if="groups.length" class="group-list">
@@ -46,7 +46,7 @@
             v-for="permission in group.permissions"
             :key="permission.id"
             class="badge badge--muted"
-            :title="permission.description || undefined"
+            :title="permissionDescription(permission) || undefined"
           >
             {{ permission.name }}
           </span>
@@ -90,6 +90,7 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { roleDescription, permissionDescription } = useSystemTexts()
 
 // Same grouping as RoleForm (by resource), sorted for a stable read-only view
 const groups = computed(() => {

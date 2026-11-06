@@ -693,7 +693,7 @@ const lastLoginShort = computed(() => {
   if (date.toDateString() === today.toDateString()) return t("profile.today");
   const diff = Math.floor((today.getTime() - date.getTime()) / 86_400_000);
   if (diff === 1) return t("profile.yesterday");
-  if (diff < 7) return t("profile.daysAgo", { n: diff });
+  if (diff < 7) return t("profile.daysAgo", { n: diff }, diff);
   return dateFormat(d);
 });
 
@@ -766,9 +766,9 @@ const remainingLabel = (session: Session) => {
     timePart = raw.slice(dot + 1);
   }
   const [h, m] = timePart.split(":").map(Number);
-  if (days >= 1) return t("profile.duration.days", { n: days });
-  if (h >= 1) return t("profile.duration.hours", { n: h });
-  if (m >= 1) return t("profile.duration.minutes", { n: m });
+  if (days >= 1) return t("profile.duration.days", { n: days }, days);
+  if (h >= 1) return t("profile.duration.hours", { n: h }, h);
+  if (m >= 1) return t("profile.duration.minutes", { n: m }, m);
   return t("profile.duration.lessThanMinute");
 };
 

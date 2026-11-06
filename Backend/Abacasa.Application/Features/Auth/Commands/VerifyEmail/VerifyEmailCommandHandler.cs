@@ -60,7 +60,7 @@ namespace Abacasa.Application.Features.Auth.Commands.VerifyEmail
                 // Kayıtta istenen hane: 11a'daki hane açılışıyla aynı kod (yönetici üyeliği, "Kendisi" kişisi, kategoriler)
                 if (!string.IsNullOrWhiteSpace(user.PendingHouseholdName))
                 {
-                    var tenant = await HouseholdSetup.CreateAsync(_unitOfWork, user, user.PendingHouseholdName);
+                    var tenant = await HouseholdSetup.CreateAsync(_unitOfWork, _localizer, user, user.PendingHouseholdName);
                     user.TenantId = tenant.Id;
                     user.PendingHouseholdName = null;
                 }

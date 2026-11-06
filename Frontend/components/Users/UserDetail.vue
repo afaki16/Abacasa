@@ -73,7 +73,7 @@
           </div>
           <div class="role-copy">
             <div class="role-name">{{ role.name }}</div>
-            <div v-if="role.description" class="role-desc">{{ role.description }}</div>
+            <div v-if="role.description" class="role-desc">{{ roleDescription(role) }}</div>
           </div>
           <span v-if="role.isSystemRole" class="badge badge--muted">{{ t('users.detail.systemRole') }}</span>
         </div>
@@ -134,6 +134,7 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { roleDescription } = useSystemTexts()
 
 const currentTab = ref('general')
 

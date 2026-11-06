@@ -47,7 +47,7 @@ public class CreateHouseholdCommandHandler : IRequestHandler<CreateHouseholdComm
 
         var name = request.Name.Trim();
 
-        var tenant = await _unitOfWork.ExecuteInTransactionAsync(() => HouseholdSetup.CreateAsync(_unitOfWork, user, name));
+        var tenant = await _unitOfWork.ExecuteInTransactionAsync(() => HouseholdSetup.CreateAsync(_unitOfWork, _localizer, user, name));
 
         // Üyelikler değişti: kullanıcının bütün hane izin önbelleği düşer
         _permissionService.ClearUserPermissionCache(userId);

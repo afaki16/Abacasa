@@ -16,7 +16,7 @@
 
     <BaseDataTable
       :hide-page-header="true"
-      :items="permissions"
+      :items="displayPermissions"
       :columns="tableColumns"
       :title="t('permissions.title')"
       toolbar-icon="mdi-key-variant"
@@ -65,6 +65,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const { permissionDescription } = useSystemTexts()
 
 useHead({
   title: computed(() => t('permissions.pageTitle')),
@@ -104,6 +105,11 @@ const tableColumns = computed(() => [
     width: '300px'
   }
 ])
+
+// Tohum açıklamaları dile göre (arama ve filtre çevrilmiş metinde çalışır)
+const displayPermissions = computed(() =>
+  permissions.value.map((p) => ({ ...p, description: permissionDescription(p) }))
+)
 
 // Methods
 const loadPermissions = async () => {

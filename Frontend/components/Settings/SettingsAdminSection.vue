@@ -66,7 +66,7 @@
                   </div>
                 </div>
               </td>
-              <td><span class="status-pill">{{ t('settings.sessionCount', { count: row.activeSessionCount }) }}</span></td>
+              <td><span class="status-pill">{{ t('settings.sessionCount', { count: row.activeSessionCount }, row.activeSessionCount) }}</span></td>
               <td class="muted-cell">{{ formatActivity(row.lastActivityAt) }}</td>
             </tr>
           </tbody>

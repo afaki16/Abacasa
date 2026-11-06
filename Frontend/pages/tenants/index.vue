@@ -53,7 +53,7 @@
 
     <template #cell-userCount="{ value }">
       <UiChip size="small" variant="tonal" color="info">
-        {{ t('households.userCount', { count: value ?? 0 }) }}
+        {{ t('households.userCount', { count: value ?? 0 }, value ?? 0) }}
       </UiChip>
     </template>
   </BaseDataTable>

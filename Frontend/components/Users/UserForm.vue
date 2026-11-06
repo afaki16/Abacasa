@@ -304,7 +304,7 @@
                     </UiChip>
                   </div>
                   <p v-if="role.description" class="role-description">
-                    {{ role.description }}
+                    {{ roleDescription(role) }}
                   </p>
                 </div>
               </div>
@@ -356,6 +356,7 @@ import { computed, reactive, ref, watch, watchEffect, onMounted } from 'vue'
 
 const { validationRules: rules } = useValidators()
 const { t } = useI18n()
+const { roleDescription } = useSystemTexts()
 
 const props = defineProps<{
   user?: User | null

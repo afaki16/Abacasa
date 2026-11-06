@@ -5,7 +5,7 @@
     <h1 class="text-[1.5rem] leading-[2rem] font-bold mb-0">{{ household?.name ?? $t('household.fallbackName') }}</h1>
     <UiBtn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" :title="$t('common.edit')" @click="openRename" />
     <div class="flex-1" />
-    <span v-if="household" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ $t('household.memberCount', { count: household.memberCount }) }}</span>
+    <span v-if="household" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ $t('household.memberCount', { count: household.memberCount }, household.memberCount) }}</span>
     <UiBtn
       v-if="canUpdateHousehold"
       size="small"

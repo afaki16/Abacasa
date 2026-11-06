@@ -44,7 +44,7 @@
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donations.fundDistributed') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.fundDistributedTotal ?? 0) }}</div>
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('budget.recordCount', { count: summary?.fundDistributedCount ?? 0 }) }}</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('budget.recordCount', { count: summary?.fundDistributedCount ?? 0 }, summary?.fundDistributedCount ?? 0) }}</div>
         </div>
       </UiCard>
     </div>
@@ -58,7 +58,7 @@
           <li class="ui-list-item" v-for="row in summary?.byKind ?? []" :key="row.kind">
             <div class="ui-list-item__content">
               <div class="ui-list-title">{{ getKindLabel(row.kind) }}</div>
-              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }) }}</div>
+              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }, row.count) }}</div>
             </div>
             <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
           </li>
@@ -77,7 +77,7 @@
           <li class="ui-list-item" v-for="row in summary?.byGiver ?? []" :key="row.personId ?? 'household'">
             <div class="ui-list-item__content">
               <div class="ui-list-title">{{ row.personName ?? t('budget.household') }}</div>
-              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }) }}</div>
+              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }, row.count) }}</div>
             </div>
             <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
           </li>

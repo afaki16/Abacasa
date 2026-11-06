@@ -42,7 +42,7 @@
     density="compact"
     class="mb-4"
   >
-    {{ t('recurringPayments.occurrences.unknownAmount', { count: occurrences?.unknownCount ?? 0 }) }}
+    {{ t('recurringPayments.occurrences.unknownAmount', { count: occurrences?.unknownCount ?? 0 }, occurrences?.unknownCount ?? 0) }}
   </UiAlert>
 
   <div class="ui-row !mb-4">

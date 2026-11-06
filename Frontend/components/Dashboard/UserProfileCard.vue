@@ -102,7 +102,7 @@
               v-if="role.description"
               class="text-label-sm text-on-surface-variant truncate"
             >
-              {{ role.description }}
+              {{ roleDescription(role) }}
             </p>
           </div>
           <span
@@ -130,6 +130,7 @@ import { computed } from 'vue'
 
 const authStore = useAuthStore()
 const { t } = useI18n()
+const { roleDescription } = useSystemTexts()
 
 // MOCK DATA — backend bağlantısı 2B sonrası bir adımda yapılacak.
 // Şu an aktif session sayısı için gerçek endpoint yok, mock 3 kullanıyoruz.

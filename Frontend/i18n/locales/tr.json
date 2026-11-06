@@ -1374,5 +1374,43 @@
     "eur": "Euro",
     "quarterGold": "Çeyrek altın",
     "quarterCount": "{n} çeyrek"
+  },
+  "systemTexts": {
+    "roles": {
+      "SuperAdmin": "Hassas işlemler dahil tam yetkili sistem süper yöneticisi",
+      "Admin": "Tam yetkili sistem yöneticisi",
+      "User": "Standart kullanıcı. Varsayılan olarak yönetim izni yoktur.",
+      "HouseholdAdmin": "Hane yöneticisi",
+      "HouseholdMember": "Hane üyesi"
+    },
+    "permissionActions": {
+      "Read": "{resource}: görüntüleme",
+      "Create": "{resource}: ekleme",
+      "Update": "{resource}: düzenleme",
+      "Delete": "{resource}: silme"
+    },
+    "resources": {
+      "Users": "Kullanıcılar",
+      "Roles": "Roller",
+      "Permissions": "İzinler",
+      "Tenants": "Haneler (sistem)",
+      "Categories": "Kategoriler",
+      "People": "Kişiler",
+      "PaymentMethods": "Ödeme araçları",
+      "Expenses": "Harcamalar",
+      "Donations": "Bağışlar",
+      "RecurringPayments": "Sabit ödemeler",
+      "Debts": "Borçlar",
+      "ExchangeRates": "Döviz kurları",
+      "Dashboard": "Özet",
+      "Ledger": "Yıllık tablo",
+      "DonationTargets": "Bağış hedefleri",
+      "DonationFunds": "Emanetler",
+      "Vehicles": "Araçlar",
+      "RecurringPaymentPayments": "Sabit ödeme ödemeleri",
+      "DebtPayments": "Borç ödemeleri",
+      "Household": "Hane",
+      "HouseholdMembers": "Hane üyeleri"
+    }
   }
 }

@@ -23,7 +23,7 @@
           <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
             {{ t('debts.summary.missingRate', { currencies: missingRateLabels.join(", ") }) }}
           </div>
-          <div v-else class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.openCount', { count: summary?.openCount ?? 0 }) }}</div>
+          <div v-else class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.openCount', { count: summary?.openCount ?? 0 }, summary?.openCount ?? 0) }}</div>
         </div>
       </UiCard>
     </div>

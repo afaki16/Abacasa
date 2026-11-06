@@ -135,7 +135,7 @@
         <Icon name="mdi:information-outline" class="w-3 h-3" />
         {{ $t('ui.richText.pasteHint') }}
       </span>
-      <span v-if="charCount" class="rte-count">{{ $t('ui.richText.charCount', { count: charCount.toLocaleString('tr-TR') }) }}</span>
+      <span v-if="charCount" class="rte-count">{{ $t('ui.richText.charCount', { count: charCount.toLocaleString('tr-TR') }, charCount) }}</span>
     </div>
   </div>
 </template>
@@ -205,6 +205,9 @@ const extractBodyHtml = (source: string): string => {
   return doc.body.innerHTML
 }
 
+// Dil değişince yer tutucu da değişsin (editör bir kez kurulur; özniteliği setOptions ile güncellenir)
+const placeholderText = computed(() => props.placeholder ?? t('ui.richText.placeholder'))
+
 const editor = new Editor({
   content: props.modelValue || '',
   extensions: [
@@ -236,7 +239,7 @@ const editor = new Editor({
     },
     attributes: {
       class: 'rte-prose',
-      'data-placeholder': props.placeholder ?? t('ui.richText.placeholder')
+      'data-placeholder': placeholderText.value
     }
   },
   onUpdate: ({ editor }) => {
@@ -247,6 +250,15 @@ const editor = new Editor({
   },
   onFocus: () => { editorFocused.value = true },
   onBlur:  () => { editorFocused.value = false }
+})
+
+watch(placeholderText, (text) => {
+  editor.setOptions({
+    editorProps: {
+      ...editor.options.editorProps,
+      attributes: { class: 'rte-prose', 'data-placeholder': text }
+    }
+  })
 })
 
 // Dışarıdan modelValue değişirse (örn. "Yeni Versiyon Olarak Kopyala" prefill)

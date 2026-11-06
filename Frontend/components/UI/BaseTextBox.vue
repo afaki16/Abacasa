@@ -131,17 +131,17 @@ watch(
 
     if (props.minLength) {
       if (newVal.minLengthValid) {
-        hint.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✓')
+        hint.push(t('ui.textBox.minChars', { n: props.minLength }, Number(props.minLength)) + ' ✓')
       } else {
-        hint.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✕')
+        hint.push(t('ui.textBox.minChars', { n: props.minLength }, Number(props.minLength)) + ' ✕')
       }
     }
 
     if (props.maxLength) {
       if (newVal.maxLengthValid) {
-        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✓')
+        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }, Number(props.maxLength)) + ' ✓')
       } else {
-        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✕')
+        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }, Number(props.maxLength)) + ' ✕')
       }
     }
 
@@ -226,16 +226,16 @@ const handleKeyDown = (event) => {
 function validateMaxLength(value: any) {
   if (props.isLengthMustMatch) {
     if (value?.length == props.maxLength) return true
-    return t('ui.textBox.exactLength', { label: props.label, n: props.maxLength })
+    return t('ui.textBox.exactLength', { label: props.label, n: props.maxLength }, Number(props.maxLength))
   } else {
     if (value?.length <= props.maxLength!) return true
-    return t('ui.textBox.maxLength', { label: props.label, n: props.maxLength })
+    return t('ui.textBox.maxLength', { label: props.label, n: props.maxLength }, Number(props.maxLength))
   }
 }
 
 function validateMinLength(value: any) {
   if (value?.length >= props.minLength!) return true
-  return t('ui.textBox.minLength', { label: props.label, n: props.minLength })
+  return t('ui.textBox.minLength', { label: props.label, n: props.minLength }, Number(props.minLength))
 }
 
 function validateMaxNumber(value: any) {
@@ -257,20 +257,20 @@ function validatePassword(value: any) {
 
   if (props.minLength) {
     if (value?.length >= props.minLength && value) {
-      messages.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✓')
+      messages.push(t('ui.textBox.minChars', { n: props.minLength }, Number(props.minLength)) + ' ✓')
       passwordSteps.value.minLengthValid = true
     } else {
-      messages.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✕')
+      messages.push(t('ui.textBox.minChars', { n: props.minLength }, Number(props.minLength)) + ' ✕')
       passwordSteps.value.minLengthValid = false
     }
   }
 
   if (props.maxLength) {
     if (value?.length <= props.maxLength && value) {
-      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✓')
+      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }, Number(props.maxLength)) + ' ✓')
       passwordSteps.value.maxLengthValid = true
     } else {
-      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✕')
+      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }, Number(props.maxLength)) + ' ✕')
       passwordSteps.value.maxLengthValid = false
     }
   }
