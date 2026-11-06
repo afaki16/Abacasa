@@ -3,16 +3,20 @@
     <div class="check-card">
       <UiIcon icon="mdi-email-fast-outline" :size="80" color="white" class="email-icon" />
 
-      <h1 class="title">Email kutunuzu kontrol edin</h1>
+      <h1 class="title">{{ $t('auth.checkEmail.title') }}</h1>
       <p v-if="email" class="subtitle">
-        <strong>{{ email }}</strong> adresine bir doğrulama bağlantısı gönderdik.
+        <i18n-t keypath="auth.checkEmail.sentTo" tag="span" scope="global">
+          <template #email><strong>{{ email }}</strong></template>
+        </i18n-t>
       </p>
       <p v-else class="subtitle">
-        Email adresinize bir doğrulama bağlantısı gönderdik.
+        {{ $t('auth.checkEmail.sent') }}
       </p>
 
       <p class="hint">
-        Email gelmediyse <strong>spam</strong> klasörünü kontrol etmeyi unutmayın.
+        <i18n-t keypath="auth.checkEmail.spamHint" tag="span" scope="global">
+          <template #spam><strong>{{ $t('auth.checkEmail.spam') }}</strong></template>
+        </i18n-t>
       </p>
 
       <div class="actions">
@@ -26,7 +30,7 @@
           @click="onResend"
           prepend-icon="mdi-email-sync-outline"
         >
-          Tekrar Gönder
+          {{ $t('auth.resendAgain') }}
         </UiBtn>
 
         <UiBtn
@@ -35,7 +39,7 @@
           class="link-btn"
           @click="goToLogin"
         >
-          Giriş sayfasına dön
+          {{ $t('auth.backToLoginLower') }}
         </UiBtn>
       </div>
     </div>
@@ -54,6 +58,7 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
 const email = computed(() => (route.query.email as string) || '')
 const resending = ref(false)
@@ -65,17 +70,17 @@ const onResend = async () => {
   resending.value = true
   try {
     await auth.resendVerification(email.value)
-    toast.success('Doğrulama bağlantısı tekrar gönderildi.')
+    toast.success(t('auth.verificationResent'))
   } catch (error) {
     const messages = parseApiErrorMessages(error)
-    toast.error(messages[0] || 'İstek gönderilemedi.')
+    toast.error(messages[0] || t('auth.requestFailed'))
   } finally {
     resending.value = false
   }
 }
 
 useHead({
-  title: 'Email Doğrulama - Abacasa'
+  title: computed(() => t('auth.pageTitleVerifyEmail'))
 })
 </script>
 

@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.date"
-            label="Tarih"
+            :label="t('budget.date')"
             type="date"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
@@ -21,7 +21,7 @@
             :items="people"
             item-title="name"
             item-value="id"
-            label="Kimden"
+            :label="t('donationFunds.from')"
             :disabled="loading"
             prepend-inner-icon="mdi-account-arrow-right"
             density="comfortable"
@@ -40,9 +40,9 @@
             :items="kindOptions"
             item-title="title"
             item-value="value"
-            label="Tür"
+            :label="t('budget.kind')"
             :disabled="loading || (fund?.distributionCount ?? 0) > 0"
-            :hint="(fund?.distributionCount ?? 0) > 0 ? 'Dağıtımı olan emanetin türü değiştirilemez' : ''"
+            :hint="(fund?.distributionCount ?? 0) > 0 ? t('donationFunds.form.kindLocked') : ''"
             persistent-hint
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -54,7 +54,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.amount"
-            label="Tutar"
+            :label="t('budget.amount')"
             type="number"
             min="0"
             step="0.01"
@@ -72,7 +72,7 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.note"
-            label="Not"
+            :label="t('budget.note')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -92,7 +92,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -102,7 +102,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ fund ? 'Güncelle' : 'Kaydet' }}
+        {{ fund ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -127,6 +127,7 @@ const emit = defineEmits<{
 
 const { validationRules: rules } = useValidators()
 const { kindOptions } = useDonations()
+const { t } = useI18n()
 
 const formRef = ref()
 const formData = reactive({
@@ -139,7 +140,7 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
 
 watch(
   () => props.fund,

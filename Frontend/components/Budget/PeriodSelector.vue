@@ -6,8 +6,8 @@
           <UiBtnToggle
             v-model="mode"
             :items="[
-              { title: 'Takvim ayı', value: 'calendar' },
-              { title: 'Kart dönemi', value: 'statement', disabled: creditCards.length === 0 },
+              { title: t('budget.period.calendarMonth'), value: 'calendar' },
+              { title: t('budget.period.statementPeriod'), value: 'statement', disabled: creditCards.length === 0 },
             ]"
             mandatory
             color="primary"
@@ -22,7 +22,7 @@
             :items="creditCards"
             item-title="name"
             item-value="id"
-            label="Kredi kartı"
+            :label="t('budget.period.creditCard')"
             density="compact"
             hide-details
           />
@@ -59,6 +59,8 @@ const props = defineProps<{
   storageKey: string;
   paymentMethods: PaymentMethod[];
 }>();
+
+const { t } = useI18n();
 
 const period = defineModel<Period>({ required: true });
 

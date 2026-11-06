@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Ad"
-            placeholder="Örn. Ayşe"
+            :label="t('people.columns.name')"
+            :placeholder="t('people.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -21,8 +21,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.relation"
-            label="Yakınlık"
-            placeholder="Örn. Eş, anne"
+            :label="t('people.columns.relation')"
+            :placeholder="t('people.relationPlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -42,7 +42,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -52,7 +52,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ person ? 'Güncelle' : 'Kaydet' }}
+        {{ person ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -72,6 +72,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()

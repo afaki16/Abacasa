@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Harcamalar' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('expenses.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-cash-minus"
-    title="Harcamalar"
-    subtitle="Dönemdeki harcamalarınızı kaydedin ve izleyin."
+    :title="t('expenses.title')"
+    :subtitle="t('expenses.subtitle')"
   />
 
   <!-- Dönem seçici -->
@@ -25,7 +25,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı (yemek kartı hariç)</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('expenses.periodTotalExcludingMealCard') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
         </div>
       </UiCard>
@@ -33,7 +33,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Yemek kartı</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('expenses.mealCard') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.mealCardTotal ?? 0) }}</div>
         </div>
       </UiCard>
@@ -41,7 +41,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">İşlem sayısı</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('expenses.transactionCount') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ summary?.count ?? 0 }}</div>
         </div>
       </UiCard>
@@ -51,7 +51,7 @@
   <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12 ui-col-md-6">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kategoriye göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('expenses.byCategory') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in summary?.byCategory ?? []" :key="row.categoryId">
             <div class="ui-list-item__content">
@@ -61,7 +61,7 @@
           </li>
           <li class="ui-list-item" v-if="!summary?.byCategory?.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('budget.noRecords') }}</span></div>
             </div>
           </li>
         </ul>
@@ -69,7 +69,7 @@
     </div>
     <div class="ui-col ui-col-12 ui-col-md-6">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('budget.byPaymentMethod') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in summary?.byPaymentMethod ?? []" :key="row.paymentMethodId">
             <div class="ui-list-item__content">
@@ -80,7 +80,7 @@
           </li>
           <li class="ui-list-item" v-if="!summary?.byPaymentMethod?.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('budget.noRecords') }}</span></div>
             </div>
           </li>
         </ul>
@@ -96,7 +96,7 @@
         :items="categories"
         item-title="name"
         item-value="id"
-        label="Kategori"
+        :label="t('budget.category')"
         density="compact"
         hide-details
         clearable
@@ -108,7 +108,7 @@
         :items="paymentMethods"
         item-title="name"
         item-value="id"
-        label="Ödeme aracı"
+        :label="t('budget.paymentMethod')"
         density="compact"
         hide-details
         clearable
@@ -120,7 +120,7 @@
         :items="people"
         item-title="name"
         item-value="id"
-        label="Kişi"
+        :label="t('budget.person')"
         density="compact"
         hide-details
         clearable
@@ -132,13 +132,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Harcamalar"
+    :title="t('expenses.title')"
     toolbar-icon="mdi-cash-minus"
-    search-placeholder="Açıklamada ara..."
-    add-button-text="Yeni Harcama Ekle"
+    :search-placeholder="t('expenses.searchPlaceholder')"
+    :add-button-text="t('expenses.add')"
     :loading="isLoading"
-    loading-text="Harcamalar yükleniyor..."
-    empty-title="Harcama bulunamadı"
+    :loading-text="t('expenses.loading')"
+    :empty-title="t('expenses.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -163,7 +163,7 @@
     </template>
 
     <template #cell-ownerPersonName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t('budget.household') }}
     </template>
 
     <template #cell-amount="{ value }">
@@ -174,8 +174,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Harcamayı Düzenle' : 'Yeni Harcama Ekle'"
-    :subtitle="isEditMode ? 'Harcama bilgilerini güncelleyin' : 'Yeni harcama bilgilerini girin'"
+    :title="isEditMode ? t('expenses.editTitle') : t('expenses.add')"
+    :subtitle="isEditMode ? t('expenses.editSubtitle') : t('expenses.createSubtitle')"
     icon="mdi-cash-minus"
     :default-width="600"
     :min-width="400"
@@ -194,10 +194,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Harcamayı Sil"
-    :message="`${formatDisplayDate(itemToDelete?.date)} tarihli ${formatMoney(itemToDelete?.amount)} tutarındaki harcamayı silmek istediğinizden emin misiniz?`"
+    :title="t('expenses.deleteTitle')"
+    :message="t('expenses.deleteMessage', { date: formatDisplayDate(itemToDelete?.date), amount: formatMoney(itemToDelete?.amount) })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -205,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import type { ExpenseSummary, PaymentMethod } from "~/types";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import ExpenseForm from "~/components/Expenses/ExpenseForm.vue";
@@ -222,20 +222,22 @@ definePageMeta({
   permissions: ["Expenses.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Harcamalar",
+  title: computed(() => t("expenses.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Tarih", key: "date", sortable: false, width: "120px" },
-  { label: "Açıklama", key: "description", sortable: false, width: "250px" },
-  { label: "Kategori", key: "categoryName", sortable: false, width: "160px" },
-  { label: "Ödeme aracı", key: "paymentMethodName", sortable: false, width: "160px" },
-  { label: "Kişi", key: "ownerPersonName", sortable: false, width: "140px" },
-  { label: "Tutar", key: "amount", sortable: false, width: "140px" },
-];
+const tableColumns = computed(() => [
+  { label: t("budget.date"), key: "date", sortable: false, width: "120px" },
+  { label: t("common.description"), key: "description", sortable: false, width: "250px" },
+  { label: t("budget.category"), key: "categoryName", sortable: false, width: "160px" },
+  { label: t("budget.paymentMethod"), key: "paymentMethodName", sortable: false, width: "160px" },
+  { label: t("budget.person"), key: "ownerPersonName", sortable: false, width: "140px" },
+  { label: t("budget.amount"), key: "amount", sortable: false, width: "140px" },
+]);
 //#endregion
 
 //#region Composables
@@ -329,7 +331,7 @@ const {
   createItem: createExpense,
   updateItem: updateExpense,
   deleteItem: deleteExpense,
-  itemName: "harcama",
+  itemName: () => t("expenses.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

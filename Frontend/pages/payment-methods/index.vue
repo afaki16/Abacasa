@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Ödeme araçları' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('paymentMethods.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-credit-card-multiple-outline"
-    title="Ödeme araçları"
-    subtitle="Kart, hesap ve nakit gibi ödeme araçlarını yönetin."
+    :title="t('paymentMethods.title')"
+    :subtitle="t('paymentMethods.subtitle')"
     :count="items.length"
   />
 
@@ -17,13 +17,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Ödeme araçları"
+    :title="t('paymentMethods.title')"
     toolbar-icon="mdi-credit-card-multiple"
-    search-placeholder="Ödeme aracı ara..."
-    add-button-text="Yeni Ödeme Aracı Ekle"
+    :search-placeholder="t('paymentMethods.searchPlaceholder')"
+    :add-button-text="t('paymentMethods.add')"
     :loading="isLoading"
-    loading-text="Ödeme araçları yükleniyor..."
-    empty-title="Ödeme aracı bulunamadı"
+    :loading-text="t('paymentMethods.loading')"
+    :empty-title="t('paymentMethods.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -54,12 +54,12 @@
     </template>
 
     <template #cell-ownerPersonName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t("paymentMethods.household") }}
     </template>
 
     <template #cell-isActive="{ value }">
       <UiChip :color="value ? 'success' : 'error'" size="small" variant="tonal">
-        {{ value ? "Aktif" : "Pasif" }}
+        {{ value ? t("common.active") : t("common.inactive") }}
       </UiChip>
     </template>
   </BaseDataTable>
@@ -67,8 +67,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Ödeme Aracını Düzenle' : 'Yeni Ödeme Aracı Ekle'"
-    :subtitle="isEditMode ? 'Ödeme aracı bilgilerini güncelleyin' : 'Yeni ödeme aracı bilgilerini girin'"
+    :title="isEditMode ? t('paymentMethods.editTitle') : t('paymentMethods.add')"
+    :subtitle="isEditMode ? t('paymentMethods.editSubtitle') : t('paymentMethods.createSubtitle')"
     icon="mdi-credit-card-multiple"
     :default-width="600"
     :min-width="400"
@@ -85,10 +85,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Ödeme Aracını Sil"
-    :message="`'${itemToDelete?.name}' ödeme aracını silmek istediğinizden emin misiniz?`"
+    :title="t('paymentMethods.deleteTitle')"
+    :message="t('paymentMethods.deleteConfirm', { name: itemToDelete?.name })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import PaymentMethodForm from "~/components/PaymentMethods/PaymentMethodForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
@@ -110,15 +110,17 @@ definePageMeta({
   permissions: ["PaymentMethods.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Ödeme araçları",
+  title: computed(() => t("paymentMethods.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
+const tableColumns = computed(() => [
   {
-    label: "Ad",
+    label: t("paymentMethods.columns.name"),
     key: "name",
     sortable: true,
     filterable: true,
@@ -126,13 +128,13 @@ const tableColumns = [
     width: "250px",
   },
   {
-    label: "Tür",
+    label: t("paymentMethods.columns.type"),
     key: "type",
     sortable: true,
     width: "150px",
   },
   {
-    label: "Banka",
+    label: t("paymentMethods.columns.bank"),
     key: "bank",
     sortable: true,
     filterable: true,
@@ -140,24 +142,24 @@ const tableColumns = [
     width: "180px",
   },
   {
-    label: "Sahibi",
+    label: t("paymentMethods.columns.owner"),
     key: "ownerPersonName",
     sortable: true,
     width: "180px",
   },
   {
-    label: "Kesim günü",
+    label: t("paymentMethods.columns.statementDay"),
     key: "statementDay",
     sortable: true,
     width: "120px",
   },
   {
-    label: "Aktif",
+    label: t("common.active"),
     key: "isActive",
     sortable: true,
     width: "100px",
   },
-];
+]);
 //#endregion
 
 //#region Composables
@@ -193,7 +195,7 @@ const {
   createItem: createPaymentMethod,
   updateItem: updatePaymentMethod,
   deleteItem: deletePaymentMethod,
-  itemName: "ödeme aracı",
+  itemName: () => t("paymentMethods.itemName"),
   serverSidePagination: false,
   initialPageSize: 10,
 });

@@ -85,7 +85,7 @@
         type="button"
         tabindex="-1"
         class="ui-field__icon ui-field__icon--clickable ui-field__clear"
-        aria-label="Temizle"
+        :aria-label="$t('ui.textField.clear')"
         @click="clear"
       >
         <UiIcon icon="mdi-close-circle" :size="labelTop ? 18 : 20" />

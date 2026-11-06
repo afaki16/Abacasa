@@ -4,7 +4,7 @@
       <div class="ui-card-title">
         <div class="flex items-center">
           <UiIcon icon="mdi-file-certificate-outline" class="mr-2" />
-          İşlemler · {{ vehicle.name }} ({{ vehicle.plate }})
+          {{ t('vehicles.obligations.title', { name: vehicle.name, plate: vehicle.plate }) }}
           <div class="flex-1" />
           <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
         </div>
@@ -14,12 +14,12 @@
         <div class="overflow-x-auto mb-4"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
-              <th>Tür</th>
-              <th>Tarih</th>
-              <th>Geçerlilik sonu</th>
-              <th class="!text-right">Tutar</th>
-              <th class="!text-center">Harcama</th>
-              <th>Not</th>
+              <th>{{ t('vehicles.obligations.type') }}</th>
+              <th>{{ t('vehicles.obligations.date') }}</th>
+              <th>{{ t('vehicles.obligations.validUntil') }}</th>
+              <th class="!text-right">{{ t('vehicles.obligations.amount') }}</th>
+              <th class="!text-center">{{ t('vehicles.obligations.expense') }}</th>
+              <th>{{ t('vehicles.obligations.note') }}</th>
               <th v-if="canUpdate" />
             </tr>
           </thead>
@@ -39,14 +39,14 @@
               </td>
             </tr>
             <tr v-if="!obligations.length">
-              <td :colspan="canUpdate ? 7 : 6" class="text-black/60 dark:text-white/70">İşlem yok</td>
+              <td :colspan="canUpdate ? 7 : 6" class="text-black/60 dark:text-white/70">{{ t('vehicles.obligations.empty') }}</td>
             </tr>
           </tbody>
         </table></div>
 
         <!-- Ekleme ya da seçili işlemi düzenleme -->
         <template v-if="canUpdate">
-          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'İşlemi düzenle' : 'İşlem ekle' }}</div>
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? t('vehicles.obligations.editHeading') : t('vehicles.obligations.addHeading') }}</div>
           <UiForm ref="formRef" @submit="save">
             <div class="ui-row ui-row--dense">
               <div class="ui-col ui-col-12 ui-col-sm-4">
@@ -55,7 +55,7 @@
                   :items="typeOptions"
                   item-title="title"
                   item-value="value"
-                  label="Tür"
+                  :label="t('vehicles.obligations.type')"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
@@ -65,7 +65,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-4">
                 <UiTextField
                   v-model="formData.date"
-                  label="Tarih"
+                  :label="t('vehicles.obligations.date')"
                   type="date"
                   density="compact"
                   hide-details="auto"
@@ -78,7 +78,7 @@
                 <!-- Türe göre önerilir, düzeltilebilir; elle değiştirilince öneri durur -->
                 <UiTextField
                   v-model="formData.validUntil"
-                  label="Geçerlilik sonu"
+                  :label="t('vehicles.obligations.validUntil')"
                   type="date"
                   density="compact"
                   hide-details="auto"
@@ -90,7 +90,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-4">
                 <UiTextField
                   v-model.number="formData.amount"
-                  label="Tutar"
+                  :label="t('vehicles.obligations.amount')"
                   type="number"
                   min="0"
                   step="0.01"
@@ -103,7 +103,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-8">
                 <UiTextField
                   v-model="formData.note"
-                  label="Not"
+                  :label="t('vehicles.obligations.note')"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
@@ -114,12 +114,12 @@
 
             <!-- Bağlı harcaması olan işlemde kutu yerine not -->
             <div v-if="editing?.hasExpense" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-2">
-              Bağlı harcama var; tarih ve tutar değişikliği harcamaya da yansır.
+              {{ t('vehicles.obligations.linkedExpenseNote') }}
             </div>
             <template v-else>
               <UiCheckbox
                 v-model="formData.createExpense"
-                label="Harcama olarak da kaydet"
+                :label="t('vehicles.obligations.createExpense')"
                 density="compact"
                 hide-details
                 :disabled="isBusy"
@@ -131,7 +131,7 @@
                     :items="categories"
                     item-title="name"
                     item-value="id"
-                    label="Kategori"
+                    :label="t('vehicles.obligations.category')"
                     density="compact"
                     hide-details="auto"
                     :disabled="isBusy"
@@ -144,7 +144,7 @@
                     :items="activePaymentMethods"
                     item-title="name"
                     item-value="id"
-                    label="Ödeme aracı"
+                    :label="t('vehicles.obligations.paymentMethod')"
                     density="compact"
                     hide-details="auto"
                     :disabled="isBusy"
@@ -155,9 +155,9 @@
             </template>
 
             <div class="flex justify-end mt-3 gap-2">
-              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</UiBtn>
+              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">{{ t('common.cancel') }}</UiBtn>
               <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
-                {{ editing ? 'Güncelle' : 'Ekle' }}
+                {{ editing ? t('common.update') : t('vehicles.obligations.add') }}
               </UiBtn>
             </div>
           </UiForm>
@@ -167,10 +167,10 @@
 
     <ConfirmDialog
       :model-value="!!toDelete"
-      title="İşlemi Sil"
+      :title="t('vehicles.obligations.deleteTitle')"
       :message="deleteMessage"
       type="error"
-      confirm-text="Sil"
+      :confirm-text="t('common.delete')"
       :loading="isBusy"
       @confirm="remove"
       @cancel="toDelete = null"
@@ -199,6 +199,7 @@ const emit = defineEmits<{
   changed: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney } = useMoney()
 const { hasPermission } = useAuth()
@@ -226,18 +227,18 @@ const canUpdate = computed(() => hasPermission('Vehicles.Update'))
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 const activePaymentMethods = computed(() => props.paymentMethods.filter((pm) => pm.isActive))
 
-const validUntilRule = (v: string) => (!!v && v > formData.date) || 'Geçerlilik sonu tarihten sonra olmalıdır'
+const validUntilRule = (v: string) => (!!v && v > formData.date) || t('vehicles.obligations.validUntilRule')
 // Tutar isteğe bağlı; harcama kaydedilecekse ya da bağlı harcama varsa zorunlu
 const amountRule = (v: number | null | string) => {
   const empty = v === null || v === ''
-  if (empty) return (formData.createExpense || editing.value?.hasExpense) ? 'Harcama için tutar zorunludur' : true
-  return Number(v) > 0 || 'Tutar 0\'dan büyük olmalıdır'
+  if (empty) return (formData.createExpense || editing.value?.hasExpense) ? t('vehicles.obligations.amountRequired') : true
+  return Number(v) > 0 || t('vehicles.obligations.amountPositive')
 }
 
 const deleteMessage = computed(() => {
   if (!toDelete.value) return ''
-  const base = `${getTypeLabel(toDelete.value.type)} (${formatDisplayDate(toDelete.value.date)}) işlemini silmek istediğinizden emin misiniz?`
-  return toDelete.value.hasExpense ? `${base} Bağlı harcama da silinecek.` : base
+  const base = t('vehicles.obligations.deleteConfirm', { type: getTypeLabel(toDelete.value.type), date: formatDisplayDate(toDelete.value.date) })
+  return toDelete.value.hasExpense ? `${base} ${t('vehicles.obligations.deleteLinkedExpense')}` : base
 })
 
 // Kullanıcı geçerlilik sonuna elle dokunduysa form kapanana (sıfırlanana) kadar öneri uygulanmaz.
@@ -315,10 +316,10 @@ const save = async () => {
     }
     if (editing.value) {
       await updateObligation(props.vehicle.id, editing.value.id, data)
-      toastStore.add('success', 'İşlem güncellendi')
+      toastStore.add('success', t('vehicles.obligations.updated'))
     } else {
       await createObligation(props.vehicle.id, data)
-      toastStore.add('success', 'İşlem eklendi')
+      toastStore.add('success', t('vehicles.obligations.created'))
     }
     resetForm()
     await load()
@@ -336,7 +337,7 @@ const remove = async () => {
   isBusy.value = true
   try {
     await deleteObligation(props.vehicle.id, o.id)
-    toastStore.add('success', 'İşlem silindi')
+    toastStore.add('success', t('vehicles.obligations.deleted'))
     toDelete.value = null
     if (editing.value?.id === o.id) resetForm()
     await load()

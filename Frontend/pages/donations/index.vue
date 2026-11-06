@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Bağışlar' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('donations.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-hand-heart-outline"
-    title="Bağışlar"
-    subtitle="Dönemdeki bağışlarınızı kaydedin ve izleyin."
+    :title="t('donations.title')"
+    :subtitle="t('donations.subtitle')"
   />
 
   <!-- Dönem seçici -->
@@ -25,7 +25,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('budget.periodTotal') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.total ?? 0) }}</div>
         </div>
       </UiCard>
@@ -33,7 +33,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kayıt sayısı</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donations.recordCountLabel') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ summary?.count ?? 0 }}</div>
         </div>
       </UiCard>
@@ -42,9 +42,9 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4" v-if="donationExtras">
       <UiCard class="!bg-secondary/[0.12] !text-secondary">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Emanetten dağıtılan</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donations.fundDistributed') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.fundDistributedTotal ?? 0) }}</div>
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ summary?.fundDistributedCount ?? 0 }} kayıt</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('budget.recordCount', { count: summary?.fundDistributedCount ?? 0 }) }}</div>
         </div>
       </UiCard>
     </div>
@@ -53,18 +53,18 @@
   <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12 ui-col-md-6">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Türe göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('donations.byKind') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in summary?.byKind ?? []" :key="row.kind">
             <div class="ui-list-item__content">
               <div class="ui-list-title">{{ getKindLabel(row.kind) }}</div>
-              <div class="ui-list-subtitle">{{ row.count }} kayıt</div>
+              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }) }}</div>
             </div>
             <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
           </li>
           <li class="ui-list-item" v-if="!summary?.byKind?.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('budget.noRecords') }}</span></div>
             </div>
           </li>
         </ul>
@@ -72,18 +72,18 @@
     </div>
     <div class="ui-col ui-col-12 ui-col-md-6">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Verene göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('donations.byGiver') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in summary?.byGiver ?? []" :key="row.personId ?? 'household'">
             <div class="ui-list-item__content">
-              <div class="ui-list-title">{{ row.personName ?? "Hane" }}</div>
-              <div class="ui-list-subtitle">{{ row.count }} kayıt</div>
+              <div class="ui-list-title">{{ row.personName ?? t('budget.household') }}</div>
+              <div class="ui-list-subtitle">{{ t('budget.recordCount', { count: row.count }) }}</div>
             </div>
             <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
           </li>
           <li class="ui-list-item" v-if="!summary?.byGiver?.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('budget.noRecords') }}</span></div>
             </div>
           </li>
         </ul>
@@ -99,7 +99,7 @@
         :items="kindOptions"
         item-title="title"
         item-value="value"
-        label="Tür"
+        :label="t('budget.kind')"
         density="compact"
         hide-details
         clearable
@@ -111,13 +111,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Bağışlar"
+    :title="t('donations.title')"
     toolbar-icon="mdi-hand-heart"
-    search-placeholder="Kime veya notta ara"
-    add-button-text="Yeni Bağış Ekle"
+    :search-placeholder="t('donations.searchPlaceholder')"
+    :add-button-text="t('donations.add')"
     :loading="isLoading"
-    loading-text="Bağışlar yükleniyor..."
-    empty-title="Bağış bulunamadı"
+    :loading-text="t('donations.loading')"
+    :empty-title="t('donations.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -148,12 +148,12 @@
     <template #cell-recipient="{ item, value }">
       {{ value }}
       <UiChip v-if="item.fundId" size="x-small" variant="tonal" color="secondary" class="ml-1">
-        Emanet: {{ fundFrom(item.fundLabel) }}
+        {{ t('donations.fundChip', { name: fundFrom(item.fundLabel) }) }}
       </UiChip>
     </template>
 
     <template #cell-giverPersonName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t('budget.household') }}
     </template>
 
     <template #cell-amount="{ value }">
@@ -164,8 +164,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Bağışı Düzenle' : 'Yeni Bağış Ekle'"
-    :subtitle="isEditMode ? 'Bağış bilgilerini güncelleyin' : 'Yeni bağış bilgilerini girin'"
+    :title="isEditMode ? t('donations.editTitle') : t('donations.add')"
+    :subtitle="isEditMode ? t('donations.editSubtitle') : t('donations.createSubtitle')"
     icon="mdi-hand-heart"
     :default-width="600"
     :min-width="400"
@@ -185,10 +185,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Bağışı Sil"
-    :message="`${formatDisplayDate(itemToDelete?.date)} tarihli ${formatMoney(itemToDelete?.amount)} tutarındaki bağışı silmek istediğinizden emin misiniz?`"
+    :title="t('donations.deleteTitle')"
+    :message="t('donations.deleteMessage', { date: formatDisplayDate(itemToDelete?.date), amount: formatMoney(itemToDelete?.amount) })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -196,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import type { DonationFund, DonationKind, DonationSummary, PaymentMethod } from "~/types";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import DonationForm from "~/components/Donations/DonationForm.vue";
@@ -213,21 +213,23 @@ definePageMeta({
   permissions: ["Donations.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Bağışlar",
+  title: computed(() => t("donations.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Tarih", key: "date", sortable: false, width: "120px" },
-  { label: "Kime", key: "recipient", sortable: false, width: "200px" },
-  { label: "Tür", key: "kind", sortable: false, width: "120px" },
-  { label: "Veren", key: "giverPersonName", sortable: false, width: "140px" },
-  { label: "Ödeme aracı", key: "paymentMethodName", sortable: false, width: "160px" },
-  { label: "Tutar", key: "amount", sortable: false, width: "140px" },
-  { label: "Not", key: "note", sortable: false, width: "220px" },
-];
+const tableColumns = computed(() => [
+  { label: t("budget.date"), key: "date", sortable: false, width: "120px" },
+  { label: t("budget.recipient"), key: "recipient", sortable: false, width: "200px" },
+  { label: t("budget.kind"), key: "kind", sortable: false, width: "120px" },
+  { label: t("budget.giver"), key: "giverPersonName", sortable: false, width: "140px" },
+  { label: t("budget.paymentMethod"), key: "paymentMethodName", sortable: false, width: "160px" },
+  { label: t("budget.amount"), key: "amount", sortable: false, width: "140px" },
+  { label: t("budget.note"), key: "note", sortable: false, width: "220px" },
+]);
 //#endregion
 
 //#region Composables
@@ -342,7 +344,7 @@ const {
   createItem: createDonation,
   updateItem: updateDonation,
   deleteItem: deleteDonation,
-  itemName: "bağış",
+  itemName: () => t("donations.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

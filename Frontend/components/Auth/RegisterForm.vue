@@ -44,8 +44,8 @@
     <div v-if="!inviteEmail" class="input-group">
       <BaseTextBox
         v-model="formData.householdName"
-        label="Hane adı"
-        placeholder="Örn. Fakı Hanesi"
+        :label="t('household.nameLabel')"
+        :placeholder="t('auth.register.householdPlaceholder')"
         type="text"
         prepend-inner-icon="mdi-home"
         :rules="[rules.required, householdNameMax]"
@@ -173,7 +173,7 @@ const formData = reactive<RegisterRequest>({
   householdName: ''
 })
 
-const householdNameMax = (v: string) => (v ?? '').trim().length <= 100 || 'Hane adı en fazla 100 karakter olabilir'
+const householdNameMax = (v: string) => (v ?? '').trim().length <= 100 || t('household.nameMax')
 
 // Davet modunda e-posta davetteki adrestir
 watch(

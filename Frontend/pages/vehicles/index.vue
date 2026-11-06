@@ -2,27 +2,27 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Araçlar' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('vehicles.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-car-outline"
-    title="Araçlar"
-    subtitle="Araçlarınızı, bakım ve yükümlülük tarihlerini izleyin."
+    :title="t('vehicles.title')"
+    :subtitle="t('vehicles.subtitle')"
   />
 
   <!-- Yaklaşan ve geciken -->
   <UiCard elevation="0" border class="mb-4">
-    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Yaklaşan ve geciken</div>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('vehicles.upcoming.title') }}</div>
     <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
       <thead>
         <tr>
-          <th>Araç</th>
-          <th>Tür</th>
-          <th>Geçerlilik sonu</th>
-          <th>Durum</th>
-          <th class="!text-right">Son tutar</th>
+          <th>{{ t('vehicles.upcoming.vehicle') }}</th>
+          <th>{{ t('vehicles.upcoming.type') }}</th>
+          <th>{{ t('vehicles.upcoming.validUntil') }}</th>
+          <th>{{ t('vehicles.upcoming.status') }}</th>
+          <th class="!text-right">{{ t('vehicles.upcoming.lastAmount') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -31,13 +31,13 @@
           <td>{{ getTypeLabel(r.type) }}</td>
           <td>{{ formatDisplayDate(r.validUntil) }}</td>
           <td>
-            <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">Gecikti · {{ -r.daysLeft }} gün</UiChip>
-            <span v-else>{{ r.daysLeft === 0 ? "Bugün" : `${r.daysLeft} gün kaldı` }}</span>
+            <UiChip v-if="r.isOverdue" size="small" color="error" variant="tonal">{{ t('vehicles.upcoming.overdue', { days: -r.daysLeft }) }}</UiChip>
+            <span v-else>{{ r.daysLeft === 0 ? t('vehicles.upcoming.today') : t('vehicles.upcoming.daysLeft', { days: r.daysLeft }) }}</span>
           </td>
           <td class="!text-right">{{ formatMoney(r.lastAmount) }}</td>
         </tr>
         <tr v-if="!reminders.length">
-          <td colspan="5" class="text-black/60 dark:text-white/70">Yaklaşan tarih yok</td>
+          <td colspan="5" class="text-black/60 dark:text-white/70">{{ t('vehicles.upcoming.empty') }}</td>
         </tr>
       </tbody>
     </table></div>
@@ -47,13 +47,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Araçlar"
+    :title="t('vehicles.title')"
     toolbar-icon="mdi-car"
-    search-placeholder="Ad ya da plakada ara"
-    add-button-text="Araç ekle"
+    :search-placeholder="t('vehicles.searchPlaceholder')"
+    :add-button-text="t('vehicles.add')"
     :loading="isLoading"
-    loading-text="Araçlar yükleniyor..."
-    empty-title="Araç bulunamadı"
+    :loading-text="t('vehicles.loading')"
+    :empty-title="t('vehicles.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -74,7 +74,7 @@
     @refresh="refreshData"
   >
     <template #cell-ownerName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t("vehicles.household") }}
     </template>
 
     <!-- Dört tür için güncel kaydın geçerlilik sonu; renk bugüne göre -->
@@ -83,14 +83,14 @@
     </template>
 
     <template #cell-isActive="{ value }">
-      <UiChip size="small" :color="value ? 'success' : 'grey'" variant="tonal">{{ value ? "Aktif" : "Pasif" }}</UiChip>
+      <UiChip size="small" :color="value ? 'success' : 'grey'" variant="tonal">{{ value ? t("common.active") : t("common.inactive") }}</UiChip>
     </template>
 
     <template #actions="{ item }">
       <div class="flex items-center gap-1">
-        <UiBtn size="small" variant="tonal" color="primary" @click="openObligations(item)">İşlemler</UiBtn>
-        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
-        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
+        <UiBtn size="small" variant="tonal" color="primary" @click="openObligations(item)">{{ t('vehicles.obligations.button') }}</UiBtn>
+        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" :title="t('common.edit')" @click="openEditDialog(item)" />
+        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" :title="t('common.delete')" @click="openDeleteDialog(item)" />
       </div>
     </template>
   </BaseDataTable>
@@ -98,8 +98,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Aracı Düzenle' : 'Araç Ekle'"
-    :subtitle="isEditMode ? 'Araç bilgilerini güncelleyin' : 'Yeni araç bilgilerini girin'"
+    :title="isEditMode ? t('vehicles.editTitle') : t('vehicles.createTitle')"
+    :subtitle="isEditMode ? t('vehicles.editSubtitle') : t('vehicles.createSubtitle')"
     icon="mdi-car"
     :default-width="600"
     :min-width="400"
@@ -125,10 +125,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Aracı Sil"
-    :message="`${itemToDelete?.name ?? ''} (${itemToDelete?.plate ?? ''}) aracını silmek istediğinizden emin misiniz?`"
+    :title="t('vehicles.deleteTitle')"
+    :message="t('vehicles.deleteConfirm', { name: itemToDelete?.name ?? '', plate: itemToDelete?.plate ?? '' })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -154,8 +154,10 @@ definePageMeta({
   permissions: ["Vehicles.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Araçlar",
+  title: computed(() => t("vehicles.title")),
 });
 //#endregion
 
@@ -179,13 +181,13 @@ const canUpdate = computed(() => hasPermission("Vehicles.Update"));
 const canDelete = computed(() => hasPermission("Vehicles.Delete"));
 
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Ad", key: "name", sortable: false, width: "160px" },
-  { label: "Plaka", key: "plate", sortable: false, width: "120px" },
-  { label: "Sahip", key: "ownerName", sortable: false, width: "120px" },
+const tableColumns = computed(() => [
+  { label: t("vehicles.columns.name"), key: "name", sortable: false, width: "160px" },
+  { label: t("vehicles.columns.plate"), key: "plate", sortable: false, width: "120px" },
+  { label: t("vehicles.columns.owner"), key: "ownerName", sortable: false, width: "120px" },
   ...OBLIGATION_TYPES.map((type) => ({ label: getTypeLabel(type), key: `type${type}`, sortable: false, width: "130px" })),
-  { label: "Aktif", key: "isActive", sortable: false, width: "90px" },
-];
+  { label: t("common.active"), key: "isActive", sortable: false, width: "90px" },
+]);
 //#endregion
 
 //#region Rozetler (bugüne göre frontend'de)
@@ -254,7 +256,7 @@ const {
   createItem: createVehicle,
   updateItem: updateVehicle,
   deleteItem: deleteVehicle,
-  itemName: "araç",
+  itemName: () => t("vehicles.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

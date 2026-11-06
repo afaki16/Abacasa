@@ -50,10 +50,14 @@ export const useHousehold = () => {
   const api = useApi()
   const authStore = useAuthStore()
 
+  // Metinler çağrı anında çevrilir (dil değişimine uyar)
+  const { $i18n } = useNuxtApp()
+  const tr = (key: string) => $i18n.t(key)
+
   const activeTenant = computed(() => authStore.user?.activeTenant ?? null)
   const memberships = computed(() => authStore.user?.memberships ?? [])
 
-  const getRoleLabel = (role?: HouseholdRole | null) => (role === 'Admin' ? 'Yönetici' : role === 'Member' ? 'Üye' : '')
+  const getRoleLabel = (role?: HouseholdRole | null) => (role === 'Admin' ? tr('household.roles.admin') : role === 'Member' ? tr('household.roles.member') : '')
 
   // Refresh token HttpOnly cookie'de; backend yeni hane ile döndürür ve cookie'yi günceller
   const switchHousehold = async (tenantId: number) => {
@@ -122,8 +126,9 @@ export const useHousehold = () => {
     return response.data
   }
 
+  const invitationStatusKeys: Record<string, string> = { Pending: 'pending', Accepted: 'accepted', Revoked: 'revoked', Expired: 'expired' }
   const invitationStatusLabel = (status: InvitationStatus) =>
-    ({ Pending: 'Bekliyor', Accepted: 'Kabul edildi', Revoked: 'İptal edildi', Expired: 'Süresi doldu' })[status] ?? status
+    invitationStatusKeys[status] ? tr(`household.invitationStatus.${invitationStatusKeys[status]}`) : status
   //#endregion
 
   return {

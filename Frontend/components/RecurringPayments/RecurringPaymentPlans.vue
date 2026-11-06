@@ -7,7 +7,7 @@
         :items="kindOptions"
         item-title="title"
         item-value="value"
-        label="Tür"
+        :label="t('budget.kind')"
         density="compact"
         hide-details
         clearable
@@ -19,13 +19,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Planlar"
+    :title="t('recurringPayments.plans.title')"
     toolbar-icon="mdi-calendar-sync"
-    search-placeholder="Ad veya kimde ara..."
-    add-button-text="Yeni Plan Ekle"
+    :search-placeholder="t('recurringPayments.plans.searchPlaceholder')"
+    :add-button-text="t('recurringPayments.plans.add')"
     :loading="isLoading"
-    loading-text="Planlar yükleniyor..."
-    empty-title="Plan bulunamadı"
+    :loading-text="t('recurringPayments.plans.loading')"
+    :empty-title="t('recurringPayments.plans.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -59,12 +59,12 @@
     </template>
 
     <template #cell-ownerPersonName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t('budget.household') }}
     </template>
 
     <template #cell-isActive="{ value }">
       <UiChip :color="value ? 'success' : undefined" size="small" variant="tonal">
-        {{ value ? "Aktif" : "Pasif" }}
+        {{ value ? t('common.active') : t('common.inactive') }}
       </UiChip>
     </template>
   </BaseDataTable>
@@ -72,8 +72,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Planı Düzenle' : 'Yeni Plan Ekle'"
-    :subtitle="isEditMode ? 'Plan bilgilerini güncelleyin' : 'Yeni sabit ödeme planı bilgilerini girin'"
+    :title="isEditMode ? t('recurringPayments.plans.editTitle') : t('recurringPayments.plans.createTitle')"
+    :subtitle="isEditMode ? t('recurringPayments.plans.editSubtitle') : t('recurringPayments.plans.createSubtitle')"
     icon="mdi-calendar-sync"
     :default-width="650"
     :min-width="400"
@@ -92,10 +92,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Planı Sil"
-    :message="`${itemToDelete?.name} planını silmek istediğinizden emin misiniz?`"
+    :title="t('recurringPayments.plans.deleteTitle')"
+    :message="t('recurringPayments.plans.deleteMessage', { name: itemToDelete?.name })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import type { PaymentMethod } from "~/types";
 import { RecurringPaymentKind } from "~/types";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
@@ -111,17 +111,19 @@ import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
 import RecurringPaymentForm from "~/components/RecurringPayments/RecurringPaymentForm.vue";
 
+const { t } = useI18n();
+
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Ad", key: "name", sortable: false, width: "200px" },
-  { label: "Tür", key: "kind", sortable: false, width: "110px" },
-  { label: "Beklenen tutar", key: "expectedAmount", sortable: false, width: "140px" },
-  { label: "Vade günü", key: "dueDay", sortable: false, width: "100px" },
-  { label: "Ödeme aracı", key: "paymentMethodName", sortable: false, width: "150px" },
-  { label: "Kategori / Kime", key: "categoryOrRecipient", sortable: false, width: "160px" },
-  { label: "Kişi", key: "ownerPersonName", sortable: false, width: "130px" },
-  { label: "Aktif", key: "isActive", sortable: false, width: "90px" },
-];
+const tableColumns = computed(() => [
+  { label: t("budget.name"), key: "name", sortable: false, width: "200px" },
+  { label: t("budget.kind"), key: "kind", sortable: false, width: "110px" },
+  { label: t("recurringPayments.form.expectedAmount"), key: "expectedAmount", sortable: false, width: "140px" },
+  { label: t("recurringPayments.form.dueDay"), key: "dueDay", sortable: false, width: "100px" },
+  { label: t("budget.paymentMethod"), key: "paymentMethodName", sortable: false, width: "150px" },
+  { label: t("recurringPayments.plans.categoryOrRecipient"), key: "categoryOrRecipient", sortable: false, width: "160px" },
+  { label: t("budget.person"), key: "ownerPersonName", sortable: false, width: "130px" },
+  { label: t("common.active"), key: "isActive", sortable: false, width: "90px" },
+]);
 //#endregion
 
 //#region Composables
@@ -191,7 +193,7 @@ const {
   createItem: createRecurringPayment,
   updateItem: updateRecurringPayment,
   deleteItem: deleteRecurringPayment,
-  itemName: "plan",
+  itemName: () => t("recurringPayments.plans.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

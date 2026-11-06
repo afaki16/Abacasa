@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Kategoriler' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('categories.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-shape-outline"
-    title="Kategoriler"
-    subtitle="Harcama ve bağış kategorilerini yönetin."
+    :title="t('categories.title')"
+    :subtitle="t('categories.subtitle')"
     :count="items.length"
   />
 
@@ -17,13 +17,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Kategoriler"
+    :title="t('categories.title')"
     toolbar-icon="mdi-shape"
-    search-placeholder="Kategori ara..."
-    add-button-text="Yeni Kategori Ekle"
+    :search-placeholder="t('categories.searchPlaceholder')"
+    :add-button-text="t('categories.add')"
     :loading="isLoading"
-    loading-text="Kategoriler yükleniyor..."
-    empty-title="Kategori bulunamadı"
+    :loading-text="t('categories.loading')"
+    :empty-title="t('categories.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -53,8 +53,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Kategoriyi Düzenle' : 'Yeni Kategori Ekle'"
-    :subtitle="isEditMode ? 'Kategori bilgilerini güncelleyin' : 'Yeni kategori bilgilerini girin'"
+    :title="isEditMode ? t('categories.editTitle') : t('categories.add')"
+    :subtitle="isEditMode ? t('categories.editSubtitle') : t('categories.createSubtitle')"
     icon="mdi-shape"
     :default-width="600"
     :min-width="400"
@@ -70,10 +70,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Kategoriyi Sil"
-    :message="`'${itemToDelete?.name}' kategorisini silmek istediğinizden emin misiniz?`"
+    :title="t('categories.deleteTitle')"
+    :message="t('categories.deleteConfirm', { name: itemToDelete?.name })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import CategoryForm from "~/components/Categories/CategoryForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
@@ -95,22 +95,24 @@ definePageMeta({
   permissions: ["Categories.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Kategoriler",
+  title: computed(() => t("categories.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
+const tableColumns = computed(() => [
   {
-    label: "Kategori Adı",
+    label: t("categories.columns.name"),
     key: "name",
     sortable: true,
     filterable: true,
     filterType: "text",
     width: "300px",
   },
-];
+]);
 //#endregion
 
 //#region Composables
@@ -140,7 +142,7 @@ const {
   createItem: createCategory,
   updateItem: updateCategory,
   deleteItem: deleteCategory,
-  itemName: "kategori",
+  itemName: () => t("categories.itemName"),
   serverSidePagination: false,
   initialPageSize: 10,
 });

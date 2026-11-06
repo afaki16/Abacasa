@@ -3,7 +3,7 @@
     <div class="invite-card">
       <div v-if="state === 'loading'" class="state-block">
         <UiProgressCircular indeterminate color="white" :size="56" :width="4" />
-        <h2 class="title">Davet yükleniyor...</h2>
+        <h2 class="title">{{ $t('auth.invite.loading') }}</h2>
       </div>
 
       <!-- Bulunamadı / kabul edilmiş / iptal / süresi dolmuş -->
@@ -12,7 +12,7 @@
         <h2 class="title">{{ unavailableTitle }}</h2>
         <p class="subtitle">{{ unavailableText }}</p>
         <UiBtn color="white" variant="outlined" size="large" class="action-btn" @click="goToLogin">
-          Giriş sayfasına dön
+          {{ $t('auth.backToLoginLower') }}
         </UiBtn>
       </div>
 
@@ -21,7 +21,10 @@
           <UiIcon icon="mdi-home-heart" :size="72" color="white" />
           <h2 class="title">{{ invite.householdName }}</h2>
           <p class="subtitle">
-            {{ invite.inviterName }} sizi bu haneye <strong>{{ roleLabel }}</strong> olarak davet etti.
+            <i18n-t keypath="auth.invite.invitedAs" tag="span" scope="global">
+              <template #inviter>{{ invite.inviterName }}</template>
+              <template #role><strong>{{ roleLabel }}</strong></template>
+            </i18n-t>
           </p>
 
           <UiAlert v-if="actionError" type="error" variant="flat" density="compact" class="w-full text-left">
@@ -38,24 +41,24 @@
             :loading="busy"
             @click="accept"
           >
-            Daveti kabul et
+            {{ $t('auth.invite.accept') }}
           </UiBtn>
 
           <!-- Oturum açık, başka hesap -->
           <template v-else-if="isLoggedIn">
-            <p class="subtitle">Bu davet {{ invite.email }} adresine gönderildi. O hesapla giriş yapın.</p>
+            <p class="subtitle">{{ $t('auth.invite.otherAccount', { email: invite.email }) }}</p>
             <UiBtn color="white" variant="outlined" size="large" class="action-btn" :loading="busy" @click="logout">
-              Çıkış yap
+              {{ $t('auth.invite.signOut') }}
             </UiBtn>
           </template>
 
           <!-- Oturum kapalı -->
           <div v-else class="actions-row">
             <UiBtn v-if="invite.userExists" color="white" variant="outlined" size="large" class="action-btn" @click="goToLoginWithRedirect">
-              Giriş yap
+              {{ $t('auth.invite.signIn') }}
             </UiBtn>
             <UiBtn v-else color="white" variant="outlined" size="large" class="action-btn" @click="goToRegister">
-              Kayıt ol
+              {{ $t('auth.invite.register') }}
             </UiBtn>
           </div>
         </div>
@@ -74,7 +77,8 @@ definePageMeta({
   layout: false
 })
 
-useHead({ title: 'Haneye davet - Abacasa' })
+const { t } = useI18n()
+useHead({ title: computed(() => t('auth.invite.pageTitle')) })
 
 const route = useRoute()
 const router = useRouter()
@@ -97,16 +101,16 @@ const roleLabel = computed(() => getRoleLabel(invite.value?.role))
 
 const unavailableTitle = computed(() => {
   switch (unavailableReason.value) {
-    case 'Accepted': return 'Davet zaten kabul edilmiş'
-    case 'Revoked': return 'Davet iptal edilmiş'
-    case 'Expired': return 'Davetin süresi dolmuş'
-    default: return 'Davet bulunamadı'
+    case 'Accepted': return t('auth.invite.alreadyAccepted')
+    case 'Revoked': return t('auth.invite.revoked')
+    case 'Expired': return t('auth.invite.expired')
+    default: return t('auth.invite.notFound')
   }
 })
 const unavailableText = computed(() =>
   unavailableReason.value === 'Accepted'
-    ? 'Bu davet daha önce kullanıldı.'
-    : 'Yeni bir davet için hane yöneticisine başvurun.'
+    ? t('auth.invite.alreadyUsed')
+    : t('auth.invite.askAdmin')
 )
 
 const goToLogin = () => router.push('/')
@@ -123,7 +127,7 @@ const accept = async () => {
   try {
     await acceptInvitation(token)
   } catch (error) {
-    actionError.value = parseApiErrorMessages(error, 'Davet kabul edilemedi').join(' ')
+    actionError.value = parseApiErrorMessages(error, t('auth.invite.acceptFailed')).join(' ')
     busy.value = false
   }
 }

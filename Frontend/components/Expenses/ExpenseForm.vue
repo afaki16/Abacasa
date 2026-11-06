@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.date"
-            label="Tarih"
+            :label="t('budget.date')"
             type="date"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
@@ -18,7 +18,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.amount"
-            label="Tutar"
+            :label="t('budget.amount')"
             type="number"
             min="0"
             step="0.01"
@@ -36,8 +36,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.description"
-            label="Açıklama"
-            placeholder="Örn. Haftalık market alışverişi"
+            :label="t('common.description')"
+            :placeholder="t('expenses.form.descriptionPlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -55,7 +55,7 @@
             :items="categories"
             item-title="name"
             item-value="id"
-            label="Kategori"
+            :label="t('budget.category')"
             :disabled="loading"
             prepend-inner-icon="mdi-shape"
             density="comfortable"
@@ -70,7 +70,7 @@
             :items="paymentMethodOptions"
             item-title="name"
             item-value="id"
-            label="Ödeme aracı"
+            :label="t('budget.paymentMethod')"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -88,7 +88,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            label="Kişi"
+            :label="t('budget.person')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -107,7 +107,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -117,7 +117,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ expense ? 'Güncelle' : 'Kaydet' }}
+        {{ expense ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -144,6 +144,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()
@@ -158,7 +159,7 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
 
 // Sadece aktif ödeme araçları; düzenlemede mevcut araç pasif olsa da görünür
 const paymentMethodOptions = computed(() =>
@@ -166,7 +167,7 @@ const paymentMethodOptions = computed(() =>
 )
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('budget.household') },
   ...props.people,
 ])
 

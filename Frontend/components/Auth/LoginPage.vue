@@ -59,7 +59,7 @@
         <AlertBox
           v-if="route.query.accountDeleted && !accountDeletedDismissed"
           variant="success"
-          message="Hesabınız silindi."
+          :message="t('auth.accountDeleted')"
           @close="accountDeletedDismissed = true"
         />
 
@@ -141,7 +141,7 @@
                 <button
                   type="button"
                   class="custom-input-toggle"
-                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  :aria-label="showPassword ? t('ui.textBox.hidePassword') : t('ui.textBox.showPassword')"
                   @click="showPassword = !showPassword"
                 >
                   <Icon
@@ -210,9 +210,9 @@
         </template>
 
         <div class="legal-links">
-          <NuxtLink :to="LEGAL_ROUTES.privacy">Aydınlatma metni</NuxtLink>
+          <NuxtLink :to="LEGAL_ROUTES.privacy">{{ t('legal.document.privacyLink') }}</NuxtLink>
           <span>·</span>
-          <NuxtLink :to="LEGAL_ROUTES.terms">Kullanım koşulları</NuxtLink>
+          <NuxtLink :to="LEGAL_ROUTES.terms">{{ t('legal.document.termsLink') }}</NuxtLink>
         </div>
       </div>
     </div>

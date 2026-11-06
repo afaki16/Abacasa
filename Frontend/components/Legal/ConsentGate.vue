@@ -2,9 +2,9 @@
   <!-- Kapatılamaz: onaylanana kadar uygulama kullanılamaz; yalnızca çıkış yapılabilir -->
   <UiDialog :model-value="open" persistent max-width="520">
     <UiCard>
-      <div class="ui-card-title">Koşullar güncellendi</div>
+      <div class="ui-card-title">{{ $t('legal.consent.title') }}</div>
       <div class="ui-card-text">
-        <p class="mb-3">Devam etmek için güncellenen belgeleri okuyup onaylayın.</p>
+        <p class="mb-3">{{ $t('legal.consent.intro') }}</p>
 
         <UiCheckbox
           v-if="pending.includes('Terms')"
@@ -14,10 +14,11 @@
           :disabled="busy"
         >
           <template #label>
-            <span>
-              <a :href="LEGAL_ROUTES.terms" target="_blank" rel="noopener" @click.stop>Kullanım koşullarını</a>
-              okudum ve kabul ediyorum.
-            </span>
+            <i18n-t keypath="legal.consent.acceptTerms" tag="span" scope="global">
+              <template #link>
+                <a :href="LEGAL_ROUTES.terms" target="_blank" rel="noopener" @click.stop>{{ $t('legal.consent.termsLink') }}</a>
+              </template>
+            </i18n-t>
           </template>
         </UiCheckbox>
         <UiCheckbox
@@ -28,11 +29,11 @@
           :disabled="busy"
         >
           <template #label>
-            <span>
-              Kişisel verilerimin işlenmesine ilişkin
-              <a :href="LEGAL_ROUTES.privacy" target="_blank" rel="noopener" @click.stop>Aydınlatma Metni'ni</a>
-              okudum.
-            </span>
+            <i18n-t keypath="legal.consent.acknowledgePrivacy" tag="span" scope="global">
+              <template #link>
+                <a :href="LEGAL_ROUTES.privacy" target="_blank" rel="noopener" @click.stop>{{ $t('legal.consent.privacyLink') }}</a>
+              </template>
+            </i18n-t>
           </template>
         </UiCheckbox>
 
@@ -41,9 +42,9 @@
         </UiAlert>
       </div>
       <div class="ui-card-actions !px-6 !pb-4">
-        <UiBtn variant="text" :disabled="busy" @click="logout">Çıkış yap</UiBtn>
+        <UiBtn variant="text" :disabled="busy" @click="logout">{{ $t('legal.consent.logout') }}</UiBtn>
         <div class="flex-1" />
-        <UiBtn color="primary" variant="flat" :loading="busy" :disabled="!canContinue" @click="submit">Devam et</UiBtn>
+        <UiBtn color="primary" variant="flat" :loading="busy" :disabled="!canContinue" @click="submit">{{ $t('legal.consent.continue') }}</UiBtn>
       </div>
     </UiCard>
   </UiDialog>
@@ -55,6 +56,7 @@ import type { ConsentDocument } from '~/types'
 import { LEGAL_ROUTES } from '~/utils/legal'
 import { parseApiErrorMessages } from '~/utils/apiError'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const auth = useAuth()
 const { acceptConsents } = useLegal()
@@ -89,7 +91,7 @@ const submit = async () => {
   try {
     await acceptConsents([...pending.value])
   } catch (error) {
-    errors.value = parseApiErrorMessages(error, 'Onay kaydedilemedi')
+    errors.value = parseApiErrorMessages(error, t('legal.consent.saveFailed'))
   } finally {
     busy.value = false
   }

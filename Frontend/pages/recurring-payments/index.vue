@@ -2,19 +2,19 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Sabit ödemeler' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('recurringPayments.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-calendar-sync"
-    title="Sabit ödemeler"
-    subtitle="Düzenli ödeme planlarını ve dönemin vadelerini yönetin."
+    :title="t('recurringPayments.title')"
+    :subtitle="t('recurringPayments.subtitle')"
   />
 
   <UiTabs v-model="tab" color="primary" class="mb-4">
-    <UiTab value="period">Dönem</UiTab>
-    <UiTab value="plans">Planlar</UiTab>
+    <UiTab value="period">{{ t('recurringPayments.tabs.period') }}</UiTab>
+    <UiTab value="plans">{{ t('recurringPayments.tabs.plans') }}</UiTab>
   </UiTabs>
 
   <!-- Sekme her açılışta yeniden yüklenir; planlardaki değişiklik dönem sekmesine yansır -->
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import RecurringPaymentOccurrences from "~/components/RecurringPayments/RecurringPaymentOccurrences.vue";
 import RecurringPaymentPlans from "~/components/RecurringPayments/RecurringPaymentPlans.vue";
 
@@ -35,8 +35,10 @@ definePageMeta({
   permissions: ["RecurringPayments.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Sabit ödemeler",
+  title: computed(() => t("recurringPayments.title")),
 });
 //#endregion
 

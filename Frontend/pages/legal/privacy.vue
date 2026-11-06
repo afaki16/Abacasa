@@ -1,5 +1,5 @@
 <template>
-  <LegalDocument title="Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni" :version="version">
+  <LegalDocument :title="$t('legal.privacy.title')" :version="version">
     <h2>1. Veri sorumlusu</h2>
     <p>
       6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca kişisel verileriniz, veri sorumlusu sıfatıyla
@@ -101,7 +101,8 @@ import { legal } from '~/utils/legal'
 
 // Herkese açık (auth.global'de serbest); giriş sayfası gibi yalın düzen
 definePageMeta({ layout: false })
-useHead({ title: 'Aydınlatma metni - Abacasa' })
+const { t } = useI18n()
+useHead({ title: computed(() => t('legal.privacy.pageTitle')) })
 
 const { getVersions } = useLegal()
 const version = ref<string | null>(null)

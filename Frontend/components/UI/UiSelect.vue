@@ -65,7 +65,7 @@
             <span class="ui-select__option-title">{{ entry.title }}</span>
           </slot>
         </button>
-        <div v-if="!filtered.length" class="ui-select__empty">{{ loading ? 'Yükleniyor…' : noDataText }}</div>
+        <div v-if="!filtered.length" class="ui-select__empty">{{ loading ? $t('ui.select.loading') : (noDataText ?? $t('ui.select.noData')) }}</div>
       </div>
     </Teleport>
   </div>
@@ -112,7 +112,7 @@ const props = withDefaults(defineProps<{
   placeholder: undefined, prependInnerIcon: undefined, density: 'comfortable', hideDetails: false, disabled: false,
   clearable: false, loading: false, autocomplete: false, filterKeys: undefined, rules: undefined,
   errorMessages: undefined, rounded: undefined, bgColor: undefined, hint: undefined, persistentHint: false,
-  noDataText: 'Kayıt bulunamadı',
+  noDataText: undefined,
 })
 
 const emit = defineEmits<{ 'update:modelValue': [value: any] }>()

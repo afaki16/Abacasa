@@ -21,7 +21,7 @@
             class="w-4 h-4"
           />
           {{ trendPrefix }}{{ Math.abs(trendPercent) }}%
-          <span class="font-normal text-on-surface-variant">{{ trendSubtitle }}</span>
+          <span class="font-normal text-on-surface-variant">{{ trendSubtitle ?? t('dashboard.trendVsLastWeek') }}</span>
         </p>
       </div>
 
@@ -82,10 +82,12 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   trendPercent: undefined,
-  trendSubtitle: 'vs geçen hafta',
+  trendSubtitle: undefined,
   color: 'primary',
   sparkline: () => []
 })
+
+const { t } = useI18n()
 
 const gradientId = `grad-${Math.random().toString(36).slice(2, 11)}`
 const sparklineWidth = 100

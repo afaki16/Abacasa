@@ -4,7 +4,7 @@
       <div class="ui-card-title">
         <div class="flex items-center">
           <UiIcon icon="mdi-cash-check" class="mr-2" />
-          Ödemeler · {{ debt.creditorName }}
+          {{ t('debts.payments.title', { creditor: debt.creditorName }) }}
           <div class="flex-1" />
           <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
         </div>
@@ -14,15 +14,15 @@
         <!-- Borcun tutarı, ödenen ve kalan -->
         <div class="ui-row ui-row--dense !mb-2">
           <div class="ui-col ui-col-4">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Tutar</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.columns.amount') }}</div>
             <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">{{ money(debt.amount) }}</div>
           </div>
           <div class="ui-col ui-col-4">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Ödenen</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.columns.paid') }}</div>
             <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">{{ money(debt.paidAmount) }}</div>
           </div>
           <div class="ui-col ui-col-4">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kalan</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.columns.remaining') }}</div>
             <div class="text-[1rem] leading-[1.75rem] tracking-[0.009375em] font-bold">
               {{ money(debt.remaining) }}
               <span v-if="isForeign && debt.remainingInTry !== null" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70">
@@ -35,11 +35,11 @@
         <div class="overflow-x-auto mb-4"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
-              <th>Tarih</th>
-              <th class="!text-right">Tutar</th>
-              <th class="!text-right">Kur</th>
-              <th class="!text-right">TL karşılığı</th>
-              <th>Not</th>
+              <th>{{ t('debts.columns.date') }}</th>
+              <th class="!text-right">{{ t('debts.columns.amount') }}</th>
+              <th class="!text-right">{{ t('debts.payments.rate') }}</th>
+              <th class="!text-right">{{ t('debts.payments.amountInTry') }}</th>
+              <th>{{ t('debts.columns.note') }}</th>
               <th v-if="canUpdate || canDelete" />
             </tr>
           </thead>
@@ -56,14 +56,14 @@
               </td>
             </tr>
             <tr v-if="!payments.length">
-              <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-black/60 dark:text-white/70">Ödeme yok</td>
+              <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-black/60 dark:text-white/70">{{ t('debts.payments.empty') }}</td>
             </tr>
           </tbody>
         </table></div>
 
         <!-- Ekleme ya da seçili ödemeyi düzenleme -->
         <template v-if="editing ? canUpdate : canCreate && debt.remaining > 0">
-          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'Ödemeyi düzenle' : 'Ödeme ekle' }}</div>
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? t('debts.payments.editHeading') : t('debts.payments.add') }}</div>
           <DebtPaymentForm
             :currency="debt.currency"
             :remaining="debt.remaining"
@@ -79,10 +79,10 @@
 
     <ConfirmDialog
       :model-value="!!paymentToDelete"
-      title="Ödemeyi Sil"
-      :message="`${formatDisplayDate(paymentToDelete?.date)} tarihli ${money(paymentToDelete?.amount ?? 0)} tutarındaki ödemeyi silmek istediğinizden emin misiniz?`"
+      :title="t('debts.payments.deleteTitle')"
+      :message="t('debts.payments.deleteConfirm', { date: formatDisplayDate(paymentToDelete?.date), amount: money(paymentToDelete?.amount ?? 0) })"
       type="error"
-      confirm-text="Sil"
+      :confirm-text="t('common.delete')"
       :loading="isBusy"
       @confirm="removePayment"
       @cancel="paymentToDelete = null"
@@ -112,6 +112,7 @@ const emit = defineEmits<{
   changed: []
 }>()
 
+const { t } = useI18n()
 const { formatMoney, formatAmount } = useMoney()
 const { hasPermission } = useAuth()
 const { getDebtById, getDebtPayments, createDebtPayment, updateDebtPayment, deleteDebtPayment } = useDebts()
@@ -154,10 +155,10 @@ const savePayment = async (data: SaveDebtPaymentRequest) => {
   try {
     if (editing.value) {
       await updateDebtPayment(debt.value.id, editing.value.id, data)
-      toastStore.add('success', 'Ödeme güncellendi')
+      toastStore.add('success', t('debts.payments.updated'))
     } else {
       await createDebtPayment(debt.value.id, data)
-      toastStore.add('success', 'Ödeme eklendi')
+      toastStore.add('success', t('debts.payments.created'))
     }
     editing.value = null
     await load()
@@ -175,7 +176,7 @@ const removePayment = async () => {
   isBusy.value = true
   try {
     await deleteDebtPayment(debt.value.id, payment.id)
-    toastStore.add('success', 'Ödeme silindi')
+    toastStore.add('success', t('debts.payments.deleted'))
     paymentToDelete.value = null
     if (editing.value?.id === payment.id) editing.value = null
     await load()

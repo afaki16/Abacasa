@@ -92,7 +92,7 @@ const onSubmit = async () => {
 }
 
 useHead({
-  title: t('auth.pageTitleForgotPassword')
+  title: computed(() => t('auth.pageTitleForgotPassword'))
 })
 </script>
 

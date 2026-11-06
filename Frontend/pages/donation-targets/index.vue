@@ -2,7 +2,7 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Bağış hedefleri' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('donationTargets.title') }]"
     />
   </div>
 
@@ -12,13 +12,13 @@
     <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ year }}</div>
     <UiBtn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
     <div class="flex-1" />
-    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Hedef ekle</UiBtn>
+    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">{{ t('donationTargets.addTarget') }}</UiBtn>
   </div>
 
   <UiProgressLinear v-if="isLoading" indeterminate color="primary" class="mb-2" />
 
   <div v-if="!isLoading && !sections.length" class="text-black/60 dark:text-white/70 mb-4">
-    {{ year }} için hedef ya da bağış yok.
+    {{ t('donationTargets.emptyYear', { year }) }}
   </div>
 
   <!-- Her tür için bir bölüm (hedefi ya da gönüllü bağışı varsa) -->
@@ -27,19 +27,19 @@
     <div class="ui-card-text">
       <div class="ui-row ui-row--dense !mb-2">
         <div class="ui-col ui-col-6 ui-col-md-3">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Hedef</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationTargets.target') }}</div>
           <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.target ?? 0) }}</div>
         </div>
         <div class="ui-col ui-col-6 ui-col-md-3">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Verilen</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationTargets.given') }}</div>
           <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.given ?? 0) }}</div>
         </div>
         <div class="ui-col ui-col-6 ui-col-md-3">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kalan</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationTargets.remaining') }}</div>
           <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.remainingTotal ?? 0) }}</div>
         </div>
         <div class="ui-col ui-col-6 ui-col-md-3">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Plana göre kalan</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationTargets.remainingAfterPlan') }}</div>
           <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ formatMoney(section.totals?.remainingAfterPlanTotal ?? 0) }}</div>
         </div>
       </div>
@@ -47,58 +47,58 @@
       <div class="overflow-x-auto" v-if="section.rows.length"><table v-stack-table class="ui-table ui-table--compact">
         <thead>
           <tr>
-            <th>Kişi</th>
-            <th class="!text-right">Hedef</th>
-            <th class="!text-right">Verilen</th>
-            <th class="!text-right">Planlanan</th>
-            <th class="!text-right">Beklenen yıl sonu</th>
-            <th class="!text-right">Kalan</th>
-            <th class="!text-right">Plana göre kalan</th>
+            <th>{{ t('budget.person') }}</th>
+            <th class="!text-right">{{ t('donationTargets.target') }}</th>
+            <th class="!text-right">{{ t('donationTargets.given') }}</th>
+            <th class="!text-right">{{ t('donationTargets.planned') }}</th>
+            <th class="!text-right">{{ t('donationTargets.expectedYearEnd') }}</th>
+            <th class="!text-right">{{ t('donationTargets.remaining') }}</th>
+            <th class="!text-right">{{ t('donationTargets.remainingAfterPlan') }}</th>
             <th v-if="canUpdate || canDelete" />
           </tr>
         </thead>
         <tbody>
           <tr v-for="row in section.rows" :key="row.targetId">
-            <td>{{ row.ownerName ?? "Hane" }}</td>
+            <td>{{ row.ownerName ?? t('budget.household') }}</td>
             <td class="!text-right">{{ formatMoney(row.target) }}</td>
             <td class="!text-right">{{ formatMoney(row.given) }}</td>
             <td class="!text-right">{{ formatMoney(row.planned) }}</td>
             <td class="!text-right">{{ formatMoney(row.expectedYearEnd) }}</td>
             <td class="!text-right">
-              <span v-if="row.remaining < 0" class="text-primary">Fazla ödendi {{ formatMoney(-row.remaining) }}</span>
+              <span v-if="row.remaining < 0" class="text-primary">{{ t('donationTargets.overpaid', { amount: formatMoney(-row.remaining) }) }}</span>
               <span v-else>{{ formatMoney(row.remaining) }}</span>
             </td>
             <td class="!text-right">{{ formatMoney(row.remainingAfterPlan) }}</td>
             <td v-if="canUpdate || canDelete" class="!text-right whitespace-nowrap">
-              <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="openEdit(row.targetId)" />
-              <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="targetToDelete = row" />
+              <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :title="t('common.edit')" @click="openEdit(row.targetId)" />
+              <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :title="t('common.delete')" @click="targetToDelete = row" />
             </td>
           </tr>
         </tbody>
       </table></div>
-      <div v-else class="text-black/60 dark:text-white/70">Bu tür için hedef yok.</div>
+      <div v-else class="text-black/60 dark:text-white/70">{{ t('donationTargets.noTargetForKind') }}</div>
     </div>
   </UiCard>
 
   <!-- Gönüllü bağışlar -->
   <UiCard elevation="0" border>
-    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Hedefsiz bağışlar (gönüllü)</div>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('donationTargets.voluntaryTitle') }}</div>
     <div class="overflow-x-auto"><table class="ui-table ui-table--compact">
       <thead>
         <tr>
-          <th>Kişi</th>
-          <th>Tür</th>
-          <th class="!text-right">Verilen</th>
+          <th>{{ t('budget.person') }}</th>
+          <th>{{ t('budget.kind') }}</th>
+          <th class="!text-right">{{ t('donationTargets.given') }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="v in report?.voluntary ?? []" :key="`${v.personId ?? 'hane'}-${v.kind}`">
-          <td>{{ v.name ?? "Hane" }}</td>
+          <td>{{ v.name ?? t('budget.household') }}</td>
           <td>{{ getKindLabel(v.kind) }}</td>
           <td class="!text-right">{{ formatMoney(v.given) }}</td>
         </tr>
         <tr v-if="!report?.voluntary?.length">
-          <td colspan="3" class="text-black/60 dark:text-white/70">Hedefsiz bağış yok</td>
+          <td colspan="3" class="text-black/60 dark:text-white/70">{{ t('donationTargets.noVoluntary') }}</td>
         </tr>
       </tbody>
     </table></div>
@@ -107,8 +107,8 @@
   <!-- Hedef formu -->
   <ResizableDrawer
     v-model="formDialog"
-    :title="editingTarget ? 'Hedefi Düzenle' : 'Hedef Ekle'"
-    :subtitle="editingTarget ? 'Hedef bilgilerini güncelleyin' : 'Kişi, yıl ve tür için hedef tutar'"
+    :title="editingTarget ? t('donationTargets.editTitle') : t('donationTargets.createTitle')"
+    :subtitle="editingTarget ? t('donationTargets.editSubtitle') : t('donationTargets.createSubtitle')"
     icon="mdi-target"
     :default-width="560"
     :min-width="400"
@@ -126,10 +126,10 @@
   <!-- Silme onayı -->
   <ConfirmDialog
     :model-value="!!targetToDelete"
-    title="Hedefi Sil"
-    :message="`${targetToDelete?.ownerName ?? 'Hane'} için ${targetToDelete ? getKindLabel(targetToDelete.kind) : ''} hedefini silmek istediğinizden emin misiniz?`"
+    :title="t('donationTargets.deleteTitle')"
+    :message="t('donationTargets.deleteMessage', { owner: targetToDelete?.ownerName ?? t('budget.household'), kind: targetToDelete ? getKindLabel(targetToDelete.kind) : '' })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isSaving"
     @confirm="confirmDelete"
     @cancel="targetToDelete = null"
@@ -161,8 +161,10 @@ definePageMeta({
   module: "donationExtras",
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Bağış hedefleri",
+  title: computed(() => t("donationTargets.title")),
 });
 //#endregion
 
@@ -243,10 +245,10 @@ const submitTarget = async (payload: CreateDonationTargetRequest | UpdateDonatio
   try {
     if (editingTarget.value) {
       await updateTarget(editingTarget.value.id, payload as UpdateDonationTargetRequest);
-      toastStore.add("success", "Hedef güncellendi");
+      toastStore.add("success", t("donationTargets.updated"));
     } else {
       await createTarget(payload as CreateDonationTargetRequest);
-      toastStore.add("success", "Hedef eklendi");
+      toastStore.add("success", t("donationTargets.created"));
     }
     formDialog.value = false;
     await load();
@@ -262,7 +264,7 @@ const confirmDelete = async () => {
   isSaving.value = true;
   try {
     await deleteTarget(targetToDelete.value.targetId);
-    toastStore.add("success", "Hedef silindi");
+    toastStore.add("success", t("donationTargets.deleted"));
     targetToDelete.value = null;
     await load();
   } catch {

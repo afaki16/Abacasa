@@ -139,7 +139,7 @@ const onSubmit = async () => {
 }
 
 useHead({
-  title: t('auth.pageTitleResetPassword')
+  title: computed(() => t('auth.pageTitleResetPassword'))
 })
 </script>
 

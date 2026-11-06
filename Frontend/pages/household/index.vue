@@ -2,10 +2,10 @@
   <!-- Başlık: hane adı -->
   <div class="flex items-center flex-wrap gap-2 mb-4">
     <UiIcon icon="mdi-home-heart" :size="28" />
-    <h1 class="text-[1.5rem] leading-[2rem] font-bold mb-0">{{ household?.name ?? 'Hane' }}</h1>
-    <UiBtn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openRename" />
+    <h1 class="text-[1.5rem] leading-[2rem] font-bold mb-0">{{ household?.name ?? $t('household.fallbackName') }}</h1>
+    <UiBtn v-if="canUpdateHousehold" icon="mdi-pencil" size="small" variant="text" :title="$t('common.edit')" @click="openRename" />
     <div class="flex-1" />
-    <span v-if="household" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ household.memberCount }} üye</span>
+    <span v-if="household" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ $t('household.memberCount', { count: household.memberCount }) }}</span>
     <UiBtn
       v-if="canUpdateHousehold"
       size="small"
@@ -15,29 +15,29 @@
       :disabled="exporting"
       @click="exportHousehold"
     >
-      Hane verisini indir (Excel)
+      {{ $t('household.export') }}
     </UiBtn>
   </div>
 
   <!-- Üyeler -->
   <UiCard elevation="0" border class="mb-6">
-    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Üyeler</div>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">{{ $t('household.members.title') }}</div>
     <table v-stack-table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
-          <th>Ad</th>
-          <th>E-posta</th>
-          <th>Rol</th>
-          <th>Bağlı kişi</th>
-          <th>Katılma tarihi</th>
-          <th class="!text-right">İşlemler</th>
+          <th>{{ $t('household.members.name') }}</th>
+          <th>{{ $t('household.email') }}</th>
+          <th>{{ $t('household.role') }}</th>
+          <th>{{ $t('household.linkedPerson') }}</th>
+          <th>{{ $t('household.members.joinedAt') }}</th>
+          <th class="!text-right">{{ $t('dataTable.actions') }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="m in members" :key="m.membershipId">
           <td>
             {{ m.fullName }}
-            <span v-if="m.isCurrentUser" class="text-black/60 dark:text-white/70">(siz)</span>
+            <span v-if="m.isCurrentUser" class="text-black/60 dark:text-white/70">{{ $t('household.members.you') }}</span>
           </td>
           <td>{{ m.email }}</td>
           <td>
@@ -46,21 +46,21 @@
           <td>{{ m.personName ?? '—' }}</td>
           <td>{{ formatDisplayDate(m.joinedAt) }}</td>
           <td class="!text-right whitespace-nowrap">
-            <UiBtn v-if="canUpdateMembers" icon="mdi-account-edit" size="x-small" variant="text" title="Rol ve kişi" @click="openMemberEdit(m)" />
+            <UiBtn v-if="canUpdateMembers" icon="mdi-account-edit" size="x-small" variant="text" :title="$t('household.members.roleAndPerson')" @click="openMemberEdit(m)" />
             <UiBtn
               v-if="canDeleteMembers && !m.isCurrentUser"
               icon="mdi-account-remove"
               size="x-small"
               variant="text"
               color="error"
-              title="Çıkar"
+              :title="$t('household.members.remove')"
               @click="memberToRemove = m"
             />
-            <UiBtn v-if="m.isCurrentUser" size="small" variant="text" color="error" @click="leaveDialog = true">Haneden ayrıl</UiBtn>
+            <UiBtn v-if="m.isCurrentUser" size="small" variant="text" color="error" @click="leaveDialog = true">{{ $t('household.leave.title') }}</UiBtn>
           </td>
         </tr>
         <tr v-if="!members.length">
-          <td colspan="6" class="text-black/60 dark:text-white/70">Üye yok</td>
+          <td colspan="6" class="text-black/60 dark:text-white/70">{{ $t('household.members.empty') }}</td>
         </tr>
       </tbody>
     </table>
@@ -68,19 +68,19 @@
 
   <!-- Modüller (yalnızca yönetici: Household.Update) -->
   <UiCard v-if="canUpdateHousehold" elevation="0" border class="mb-6">
-    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Modüller</div>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">{{ $t('household.modules.title') }}</div>
     <div class="ui-card-text">
       <div class="toggle-card">
         <div>
-          <span class="toggle-card-title">Bağış hedefleri ve emanetler</span>
-          <span class="toggle-card-sub">Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.</span>
+          <span class="toggle-card-title">{{ $t('household.modules.donationExtras') }}</span>
+          <span class="toggle-card-sub">{{ $t('household.modules.donationExtrasHint') }}</span>
         </div>
         <UiSwitch
           :model-value="donationExtras"
           color="primary"
           hide-details
           :disabled="savingModules"
-          aria-label="Bağış hedefleri ve emanetler"
+          :aria-label="$t('household.modules.donationExtras')"
           @update:model-value="toggleDonationExtras"
         />
       </div>
@@ -91,20 +91,20 @@
   <UiCard v-if="canReadMembers" elevation="0" border>
     <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">
       <div class="flex items-center">
-        Davetler
+        {{ $t('household.invitations.title') }}
         <div class="flex-1" />
-        <UiBtn v-if="canCreateMembers" color="primary" size="small" prepend-icon="mdi-email-plus" @click="openInvite">Davet et</UiBtn>
+        <UiBtn v-if="canCreateMembers" color="primary" size="small" prepend-icon="mdi-email-plus" @click="openInvite">{{ $t('household.invitations.invite') }}</UiBtn>
       </div>
     </div>
     <table v-stack-table class="ui-table ui-table--comfortable">
       <thead>
         <tr>
-          <th>E-posta</th>
-          <th>Rol</th>
-          <th>Bağlı kişi</th>
-          <th>Durum</th>
-          <th>Son geçerlilik</th>
-          <th class="!text-right">İşlemler</th>
+          <th>{{ $t('household.email') }}</th>
+          <th>{{ $t('household.role') }}</th>
+          <th>{{ $t('household.linkedPerson') }}</th>
+          <th>{{ $t('household.invitations.status') }}</th>
+          <th>{{ $t('household.invitations.expiresAt') }}</th>
+          <th class="!text-right">{{ $t('dataTable.actions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -124,15 +124,15 @@
               :loading="busyInvitationId === i.id"
               @click="resend(i)"
             >
-              Yeniden gönder
+              {{ $t('household.invitations.resend') }}
             </UiBtn>
             <UiBtn v-if="canDeleteMembers && i.status === 'Pending'" size="small" variant="text" color="error" @click="invitationToRevoke = i">
-              İptal
+              {{ $t('common.cancel') }}
             </UiBtn>
           </td>
         </tr>
         <tr v-if="!invitations.length">
-          <td colspan="6" class="text-black/60 dark:text-white/70">Davet yok</td>
+          <td colspan="6" class="text-black/60 dark:text-white/70">{{ $t('household.invitations.empty') }}</td>
         </tr>
       </tbody>
     </table>
@@ -140,18 +140,17 @@
 
   <!-- Haneyi sil (eski outlined + color="error" görünümü: çerçeve ve başlık hata renginde) -->
   <UiCard v-if="canDeleteHousehold" elevation="0" border class="danger-card mt-6">
-    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">Haneyi sil</div>
+    <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-bold">{{ $t('household.delete.title') }}</div>
     <div class="ui-card-text">
       <p class="mb-4 text-black/[0.87] dark:text-white/[0.87]">
-        Hanenin bütün kayıtları (harcamalar, borçlar, planlar, kişiler…), üyelikleri ve davetleri kalıcı olarak silinir. Bu işlem geri
-        alınamaz.
+        {{ $t('household.delete.hint') }}
       </p>
       <UiForm @submit="removeHousehold">
         <div class="ui-row ui-row--dense">
           <div class="ui-col ui-col-12 ui-col-sm-6">
             <UiTextField
               v-model="deleteConfirmName"
-              label="Onaylamak için hane adını yazın"
+              :label="$t('household.delete.confirmName')"
               :placeholder="household?.name"
               density="compact"
               :disabled="deleting"
@@ -160,7 +159,7 @@
           <div class="ui-col ui-col-12 ui-col-sm-6">
             <UiTextField
               v-model="deletePassword"
-              label="Parola"
+              :label="$t('account.delete.password')"
               type="password"
               autocomplete="current-password"
               density="compact"
@@ -171,7 +170,7 @@
         <UiAlert v-if="deleteErrors.length" type="error" variant="tonal" density="compact" class="mb-3">
           <div v-for="(e, idx) in deleteErrors" :key="idx">{{ e }}</div>
         </UiAlert>
-        <UiBtn type="submit" color="error" :loading="deleting" :disabled="!canConfirmDelete">Haneyi kalıcı olarak sil</UiBtn>
+        <UiBtn type="submit" color="error" :loading="deleting" :disabled="!canConfirmDelete">{{ $t('household.delete.submit') }}</UiBtn>
       </UiForm>
     </div>
   </UiCard>
@@ -182,26 +181,26 @@
       <div class="dialog-head">
         <div class="dialog-head__icon"><UiIcon icon="mdi-home-edit-outline" :size="20" /></div>
         <div>
-          <h3 class="dialog-head__title">Hane adını düzenle</h3>
-          <p class="dialog-head__sub">Hane adı tüm üyelere görünür.</p>
+          <h3 class="dialog-head__title">{{ $t('household.rename.title') }}</h3>
+          <p class="dialog-head__sub">{{ $t('household.rename.subtitle') }}</p>
         </div>
       </div>
       <UiForm ref="renameFormRef" @submit="saveRename">
         <div class="dialog-body">
           <UiTextField
             v-model="renameValue"
-            label="Hane adı"
-            placeholder="Örn. Yılmaz ailesi"
+            :label="$t('household.nameLabel')"
+            :placeholder="$t('household.namePlaceholder')"
             density="compact"
             counter="100"
             autofocus
-            :rules="[requiredRule('Hane adı'), maxRule('Hane adı', 100)]"
+            :rules="[requiredRule($t('household.nameLabel')), maxRule($t('household.nameLabel'), 100)]"
             :disabled="busy"
           />
         </div>
         <div class="dialog-actions">
-          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="renameDialog = false">İptal</UiBtn>
-          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">Kaydet</UiBtn>
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="renameDialog = false">{{ $t('common.cancel') }}</UiBtn>
+          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">{{ $t('common.save') }}</UiBtn>
         </div>
       </UiForm>
     </UiCard>
@@ -214,15 +213,15 @@
         <div class="dialog-head__icon"><UiIcon icon="mdi-account-edit-outline" :size="20" /></div>
         <div>
           <h3 class="dialog-head__title">{{ editingMember.fullName }}</h3>
-          <p class="dialog-head__sub">Hanedeki rolü ve bağlı kişi</p>
+          <p class="dialog-head__sub">{{ $t('household.members.editSubtitle') }}</p>
         </div>
       </div>
       <div class="dialog-body">
-        <UiSelect v-model="memberRole" :items="roleItems" label="Rol" density="compact" class="mb-3" :disabled="busy" />
+        <UiSelect v-model="memberRole" :items="roleItems" :label="$t('household.role')" density="compact" class="mb-3" :disabled="busy" />
         <UiSelect
           v-model="memberPersonId"
           :items="personItemsFor(editingMember.personId)"
-          label="Bağlı kişi"
+          :label="$t('household.linkedPerson')"
           density="compact"
           clearable
           :disabled="busy"
@@ -232,8 +231,8 @@
         </UiAlert>
       </div>
       <div class="dialog-actions">
-        <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="memberDialog = false">İptal</UiBtn>
-        <UiBtn class="btn-gradient-primary" :loading="busy" @click="saveMember">Kaydet</UiBtn>
+        <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="memberDialog = false">{{ $t('common.cancel') }}</UiBtn>
+        <UiBtn class="btn-gradient-primary" :loading="busy" @click="saveMember">{{ $t('common.save') }}</UiBtn>
       </div>
     </UiCard>
   </UiDialog>
@@ -244,28 +243,28 @@
       <div class="dialog-head">
         <div class="dialog-head__icon"><UiIcon icon="mdi-email-plus-outline" :size="20" /></div>
         <div>
-          <h3 class="dialog-head__title">Davet et</h3>
-          <p class="dialog-head__sub">Davet bağlantısı 7 gün geçerlidir.</p>
+          <h3 class="dialog-head__title">{{ $t('household.invitations.invite') }}</h3>
+          <p class="dialog-head__sub">{{ $t('household.invitations.validity') }}</p>
         </div>
       </div>
       <UiForm ref="inviteFormRef" @submit="sendInvite">
         <div class="dialog-body">
           <UiTextField
             v-model="inviteEmail"
-            label="E-posta"
+            :label="$t('household.email')"
             placeholder="ornek@sirket.com"
             type="email"
             density="compact"
             class="mb-3"
             autofocus
-            :rules="[requiredRule('E-posta'), emailRule]"
+            :rules="[requiredRule($t('household.email')), emailRule]"
             :disabled="busy"
           />
-          <UiSelect v-model="inviteRole" :items="roleItems" label="Rol" density="compact" class="mb-3" :disabled="busy" />
+          <UiSelect v-model="inviteRole" :items="roleItems" :label="$t('household.role')" density="compact" class="mb-3" :disabled="busy" />
           <UiSelect
             v-model="invitePersonId"
             :items="personItemsFor(null)"
-            label="Bağlanacak kişi (isteğe bağlı)"
+            :label="$t('household.invitations.personOptional')"
             density="compact"
             clearable
             :disabled="busy"
@@ -275,18 +274,18 @@
           </UiAlert>
         </div>
         <div class="dialog-actions">
-          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="inviteDialog = false">İptal</UiBtn>
-          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">Gönder</UiBtn>
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="busy" @click="inviteDialog = false">{{ $t('common.cancel') }}</UiBtn>
+          <UiBtn class="btn-gradient-primary" type="submit" :loading="busy">{{ $t('common.send') }}</UiBtn>
         </div>
       </UiForm>
     </UiCard>
   </UiDialog>
   <ConfirmDialog
     :model-value="!!memberToRemove"
-    title="Üyeyi çıkar"
-    :message="`${memberToRemove?.fullName ?? ''} haneden çıkarılsın mı?`"
+    :title="$t('household.members.removeTitle')"
+    :message="$t('household.members.removeConfirm', { name: memberToRemove?.fullName ?? '' })"
     type="error"
-    confirm-text="Çıkar"
+    :confirm-text="$t('household.members.remove')"
     :loading="busy"
     @confirm="removeSelectedMember"
     @cancel="memberToRemove = null"
@@ -294,10 +293,10 @@
 
   <ConfirmDialog
     :model-value="leaveDialog"
-    title="Haneden ayrıl"
-    :message="`${household?.name ?? 'Bu'} hanesinden ayrılmak istediğinizden emin misiniz?`"
+    :title="$t('household.leave.title')"
+    :message="$t('household.leave.confirm', { name: household?.name ?? $t('household.leave.thisFallback') })"
     type="error"
-    confirm-text="Ayrıl"
+    :confirm-text="$t('household.leave.submit')"
     :loading="busy"
     @confirm="leave"
     @cancel="leaveDialog = false"
@@ -305,10 +304,10 @@
 
   <ConfirmDialog
     :model-value="!!invitationToRevoke"
-    title="Daveti iptal et"
-    :message="`${invitationToRevoke?.email ?? ''} adresine gönderilen davet iptal edilsin mi?`"
+    :title="$t('household.invitations.revokeTitle')"
+    :message="$t('household.invitations.revokeConfirm', { email: invitationToRevoke?.email ?? '' })"
     type="warning"
-    confirm-text="İptal et"
+    :confirm-text="$t('household.invitations.revoke')"
     :loading="busy"
     @confirm="revokeSelected"
     @cancel="invitationToRevoke = null"
@@ -331,7 +330,8 @@ definePageMeta({
   permissions: ['Household.Read']
 })
 
-useHead({ title: 'Hane ve üyeler' })
+const { t } = useI18n()
+useHead({ title: computed(() => t('sidebar.menu.household')) })
 
 //#region Composables
 const { hasPermission } = useAuth()
@@ -358,14 +358,14 @@ const people = ref<Person[]>([])
 const busy = ref(false)
 const dialogErrors = ref<string[]>([])
 
-const roleItems = [
-  { title: 'Yönetici', value: HouseholdRoleValue.Admin },
-  { title: 'Üye', value: HouseholdRoleValue.Member }
-]
+const roleItems = computed(() => [
+  { title: t('household.roles.admin'), value: HouseholdRoleValue.Admin },
+  { title: t('household.roles.member'), value: HouseholdRoleValue.Member }
+])
 
-const requiredRule = (label: string) => (v: string) => !!v?.trim() || `${label} zorunludur`
-const maxRule = (label: string, max: number) => (v: string) => (v ?? '').trim().length <= max || `${label} en fazla ${max} karakter olabilir`
-const emailRule = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v ?? '') || 'Geçerli bir e-posta girin'
+const requiredRule = (label: string) => (v: string) => !!v?.trim() || t('household.rules.required', { label })
+const maxRule = (label: string, max: number) => (v: string) => (v ?? '').trim().length <= max || t('household.rules.max', { label, max })
+const emailRule = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v ?? '') || t('household.rules.email')
 
 const statusColor = (status: InvitationStatus) =>
   status === 'Pending' ? 'warning' : status === 'Accepted' ? 'success' : undefined
@@ -408,7 +408,7 @@ const saveRename = async () => {
   try {
     household.value = await updateHousehold(renameValue.value.trim())
     renameDialog.value = false
-    toast.success('Hane adı güncellendi')
+    toast.success(t('household.rename.success'))
   } catch {
     // hata toast'ı useApi'de
   } finally {
@@ -442,7 +442,7 @@ const saveMember = async () => {
     memberDialog.value = false
     await refreshAll()
   } catch (error) {
-    dialogErrors.value = parseApiErrorMessages(error, 'Üye güncellenemedi')
+    dialogErrors.value = parseApiErrorMessages(error, t('household.members.updateFailed'))
   } finally {
     busy.value = false
   }
@@ -483,7 +483,7 @@ const invitePersonId = ref<number | null>(null)
 const invitationToRevoke = ref<HouseholdInvitation | null>(null)
 const busyInvitationId = ref<number | null>(null)
 
-const emailNotSentWarning = 'Davet oluşturuldu ama e-posta gönderilemedi; yeniden göndermeyi deneyin'
+const emailNotSentWarning = () => t('household.invitations.emailNotSent')
 
 const openInvite = () => {
   inviteEmail.value = ''
@@ -501,11 +501,11 @@ const sendInvite = async () => {
   try {
     const result = await createInvitation(inviteEmail.value.trim(), inviteRole.value, invitePersonId.value)
     inviteDialog.value = false
-    if (result.emailSent) toast.success('Davet gönderildi')
-    else toast.warning(emailNotSentWarning)
+    if (result.emailSent) toast.success(t('household.invitations.sent'))
+    else toast.warning(emailNotSentWarning())
     await loadInvitations()
   } catch (error) {
-    dialogErrors.value = parseApiErrorMessages(error, 'Davet oluşturulamadı')
+    dialogErrors.value = parseApiErrorMessages(error, t('household.invitations.createFailed'))
   } finally {
     busy.value = false
   }
@@ -515,8 +515,8 @@ const resend = async (i: HouseholdInvitation) => {
   busyInvitationId.value = i.id
   try {
     const result = await resendInvitation(i.id)
-    if (result.emailSent) toast.success('Davet yeniden gönderildi')
-    else toast.warning(emailNotSentWarning)
+    if (result.emailSent) toast.success(t('household.invitations.resent'))
+    else toast.warning(emailNotSentWarning())
     await loadInvitations()
   } catch {
     // hata toast'ı useApi'de
@@ -548,7 +548,7 @@ const toggleDonationExtras = async (value: boolean | null) => {
   savingModules.value = true
   try {
     await updateModules({ donationExtras: !!value })
-    toast.success(value ? 'Bağış hedefleri ve emanetler açıldı' : 'Bağış hedefleri ve emanetler kapatıldı')
+    toast.success(value ? t('household.modules.donationExtrasOn') : t('household.modules.donationExtrasOff'))
   } catch {
     // hata toast'ı useApi'de; anahtar store'daki değere döner
   } finally {
@@ -565,7 +565,7 @@ const exportHousehold = async () => {
   try {
     await download(API_ENDPOINTS.HOUSEHOLD.EXPORT, 'abacasa-hane.xlsx')
   } catch {
-    toast.error('Hane verisi indirilemedi')
+    toast.error(t('household.exportFailed'))
   } finally {
     exporting.value = false
   }
@@ -591,7 +591,7 @@ const removeHousehold = async () => {
   try {
     await deleteHousehold(deletePassword.value, deleteConfirmName.value)
   } catch (error) {
-    deleteErrors.value = parseApiErrorMessages(error, 'Hane silinemedi')
+    deleteErrors.value = parseApiErrorMessages(error, t('household.delete.failed'))
     deleting.value = false
   }
 }

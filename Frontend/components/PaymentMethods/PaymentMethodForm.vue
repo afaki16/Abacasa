@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Ad"
-            placeholder="Örn. Maaş kartı"
+            :label="t('paymentMethods.columns.name')"
+            :placeholder="t('paymentMethods.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -24,7 +24,7 @@
             :items="typeOptions"
             item-title="title"
             item-value="value"
-            label="Tür"
+            :label="t('paymentMethods.columns.type')"
             :disabled="loading"
             prepend-inner-icon="mdi-shape-outline"
             density="comfortable"
@@ -36,8 +36,8 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.bank"
-            label="Banka"
-            placeholder="Örn. Ziraat Bankası"
+            :label="t('paymentMethods.columns.bank')"
+            :placeholder="t('paymentMethods.bankPlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-bank"
             density="comfortable"
@@ -55,7 +55,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            label="Sahibi"
+            :label="t('paymentMethods.columns.owner')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -66,7 +66,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6" v-if="isCreditCard">
           <UiTextField
             v-model.number="formData.statementDay"
-            label="Kesim günü"
+            :label="t('paymentMethods.columns.statementDay')"
             type="number"
             min="1"
             max="31"
@@ -84,7 +84,7 @@
         <div class="ui-col ui-col-12">
           <UiSwitch
             v-model="formData.isActive"
-            label="Aktif"
+            :label="t('common.active')"
             color="primary"
             :disabled="loading"
             hide-details
@@ -101,7 +101,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -111,7 +111,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ paymentMethod ? 'Güncelle' : 'Kaydet' }}
+        {{ paymentMethod ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -136,6 +136,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { typeOptions } = usePaymentMethods()
 
@@ -153,12 +154,12 @@ const isFormValid = computed(() => formRef.value?.isValid ?? false)
 const isCreditCard = computed(() => formData.type === PaymentMethodType.CreditCard)
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('paymentMethods.household') },
   ...props.people,
 ])
 
 const statementDayRule = (v: number | null) =>
-  (v !== null && Number.isInteger(Number(v)) && Number(v) >= 1 && Number(v) <= 31) || '1 ile 31 arasında olmalıdır'
+  (v !== null && Number.isInteger(Number(v)) && Number(v) >= 1 && Number(v) <= 31) || t('paymentMethods.statementDayRange')
 
 // Kesim günü sadece kredi kartında; tür değişince temizlenir
 watch(isCreditCard, (value) => {

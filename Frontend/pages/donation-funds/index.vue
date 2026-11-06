@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Emanetler' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('donationFunds.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-safe"
-    title="Emanetler"
-    subtitle="Size emanet edilen bağış paralarını ve dağıtımlarını izleyin."
+    :title="t('donationFunds.title')"
+    :subtitle="t('donationFunds.subtitle')"
   />
 
   <!-- Özet: açık emanetlerin toplamı -->
@@ -17,7 +17,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dağıtılacak kalan</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationFunds.remainingToDistribute') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.remaining) }}</div>
         </div>
       </UiCard>
@@ -25,7 +25,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#fea619]/[0.12] !text-[#fea619]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kullanımda</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationFunds.inUse') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.inUse) }}</div>
         </div>
       </UiCard>
@@ -33,7 +33,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Elde</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('donationFunds.onHand') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(openTotals.onHand) }}</div>
         </div>
       </UiCard>
@@ -48,7 +48,7 @@
         :items="statusOptions"
         item-title="title"
         item-value="value"
-        label="Durum"
+        :label="t('budget.status')"
         density="compact"
         hide-details
       />
@@ -59,13 +59,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Emanetler"
+    :title="t('donationFunds.title')"
     toolbar-icon="mdi-safe"
-    search-placeholder="Kimden ya da notta ara"
-    add-button-text="Yeni Emanet Ekle"
+    :search-placeholder="t('donationFunds.searchPlaceholder')"
+    :add-button-text="t('donationFunds.add')"
     :loading="isLoading"
-    loading-text="Emanetler yükleniyor..."
-    empty-title="Emanet bulunamadı"
+    :loading-text="t('donationFunds.loading')"
+    :empty-title="t('donationFunds.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -105,20 +105,20 @@
     <template #cell-onHand="{ value }">{{ formatMoney(value) }}</template>
 
     <template #cell-status="{ item }">
-      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">Bitti</UiChip>
-      <UiChip v-else size="small" color="warning" variant="tonal">Açık</UiChip>
+      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">{{ t('donationFunds.closed') }}</UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">{{ t('donationFunds.open') }}</UiChip>
     </template>
 
     <template #actions="{ item }">
       <div class="flex items-center gap-1">
         <UiBtn size="small" variant="tonal" color="primary" @click="openDistributions(item)">
-          Dağıtımlar ({{ item.distributionCount }})
+          {{ t('donationFunds.distributionsButton', { count: item.distributionCount }) }}
         </UiBtn>
         <UiBtn size="small" variant="tonal" @click="openMovements(item)">
-          Hareketler ({{ item.movementCount }})
+          {{ t('donationFunds.movementsButton', { count: item.movementCount }) }}
         </UiBtn>
-        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" title="Düzenle" @click="openEditDialog(item)" />
-        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" title="Sil" @click="openDeleteDialog(item)" />
+        <UiBtn v-if="canUpdate" icon="mdi-pencil" size="small" variant="text" :title="t('common.edit')" @click="openEditDialog(item)" />
+        <UiBtn v-if="canDelete" icon="mdi-delete" size="small" variant="text" color="error" :title="t('common.delete')" @click="openDeleteDialog(item)" />
       </div>
     </template>
   </BaseDataTable>
@@ -126,8 +126,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Emaneti Düzenle' : 'Yeni Emanet Ekle'"
-    :subtitle="isEditMode ? 'Emanet bilgilerini güncelleyin' : 'Dağıtılsın diye verilen para'"
+    :title="isEditMode ? t('donationFunds.editTitle') : t('donationFunds.createTitle')"
+    :subtitle="isEditMode ? t('donationFunds.editSubtitle') : t('donationFunds.createSubtitle')"
     icon="mdi-safe"
     :default-width="600"
     :min-width="400"
@@ -155,10 +155,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Emaneti Sil"
-    :message="`${itemToDelete?.fromPersonName ?? ''} emanetini (${formatMoney(itemToDelete?.amount ?? 0)}) silmek istediğinizden emin misiniz?`"
+    :title="t('donationFunds.deleteTitle')"
+    :message="t('donationFunds.deleteMessage', { from: itemToDelete?.fromPersonName ?? '', amount: formatMoney(itemToDelete?.amount ?? 0) })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -186,24 +186,26 @@ definePageMeta({
   module: "donationExtras",
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Emanetler",
+  title: computed(() => t("donationFunds.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Tarih", key: "date", sortable: false, width: "110px" },
-  { label: "Kimden", key: "fromPersonName", sortable: false, width: "140px" },
-  { label: "Tür", key: "kind", sortable: false, width: "90px" },
-  { label: "Tutar", key: "amount", sortable: false, width: "130px" },
-  { label: "Dağıtılan", key: "distributed", sortable: false, width: "130px" },
-  { label: "Kullanımda", key: "inUse", sortable: false, width: "130px" },
-  { label: "Kalan", key: "remaining", sortable: false, width: "130px" },
-  { label: "Elde", key: "onHand", sortable: false, width: "130px" },
-  { label: "Durum", key: "status", sortable: false, width: "90px" },
-  { label: "Not", key: "note", sortable: false, width: "160px" },
-];
+const tableColumns = computed(() => [
+  { label: t("budget.date"), key: "date", sortable: false, width: "110px" },
+  { label: t("donationFunds.from"), key: "fromPersonName", sortable: false, width: "140px" },
+  { label: t("budget.kind"), key: "kind", sortable: false, width: "90px" },
+  { label: t("budget.amount"), key: "amount", sortable: false, width: "130px" },
+  { label: t("donationFunds.distributed"), key: "distributed", sortable: false, width: "130px" },
+  { label: t("donationFunds.inUse"), key: "inUse", sortable: false, width: "130px" },
+  { label: t("donationFunds.remaining"), key: "remaining", sortable: false, width: "130px" },
+  { label: t("donationFunds.onHand"), key: "onHand", sortable: false, width: "130px" },
+  { label: t("budget.status"), key: "status", sortable: false, width: "90px" },
+  { label: t("budget.note"), key: "note", sortable: false, width: "160px" },
+]);
 //#endregion
 
 //#region Composables
@@ -243,11 +245,11 @@ const openTotals = computed(() => {
 //#endregion
 
 //#region Filtreler ve liste
-const statusOptions = [
-  { value: "open", title: "Açık" },
-  { value: "closed", title: "Biten" },
-  { value: "all", title: "Tümü" },
-];
+const statusOptions = computed(() => [
+  { value: "open", title: t("donationFunds.statusOptions.open") },
+  { value: "closed", title: t("donationFunds.statusOptions.closed") },
+  { value: "all", title: t("dataTable.all") },
+]);
 const filterStatus = ref<"open" | "closed" | "all">("open");
 
 const currentFilters = () => ({
@@ -289,7 +291,7 @@ const {
   createItem: createFund,
   updateItem: updateFund,
   deleteItem: deleteFund,
-  itemName: "emanet",
+  itemName: () => t("donationFunds.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

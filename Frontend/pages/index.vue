@@ -39,10 +39,12 @@ onMounted(async () => {
   await loadAppData()
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: 'Abacasa - Authentication System',
+  title: computed(() => t('auth.pageTitleLogin')),
   meta: [
-    { name: 'description', content: 'Sign in to your Abacasa account' }
+    { name: 'description', content: computed(() => t('auth.metaDescriptionLogin')) }
   ]
 })
 </script>

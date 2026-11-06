@@ -1,11 +1,16 @@
 import { Currency } from '~/types'
 
-// Birim etiketleri (tek yer)
-export const CURRENCY_LABELS: Record<Currency, string> = {
-  [Currency.TRY]: 'TL',
-  [Currency.USD]: 'Dolar',
-  [Currency.EUR]: 'Euro',
-  [Currency.QuarterGold]: 'Çeyrek altın',
+// Birim etiketleri (tek yer): metinler i18n'de (currencies.*); çağrıldığı anda çevrilir
+const CURRENCY_KEYS: Record<Currency, string> = {
+  [Currency.TRY]: 'try',
+  [Currency.USD]: 'usd',
+  [Currency.EUR]: 'eur',
+  [Currency.QuarterGold]: 'quarterGold',
+}
+
+export const translateCurrency = (currency: Currency): string => {
+  const key = CURRENCY_KEYS[currency]
+  return key ? String(useNuxtApp().$i18n.t(`currencies.${key}`)) : String(currency)
 }
 
 type MoneyCode = 'TRY' | 'USD' | 'EUR'
@@ -35,11 +40,11 @@ export const useMoney = () => {
   // Tutar kendi biriminde: TL/Dolar/Euro para biçimi; çeyrek altın "{n} çeyrek" (Türkçe sayı, ondalıksız)
   const formatAmount = (amount: number | null | undefined, currency: Currency): string => {
     if (amount === null || amount === undefined) return '—'
-    if (currency === Currency.QuarterGold) return `${quarterFormatter.format(amount)} çeyrek`
+    if (currency === Currency.QuarterGold) return String(useNuxtApp().$i18n.t('currencies.quarterCount', { n: quarterFormatter.format(amount) }))
     return formatMoney(amount, moneyCodes[currency] ?? 'TRY')
   }
 
-  const currencyLabel = (currency: Currency) => CURRENCY_LABELS[currency] ?? String(currency)
+  const currencyLabel = (currency: Currency) => translateCurrency(currency)
 
   // TL ve yabancı birimler tek satırda: "₺29.000,00 · $17.700,00 · 3 çeyrek"
   const formatOpenLine = (openTry: number, foreign: { currency: Currency; open: number }[]) =>

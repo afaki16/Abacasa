@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Kategori Adı"
-            placeholder="Örn. Market"
+            :label="t('categories.columns.name')"
+            :placeholder="t('categories.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-shape"
             density="comfortable"
@@ -26,7 +26,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -36,7 +36,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ category ? 'Güncelle' : 'Kaydet' }}
+        {{ category ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -56,6 +56,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()

@@ -10,7 +10,7 @@ import type {
   SaveExchangeRateRequest
 } from '~/types'
 import { Currency } from '~/types'
-import { CURRENCY_LABELS } from './useMoney'
+import { translateCurrency } from './useMoney'
 import { API_ENDPOINTS, getPaginatedEndpoint } from '~/utils/apiEndpoints'
 import { useApi } from './useApi'
 
@@ -29,11 +29,11 @@ export const useDebts = () => {
   const api = useApi()
 
   // Etiketler useMoney'de (tek yer)
-  const currencyOptions = [Currency.TRY, Currency.USD, Currency.EUR, Currency.QuarterGold]
-    .map((value) => ({ value, title: CURRENCY_LABELS[value] }))
+  const currencyOptions = computed(() => [Currency.TRY, Currency.USD, Currency.EUR, Currency.QuarterGold]
+    .map((value) => ({ value, title: translateCurrency(value) })))
 
   // Elle kur girilebilen birimler (TL'nin kuru olmaz)
-  const rateCurrencyOptions = currencyOptions.filter((o) => o.value !== Currency.TRY)
+  const rateCurrencyOptions = computed(() => currencyOptions.value.filter((o) => o.value !== Currency.TRY))
 
   const getDebts = async (page = 1, pageSize = 10, searchTerm = '', filters: DebtFilters = {}) => {
     try {

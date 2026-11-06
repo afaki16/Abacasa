@@ -3,12 +3,12 @@
     <article class="legal-article">
       <NuxtLink to="/" class="legal-back">← Abacasa</NuxtLink>
       <h1 class="legal-title">{{ title }}</h1>
-      <p class="legal-meta">Sürüm {{ version ?? '…' }} · Yürürlük: {{ legal.effectiveDate }}</p>
+      <p class="legal-meta">{{ $t('legal.document.meta', { version: version ?? '…', date: legal.effectiveDate }) }}</p>
       <slot />
       <nav class="legal-links">
-        <NuxtLink :to="LEGAL_ROUTES.privacy">Aydınlatma metni</NuxtLink>
+        <NuxtLink :to="LEGAL_ROUTES.privacy">{{ $t('legal.document.privacyLink') }}</NuxtLink>
         <span>·</span>
-        <NuxtLink :to="LEGAL_ROUTES.terms">Kullanım koşulları</NuxtLink>
+        <NuxtLink :to="LEGAL_ROUTES.terms">{{ $t('legal.document.termsLink') }}</NuxtLink>
       </nav>
     </article>
   </div>

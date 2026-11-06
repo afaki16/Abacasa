@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.date"
-            label="Tarih"
+            :label="t('budget.date')"
             type="date"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
@@ -18,7 +18,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.amount"
-            label="Tutar"
+            :label="t('budget.amount')"
             type="number"
             min="0"
             step="0.01"
@@ -40,7 +40,7 @@
             :items="fundOptions"
             item-title="title"
             item-value="value"
-            label="Emanetten"
+            :label="t('donations.form.fromFund')"
             :disabled="loading || !!presetFundId"
             prepend-inner-icon="mdi-safe"
             density="comfortable"
@@ -58,7 +58,7 @@
             :items="kindOptions"
             item-title="title"
             item-value="value"
-            label="Tür"
+            :label="t('budget.kind')"
             :disabled="loading || !!selectedFund"
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -70,7 +70,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.recipient"
-            label="Kime"
+            :label="t('budget.recipient')"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -88,7 +88,7 @@
             :items="giverOptions"
             item-title="name"
             item-value="id"
-            label="Veren"
+            :label="t('budget.giver')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -102,7 +102,7 @@
             :items="paymentMethodOptions"
             item-title="name"
             item-value="id"
-            label="Ödeme aracı"
+            :label="t('budget.paymentMethod')"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -117,7 +117,7 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.note"
-            label="Not"
+            :label="t('budget.note')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -137,7 +137,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -147,7 +147,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ donation ? 'Güncelle' : 'Kaydet' }}
+        {{ donation ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -183,6 +183,7 @@ const emit = defineEmits<{
 const { validationRules: rules } = useValidators()
 const { kindOptions, getKindLabel } = useDonations()
 const { formatMoney } = useMoney()
+const { t } = useI18n()
 
 const formRef = ref()
 const formData = reactive({
@@ -202,7 +203,7 @@ const fundOptions = computed(() =>
     .filter((f) => (!f.isClosed && f.onHand > 0) || f.id === props.donation?.fundId || f.id === props.presetFundId)
     .map((f) => ({
       value: f.id,
-      title: `${f.fromPersonName} · ${getKindLabel(f.kind)} · elde ${formatMoney(f.onHand)}`,
+      title: t('donations.form.fundOption', { from: f.fromPersonName, kind: getKindLabel(f.kind), amount: formatMoney(f.onHand) }),
     }))
 )
 
@@ -215,8 +216,8 @@ watch(selectedFund, (fund) => {
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
-const recipientRule = (v: string) => !!v?.trim() || 'Kime alanı zorunludur'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
+const recipientRule = (v: string) => !!v?.trim() || t('budget.recipientRequired')
 
 // Sadece aktif ödeme araçları; düzenlemede mevcut araç pasif olsa da görünür
 const paymentMethodOptions = computed(() =>
@@ -224,7 +225,7 @@ const paymentMethodOptions = computed(() =>
 )
 
 const giverOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('budget.household') },
   ...props.people,
 ])
 

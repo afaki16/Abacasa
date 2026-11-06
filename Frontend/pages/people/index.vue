@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Kişiler' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('people.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-account-heart-outline"
-    title="Kişiler"
-    subtitle="Hanedeki kişileri yönetin."
+    :title="t('people.title')"
+    :subtitle="t('people.subtitle')"
     :count="items.length"
   />
 
@@ -17,13 +17,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Kişiler"
+    :title="t('people.title')"
     toolbar-icon="mdi-account-heart"
-    search-placeholder="Kişi ara..."
-    add-button-text="Yeni Kişi Ekle"
+    :search-placeholder="t('people.searchPlaceholder')"
+    :add-button-text="t('people.add')"
     :loading="isLoading"
-    loading-text="Kişiler yükleniyor..."
-    empty-title="Kişi bulunamadı"
+    :loading-text="t('people.loading')"
+    :empty-title="t('people.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -53,8 +53,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Kişiyi Düzenle' : 'Yeni Kişi Ekle'"
-    :subtitle="isEditMode ? 'Kişi bilgilerini güncelleyin' : 'Yeni kişi bilgilerini girin'"
+    :title="isEditMode ? t('people.editTitle') : t('people.add')"
+    :subtitle="isEditMode ? t('people.editSubtitle') : t('people.createSubtitle')"
     icon="mdi-account-heart"
     :default-width="600"
     :min-width="400"
@@ -70,10 +70,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Kişiyi Sil"
-    :message="`'${itemToDelete?.name}' kişisini silmek istediğinizden emin misiniz?`"
+    :title="t('people.deleteTitle')"
+    :message="t('people.deleteConfirm', { name: itemToDelete?.name })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import PersonForm from "~/components/People/PersonForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
@@ -95,15 +95,17 @@ definePageMeta({
   permissions: ["People.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Kişiler",
+  title: computed(() => t("people.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
+const tableColumns = computed(() => [
   {
-    label: "Ad",
+    label: t("people.columns.name"),
     key: "name",
     sortable: true,
     filterable: true,
@@ -111,14 +113,14 @@ const tableColumns = [
     width: "300px",
   },
   {
-    label: "Yakınlık",
+    label: t("people.columns.relation"),
     key: "relation",
     sortable: true,
     filterable: true,
     filterType: "text",
     width: "200px",
   },
-];
+]);
 //#endregion
 
 //#region Composables
@@ -148,7 +150,7 @@ const {
   createItem: createPerson,
   updateItem: updatePerson,
   deleteItem: deletePerson,
-  itemName: "kişi",
+  itemName: () => t("people.itemName"),
   serverSidePagination: false,
   initialPageSize: 10,
 });

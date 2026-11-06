@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.name"
-            label="Ad"
+            :label="t('ledger.form.name')"
             :disabled="loading"
             prepend-inner-icon="mdi-format-title"
             density="comfortable"
@@ -24,9 +24,9 @@
             :items="directionOptions"
             item-title="title"
             item-value="value"
-            label="Yön"
+            :label="t('ledger.form.direction')"
             :disabled="loading || !!item?.hasAmounts"
-            :hint="item?.hasAmounts ? 'Tutarı olan kalemin yönü değiştirilemez' : ''"
+            :hint="item?.hasAmounts ? t('ledger.form.directionLocked') : ''"
             persistent-hint
             prepend-inner-icon="mdi-swap-vertical"
             density="comfortable"
@@ -41,7 +41,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            label="Kişi"
+            :label="t('ledger.form.person')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -56,7 +56,7 @@
         <div class="ui-col ui-col-12">
           <UiSwitch
             v-model="formData.isActive"
-            label="Aktif"
+            :label="t('common.active')"
             color="primary"
             :disabled="loading"
             hide-details
@@ -73,7 +73,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -83,7 +83,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ item ? 'Güncelle' : 'Kaydet' }}
+        {{ item ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -108,6 +108,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { directionOptions } = useLedger()
 
@@ -121,10 +122,10 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const nameRule = (v: string) => !!v?.trim() || 'Ad alanı zorunludur'
+const nameRule = (v: string) => !!v?.trim() || t('ledger.form.nameRequired')
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('ledger.household') },
   ...props.people,
 ])
 

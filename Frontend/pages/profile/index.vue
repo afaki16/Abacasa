@@ -2,7 +2,7 @@
   <div class="profile-page">
     <div class="mb-6">
       <BreadCrumb
-        :items="[{ text: 'Ana Sayfa', to: '/dashboard' }, { text: 'Profilim' }]"
+        :items="[{ text: $t('common.home'), to: '/dashboard' }, { text: $t('profile.title') }]"
       />
     </div>
 
@@ -43,7 +43,7 @@
           <UiIcon icon="mdi-calendar-account-outline" :size="18" class="stat-icon" />
           <div>
             <div class="stat-val">{{ memberDays }}</div>
-            <div class="stat-lbl">Gün Üye</div>
+            <div class="stat-lbl">{{ $t('profile.stats.memberDays') }}</div>
           </div>
         </div>
         <div class="stat-sep" />
@@ -51,7 +51,7 @@
           <UiIcon icon="mdi-login-variant" :size="18" class="stat-icon" />
           <div>
             <div class="stat-val">{{ lastLoginShort }}</div>
-            <div class="stat-lbl">Son Giriş</div>
+            <div class="stat-lbl">{{ $t('profile.lastLogin') }}</div>
           </div>
         </div>
       </div>
@@ -77,55 +77,55 @@
       <div class="card">
         <div class="card-header">
           <div class="card-icon"><UiIcon icon="mdi-account-circle-outline" :size="16" /></div>
-          <span>Hesap Bilgileri</span>
+          <span>{{ $t('profile.account.title') }}</span>
           <button type="button" class="edit-btn" @click="openProfileDialog">
-            <UiIcon icon="mdi-pencil-outline" :size="14" /> Düzenle
+            <UiIcon icon="mdi-pencil-outline" :size="14" /> {{ $t('common.edit') }}
           </button>
         </div>
         <div class="card-divider" />
 
         <div class="info-grid">
           <div class="info-tile">
-            <span class="tile-lbl">Ad</span>
+            <span class="tile-lbl">{{ $t('auth.firstNameLabel') }}</span>
             <span class="tile-val">{{ user?.firstName || "—" }}</span>
           </div>
           <div class="info-tile">
-            <span class="tile-lbl">Soyad</span>
+            <span class="tile-lbl">{{ $t('auth.lastNameLabel') }}</span>
             <span class="tile-val">{{ user?.lastName || "—" }}</span>
           </div>
 
           <div class="info-tile info-tile--wide">
-            <span class="tile-lbl">E-posta</span>
+            <span class="tile-lbl">{{ $t('household.email') }}</span>
             <div class="tile-val-row">
               <span class="tile-val">{{ user?.email }}</span>
               <span class="confirm-badge" :class="user?.emailConfirmed ? 'confirm-ok' : 'confirm-warn'">
                 <UiIcon :icon="user?.emailConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'" :size="12" />
-                {{ user?.emailConfirmed ? "Doğrulandı" : "Doğrulanmadı" }}
+                {{ user?.emailConfirmed ? $t('profile.account.verified') : $t('profile.account.notVerified') }}
               </span>
               <button type="button" class="link-inline-btn" @click="openEmailDialog">
-                E-postayı değiştir
+                {{ $t('profile.account.changeEmail') }}
               </button>
             </div>
           </div>
 
           <div class="info-tile info-tile--wide">
-            <span class="tile-lbl">Telefon</span>
+            <span class="tile-lbl">{{ $t('profile.account.phone') }}</span>
             <div v-if="user?.phoneNumber" class="tile-val-row">
               <span class="tile-val">{{ user.phoneNumber }}</span>
               <span class="confirm-badge" :class="user?.phoneConfirmed ? 'confirm-ok' : 'confirm-warn'">
                 <UiIcon :icon="user?.phoneConfirmed ? 'mdi-check-circle' : 'mdi-alert-circle-outline'" :size="12" />
-                {{ user?.phoneConfirmed ? "Doğrulandı" : "Doğrulanmadı" }}
+                {{ user?.phoneConfirmed ? $t('profile.account.verified') : $t('profile.account.notVerified') }}
               </span>
             </div>
-            <span v-else class="tile-val tile-val--muted">Belirtilmemiş</span>
+            <span v-else class="tile-val tile-val--muted">{{ $t('profile.account.notSpecified') }}</span>
           </div>
 
           <div class="info-tile">
-            <span class="tile-lbl">Kayıt Tarihi</span>
+            <span class="tile-lbl">{{ $t('profile.account.createdDate') }}</span>
             <span class="tile-val">{{ user?.createdDate ? dateFormat(user.createdDate) : "—" }}</span>
           </div>
           <div class="info-tile">
-            <span class="tile-lbl">Son Giriş</span>
+            <span class="tile-lbl">{{ $t('profile.lastLogin') }}</span>
             <span class="tile-val tile-val--sm">{{ user?.lastLoginDate ? dateTimeFormat(user.lastLoginDate) : "—" }}</span>
           </div>
         </div>
@@ -138,17 +138,17 @@
       <div class="card security-card mb-4">
         <div class="card-header">
           <div class="card-icon"><UiIcon icon="mdi-lock-reset" :size="16" /></div>
-          <span>Şifre Değiştir</span>
+          <span>{{ $t('profile.password.title') }}</span>
         </div>
         <div class="card-divider" />
 
         <!-- Mevcut şifre ya da e-postaya gelen 6 haneli kod -->
         <div class="pwd-mode-tabs">
           <button type="button" class="pwd-mode-btn" :class="{ active: !useCode }" @click="useCode = false">
-            <UiIcon icon="mdi-key-outline" :size="14" /> Mevcut şifremi biliyorum
+            <UiIcon icon="mdi-key-outline" :size="14" /> {{ $t('profile.password.knowCurrent') }}
           </button>
           <button type="button" class="pwd-mode-btn" :class="{ active: useCode }" @click="switchToCode">
-            <UiIcon icon="mdi-email-lock-outline" :size="14" /> Şifremi unuttum
+            <UiIcon icon="mdi-email-lock-outline" :size="14" /> {{ $t('profile.password.forgot') }}
           </button>
         </div>
 
@@ -160,7 +160,7 @@
             <template v-if="!useCode">
               <UiTextField
                 v-model="currentPassword"
-                label="Mevcut Şifre"
+                :label="$t('auth.currentPasswordLabel')"
                 placeholder="••••••••"
                 :type="showCurrent ? 'text' : 'password'"
                 :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
@@ -173,13 +173,15 @@
 
             <template v-else>
               <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-3">
-                <strong>{{ user?.email }}</strong> adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.
+                <i18n-t keypath="profile.password.codeInfo" tag="span" scope="global">
+                  <template #email><strong>{{ user?.email }}</strong></template>
+                </i18n-t>
               </p>
               <div class="flex gap-2 items-start mb-3">
                 <UiTextField
                   v-model="passwordCode"
-                  label="Doğrulama Kodu"
-                  placeholder="6 haneli kod"
+                  :label="$t('profile.password.codeLabel')"
+                  :placeholder="$t('profile.password.codePlaceholder')"
                   inputmode="numeric"
                   maxlength="6"
                   autocomplete="one-time-code"
@@ -197,13 +199,13 @@
                   :disabled="codeCooldown > 0"
                   @click="sendCode"
                 >
-                  {{ codeCooldown > 0 ? `${codeCooldown} sn` : codeSent ? "Tekrar Gönder" : "Kod Gönder" }}
+                  {{ codeCooldown > 0 ? $t('auth.secondsShort', { s: codeCooldown }) : codeSent ? $t('auth.resendAgain') : $t('profile.password.sendCode') }}
                 </UiBtn>
               </div>
             </template>
             <UiTextField
               v-model="newPassword"
-              label="Yeni Şifre"
+              :label="$t('auth.newPasswordLabel')"
               placeholder="••••••••"
               :type="showNew ? 'text' : 'password'"
               :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
@@ -214,7 +216,7 @@
             />
             <UiTextField
               v-model="confirmNewPassword"
-              label="Yeni Şifre Tekrar"
+              :label="$t('profile.password.confirmNew')"
               placeholder="••••••••"
               required
               :type="showConfirm ? 'text' : 'password'"
@@ -230,7 +232,7 @@
               :loading="isChangingPassword"
               block
             >
-              Şifreyi Güncelle
+              {{ $t('auth.resetPasswordButton') }}
             </UiBtn>
           </UiForm>
         </div>
@@ -240,7 +242,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-icon"><UiIcon icon="mdi-monitor-multiple" :size="16" /></div>
-          <span>Aktif Oturumlarım</span>
+          <span>{{ $t('profile.sessions.title') }}</span>
           <span v-if="!loadingSessions && activeSessions.length" class="count-badge">
             {{ activeSessions.length }}
           </span>
@@ -253,7 +255,7 @@
             :loading="loadingSessions"
             @click="loadSessions"
           >
-            Yenile
+            {{ $t('common.refresh') }}
           </UiBtn>
           <UiBtn
             v-if="activeSessions.length"
@@ -264,7 +266,7 @@
             :loading="loggingOutAll"
             @click="confirmLogoutAll = true"
           >
-            Tümünden Çık
+            {{ $t('profile.sessions.logoutAll') }}
           </UiBtn>
         </div>
         <div class="card-divider" />
@@ -281,7 +283,7 @@
           class="empty-state"
         >
           <UiIcon icon="mdi-monitor-off" :size="24" />
-          Aktif oturum bulunamadı.
+          {{ $t('profile.sessions.empty') }}
         </div>
 
         <!-- Active sessions -->
@@ -309,7 +311,7 @@
                   variant="flat"
                   rounded
                 >
-                  Bu cihaz
+                  {{ $t('profile.sessions.thisDevice') }}
                 </UiChip>
               </div>
               <div class="session-meta mt-1">
@@ -325,7 +327,7 @@
                 <span class="mx-1 opacity-30">·</span>
                 <span class="session-remaining">
                   <UiIcon icon="mdi-clock-outline" :size="11" />
-                  {{ remainingLabel(session) }} kaldı
+                  {{ $t('profile.sessions.remaining', { time: remainingLabel(session) }) }}
                 </span>
               </div>
             </div>
@@ -342,7 +344,7 @@
             @click="showHistory = !showHistory"
           >
             <UiIcon :icon="showHistory ? 'mdi-chevron-up' : 'mdi-chevron-down'" :size="16" />
-            Geçmiş oturumlar ({{ inactiveSessions.length }})
+            {{ $t('profile.sessions.history', { count: inactiveSessions.length }) }}
           </div>
 
           <div v-if="showHistory" class="session-list session-list--history">
@@ -367,7 +369,7 @@
                     {{ formatDate(session.createdDate) }}
                   </span>
                   <span class="mx-1 opacity-30">·</span>
-                  <span class="session-ended">Sona erdi</span>
+                  <span class="session-ended">{{ $t('profile.sessions.ended') }}</span>
                 </div>
               </div>
             </div>
@@ -376,17 +378,17 @@
       </div>
 
       <!-- Hesap ve veriler: kişisel veri indirme (KVKK) ve hesabı silme -->
-      <h2 class="group-title">Hesap ve veriler</h2>
+      <h2 class="group-title">{{ $t('profile.data.groupTitle') }}</h2>
       <div class="panel-card">
         <div class="panel-card__header">
           <div class="panel-card__icon"><UiIcon icon="mdi-microsoft-excel" :size="16" /></div>
-          <span>Verilerim</span>
+          <span>{{ $t('profile.data.title') }}</span>
         </div>
         <div class="panel-card__divider" />
         <div class="panel-card__body">
-          <p class="panel-card__hint">Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.</p>
+          <p class="panel-card__hint">{{ $t('profile.data.hint') }}</p>
           <UiBtn color="primary" variant="tonal" prepend-icon="mdi-download" :loading="exporting" :disabled="exporting" @click="exportMyData">
-            Verilerimi indir (Excel)
+            {{ $t('profile.data.export') }}
           </UiBtn>
         </div>
       </div>
@@ -399,16 +401,16 @@
         <div class="dialog-head">
           <div class="dialog-head__icon"><UiIcon icon="mdi-account-edit-outline" :size="20" /></div>
           <div>
-            <h3 class="dialog-head__title">Bilgilerimi Düzenle</h3>
-            <p class="dialog-head__sub">Ad, soyad ve telefon bilgileriniz</p>
+            <h3 class="dialog-head__title">{{ $t('profile.edit.title') }}</h3>
+            <p class="dialog-head__sub">{{ $t('profile.edit.subtitle') }}</p>
           </div>
         </div>
         <div class="dialog-body">
           <UiForm ref="profileFormRef" @submit="saveProfile">
             <UiTextField
               v-model="profileForm.firstName"
-              label="Ad"
-              placeholder="Adınız"
+              :label="$t('auth.firstNameLabel')"
+              :placeholder="$t('profile.edit.firstNamePlaceholder')"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
@@ -416,8 +418,8 @@
             />
             <UiTextField
               v-model="profileForm.lastName"
-              label="Soyad"
-              placeholder="Soyadınız"
+              :label="$t('auth.lastNameLabel')"
+              :placeholder="$t('profile.edit.lastNamePlaceholder')"
               density="comfortable"
               :rules="[validationRules.required]"
               :disabled="savingProfile"
@@ -425,7 +427,7 @@
             />
             <UiTextField
               v-model="profileForm.phoneNumber"
-              label="Telefon"
+              :label="$t('profile.account.phone')"
               placeholder="0555 000 00 00"
               density="comfortable"
               type="tel"
@@ -438,8 +440,8 @@
           </UiForm>
         </div>
         <div class="dialog-actions">
-          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="savingProfile" @click="profileDialog = false">İptal</UiBtn>
-          <UiBtn class="btn-gradient-primary" :loading="savingProfile" @click="saveProfile">Kaydet</UiBtn>
+          <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="savingProfile" @click="profileDialog = false">{{ $t('common.cancel') }}</UiBtn>
+          <UiBtn class="btn-gradient-primary" :loading="savingProfile" @click="saveProfile">{{ $t('common.save') }}</UiBtn>
         </div>
       </UiCard>
     </UiDialog>
@@ -450,25 +452,25 @@
         <div class="dialog-head">
           <div class="dialog-head__icon"><UiIcon icon="mdi-email-edit-outline" :size="20" /></div>
           <div>
-            <h3 class="dialog-head__title">E-posta Adresini Değiştir</h3>
-            <p class="dialog-head__sub">Yeni adres, onay bağlantısıyla değişir</p>
+            <h3 class="dialog-head__title">{{ $t('profile.email.title') }}</h3>
+            <p class="dialog-head__sub">{{ $t('profile.email.subtitle') }}</p>
           </div>
         </div>
         <div class="dialog-body">
           <template v-if="emailSentTo">
             <UiAlert type="success" variant="tonal" class="mb-2">
-              <strong>{{ emailSentTo }}</strong> adresine bir onay bağlantısı gönderdik. Bağlantıya
-              tıklayana kadar mevcut adresinizle giriş yapmaya devam edersiniz.
+              <i18n-t keypath="profile.email.sent" tag="span" scope="global">
+                <template #email><strong>{{ emailSentTo }}</strong></template>
+              </i18n-t>
             </UiAlert>
           </template>
           <UiForm v-else ref="emailFormRef" @submit="submitEmailChange">
             <p class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mb-4">
-              Yeni adrese bir onay bağlantısı gönderilir. E-postanız bu bağlantı onaylandığında değişir
-              ve tüm oturumlarınız kapatılır.
+              {{ $t('profile.email.info') }}
             </p>
             <UiTextField
               v-model="emailForm.newEmail"
-              label="Yeni e-posta"
+              :label="$t('profile.email.newEmail')"
               placeholder="yeni@ornek.com"
               density="comfortable"
               type="email"
@@ -479,7 +481,7 @@
             />
             <UiTextField
               v-model="emailForm.currentPassword"
-              label="Mevcut şifre"
+              :label="$t('profile.email.currentPassword')"
               placeholder="••••••••"
               density="comfortable"
               :type="showEmailPassword ? 'text' : 'password'"
@@ -496,12 +498,12 @@
         </div>
         <div class="dialog-actions">
           <template v-if="emailSentTo">
-            <UiBtn class="btn-gradient-primary" @click="emailDialog = false">Tamam</UiBtn>
+            <UiBtn class="btn-gradient-primary" @click="emailDialog = false">{{ $t('common.ok') }}</UiBtn>
           </template>
           <template v-else>
-            <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="sendingEmailChange" @click="emailDialog = false">İptal</UiBtn>
+            <UiBtn variant="outlined" class="btn-gradient-dark" :disabled="sendingEmailChange" @click="emailDialog = false">{{ $t('common.cancel') }}</UiBtn>
             <UiBtn class="btn-gradient-primary" :loading="sendingEmailChange" @click="submitEmailChange">
-              Onay Bağlantısı Gönder
+              {{ $t('profile.email.submit') }}
             </UiBtn>
           </template>
         </div>
@@ -510,10 +512,10 @@
 
     <ConfirmDialog
       v-model="confirmLogoutAll"
-      title="Tüm cihazlardan çıkış"
-      message="Tüm cihazlardaki oturumlarınız kapatılacak, bu cihaz dahil. Devam etmek istiyor musunuz?"
+      :title="$t('profile.sessions.logoutAllTitle')"
+      :message="$t('profile.sessions.logoutAllConfirm')"
       type="error"
-      confirm-text="Evet, çıkış yap"
+      :confirm-text="$t('profile.sessions.logoutAllSubmit')"
       :loading="loggingOutAll"
       @confirm="doLogoutAll"
       @cancel="confirmLogoutAll = false"
@@ -538,7 +540,8 @@ definePageMeta({
   requiresAuth: true,
 });
 
-useHead({ title: "Profilim - Abacasa" });
+const { t } = useI18n();
+useHead({ title: computed(() => t("profile.pageTitle")) });
 
 const authStore = useAuthStore();
 const {
@@ -579,10 +582,10 @@ const saveProfile = async () => {
       lastName: profileForm.lastName.trim(),
       phoneNumber: profileForm.phoneNumber.trim() || undefined,
     });
-    toast.success("Bilgileriniz güncellendi.");
+    toast.success(t("profile.edit.success"));
     profileDialog.value = false;
   } catch (error) {
-    profileError.value = parseApiErrorMessages(error)[0] || "Bilgiler güncellenemedi.";
+    profileError.value = parseApiErrorMessages(error)[0] || t("profile.edit.failed");
   } finally {
     savingProfile.value = false;
   }
@@ -615,7 +618,7 @@ const submitEmailChange = async () => {
     await requestEmailChange(newEmail, emailForm.currentPassword);
     emailSentTo.value = newEmail;
   } catch (error) {
-    emailError.value = parseApiErrorMessages(error)[0] || "İstek gönderilemedi.";
+    emailError.value = parseApiErrorMessages(error)[0] || t("auth.requestFailed");
   } finally {
     sendingEmailChange.value = false;
     emailForm.currentPassword = "";
@@ -632,7 +635,7 @@ const exportMyData = async () => {
   try {
     await download(API_ENDPOINTS.AUTH.ACCOUNT_EXPORT, "abacasa-hesabim.xlsx");
   } catch {
-    toast.error("Veriler indirilemedi");
+    toast.error(t("profile.data.exportFailed"));
   } finally {
     exporting.value = false;
   }
@@ -664,15 +667,15 @@ const statusColor = computed(() => {
 const statusLabel = computed(() => {
   switch (authStore.user?.status) {
     case UserStatus.Active:
-      return "Aktif";
+      return t("common.active");
     case UserStatus.Inactive:
-      return "Pasif";
+      return t("common.inactive");
     case UserStatus.Banned:
-      return "Yasaklı";
+      return t("profile.status.banned");
     case UserStatus.PendingVerification:
-      return "Doğrulama bekliyor";
+      return t("profile.status.pendingVerification");
     default:
-      return "Bilinmiyor";
+      return t("profile.status.unknown");
   }
 });
 
@@ -687,10 +690,10 @@ const lastLoginShort = computed(() => {
   if (!d) return "—";
   const date = new Date(d);
   const today = new Date();
-  if (date.toDateString() === today.toDateString()) return "Bugün";
+  if (date.toDateString() === today.toDateString()) return t("profile.today");
   const diff = Math.floor((today.getTime() - date.getTime()) / 86_400_000);
-  if (diff === 1) return "Dün";
-  if (diff < 7) return `${diff} gün önce`;
+  if (diff === 1) return t("profile.yesterday");
+  if (diff < 7) return t("profile.daysAgo", { n: diff });
   return dateFormat(d);
 });
 
@@ -700,11 +703,12 @@ const loadingSessions = ref(false);
 const showHistory = ref(false);
 
 // Tabs
-const tabs = [
-  { key: "profile", label: "Profil", icon: "mdi-account-circle-outline" },
-  { key: "security", label: "Güvenlik", icon: "mdi-shield-lock-outline" },
+const tabDefs = [
+  { key: "profile", labelKey: "profile.tabs.profile", icon: "mdi-account-circle-outline" },
+  { key: "security", labelKey: "profile.tabs.security", icon: "mdi-shield-lock-outline" },
 ] as const;
-const activeTab = ref<(typeof tabs)[number]["key"]>("profile");
+const tabs = computed(() => tabDefs.map((tab) => ({ ...tab, label: t(tab.labelKey) })));
+const activeTab = ref<(typeof tabDefs)[number]["key"]>("profile");
 
 const activeSessions = computed(() =>
   sessions.value.filter((s: Session) => s.isActive),
@@ -762,10 +766,10 @@ const remainingLabel = (session: Session) => {
     timePart = raw.slice(dot + 1);
   }
   const [h, m] = timePart.split(":").map(Number);
-  if (days >= 1) return `${days} gün`;
-  if (h >= 1) return `${h} saat`;
-  if (m >= 1) return `${m} dakika`;
-  return "< 1 dakika";
+  if (days >= 1) return t("profile.duration.days", { n: days });
+  if (h >= 1) return t("profile.duration.hours", { n: h });
+  if (m >= 1) return t("profile.duration.minutes", { n: m });
+  return t("profile.duration.lessThanMinute");
 };
 
 // Change password
@@ -805,10 +809,10 @@ const sendCode = async () => {
   try {
     await sendPasswordChangeCode();
     codeSent.value = true;
-    toast.success("Doğrulama kodu e-posta adresinize gönderildi.");
+    toast.success(t("auth.codeSent"));
     startCooldown(60);
   } catch (error) {
-    const message = parseApiErrorMessages(error)[0] || "Kod gönderilemedi.";
+    const message = parseApiErrorMessages(error)[0] || t("auth.codeSendFailed");
     toast.error(message);
     // Backend bekleme süresini mesajda bildirir ("... 42 saniye bekleyin")
     const seconds = Number(message.match(/\d+/)?.[0]);

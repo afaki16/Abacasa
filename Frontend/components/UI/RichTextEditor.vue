@@ -6,7 +6,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('bold') }"
-        title="Kalın (Ctrl+B)"
+        :title="$t('ui.richText.bold')"
         @click="editor.chain().focus().toggleBold().run()"
       >
         <Icon name="mdi:format-bold" class="w-4 h-4" />
@@ -15,7 +15,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('italic') }"
-        title="İtalik (Ctrl+I)"
+        :title="$t('ui.richText.italic')"
         @click="editor.chain().focus().toggleItalic().run()"
       >
         <Icon name="mdi:format-italic" class="w-4 h-4" />
@@ -24,7 +24,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('underline') }"
-        title="Altı çizili (Ctrl+U)"
+        :title="$t('ui.richText.underline')"
         @click="editor.chain().focus().toggleUnderline().run()"
       >
         <Icon name="mdi:format-underline" class="w-4 h-4" />
@@ -36,7 +36,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('heading', { level: 2 }) }"
-        title="Başlık 1"
+        :title="$t('ui.richText.heading1')"
         @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
       >
         <span class="rte-h">H1</span>
@@ -45,7 +45,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('heading', { level: 3 }) }"
-        title="Başlık 2"
+        :title="$t('ui.richText.heading2')"
         @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
       >
         <span class="rte-h">H2</span>
@@ -57,7 +57,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('bulletList') }"
-        title="Madde listesi"
+        :title="$t('ui.richText.bulletList')"
         @click="editor.chain().focus().toggleBulletList().run()"
       >
         <Icon name="mdi:format-list-bulleted" class="w-4 h-4" />
@@ -66,7 +66,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('orderedList') }"
-        title="Sıralı liste"
+        :title="$t('ui.richText.orderedList')"
         @click="editor.chain().focus().toggleOrderedList().run()"
       >
         <Icon name="mdi:format-list-numbered" class="w-4 h-4" />
@@ -78,7 +78,7 @@
         type="button"
         class="rte-btn"
         :class="{ 'rte-btn--active': editor.isActive('link') }"
-        title="Bağlantı"
+        :title="$t('ui.richText.link')"
         @click="promptLink"
       >
         <Icon name="mdi:link-variant" class="w-4 h-4" />
@@ -87,7 +87,7 @@
         type="button"
         class="rte-btn"
         :disabled="!editor.isActive('link')"
-        title="Bağlantıyı kaldır"
+        :title="$t('ui.richText.unlink')"
         @click="editor.chain().focus().unsetLink().run()"
       >
         <Icon name="mdi:link-variant-off" class="w-4 h-4" />
@@ -98,7 +98,7 @@
       <button
         type="button"
         class="rte-btn"
-        title="Biçimi temizle"
+        :title="$t('ui.richText.clearFormat')"
         @click="editor.chain().focus().unsetAllMarks().clearNodes().run()"
       >
         <Icon name="mdi:format-clear" class="w-4 h-4" />
@@ -110,7 +110,7 @@
         type="button"
         class="rte-btn"
         :disabled="!editor.can().chain().focus().undo().run()"
-        title="Geri al (Ctrl+Z)"
+        :title="$t('ui.richText.undo')"
         @click="editor.chain().focus().undo().run()"
       >
         <Icon name="mdi:undo" class="w-4 h-4" />
@@ -119,7 +119,7 @@
         type="button"
         class="rte-btn"
         :disabled="!editor.can().chain().focus().redo().run()"
-        title="Yinele (Ctrl+Y)"
+        :title="$t('ui.richText.redo')"
         @click="editor.chain().focus().redo().run()"
       >
         <Icon name="mdi:redo" class="w-4 h-4" />
@@ -133,9 +133,9 @@
     <div class="rte-footer">
       <span class="rte-hint">
         <Icon name="mdi:information-outline" class="w-3 h-3" />
-        Word'den kopyalayıp buraya yapıştırabilirsiniz — biçim korunur.
+        {{ $t('ui.richText.pasteHint') }}
       </span>
-      <span v-if="charCount" class="rte-count">{{ charCount.toLocaleString('tr-TR') }} karakter</span>
+      <span v-if="charCount" class="rte-count">{{ $t('ui.richText.charCount', { count: charCount.toLocaleString('tr-TR') }) }}</span>
     </div>
   </div>
 </template>
@@ -146,6 +146,8 @@ import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   modelValue: string
@@ -234,7 +236,7 @@ const editor = new Editor({
     },
     attributes: {
       class: 'rte-prose',
-      'data-placeholder': props.placeholder ?? "Metni buraya yazın veya Word'den yapıştırın…"
+      'data-placeholder': props.placeholder ?? t('ui.richText.placeholder')
     }
   },
   onUpdate: ({ editor }) => {
@@ -261,7 +263,7 @@ const charCount = computed(() => editor?.state?.doc?.textContent?.length ?? 0)
 
 const promptLink = () => {
   const prev = editor.getAttributes('link').href ?? ''
-  const url  = window.prompt('Bağlantı adresi (https://...)', prev)
+  const url  = window.prompt(t('ui.richText.linkPrompt'), prev)
   if (url === null) return                // iptal
   if (url === '') {
     editor.chain().focus().extendMarkRange('link').unsetLink().run()

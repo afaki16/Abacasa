@@ -13,13 +13,16 @@ import { useApi } from './useApi'
 export const useDonationFunds = () => {
   const api = useApi()
 
-  const movementTypeOptions = [
-    { value: FundMovementType.Use, title: 'Kullanım' },
-    { value: FundMovementType.Return, title: 'Yerine koyma' },
-  ]
+  const { $i18n } = useNuxtApp()
+
+  // Etiketler okunduğu anda çevrilir; dil değişikliği yansır
+  const movementTypeOptions = computed(() => [
+    { value: FundMovementType.Use, title: $i18n.t('donationFunds.movements.types.use') },
+    { value: FundMovementType.Return, title: $i18n.t('donationFunds.movements.types.return') },
+  ])
 
   const getMovementTypeLabel = (type: FundMovementType) =>
-    movementTypeOptions.find((o) => o.value === type)?.title ?? String(type)
+    movementTypeOptions.value.find((o) => o.value === type)?.title ?? String(type)
 
   const getFunds = async (page = 1, pageSize = 10, searchTerm = '', filters: DonationFundFilters = {}) => {
     try {

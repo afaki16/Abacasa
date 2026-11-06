@@ -3,14 +3,14 @@
     <div class="verify-card">
       <div v-if="state === 'loading'" class="state-block">
         <UiProgressCircular indeterminate color="white" :size="56" :width="4" />
-        <h2 class="title">Email adresiniz doğrulanıyor...</h2>
-        <p class="subtitle">Lütfen bekleyin.</p>
+        <h2 class="title">{{ $t('auth.verify.inProgress') }}</h2>
+        <p class="subtitle">{{ $t('auth.pleaseWait') }}</p>
       </div>
 
       <div v-else-if="state === 'success'" class="state-block">
         <UiIcon icon="mdi-check-circle-outline" :size="72" color="success" />
-        <h2 class="title">Email'iniz doğrulandı</h2>
-        <p class="subtitle">Artık giriş yapabilirsiniz.</p>
+        <h2 class="title">{{ $t('auth.verify.done') }}</h2>
+        <p class="subtitle">{{ $t('auth.verify.canSignIn') }}</p>
         <UiBtn
           color="white"
           variant="outlined"
@@ -18,13 +18,13 @@
           class="action-btn"
           @click="goToLogin"
         >
-          Giriş Sayfasına Git
+          {{ $t('auth.goToLogin') }}
         </UiBtn>
       </div>
 
       <div v-else class="state-block">
         <UiIcon icon="mdi-alert-circle-outline" :size="72" color="error" />
-        <h2 class="title">Bağlantı geçersiz</h2>
+        <h2 class="title">{{ $t('auth.linkInvalid') }}</h2>
         <p class="subtitle">{{ errorMessage }}</p>
 
         <div class="actions-row">
@@ -37,7 +37,7 @@
             :disabled="!email"
             @click="onResend"
           >
-            Tekrar Gönder
+            {{ $t('auth.resendAgain') }}
           </UiBtn>
           <UiBtn
             color="white"
@@ -46,7 +46,7 @@
             class="action-btn"
             @click="goToLogin"
           >
-            Giriş Sayfası
+            {{ $t('auth.loginPage') }}
           </UiBtn>
         </div>
       </div>
@@ -65,9 +65,10 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
 const state = ref<'loading' | 'success' | 'error'>('loading')
-const errorMessage = ref('Doğrulama bağlantısı geçersiz veya süresi dolmuş.')
+const errorMessage = ref(t('auth.verify.linkExpired'))
 const resending = ref(false)
 
 const email = computed(() => (route.query.email as string) || '')
@@ -80,10 +81,10 @@ const onResend = async () => {
   resending.value = true
   try {
     await auth.resendVerification(email.value)
-    toast.success('Doğrulama bağlantısı tekrar gönderildi. Lütfen email kutunuzu kontrol edin.')
+    toast.success(t('auth.verify.resent'))
   } catch (error) {
     const messages = parseApiErrorMessages(error)
-    toast.error(messages[0] || 'İstek gönderilemedi.')
+    toast.error(messages[0] || t('auth.requestFailed'))
   } finally {
     resending.value = false
   }
@@ -92,7 +93,7 @@ const onResend = async () => {
 onMounted(async () => {
   if (!email.value || !token.value) {
     state.value = 'error'
-    errorMessage.value = 'Bağlantı eksik veya hatalı.'
+    errorMessage.value = t('auth.linkMalformed')
     return
   }
 
@@ -113,7 +114,7 @@ onMounted(async () => {
 })
 
 useHead({
-  title: 'Email Doğrulama - Abacasa'
+  title: computed(() => t('auth.pageTitleVerifyEmail'))
 })
 </script>
 

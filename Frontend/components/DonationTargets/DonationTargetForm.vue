@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.year"
-            label="Yıl"
+            :label="t('donationTargets.form.year')"
             type="number"
             min="2000"
             max="2100"
@@ -23,7 +23,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            label="Kişi"
+            :label="t('budget.person')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -40,7 +40,7 @@
             :items="kindOptions"
             item-title="title"
             item-value="value"
-            label="Tür"
+            :label="t('budget.kind')"
             :disabled="loading"
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -52,7 +52,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.amount"
-            label="Tutar"
+            :label="t('budget.amount')"
             type="number"
             min="0"
             step="0.01"
@@ -70,7 +70,7 @@
         <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.note"
-            label="Not"
+            :label="t('budget.note')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -90,7 +90,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -100,7 +100,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ target ? 'Güncelle' : 'Kaydet' }}
+        {{ target ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -129,6 +129,7 @@ const emit = defineEmits<{
 
 const { validationRules: rules } = useValidators()
 const { kindOptions } = useDonations()
+const { t } = useI18n()
 
 const formRef = ref()
 const formData = reactive({
@@ -141,11 +142,11 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
-const yearRule = (v: number | null) => (v !== null && v >= 2000 && v <= 2100) || 'Yıl 2000 ile 2100 arasında olmalıdır'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
+const yearRule = (v: number | null) => (v !== null && v >= 2000 && v <= 2100) || t('donationTargets.form.yearRange')
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('budget.household') },
   ...props.people,
 ])
 

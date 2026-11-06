@@ -101,7 +101,70 @@
     "resendCode": "Tekrar gönder",
     "codeSent": "Doğrulama kodu e-posta adresinize gönderildi.",
     "codeSendFailed": "Kod gönderilemedi.",
-    "secondsShort": "{s} sn"
+    "secondsShort": "{s} sn",
+    "pageTitleLogin": "Abacasa - Giriş",
+    "metaDescriptionLogin": "Abacasa hesabınıza giriş yapın",
+    "passwordChangedRelogin": "Şifreniz değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.",
+    "passwordChanged": "Şifreniz değiştirildi.",
+    "passwordChangedLogin": "Şifreniz değiştirildi. Lütfen yeni şifrenizle giriş yapın.",
+    "invite": {
+      "loading": "Davet yükleniyor...",
+      "invitedAs": "{inviter} sizi bu haneye {role} olarak davet etti.",
+      "accept": "Daveti kabul et",
+      "otherAccount": "Bu davet {email} adresine gönderildi. O hesapla giriş yapın.",
+      "signIn": "Giriş yap",
+      "register": "Kayıt ol",
+      "pageTitle": "Haneye davet - Abacasa",
+      "alreadyAccepted": "Davet zaten kabul edilmiş",
+      "revoked": "Davet iptal edilmiş",
+      "expired": "Davetin süresi dolmuş",
+      "notFound": "Davet bulunamadı",
+      "alreadyUsed": "Bu davet daha önce kullanıldı.",
+      "askAdmin": "Yeni bir davet için hane yöneticisine başvurun.",
+      "acceptFailed": "Davet kabul edilemedi",
+      "signOut": "Çıkış yap"
+    },
+    "backToLoginLower": "Giriş sayfasına dön",
+    "checkEmail": {
+      "title": "Email kutunuzu kontrol edin",
+      "sentTo": "{email} adresine bir doğrulama bağlantısı gönderdik.",
+      "sent": "Email adresinize bir doğrulama bağlantısı gönderdik.",
+      "spamHint": "Email gelmediyse {spam} klasörünü kontrol etmeyi unutmayın.",
+      "spam": "spam"
+    },
+    "resendAgain": "Tekrar Gönder",
+    "verificationResent": "Doğrulama bağlantısı tekrar gönderildi.",
+    "requestFailed": "İstek gönderilemedi.",
+    "pageTitleVerifyEmail": "Email Doğrulama - Abacasa",
+    "emailChange": {
+      "inProgress": "E-posta adresiniz değiştiriliyor...",
+      "done": "E-posta adresiniz değiştirildi",
+      "doneText": "Güvenliğiniz için tüm oturumlarınız kapatıldı. Yeni adresinizle ({email}) giriş yapabilirsiniz.",
+      "notChanged": "E-posta adresiniz değişmedi. Gerekirse profil sayfanızdan yeniden talep edebilirsiniz.",
+      "linkExpired": "Onay bağlantısı geçersiz veya süresi dolmuş."
+    },
+    "pleaseWait": "Lütfen bekleyin.",
+    "goToLogin": "Giriş Sayfasına Git",
+    "linkInvalid": "Bağlantı geçersiz",
+    "loginPage": "Giriş Sayfası",
+    "linkMalformed": "Bağlantı eksik veya hatalı.",
+    "pageTitleEmailChange": "E-posta Değişikliği - Abacasa",
+    "verify": {
+      "inProgress": "Email adresiniz doğrulanıyor...",
+      "done": "Email'iniz doğrulandı",
+      "canSignIn": "Artık giriş yapabilirsiniz.",
+      "linkExpired": "Doğrulama bağlantısı geçersiz veya süresi dolmuş.",
+      "resent": "Doğrulama bağlantısı tekrar gönderildi. Lütfen email kutunuzu kontrol edin."
+    },
+    "register": {
+      "invitedTo": "{household} hanesine davet edildiniz. Kayıttan sonra doğrudan haneye katılırsınız.",
+      "mustAcceptTerms": "Kullanım koşullarını kabul etmelisiniz",
+      "mustAcknowledgePrivacy": "Aydınlatma metnini okuduğunuzu onaylamalısınız",
+      "failed": "Kayıt tamamlanamadı",
+      "householdPlaceholder": "Örn. Fakı Hanesi"
+    },
+    "metaDescriptionRegister": "Abacasa hesabınızı oluşturun",
+    "accountDeleted": "Hesabınız silindi."
   },
   "sidebar": {
     "context": {
@@ -174,7 +237,63 @@
       "sat": "Cmt",
       "sun": "Paz"
     },
-    "pageTitle": "Anasayfa - Abacasa"
+    "pageTitle": "Anasayfa - Abacasa",
+    "title": "Özet",
+    "noHousehold": {
+      "title": "Henüz bir haneniz yok",
+      "description": "Kendi hanenizi oluşturabilir ya da size gelen davet e-postasındaki bağlantıyı kullanabilirsiniz.",
+      "create": "Hane oluştur"
+    },
+    "welcomeApp": "Abacasa'ya hoş geldiniz.",
+    "hello": "Merhaba",
+    "helloName": "Merhaba, {name}",
+    "household": "Hane",
+    "noRecords": "Kayıt yok",
+    "cards": {
+      "periodTotal": "Dönem toplamı (yemek kartı hariç)",
+      "periodBreakdown": "Harcama {expenses} · Bağış {donations} · Bekleyen {pending}",
+      "unknownAmounts": "{count} kalemin tutarı belli değil",
+      "recurring": "Sabit ödemeler",
+      "recurringBreakdown": "Ödenen {paid} · Bekleyen {pending}",
+      "openDebt": "Açık borç (TL karşılığı)",
+      "missingRate": "{currencies} kuru girilmemiş",
+      "mealCard": "Yemek kartı",
+      "mealCardBreakdown": "Harcanan {spent} · Bekleyen {pending}"
+    },
+    "byPaymentMethod": "Ödeme aracına göre",
+    "byPerson": "Kişiye göre",
+    "columns": {
+      "name": "Ad",
+      "type": "Tür",
+      "spent": "Gerçekleşen",
+      "pending": "Bekleyen",
+      "total": "Toplam"
+    },
+    "upcoming": {
+      "title": "Yaklaşan ödemeler",
+      "goToRecurring": "Sabit ödemeler'e git",
+      "dueDate": "Vade",
+      "paymentMethod": "Ödeme aracı",
+      "amount": "Tutar",
+      "status": "Durum",
+      "estimated": "tahmini",
+      "overdue": "Gecikti",
+      "empty": "Yaklaşan ödeme yok",
+      "today": "Bugün",
+      "daysLeft": "{days} gün kaldı"
+    },
+    "trendVsLastWeek": "vs geçen hafta",
+    "profileCard": {
+      "roles": "Rol",
+      "permissions": "İzin",
+      "sessions": "Oturum",
+      "editProfile": "Profili Düzenle",
+      "myRoles": "Rollerim",
+      "viewAllRoles": "Tüm rolleri görüntüle",
+      "system": "Sistem",
+      "more": "+{count} daha",
+      "defaultName": "Kullanıcı"
+    }
   },
   "paymentMethodTypes": {
     "cash": "Nakit",
@@ -472,5 +591,788 @@
       "roles": "Roller",
       "permissions": "İzinler"
     }
+  },
+  "budget": {
+    "date": "Tarih",
+    "amount": "Tutar",
+    "category": "Kategori",
+    "paymentMethod": "Ödeme aracı",
+    "person": "Kişi",
+    "household": "Hane",
+    "kind": "Tür",
+    "note": "Not",
+    "recipient": "Kime",
+    "giver": "Veren",
+    "status": "Durum",
+    "name": "Ad",
+    "add": "Ekle",
+    "noRecords": "Kayıt yok",
+    "recordCount": "{count} kayıt",
+    "periodTotal": "Dönem toplamı",
+    "byPaymentMethod": "Ödeme aracına göre",
+    "amountPositive": "Tutar 0'dan büyük olmalıdır",
+    "recipientRequired": "Kime alanı zorunludur",
+    "period": {
+      "calendarMonth": "Takvim ayı",
+      "statementPeriod": "Kart dönemi",
+      "creditCard": "Kredi kartı"
+    }
+  },
+  "expenses": {
+    "title": "Harcamalar",
+    "subtitle": "Dönemdeki harcamalarınızı kaydedin ve izleyin.",
+    "itemName": "harcama",
+    "periodTotalExcludingMealCard": "Dönem toplamı (yemek kartı hariç)",
+    "mealCard": "Yemek kartı",
+    "transactionCount": "İşlem sayısı",
+    "byCategory": "Kategoriye göre",
+    "searchPlaceholder": "Açıklamada ara...",
+    "add": "Yeni Harcama Ekle",
+    "loading": "Harcamalar yükleniyor...",
+    "empty": "Harcama bulunamadı",
+    "editTitle": "Harcamayı Düzenle",
+    "editSubtitle": "Harcama bilgilerini güncelleyin",
+    "createSubtitle": "Yeni harcama bilgilerini girin",
+    "deleteTitle": "Harcamayı Sil",
+    "deleteMessage": "{date} tarihli {amount} tutarındaki harcamayı silmek istediğinizden emin misiniz?",
+    "form": {
+      "descriptionPlaceholder": "Örn. Haftalık market alışverişi"
+    }
+  },
+  "donations": {
+    "title": "Bağışlar",
+    "subtitle": "Dönemdeki bağışlarınızı kaydedin ve izleyin.",
+    "itemName": "bağış",
+    "recordCountLabel": "Kayıt sayısı",
+    "fundDistributed": "Emanetten dağıtılan",
+    "byKind": "Türe göre",
+    "byGiver": "Verene göre",
+    "searchPlaceholder": "Kime veya notta ara",
+    "add": "Yeni Bağış Ekle",
+    "loading": "Bağışlar yükleniyor...",
+    "empty": "Bağış bulunamadı",
+    "fundChip": "Emanet: {name}",
+    "editTitle": "Bağışı Düzenle",
+    "editSubtitle": "Bağış bilgilerini güncelleyin",
+    "createSubtitle": "Yeni bağış bilgilerini girin",
+    "deleteTitle": "Bağışı Sil",
+    "deleteMessage": "{date} tarihli {amount} tutarındaki bağışı silmek istediğinizden emin misiniz?",
+    "form": {
+      "fromFund": "Emanetten",
+      "fundOption": "{from} · {kind} · elde {amount}"
+    }
+  },
+  "donationTargets": {
+    "title": "Bağış hedefleri",
+    "addTarget": "Hedef ekle",
+    "emptyYear": "{year} için hedef ya da bağış yok.",
+    "target": "Hedef",
+    "given": "Verilen",
+    "remaining": "Kalan",
+    "remainingAfterPlan": "Plana göre kalan",
+    "planned": "Planlanan",
+    "expectedYearEnd": "Beklenen yıl sonu",
+    "overpaid": "Fazla ödendi {amount}",
+    "noTargetForKind": "Bu tür için hedef yok.",
+    "voluntaryTitle": "Hedefsiz bağışlar (gönüllü)",
+    "noVoluntary": "Hedefsiz bağış yok",
+    "editTitle": "Hedefi Düzenle",
+    "createTitle": "Hedef Ekle",
+    "editSubtitle": "Hedef bilgilerini güncelleyin",
+    "createSubtitle": "Kişi, yıl ve tür için hedef tutar",
+    "deleteTitle": "Hedefi Sil",
+    "deleteMessage": "{owner} için {kind} hedefini silmek istediğinizden emin misiniz?",
+    "created": "Hedef eklendi",
+    "updated": "Hedef güncellendi",
+    "deleted": "Hedef silindi",
+    "form": {
+      "year": "Yıl",
+      "yearRange": "Yıl 2000 ile 2100 arasında olmalıdır"
+    }
+  },
+  "donationFunds": {
+    "title": "Emanetler",
+    "subtitle": "Size emanet edilen bağış paralarını ve dağıtımlarını izleyin.",
+    "itemName": "emanet",
+    "remainingToDistribute": "Dağıtılacak kalan",
+    "from": "Kimden",
+    "distributed": "Dağıtılan",
+    "inUse": "Kullanımda",
+    "remaining": "Kalan",
+    "onHand": "Elde",
+    "searchPlaceholder": "Kimden ya da notta ara",
+    "add": "Yeni Emanet Ekle",
+    "loading": "Emanetler yükleniyor...",
+    "empty": "Emanet bulunamadı",
+    "closed": "Bitti",
+    "open": "Açık",
+    "distributionsButton": "Dağıtımlar ({count})",
+    "movementsButton": "Hareketler ({count})",
+    "editTitle": "Emaneti Düzenle",
+    "createTitle": "Yeni Emanet Ekle",
+    "editSubtitle": "Emanet bilgilerini güncelleyin",
+    "createSubtitle": "Dağıtılsın diye verilen para",
+    "deleteTitle": "Emaneti Sil",
+    "deleteMessage": "{from} emanetini ({amount}) silmek istediğinizden emin misiniz?",
+    "statusOptions": {
+      "open": "Açık",
+      "closed": "Biten"
+    },
+    "form": {
+      "kindLocked": "Dağıtımı olan emanetin türü değiştirilemez"
+    },
+    "distributions": {
+      "title": "Dağıtımlar",
+      "summary": "Kalan {remaining} · Elde {onHand}",
+      "add": "Dağıtım ekle",
+      "none": "Dağıtım yok",
+      "drawerTitle": "Dağıtım Ekle",
+      "drawerSubtitle": "Emanetten bağış",
+      "added": "Dağıtım eklendi"
+    },
+    "movements": {
+      "title": "Hareketler",
+      "summary": "Kullanımda {inUse} · Elde {onHand}",
+      "none": "Hareket yok",
+      "editHeading": "Hareketi düzenle",
+      "addHeading": "Hareket ekle",
+      "deleteTitle": "Hareketi Sil",
+      "deleteMessage": "{date} tarihli {amount} tutarındaki hareketi silmek istediğinizden emin misiniz?",
+      "added": "Hareket eklendi",
+      "updated": "Hareket güncellendi",
+      "deleted": "Hareket silindi",
+      "types": {
+        "use": "Kullanım",
+        "return": "Yerine koyma"
+      }
+    }
+  },
+  "recurringPayments": {
+    "title": "Sabit ödemeler",
+    "subtitle": "Düzenli ödeme planlarını ve dönemin vadelerini yönetin.",
+    "tabs": {
+      "period": "Dönem",
+      "plans": "Planlar"
+    },
+    "occurrences": {
+      "paid": "Ödenen",
+      "pending": "Bekleyen",
+      "total": "Toplam",
+      "unknownAmount": "{count} kalemin tutarı belli değil",
+      "paymentMethodSummary": "Ödenen {paid} · Bekleyen {pending}",
+      "title": "Vadeler",
+      "searchPlaceholder": "Vadelerde ara...",
+      "loading": "Vadeler yükleniyor...",
+      "empty": "Bu dönemde vade yok",
+      "dueDate": "Vade",
+      "estimated": "tahmini",
+      "paidOn": "Ödendi · {date}",
+      "waiting": "Bekliyor",
+      "pay": "Öde",
+      "undo": "Geri al",
+      "undoTitle": "Ödemeyi geri al",
+      "undoMessageDonation": "Oluşturulan bağış kaydı silinecek.",
+      "undoMessageExpense": "Oluşturulan harcama kaydı silinecek.",
+      "paymentSaved": "Ödeme kaydedildi",
+      "paymentUndone": "Ödeme geri alındı"
+    },
+    "plans": {
+      "title": "Planlar",
+      "itemName": "plan",
+      "searchPlaceholder": "Ad veya kimde ara...",
+      "add": "Yeni Plan Ekle",
+      "loading": "Planlar yükleniyor...",
+      "empty": "Plan bulunamadı",
+      "categoryOrRecipient": "Kategori / Kime",
+      "editTitle": "Planı Düzenle",
+      "createTitle": "Yeni Plan Ekle",
+      "editSubtitle": "Plan bilgilerini güncelleyin",
+      "createSubtitle": "Yeni sabit ödeme planı bilgilerini girin",
+      "deleteTitle": "Planı Sil",
+      "deleteMessage": "{name} planını silmek istediğinizden emin misiniz?"
+    },
+    "form": {
+      "namePlaceholder": "Örn. Kira",
+      "kindLocked": "Ödemesi olan planda değiştirilemez",
+      "startMonth": "Başlangıç ayı",
+      "dueDay": "Vade günü",
+      "donationKind": "Bağış türü",
+      "totalAmount": "Toplam tutar",
+      "installmentCount": "Taksit sayısı",
+      "firstDueDate": "İlk taksit tarihi",
+      "expectedAmount": "Beklenen tutar",
+      "nameRequired": "Ad alanı zorunludur",
+      "dueDayRange": "Vade günü 1 ile 31 arasında olmalıdır",
+      "installmentCountRange": "Taksit sayısı 2 ile 120 arasında olmalıdır"
+    }
+  },
+  "categories": {
+    "title": "Kategoriler",
+    "subtitle": "Harcama ve bağış kategorilerini yönetin.",
+    "searchPlaceholder": "Kategori ara...",
+    "add": "Yeni Kategori Ekle",
+    "loading": "Kategoriler yükleniyor...",
+    "empty": "Kategori bulunamadı",
+    "editTitle": "Kategoriyi Düzenle",
+    "editSubtitle": "Kategori bilgilerini güncelleyin",
+    "createSubtitle": "Yeni kategori bilgilerini girin",
+    "deleteTitle": "Kategoriyi Sil",
+    "deleteConfirm": "'{name}' kategorisini silmek istediğinizden emin misiniz?",
+    "columns": {
+      "name": "Kategori Adı"
+    },
+    "itemName": "kategori",
+    "namePlaceholder": "Örn. Market"
+  },
+  "debts": {
+    "title": "Borçlar",
+    "subtitle": "Alınan borçları ve geri ödemelerini izleyin; borç hareketleri dönem harcamasına girmez.",
+    "searchPlaceholder": "Notta ara",
+    "add": "Yeni Borç Ekle",
+    "loading": "Borçlar yükleniyor...",
+    "empty": "Borç bulunamadı",
+    "household": "Hane",
+    "editTitle": "Borcu Düzenle",
+    "editSubtitle": "Borç bilgilerini güncelleyin",
+    "createSubtitle": "Yeni borç bilgilerini girin",
+    "deleteTitle": "Borcu Sil",
+    "deleteConfirm": "{creditor} alacaklı {amount} tutarındaki borcu silmek istediğinizden emin misiniz?",
+    "itemName": "borç",
+    "summary": {
+      "openTotal": "Açık borç (TL karşılığı)",
+      "missingRate": "{currencies} kuru girilmemiş",
+      "openCount": "{count} açık borç",
+      "tryDebt": "TL borç",
+      "goldDebt": "Altın borç",
+      "foreignDebt": "{currency} borç",
+      "rates": "Kurlar",
+      "noRates": "Kur yok"
+    },
+    "byCreditor": {
+      "title": "Alacaklıya göre",
+      "open": "Açık",
+      "totalTry": "Toplam TL",
+      "empty": "Açık borç yok"
+    },
+    "columns": {
+      "date": "Tarih",
+      "creditor": "Alacaklı",
+      "debtor": "Borçlu",
+      "amount": "Tutar",
+      "paid": "Ödenen",
+      "remaining": "Kalan",
+      "status": "Durum",
+      "note": "Not"
+    },
+    "filters": {
+      "currency": "Para birimi",
+      "closed": "Kapanan",
+      "all": "Tümü"
+    },
+    "status": {
+      "open": "Açık",
+      "closed": "Kapandı"
+    },
+    "form": {
+      "currencyLocked": "Ödemesi olan borcun para birimi değiştirilemez",
+      "quantity": "Adet",
+      "amountPositive": "Tutar 0'dan büyük olmalıdır",
+      "goldWhole": "Çeyrek altın tam sayı olmalı."
+    },
+    "payments": {
+      "button": "Ödemeler",
+      "buttonAria": "Ödemeler ({count})",
+      "title": "Ödemeler · {creditor}",
+      "rate": "Kur",
+      "amountInTry": "TL karşılığı",
+      "amountInTryLine": "TL karşılığı: {amount}",
+      "empty": "Ödeme yok",
+      "editHeading": "Ödemeyi düzenle",
+      "add": "Ödeme ekle",
+      "deleteTitle": "Ödemeyi Sil",
+      "deleteConfirm": "{date} tarihli {amount} tutarındaki ödemeyi silmek istediğinizden emin misiniz?",
+      "updated": "Ödeme güncellendi",
+      "created": "Ödeme eklendi",
+      "deleted": "Ödeme silindi",
+      "amountUsd": "Tutar ($)",
+      "amountEur": "Tutar (€)",
+      "amountTry": "Tutar (₺)",
+      "positive": "0'dan büyük olmalıdır"
+    }
+  },
+  "exchangeRates": {
+    "title": "Kurlar (elle)",
+    "currency": "Birim",
+    "goldPrice": "Çeyrek fiyatı (₺)",
+    "rate": "Kur (₺)",
+    "date": "Tarih",
+    "recent": "Son kayıtlar",
+    "empty": "Kur girilmemiş",
+    "deleteTitle": "Kuru Sil",
+    "deleteConfirm": "{date} tarihli kuru silmek istediğinizden emin misiniz?",
+    "positive": "Kur 0'dan büyük olmalıdır",
+    "saved": "Kur kaydedildi",
+    "deleted": "Kur silindi"
+  },
+  "ledger": {
+    "title": "Yıllık tablo",
+    "addItem": "Kalem ekle",
+    "editTitle": "Kalemi Düzenle",
+    "createTitle": "Kalem Ekle",
+    "editSubtitle": "Kalem bilgilerini güncelleyin",
+    "createSubtitle": "Yeni gelir ya da gider kalemi",
+    "deleteTitle": "Kalemi Sil",
+    "deleteConfirm": "'{name}' kalemini silmek istediğinizden emin misiniz?",
+    "updated": "Kalem güncellendi",
+    "created": "Kalem eklendi",
+    "deleted": "Kalem silindi",
+    "household": "Hane",
+    "direction": {
+      "income": "Gelir",
+      "expense": "Gider"
+    },
+    "form": {
+      "name": "Ad",
+      "direction": "Yön",
+      "directionLocked": "Tutarı olan kalemin yönü değiştirilemez",
+      "person": "Kişi",
+      "nameRequired": "Ad alanı zorunludur"
+    },
+    "table": {
+      "item": "Kalem",
+      "total": "Toplam",
+      "average": "Ortalama",
+      "noRecords": "Kayıt yok",
+      "incomeTotal": "Gelir toplamı",
+      "expenseTotal": "Gider toplamı",
+      "net": "Net (gelir − gider)"
+    },
+    "months": {
+      "jan": "Oca",
+      "feb": "Şub",
+      "mar": "Mar",
+      "apr": "Nis",
+      "may": "May",
+      "jun": "Haz",
+      "jul": "Tem",
+      "aug": "Ağu",
+      "sep": "Eyl",
+      "oct": "Eki",
+      "nov": "Kas",
+      "dec": "Ara"
+    },
+    "sections": {
+      "income": "Gelirler",
+      "recurring": "Giderler · Sabit ödemeler",
+      "expenses": "Giderler · Harcamalar",
+      "manual": "Giderler · Elle"
+    },
+    "rows": {
+      "category": "Harcamalar · {name}",
+      "donations": "Bağışlar (plan dışı)"
+    }
+  },
+  "paymentMethods": {
+    "title": "Ödeme araçları",
+    "subtitle": "Kart, hesap ve nakit gibi ödeme araçlarını yönetin.",
+    "searchPlaceholder": "Ödeme aracı ara...",
+    "add": "Yeni Ödeme Aracı Ekle",
+    "loading": "Ödeme araçları yükleniyor...",
+    "empty": "Ödeme aracı bulunamadı",
+    "household": "Hane",
+    "editTitle": "Ödeme Aracını Düzenle",
+    "editSubtitle": "Ödeme aracı bilgilerini güncelleyin",
+    "createSubtitle": "Yeni ödeme aracı bilgilerini girin",
+    "deleteTitle": "Ödeme Aracını Sil",
+    "deleteConfirm": "'{name}' ödeme aracını silmek istediğinizden emin misiniz?",
+    "columns": {
+      "name": "Ad",
+      "type": "Tür",
+      "bank": "Banka",
+      "owner": "Sahibi",
+      "statementDay": "Kesim günü"
+    },
+    "itemName": "ödeme aracı",
+    "namePlaceholder": "Örn. Maaş kartı",
+    "bankPlaceholder": "Örn. Ziraat Bankası",
+    "statementDayRange": "1 ile 31 arasında olmalıdır"
+  },
+  "people": {
+    "title": "Kişiler",
+    "subtitle": "Hanedeki kişileri yönetin.",
+    "searchPlaceholder": "Kişi ara...",
+    "add": "Yeni Kişi Ekle",
+    "loading": "Kişiler yükleniyor...",
+    "empty": "Kişi bulunamadı",
+    "editTitle": "Kişiyi Düzenle",
+    "editSubtitle": "Kişi bilgilerini güncelleyin",
+    "createSubtitle": "Yeni kişi bilgilerini girin",
+    "deleteTitle": "Kişiyi Sil",
+    "deleteConfirm": "'{name}' kişisini silmek istediğinizden emin misiniz?",
+    "columns": {
+      "name": "Ad",
+      "relation": "Yakınlık"
+    },
+    "itemName": "kişi",
+    "namePlaceholder": "Örn. Ayşe",
+    "relationPlaceholder": "Örn. Eş, anne"
+  },
+  "vehicles": {
+    "title": "Araçlar",
+    "subtitle": "Araçlarınızı, bakım ve yükümlülük tarihlerini izleyin.",
+    "searchPlaceholder": "Ad ya da plakada ara",
+    "add": "Araç ekle",
+    "loading": "Araçlar yükleniyor...",
+    "empty": "Araç bulunamadı",
+    "household": "Hane",
+    "editTitle": "Aracı Düzenle",
+    "createTitle": "Araç Ekle",
+    "editSubtitle": "Araç bilgilerini güncelleyin",
+    "createSubtitle": "Yeni araç bilgilerini girin",
+    "deleteTitle": "Aracı Sil",
+    "deleteConfirm": "{name} ({plate}) aracını silmek istediğinizden emin misiniz?",
+    "itemName": "araç",
+    "columns": {
+      "name": "Ad",
+      "plate": "Plaka",
+      "owner": "Sahip"
+    },
+    "upcoming": {
+      "title": "Yaklaşan ve geciken",
+      "vehicle": "Araç",
+      "type": "Tür",
+      "validUntil": "Geçerlilik sonu",
+      "status": "Durum",
+      "lastAmount": "Son tutar",
+      "overdue": "Gecikti · {days} gün",
+      "today": "Bugün",
+      "daysLeft": "{days} gün kaldı",
+      "empty": "Yaklaşan tarih yok"
+    },
+    "form": {
+      "namePlaceholder": "Örn. Aile arabası",
+      "note": "Not",
+      "nameRequired": "Ad alanı zorunludur",
+      "plateRequired": "Plaka alanı zorunludur"
+    },
+    "obligations": {
+      "button": "İşlemler",
+      "title": "İşlemler · {name} ({plate})",
+      "type": "Tür",
+      "date": "Tarih",
+      "validUntil": "Geçerlilik sonu",
+      "amount": "Tutar",
+      "expense": "Harcama",
+      "note": "Not",
+      "empty": "İşlem yok",
+      "editHeading": "İşlemi düzenle",
+      "addHeading": "İşlem ekle",
+      "linkedExpenseNote": "Bağlı harcama var; tarih ve tutar değişikliği harcamaya da yansır.",
+      "createExpense": "Harcama olarak da kaydet",
+      "category": "Kategori",
+      "paymentMethod": "Ödeme aracı",
+      "add": "Ekle",
+      "deleteTitle": "İşlemi Sil",
+      "validUntilRule": "Geçerlilik sonu tarihten sonra olmalıdır",
+      "amountRequired": "Harcama için tutar zorunludur",
+      "amountPositive": "Tutar 0'dan büyük olmalıdır",
+      "deleteConfirm": "{type} ({date}) işlemini silmek istediğinizden emin misiniz?",
+      "deleteLinkedExpense": "Bağlı harcama da silinecek.",
+      "updated": "İşlem güncellendi",
+      "created": "İşlem eklendi",
+      "deleted": "İşlem silindi"
+    }
+  },
+  "ui": {
+    "select": {
+      "loading": "Yükleniyor…",
+      "noData": "Kayıt bulunamadı"
+    },
+    "richText": {
+      "bold": "Kalın (Ctrl+B)",
+      "italic": "İtalik (Ctrl+I)",
+      "underline": "Altı çizili (Ctrl+U)",
+      "heading1": "Başlık 1",
+      "heading2": "Başlık 2",
+      "bulletList": "Madde listesi",
+      "orderedList": "Sıralı liste",
+      "link": "Bağlantı",
+      "unlink": "Bağlantıyı kaldır",
+      "clearFormat": "Biçimi temizle",
+      "undo": "Geri al (Ctrl+Z)",
+      "redo": "Yinele (Ctrl+Y)",
+      "pasteHint": "Word'den kopyalayıp buraya yapıştırabilirsiniz — biçim korunur.",
+      "charCount": "{count} karakter",
+      "placeholder": "Metni buraya yazın veya Word'den yapıştırın…",
+      "linkPrompt": "Bağlantı adresi (https://...)"
+    },
+    "textBox": {
+      "minChars": "En az {n} karakter",
+      "maxChars": "En fazla {n} karakter",
+      "uppercase": "En az bir büyük harf",
+      "lowercase": "En az bir küçük harf",
+      "number": "En az bir rakam",
+      "special": "En az bir özel karakter",
+      "required": "Girilmesi zorunludur.",
+      "exactLength": "{label} {n} karakter olmalıdır.",
+      "maxLength": "{label} en fazla {n} karakter olabilir.",
+      "minLength": "{label} en az {n} karakter olmalıdır.",
+      "maxNumber": "{label} en fazla {n} olabilir.",
+      "minNumber": "{label} en az {n} olabilir.",
+      "email": "Geçerli bir e-posta giriniz.",
+      "hidePassword": "Şifreyi gizle",
+      "showPassword": "Şifreyi göster"
+    },
+    "textField": {
+      "clear": "Temizle"
+    }
+  },
+  "errorPage": {
+    "tryAgain": "Tekrar Dene",
+    "goHome": "Ana Sayfaya Git",
+    "needAccess": "Erişim mi gerekiyor?",
+    "needAccessText": "Bu kaynağa erişiminiz olması gerektiğini düşünüyorsanız lütfen yöneticinizle iletişime geçin.",
+    "contactSupport": "Destekle İletişime Geç",
+    "title403": "Erişim Reddedildi",
+    "title404": "Sayfa Bulunamadı",
+    "title500": "Sunucu Hatası",
+    "titleDefault": "Bir şeyler ters gitti",
+    "message403": "Bu kaynağa erişim izniniz yok. Lütfen bilgilerinizi kontrol edin veya bir yöneticiyle iletişime geçin.",
+    "message404": "Aradığınız sayfa yok. Taşınmış, silinmiş olabilir ya da adresi yanlış girmiş olabilirsiniz.",
+    "message500": "Sunucuda bir hata oluştu. Ekibimiz bilgilendirildi ve sorunu gidermek için çalışıyor.",
+    "messageDefault": "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+  },
+  "layout": {
+    "collapse": "Daralt",
+    "expand": "Genişlet",
+    "searchPlaceholder": "Ara...",
+    "householdSettings": "Hane ayarları",
+    "privacyAndTerms": "Gizlilik ve koşullar",
+    "menu": "Menü",
+    "switchToLight": "Light moda geç",
+    "switchToDark": "Dark moda geç",
+    "defaultUserName": "Kullanıcı",
+    "noHousehold": "Hane yok"
+  },
+  "household": {
+    "roles": {
+      "admin": "Yönetici",
+      "member": "Üye"
+    },
+    "invitationStatus": {
+      "pending": "Bekliyor",
+      "accepted": "Kabul edildi",
+      "revoked": "İptal edildi",
+      "expired": "Süresi doldu"
+    },
+    "create": {
+      "title": "Yeni hane oluştur",
+      "subtitle": "Yöneticisi siz olursunuz.",
+      "submit": "Oluştur",
+      "failed": "Hane oluşturulamadı"
+    },
+    "nameLabel": "Hane adı",
+    "namePlaceholder": "Örn. Yılmaz ailesi",
+    "nameRequired": "Hane adı zorunludur",
+    "nameMax": "Hane adı en fazla 100 karakter olabilir",
+    "switcher": {
+      "select": "Hane seç",
+      "failed": "Haneye geçilemedi"
+    },
+    "fallbackName": "Hane",
+    "memberCount": "{count} üye",
+    "export": "Hane verisini indir (Excel)",
+    "exportFailed": "Hane verisi indirilemedi",
+    "email": "E-posta",
+    "role": "Rol",
+    "linkedPerson": "Bağlı kişi",
+    "rules": {
+      "required": "{label} zorunludur",
+      "max": "{label} en fazla {max} karakter olabilir",
+      "email": "Geçerli bir e-posta girin"
+    },
+    "members": {
+      "title": "Üyeler",
+      "name": "Ad",
+      "joinedAt": "Katılma tarihi",
+      "you": "(siz)",
+      "roleAndPerson": "Rol ve kişi",
+      "remove": "Çıkar",
+      "empty": "Üye yok",
+      "editSubtitle": "Hanedeki rolü ve bağlı kişi",
+      "removeTitle": "Üyeyi çıkar",
+      "removeConfirm": "{name} haneden çıkarılsın mı?",
+      "updateFailed": "Üye güncellenemedi"
+    },
+    "leave": {
+      "title": "Haneden ayrıl",
+      "confirm": "{name} hanesinden ayrılmak istediğinizden emin misiniz?",
+      "thisFallback": "Bu",
+      "submit": "Ayrıl"
+    },
+    "modules": {
+      "title": "Modüller",
+      "donationExtras": "Bağış hedefleri ve emanetler",
+      "donationExtrasHint": "Yıllık bağış ve zekat hedefleri, başkasının verdiği emanetlerin takibi.",
+      "donationExtrasOn": "Bağış hedefleri ve emanetler açıldı",
+      "donationExtrasOff": "Bağış hedefleri ve emanetler kapatıldı"
+    },
+    "invitations": {
+      "title": "Davetler",
+      "invite": "Davet et",
+      "status": "Durum",
+      "expiresAt": "Son geçerlilik",
+      "resend": "Yeniden gönder",
+      "empty": "Davet yok",
+      "validity": "Davet bağlantısı 7 gün geçerlidir.",
+      "personOptional": "Bağlanacak kişi (isteğe bağlı)",
+      "revokeTitle": "Daveti iptal et",
+      "revokeConfirm": "{email} adresine gönderilen davet iptal edilsin mi?",
+      "revoke": "İptal et",
+      "emailNotSent": "Davet oluşturuldu ama e-posta gönderilemedi; yeniden göndermeyi deneyin",
+      "sent": "Davet gönderildi",
+      "resent": "Davet yeniden gönderildi",
+      "createFailed": "Davet oluşturulamadı"
+    },
+    "delete": {
+      "title": "Haneyi sil",
+      "hint": "Hanenin bütün kayıtları (harcamalar, borçlar, planlar, kişiler…), üyelikleri ve davetleri kalıcı olarak silinir. Bu işlem geri alınamaz.",
+      "confirmName": "Onaylamak için hane adını yazın",
+      "submit": "Haneyi kalıcı olarak sil",
+      "failed": "Hane silinemedi"
+    },
+    "rename": {
+      "title": "Hane adını düzenle",
+      "subtitle": "Hane adı tüm üyelere görünür.",
+      "success": "Hane adı güncellendi"
+    }
+  },
+  "legal": {
+    "consent": {
+      "title": "Koşullar güncellendi",
+      "intro": "Devam etmek için güncellenen belgeleri okuyup onaylayın.",
+      "acceptTerms": "{link} okudum ve kabul ediyorum.",
+      "termsLink": "Kullanım koşullarını",
+      "acknowledgePrivacy": "Kişisel verilerimin işlenmesine ilişkin {link} okudum.",
+      "privacyLink": "Aydınlatma Metni'ni",
+      "logout": "Çıkış yap",
+      "continue": "Devam et",
+      "saveFailed": "Onay kaydedilemedi"
+    },
+    "document": {
+      "meta": "Sürüm {version} · Yürürlük: {date}",
+      "privacyLink": "Aydınlatma metni",
+      "termsLink": "Kullanım koşulları"
+    },
+    "terms": {
+      "title": "Kullanım Koşulları",
+      "pageTitle": "Kullanım koşulları - Abacasa"
+    },
+    "privacy": {
+      "title": "Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metni",
+      "pageTitle": "Aydınlatma metni - Abacasa"
+    }
+  },
+  "account": {
+    "delete": {
+      "title": "Hesabı sil",
+      "hint": "Hesabınız silindiğinde kişisel bilgileriniz kalıcı olarak silinir ve bu işlem geri alınamaz. Girdiğiniz kayıtlar ait oldukları hanelerde kalır.",
+      "start": "Hesabımı silmek istiyorum",
+      "lastSuperAdmin": "Sistemdeki son süper yöneticisiniz; hesabınız silinemez.",
+      "blockedHouseholds": "Şu hanelerde son yöneticisiniz; önce başka bir üyeyi yönetici yapın: {names}",
+      "householdsToDelete": "Şu haneler de bütün verileriyle silinecek: {names}",
+      "confirmHouseholds": "Bu hanelerin de silinmesini onaylıyorum",
+      "password": "Parola",
+      "submit": "Hesabımı kalıcı olarak sil",
+      "failed": "Hesap silinemedi"
+    }
+  },
+  "profile": {
+    "title": "Profilim",
+    "pageTitle": "Profilim - Abacasa",
+    "stats": {
+      "memberDays": "Gün Üye"
+    },
+    "lastLogin": "Son Giriş",
+    "account": {
+      "title": "Hesap Bilgileri",
+      "verified": "Doğrulandı",
+      "notVerified": "Doğrulanmadı",
+      "changeEmail": "E-postayı değiştir",
+      "phone": "Telefon",
+      "notSpecified": "Belirtilmemiş",
+      "createdDate": "Kayıt Tarihi"
+    },
+    "password": {
+      "title": "Şifre Değiştir",
+      "knowCurrent": "Mevcut şifremi biliyorum",
+      "forgot": "Şifremi unuttum",
+      "codeInfo": "{email} adresine 6 haneli bir kod gönderilir. Kod 10 dakika geçerlidir.",
+      "codeLabel": "Doğrulama Kodu",
+      "codePlaceholder": "6 haneli kod",
+      "sendCode": "Kod Gönder",
+      "confirmNew": "Yeni Şifre Tekrar"
+    },
+    "sessions": {
+      "title": "Aktif Oturumlarım",
+      "logoutAll": "Tümünden Çık",
+      "empty": "Aktif oturum bulunamadı.",
+      "thisDevice": "Bu cihaz",
+      "remaining": "{time} kaldı",
+      "history": "Geçmiş oturumlar ({count})",
+      "ended": "Sona erdi",
+      "logoutAllTitle": "Tüm cihazlardan çıkış",
+      "logoutAllConfirm": "Tüm cihazlardaki oturumlarınız kapatılacak, bu cihaz dahil. Devam etmek istiyor musunuz?",
+      "logoutAllSubmit": "Evet, çıkış yap"
+    },
+    "data": {
+      "groupTitle": "Hesap ve veriler",
+      "title": "Verilerim",
+      "hint": "Hesap bilgileriniz, üyelikleriniz, onaylarınız, oturumlarınız ve giriş denemeleriniz Excel dosyası olarak.",
+      "export": "Verilerimi indir (Excel)",
+      "exportFailed": "Veriler indirilemedi"
+    },
+    "edit": {
+      "title": "Bilgilerimi Düzenle",
+      "subtitle": "Ad, soyad ve telefon bilgileriniz",
+      "firstNamePlaceholder": "Adınız",
+      "lastNamePlaceholder": "Soyadınız",
+      "success": "Bilgileriniz güncellendi.",
+      "failed": "Bilgiler güncellenemedi."
+    },
+    "email": {
+      "title": "E-posta Adresini Değiştir",
+      "subtitle": "Yeni adres, onay bağlantısıyla değişir",
+      "sent": "{email} adresine bir onay bağlantısı gönderdik. Bağlantıya tıklayana kadar mevcut adresinizle giriş yapmaya devam edersiniz.",
+      "info": "Yeni adrese bir onay bağlantısı gönderilir. E-postanız bu bağlantı onaylandığında değişir ve tüm oturumlarınız kapatılır.",
+      "newEmail": "Yeni e-posta",
+      "currentPassword": "Mevcut şifre",
+      "submit": "Onay Bağlantısı Gönder"
+    },
+    "status": {
+      "banned": "Yasaklı",
+      "pendingVerification": "Doğrulama bekliyor",
+      "unknown": "Bilinmiyor"
+    },
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "daysAgo": "{n} gün önce",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Güvenlik"
+    },
+    "duration": {
+      "days": "{n} gün",
+      "hours": "{n} saat",
+      "minutes": "{n} dakika",
+      "lessThanMinute": "< 1 dakika"
+    }
+  },
+  "currencies": {
+    "try": "TL",
+    "usd": "Dolar",
+    "eur": "Euro",
+    "quarterGold": "Çeyrek altın",
+    "quarterCount": "{n} çeyrek"
   }
 }

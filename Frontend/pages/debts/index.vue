@@ -2,14 +2,14 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Borçlar' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('debts.title') }]"
     />
   </div>
 
   <PageHero
     icon="mdi-hand-coin-outline"
-    title="Borçlar"
-    subtitle="Alınan borçları ve geri ödemelerini izleyin; borç hareketleri dönem harcamasına girmez."
+    :title="t('debts.title')"
+    :subtitle="t('debts.subtitle')"
   />
 
   <!-- Özet -->
@@ -17,20 +17,20 @@
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
       <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Açık borç (TL karşılığı)</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.openTotal') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.openTotalInTry) }}</div>
           <!-- Açığı olan bir birimin kuru yoksa TL karşılığı hesaplanamaz -->
           <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-            {{ missingRateLabels.join(", ") }} kuru girilmemiş
+            {{ t('debts.summary.missingRate', { currencies: missingRateLabels.join(", ") }) }}
           </div>
-          <div v-else class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ summary?.openCount ?? 0 }} açık borç</div>
+          <div v-else class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.openCount', { count: summary?.openCount ?? 0 }) }}</div>
         </div>
       </UiCard>
     </div>
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
       <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">TL borç</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.tryDebt') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.openTry ?? 0) }}</div>
         </div>
       </UiCard>
@@ -49,7 +49,7 @@
       <UiCard class="h-full !bg-secondary/[0.12] !text-secondary">
         <div class="ui-card-text">
           <div class="flex items-center">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Kurlar</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.rates') }}</div>
             <div class="flex-1" />
             <UiBtn
               v-if="canEditRate"
@@ -57,7 +57,7 @@
               variant="tonal"
               @click="rateDialog = true"
             >
-              Güncelle
+              {{ t('common.update') }}
             </UiBtn>
           </div>
           <div v-for="r in summary?.rates ?? []" :key="r.currency" class="flex items-center gap-2 mt-1 text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
@@ -66,7 +66,7 @@
             <span class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">{{ formatDisplayDate(r.date) }}</span>
             <UiChip size="x-small" :color="r.source === 'TCMB' ? 'primary' : undefined" variant="tonal">{{ r.source }}</UiChip>
           </div>
-          <div v-if="!summary?.rates?.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal mt-1">Kur yok</div>
+          <div v-if="!summary?.rates?.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal mt-1">{{ t('debts.summary.noRates') }}</div>
         </div>
       </UiCard>
     </div>
@@ -76,13 +76,13 @@
   <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Alacaklıya göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('debts.byCreditor.title') }}</div>
         <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
-              <th>Alacaklı</th>
-              <th class="!text-right">Açık</th>
-              <th class="!text-right">Toplam TL</th>
+              <th>{{ t('debts.columns.creditor') }}</th>
+              <th class="!text-right">{{ t('debts.byCreditor.open') }}</th>
+              <th class="!text-right">{{ t('debts.byCreditor.totalTry') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -93,7 +93,7 @@
               <td class="!text-right font-medium">{{ formatMoney(row.totalInTry) }}</td>
             </tr>
             <tr v-if="!summary?.byCreditor?.length">
-              <td colspan="3" class="text-black/60 dark:text-white/70">Açık borç yok</td>
+              <td colspan="3" class="text-black/60 dark:text-white/70">{{ t('debts.byCreditor.empty') }}</td>
             </tr>
           </tbody>
         </table></div>
@@ -109,7 +109,7 @@
         :items="statusOptions"
         item-title="title"
         item-value="value"
-        label="Durum"
+        :label="t('debts.columns.status')"
         density="compact"
         hide-details
       />
@@ -120,7 +120,7 @@
         :items="people"
         item-title="name"
         item-value="id"
-        label="Alacaklı"
+        :label="t('debts.columns.creditor')"
         density="compact"
         hide-details
         clearable
@@ -132,7 +132,7 @@
         :items="currencyOptions"
         item-title="title"
         item-value="value"
-        label="Para birimi"
+        :label="t('debts.filters.currency')"
         density="compact"
         hide-details
         clearable
@@ -145,13 +145,13 @@
     :hide-page-header="true"
     :items="items"
     :columns="tableColumns"
-    title="Borçlar"
+    :title="t('debts.title')"
     toolbar-icon="mdi-hand-coin"
-    search-placeholder="Notta ara"
-    add-button-text="Yeni Borç Ekle"
+    :search-placeholder="t('debts.searchPlaceholder')"
+    :add-button-text="t('debts.add')"
     :loading="isLoading"
-    loading-text="Borçlar yükleniyor..."
-    empty-title="Borç bulunamadı"
+    :loading-text="t('debts.loading')"
+    :empty-title="t('debts.empty')"
     :show-add-button="true"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -176,7 +176,7 @@
     </template>
 
     <template #cell-debtorName="{ value }">
-      {{ value || "Hane" }}
+      {{ value || t("debts.household") }}
     </template>
 
     <template #cell-amount="{ item }">
@@ -198,8 +198,8 @@
     </template>
 
     <template #cell-status="{ item }">
-      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">Kapandı</UiChip>
-      <UiChip v-else size="small" color="warning" variant="tonal">Açık</UiChip>
+      <UiChip v-if="item.isClosed" size="small" color="success" variant="tonal">{{ t('debts.status.closed') }}</UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">{{ t('debts.status.open') }}</UiChip>
     </template>
 
     <template #actions="{ item }">
@@ -210,8 +210,8 @@
           variant="tonal"
           color="primary"
           prepend-icon="mdi-cash-multiple"
-          title="Ödemeler"
-          :aria-label="`Ödemeler (${item.paymentCount})`"
+          :title="t('debts.payments.button')"
+          :aria-label="t('debts.payments.buttonAria', { count: item.paymentCount })"
           @click="openPayments(item)"
         >
           {{ item.paymentCount }}
@@ -221,7 +221,7 @@
           icon="mdi-pencil"
           size="small"
           variant="text"
-          title="Düzenle"
+          :title="t('common.edit')"
           @click="openEditDialog(item)"
         />
         <UiBtn
@@ -230,7 +230,7 @@
           size="small"
           variant="text"
           color="error"
-          title="Sil"
+          :title="t('common.delete')"
           @click="openDeleteDialog(item)"
         />
       </div>
@@ -240,8 +240,8 @@
   <!-- Create/Edit Drawer -->
   <ResizableDrawer
     v-model="dialogs.create"
-    :title="isEditMode ? 'Borcu Düzenle' : 'Yeni Borç Ekle'"
-    :subtitle="isEditMode ? 'Borç bilgilerini güncelleyin' : 'Yeni borç bilgilerini girin'"
+    :title="isEditMode ? t('debts.editTitle') : t('debts.add')"
+    :subtitle="isEditMode ? t('debts.editSubtitle') : t('debts.createSubtitle')"
     icon="mdi-hand-coin"
     :default-width="600"
     :min-width="400"
@@ -269,10 +269,10 @@
   <!-- Confirm Delete Dialog -->
   <ConfirmDialog
     v-model="dialogs.delete"
-    title="Borcu Sil"
-    :message="`${itemToDelete?.creditorName ?? ''} alacaklı ${itemToDelete ? money(itemToDelete.amount, itemToDelete) : ''} tutarındaki borcu silmek istediğinizden emin misiniz?`"
+    :title="t('debts.deleteTitle')"
+    :message="t('debts.deleteConfirm', { creditor: itemToDelete?.creditorName ?? '', amount: itemToDelete ? money(itemToDelete.amount, itemToDelete) : '' })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isDeleting"
     @confirm="confirmDelete"
     @cancel="closeDeleteDialog"
@@ -299,22 +299,24 @@ definePageMeta({
   permissions: ["Debts.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Borçlar",
+  title: computed(() => t("debts.title")),
 });
 //#endregion
 
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Tarih", key: "date", sortable: false, width: "110px" },
-  { label: "Alacaklı", key: "creditorName", sortable: false, width: "140px" },
-  { label: "Borçlu", key: "debtorName", sortable: false, width: "120px" },
-  { label: "Tutar", key: "amount", sortable: false, width: "140px" },
-  { label: "Ödenen", key: "paidAmount", sortable: false, width: "140px" },
-  { label: "Kalan", key: "remaining", sortable: false, width: "140px" },
-  { label: "Durum", key: "status", sortable: false, width: "100px" },
-  { label: "Not", key: "note", sortable: false, width: "180px", cellClass: "whitespace-normal" },
-];
+const tableColumns = computed(() => [
+  { label: t("debts.columns.date"), key: "date", sortable: false, width: "110px" },
+  { label: t("debts.columns.creditor"), key: "creditorName", sortable: false, width: "140px" },
+  { label: t("debts.columns.debtor"), key: "debtorName", sortable: false, width: "120px" },
+  { label: t("debts.columns.amount"), key: "amount", sortable: false, width: "140px" },
+  { label: t("debts.columns.paid"), key: "paidAmount", sortable: false, width: "140px" },
+  { label: t("debts.columns.remaining"), key: "remaining", sortable: false, width: "140px" },
+  { label: t("debts.columns.status"), key: "status", sortable: false, width: "100px" },
+  { label: t("debts.columns.note"), key: "note", sortable: false, width: "180px", cellClass: "whitespace-normal" },
+]);
 //#endregion
 
 //#region Composables
@@ -334,7 +336,7 @@ const missingRateLabels = computed(() =>
 );
 
 const foreignCardTitle = (currency: Currency) =>
-  currency === Currency.QuarterGold ? "Altın borç" : `${currencyLabel(currency)} borç`;
+  currency === Currency.QuarterGold ? t("debts.summary.goldDebt") : t("debts.summary.foreignDebt", { currency: currencyLabel(currency) });
 
 // Tutar borcun kendi biriminde gösterilir (çeyrek altın adet)
 const money = (amount: number, debt: Debt) => formatAmount(amount, debt.currency);
@@ -349,11 +351,11 @@ const loadPeople = async () => {
 //#endregion
 
 //#region Filtreler, liste ve özet
-const statusOptions = [
-  { value: "open", title: "Açık" },
-  { value: "closed", title: "Kapanan" },
-  { value: "all", title: "Tümü" },
-];
+const statusOptions = computed(() => [
+  { value: "open", title: t("debts.status.open") },
+  { value: "closed", title: t("debts.filters.closed") },
+  { value: "all", title: t("debts.filters.all") },
+]);
 const filterStatus = ref<"open" | "closed" | "all">("open");
 const filterCreditor = ref<number | null>(null);
 const filterCurrency = ref<Currency | null>(null);
@@ -412,7 +414,7 @@ const {
   createItem: createDebt,
   updateItem: updateDebt,
   deleteItem: deleteDebt,
-  itemName: "borç",
+  itemName: () => t("debts.itemName"),
   serverSidePagination: true,
   initialPageSize: 10,
 });

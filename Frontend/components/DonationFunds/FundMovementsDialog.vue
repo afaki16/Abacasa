@@ -4,7 +4,7 @@
       <div class="ui-card-title">
         <div class="flex items-center">
           <UiIcon icon="mdi-swap-horizontal" class="mr-2" />
-          Hareketler · {{ fund.fromPersonName }}
+          {{ t('donationFunds.movements.title') }} · {{ fund.fromPersonName }}
           <div class="flex-1" />
           <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
         </div>
@@ -12,16 +12,16 @@
 
       <div class="ui-card-text">
         <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal mb-2">
-          Kullanımda {{ formatMoney(fund.inUse) }} · Elde {{ formatMoney(fund.onHand) }}
+          {{ t('donationFunds.movements.summary', { inUse: formatMoney(fund.inUse), onHand: formatMoney(fund.onHand) }) }}
         </div>
 
         <div class="overflow-x-auto mb-4"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
-              <th>Tarih</th>
-              <th>Tür</th>
-              <th class="!text-right">Tutar</th>
-              <th>Not</th>
+              <th>{{ t('budget.date') }}</th>
+              <th>{{ t('budget.kind') }}</th>
+              <th class="!text-right">{{ t('budget.amount') }}</th>
+              <th>{{ t('budget.note') }}</th>
               <th v-if="canUpdate" />
             </tr>
           </thead>
@@ -37,14 +37,14 @@
               </td>
             </tr>
             <tr v-if="!movements.length">
-              <td :colspan="canUpdate ? 5 : 4" class="text-black/60 dark:text-white/70">Hareket yok</td>
+              <td :colspan="canUpdate ? 5 : 4" class="text-black/60 dark:text-white/70">{{ t('donationFunds.movements.none') }}</td>
             </tr>
           </tbody>
         </table></div>
 
         <!-- Ekleme ya da seçili hareketi düzenleme; tarih varsayılanı bugün -->
         <template v-if="canUpdate">
-          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? 'Hareketi düzenle' : 'Hareket ekle' }}</div>
+          <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mb-2">{{ editing ? t('donationFunds.movements.editHeading') : t('donationFunds.movements.addHeading') }}</div>
           <UiForm ref="formRef" @submit="save">
             <div class="ui-row ui-row--dense">
               <div class="ui-col ui-col-12 ui-col-sm-3">
@@ -53,7 +53,7 @@
                   :items="movementTypeOptions"
                   item-title="title"
                   item-value="value"
-                  label="Tür"
+                  :label="t('budget.kind')"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
@@ -62,7 +62,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-3">
                 <UiTextField
                   v-model="formData.date"
-                  label="Tarih"
+                  :label="t('budget.date')"
                   type="date"
                   density="compact"
                   hide-details="auto"
@@ -73,7 +73,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-3">
                 <UiTextField
                   v-model.number="formData.amount"
-                  label="Tutar"
+                  :label="t('budget.amount')"
                   type="number"
                   min="0"
                   step="0.01"
@@ -86,7 +86,7 @@
               <div class="ui-col ui-col-12 ui-col-sm-3">
                 <UiTextField
                   v-model="formData.note"
-                  label="Not"
+                  :label="t('budget.note')"
                   density="compact"
                   hide-details="auto"
                   :disabled="isBusy"
@@ -95,9 +95,9 @@
               </div>
             </div>
             <div class="flex justify-end mt-3 gap-2">
-              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">İptal</UiBtn>
+              <UiBtn v-if="editing" variant="text" :disabled="isBusy" @click="resetForm">{{ t('common.cancel') }}</UiBtn>
               <UiBtn color="primary" type="submit" :loading="isBusy" :disabled="isBusy || !isFormValid">
-                {{ editing ? 'Güncelle' : 'Ekle' }}
+                {{ editing ? t('common.update') : t('budget.add') }}
               </UiBtn>
             </div>
           </UiForm>
@@ -107,10 +107,10 @@
 
     <ConfirmDialog
       :model-value="!!toDelete"
-      title="Hareketi Sil"
-      :message="`${formatDisplayDate(toDelete?.date)} tarihli ${formatMoney(toDelete?.amount ?? 0)} tutarındaki hareketi silmek istediğinizden emin misiniz?`"
+      :title="t('donationFunds.movements.deleteTitle')"
+      :message="t('donationFunds.movements.deleteMessage', { date: formatDisplayDate(toDelete?.date), amount: formatMoney(toDelete?.amount ?? 0) })"
       type="error"
-      confirm-text="Sil"
+      :confirm-text="t('common.delete')"
       :loading="isBusy"
       @confirm="remove"
       @cancel="toDelete = null"
@@ -137,6 +137,7 @@ const emit = defineEmits<{
   changed: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney } = useMoney()
 const { hasPermission } = useAuth()
@@ -158,7 +159,7 @@ const formData = reactive({
 // Hareket ekleme, düzenleme ve silme DonationFunds.Update ister
 const canUpdate = computed(() => hasPermission('DonationFunds.Update'))
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
 
 const resetForm = () => {
   editing.value = null
@@ -199,10 +200,10 @@ const save = async () => {
     }
     if (editing.value) {
       await updateMovement(props.fund.id, editing.value.id, data)
-      toastStore.add('success', 'Hareket güncellendi')
+      toastStore.add('success', t('donationFunds.movements.updated'))
     } else {
       await createMovement(props.fund.id, data)
-      toastStore.add('success', 'Hareket eklendi')
+      toastStore.add('success', t('donationFunds.movements.added'))
     }
     resetForm()
     await load()
@@ -220,7 +221,7 @@ const remove = async () => {
   isBusy.value = true
   try {
     await deleteMovement(props.fund.id, m.id)
-    toastStore.add('success', 'Hareket silindi')
+    toastStore.add('success', t('donationFunds.movements.deleted'))
     toDelete.value = null
     if (editing.value?.id === m.id) resetForm()
     await load()

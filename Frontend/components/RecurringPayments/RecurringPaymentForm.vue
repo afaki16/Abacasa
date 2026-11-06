@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.name"
-            label="Ad"
-            placeholder="Örn. Kira"
+            :label="t('budget.name')"
+            :placeholder="t('recurringPayments.form.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -21,9 +21,9 @@
             :items="kindOptions"
             item-title="title"
             item-value="value"
-            label="Tür"
+            :label="t('budget.kind')"
             :disabled="loading || isLocked"
-            :hint="isLocked ? 'Ödemesi olan planda değiştirilemez' : ''"
+            :hint="isLocked ? t('recurringPayments.form.kindLocked') : ''"
             persistent-hint
             prepend-inner-icon="mdi-shape"
             density="comfortable"
@@ -41,7 +41,7 @@
             :items="paymentMethodOptions"
             item-title="name"
             item-value="id"
-            label="Ödeme aracı"
+            :label="t('budget.paymentMethod')"
             :disabled="loading"
             prepend-inner-icon="mdi-credit-card-outline"
             density="comfortable"
@@ -56,7 +56,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            :label="isDonation ? 'Veren' : 'Kişi'"
+            :label="isDonation ? t('budget.giver') : t('budget.person')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -71,7 +71,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.startMonth"
-            label="Başlangıç ayı"
+            :label="t('recurringPayments.form.startMonth')"
             type="month"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar-month"
@@ -84,7 +84,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.dueDay"
-            label="Vade günü"
+            :label="t('recurringPayments.form.dueDay')"
             type="number"
             min="1"
             max="31"
@@ -106,7 +106,7 @@
             :items="categories"
             item-title="name"
             item-value="id"
-            label="Kategori"
+            :label="t('budget.category')"
             :disabled="loading"
             prepend-inner-icon="mdi-shape-outline"
             density="comfortable"
@@ -122,7 +122,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.recipient"
-            label="Kime"
+            :label="t('budget.recipient')"
             :disabled="loading"
             prepend-inner-icon="mdi-account-heart"
             density="comfortable"
@@ -137,7 +137,7 @@
             :items="donationKindOptions"
             item-title="title"
             item-value="value"
-            label="Bağış türü"
+            :label="t('recurringPayments.form.donationKind')"
             :disabled="loading"
             prepend-inner-icon="mdi-hand-heart"
             density="comfortable"
@@ -153,7 +153,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-4">
           <UiTextField
             v-model.number="formData.totalAmount"
-            label="Toplam tutar"
+            :label="t('recurringPayments.form.totalAmount')"
             type="number"
             min="0"
             step="0.01"
@@ -168,7 +168,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-4">
           <UiTextField
             v-model.number="formData.installmentCount"
-            label="Taksit sayısı"
+            :label="t('recurringPayments.form.installmentCount')"
             type="number"
             min="2"
             max="120"
@@ -183,7 +183,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-4">
           <UiTextField
             v-model="formData.firstDueDate"
-            label="İlk taksit tarihi"
+            :label="t('recurringPayments.form.firstDueDate')"
             type="date"
             :disabled="loading || isLocked"
             prepend-inner-icon="mdi-calendar"
@@ -199,7 +199,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.expectedAmount"
-            label="Beklenen tutar"
+            :label="t('recurringPayments.form.expectedAmount')"
             type="number"
             min="0"
             step="0.01"
@@ -215,7 +215,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6 flex items-center" v-if="recurringPayment">
           <UiSwitch
             v-model="formData.isActive"
-            label="Aktif"
+            :label="t('common.active')"
             color="primary"
             :disabled="loading"
             hide-details
@@ -232,7 +232,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -242,7 +242,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ recurringPayment ? 'Güncelle' : 'Kaydet' }}
+        {{ recurringPayment ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -275,6 +275,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { kindOptions } = useRecurringPayments()
 const { kindOptions: donationKindOptions } = useDonations()
@@ -310,14 +311,14 @@ const isInstallment = computed(() => formData.kind === RecurringPaymentKind.Inst
 // Ödemesi olan planda tür, taksit sayısı ve ilk taksit tarihi değiştirilemez
 const isLocked = computed(() => !!props.recurringPayment?.hasPayments)
 
-const nameRule = (v: string) => !!v?.trim() || 'Ad alanı zorunludur'
-const recipientRule = (v: string) => !!v?.trim() || 'Kime alanı zorunludur'
-const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+const nameRule = (v: string) => !!v?.trim() || t('recurringPayments.form.nameRequired')
+const recipientRule = (v: string) => !!v?.trim() || t('budget.recipientRequired')
+const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
 const optionalPositiveRule = (v: number | null | string) =>
-  v === null || v === '' || Number(v) > 0 || 'Tutar 0\'dan büyük olmalıdır'
-const dueDayRule = (v: number | null) => (v !== null && v >= 1 && v <= 31) || 'Vade günü 1 ile 31 arasında olmalıdır'
+  v === null || v === '' || Number(v) > 0 || t('budget.amountPositive')
+const dueDayRule = (v: number | null) => (v !== null && v >= 1 && v <= 31) || t('recurringPayments.form.dueDayRange')
 const installmentCountRule = (v: number | null) =>
-  (v !== null && v >= 2 && v <= 120) || 'Taksit sayısı 2 ile 120 arasında olmalıdır'
+  (v !== null && v >= 2 && v <= 120) || t('recurringPayments.form.installmentCountRange')
 
 // Sadece aktif ödeme araçları; düzenlemede mevcut araç pasif olsa da görünür
 const paymentMethodOptions = computed(() =>
@@ -325,7 +326,7 @@ const paymentMethodOptions = computed(() =>
 )
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('budget.household') },
   ...props.people,
 ])
 

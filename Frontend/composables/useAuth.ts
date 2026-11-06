@@ -40,6 +40,7 @@ export const useAuth = () => {
   const authStore = useAuthStore();
   const router = useRouter();
   const toast = useToast();
+  const { $i18n } = useNuxtApp();
 
   /**
    * Device ID — cihazı tanımak için (refresh token rotation kontrolünde
@@ -264,7 +265,7 @@ export const useAuth = () => {
       currentPassword,
       newPassword,
     });
-    toast.success("Şifreniz değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.");
+    toast.success($i18n.t("auth.passwordChangedRelogin"));
     // Backend revoked every session, including this one
     authStore.clearAuth();
     await router.push("/");
@@ -306,9 +307,9 @@ export const useAuth = () => {
     try {
       // Kimlik global; login hane seçmez (son aktif hane backend'de seçilir)
       await login({ email: user.email, password: newPassword });
-      toast.success("Şifreniz değiştirildi.");
+      toast.success($i18n.t("auth.passwordChanged"));
     } catch {
-      toast.success("Şifreniz değiştirildi. Lütfen yeni şifrenizle giriş yapın.");
+      toast.success($i18n.t("auth.passwordChangedLogin"));
       await router.push("/");
     }
   };
@@ -346,7 +347,7 @@ export const useAuth = () => {
   /** Kodla şifre değiştirir. Backend tüm oturumları kapattığı için changePassword gibi login'e döner. */
   const changePasswordWithCode = async (code: string, newPassword: string): Promise<void> => {
     await api.post(API_ENDPOINTS.AUTH.PASSWORD_CHANGE_CONFIRM, { code, newPassword });
-    toast.success("Şifreniz değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.");
+    toast.success($i18n.t("auth.passwordChangedRelogin"));
     authStore.clearAuth();
     await router.push("/");
   };

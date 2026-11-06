@@ -12,7 +12,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Ödenen</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('recurringPayments.occurrences.paid') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.paidTotal ?? 0) }}</div>
         </div>
       </UiCard>
@@ -20,7 +20,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[#fea619]/[0.12] !text-[#fea619]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Bekleyen</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('recurringPayments.occurrences.pending') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.pendingTotal ?? 0) }}</div>
         </div>
       </UiCard>
@@ -28,7 +28,7 @@
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiCard class="!bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
-          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Toplam</div>
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('recurringPayments.occurrences.total') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(occurrences?.total ?? 0) }}</div>
         </div>
       </UiCard>
@@ -42,24 +42,24 @@
     density="compact"
     class="mb-4"
   >
-    {{ occurrences?.unknownCount }} kalemin tutarı belli değil
+    {{ t('recurringPayments.occurrences.unknownAmount', { count: occurrences?.unknownCount ?? 0 }) }}
   </UiAlert>
 
   <div class="ui-row !mb-4">
     <div class="ui-col ui-col-12">
       <UiCard elevation="0" border>
-        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+        <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('budget.byPaymentMethod') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in occurrences?.byPaymentMethod ?? []" :key="row.id">
             <div class="ui-list-item__content">
               <div class="ui-list-title">{{ row.name }}</div>
-              <div class="ui-list-subtitle">Ödenen {{ formatMoney(row.paidTotal) }} · Bekleyen {{ formatMoney(row.pendingTotal) }}</div>
+              <div class="ui-list-subtitle">{{ t('recurringPayments.occurrences.paymentMethodSummary', { paid: formatMoney(row.paidTotal), pending: formatMoney(row.pendingTotal) }) }}</div>
             </div>
             <span class="ui-list-item__append">{{ formatMoney(row.total) }}</span>
           </li>
           <li class="ui-list-item" v-if="!occurrences?.byPaymentMethod?.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kayıt yok</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('budget.noRecords') }}</span></div>
             </div>
           </li>
         </ul>
@@ -71,12 +71,12 @@
     :hide-page-header="true"
     :items="tableItems"
     :columns="tableColumns"
-    title="Vadeler"
+    :title="t('recurringPayments.occurrences.title')"
     toolbar-icon="mdi-calendar-clock"
-    search-placeholder="Vadelerde ara..."
+    :search-placeholder="t('recurringPayments.occurrences.searchPlaceholder')"
     :loading="isLoading"
-    loading-text="Vadeler yükleniyor..."
-    empty-title="Bu dönemde vade yok"
+    :loading-text="t('recurringPayments.occurrences.loading')"
+    :empty-title="t('recurringPayments.occurrences.empty')"
     :show-add-button="false"
     :show-advanced-filters="false"
     :show-actions="true"
@@ -100,15 +100,15 @@
       <span v-if="item.amount === null || item.amount === undefined">—</span>
       <span v-else class="font-medium">
         {{ formatMoney(item.amount) }}
-        <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</UiChip>
+        <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">{{ t('recurringPayments.occurrences.estimated') }}</UiChip>
       </span>
     </template>
 
     <template #cell-status="{ item }">
       <UiChip v-if="item.isPaid" size="small" color="success" variant="tonal">
-        Ödendi · {{ formatDisplayDate(item.paidDate) }}
+        {{ t('recurringPayments.occurrences.paidOn', { date: formatDisplayDate(item.paidDate) }) }}
       </UiChip>
-      <UiChip v-else size="small" color="warning" variant="tonal">Bekliyor</UiChip>
+      <UiChip v-else size="small" color="warning" variant="tonal">{{ t('recurringPayments.occurrences.waiting') }}</UiChip>
     </template>
 
     <template #actions="{ item }">
@@ -119,7 +119,7 @@
         variant="tonal"
         @click="openPayDialog(item)"
       >
-        Öde
+        {{ t('recurringPayments.occurrences.pay') }}
       </UiBtn>
       <UiBtn
         v-else-if="item.isPaid && canUndo(item)"
@@ -128,7 +128,7 @@
         variant="text"
         @click="openUndoDialog(item)"
       >
-        Geri al
+        {{ t('recurringPayments.occurrences.undo') }}
       </UiBtn>
     </template>
   </BaseDataTable>
@@ -136,7 +136,7 @@
   <!-- Öde -->
   <ResizableDrawer
     v-model="payDialog"
-    title="Öde"
+    :title="t('recurringPayments.occurrences.pay')"
     :subtitle="payTarget ? `${payTarget.name} · ${formatDisplayDate(payTarget.dueDate)}` : ''"
     icon="mdi-cash-check"
     :default-width="500"
@@ -153,10 +153,10 @@
   <!-- Geri al -->
   <ConfirmDialog
     v-model="undoDialog"
-    title="Ödemeyi geri al"
-    :message="`Oluşturulan ${undoTarget?.donationId ? 'bağış' : 'harcama'} kaydı silinecek.`"
+    :title="t('recurringPayments.occurrences.undoTitle')"
+    :message="undoTarget?.donationId ? t('recurringPayments.occurrences.undoMessageDonation') : t('recurringPayments.occurrences.undoMessageExpense')"
     type="error"
-    confirm-text="Geri al"
+    :confirm-text="t('recurringPayments.occurrences.undo')"
     :loading="isUndoing"
     @confirm="confirmUndo"
     @cancel="undoDialog = false"
@@ -174,15 +174,17 @@ import RecurringPaymentPayForm from "~/components/RecurringPayments/RecurringPay
 import { formatDisplayDate, monthRange, todayIso, type Period } from "~/utils/period";
 import { useToastStore } from "~/stores/toast";
 
+const { t } = useI18n();
+
 //#region DataTable Columns
-const tableColumns = [
-  { label: "Vade", key: "dueDate", sortable: false, width: "120px" },
-  { label: "Ad", key: "name", sortable: false, width: "220px" },
-  { label: "Tür", key: "kind", sortable: false, width: "120px" },
-  { label: "Ödeme aracı", key: "paymentMethodName", sortable: false, width: "160px" },
-  { label: "Tutar", key: "amount", sortable: false, width: "160px" },
-  { label: "Durum", key: "status", sortable: false, width: "180px" },
-];
+const tableColumns = computed(() => [
+  { label: t("recurringPayments.occurrences.dueDate"), key: "dueDate", sortable: false, width: "120px" },
+  { label: t("budget.name"), key: "name", sortable: false, width: "220px" },
+  { label: t("budget.kind"), key: "kind", sortable: false, width: "120px" },
+  { label: t("budget.paymentMethod"), key: "paymentMethodName", sortable: false, width: "160px" },
+  { label: t("budget.amount"), key: "amount", sortable: false, width: "160px" },
+  { label: t("budget.status"), key: "status", sortable: false, width: "180px" },
+]);
 //#endregion
 
 //#region Composables
@@ -246,7 +248,7 @@ const confirmPay = async (data: { amount: number; date: string }) => {
       amount: data.amount,
       date: data.date,
     });
-    toastStore.add("success", "Ödeme kaydedildi");
+    toastStore.add("success", t("recurringPayments.occurrences.paymentSaved"));
     payDialog.value = false;
     await loadOccurrences();
   } catch {
@@ -277,7 +279,7 @@ const confirmUndo = async () => {
   try {
     if (undoTarget.value.donationId) await deleteDonation(String(undoTarget.value.donationId));
     else if (undoTarget.value.expenseId) await deleteExpense(String(undoTarget.value.expenseId));
-    toastStore.add("success", "Ödeme geri alındı");
+    toastStore.add("success", t("recurringPayments.occurrences.paymentUndone"));
     undoDialog.value = false;
     await loadOccurrences();
   } catch {

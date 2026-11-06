@@ -2,11 +2,11 @@
   <!-- Hanesiz kullanıcı: API çağrılmaz, hane oluşturma kartı -->
   <template v-if="!hasHousehold">
     <UiCard elevation="0" border class="p-6">
-      <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">Henüz bir haneniz yok</div>
+      <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ t('dashboard.noHousehold.title') }}</div>
       <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-1">
-        Kendi hanenizi oluşturabilir ya da size gelen davet e-postasındaki bağlantıyı kullanabilirsiniz.
+        {{ t('dashboard.noHousehold.description') }}
       </div>
-      <UiBtn color="primary" prepend-icon="mdi-home-plus" class="mt-4" @click="createDialog = true">Hane oluştur</UiBtn>
+      <UiBtn color="primary" prepend-icon="mdi-home-plus" class="mt-4" @click="createDialog = true">{{ t('dashboard.noHousehold.create') }}</UiBtn>
     </UiCard>
     <CreateHouseholdDialog v-model="createDialog" />
   </template>
@@ -14,7 +14,7 @@
   <!-- Dashboard.Read yoksa API çağrılmaz; kısa hoş geldin mesajı -->
   <UiCard elevation="0" border v-else-if="!canRead" class="p-6">
     <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ greeting }}</div>
-    <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-1">Abacasa'ya hoş geldiniz.</div>
+    <div class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-black/60 dark:text-white/70 mt-1">{{ t('dashboard.welcomeApp') }}</div>
   </UiCard>
 
   <template v-else>
@@ -31,14 +31,13 @@
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
           <div class="ui-card-text">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Dönem toplamı (yemek kartı hariç)</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('dashboard.cards.periodTotal') }}</div>
             <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.outflowTotal ?? 0) }}</div>
             <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-              Harcama {{ formatMoney(data?.spent.expenses ?? 0) }} · Bağış {{ formatMoney(data?.spent.donations ?? 0) }} ·
-              Bekleyen {{ formatMoney(data?.pending.total ?? 0) }}
+              {{ t('dashboard.cards.periodBreakdown', { expenses: formatMoney(data?.spent.expenses ?? 0), donations: formatMoney(data?.spent.donations ?? 0), pending: formatMoney(data?.pending.total ?? 0) }) }}
             </div>
             <div v-if="(data?.pending.unknownCount ?? 0) > 0" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-              {{ data?.pending.unknownCount }} kalemin tutarı belli değil
+              {{ t('dashboard.cards.unknownAmounts', { count: data?.pending.unknownCount }) }}
             </div>
           </div>
         </UiCard>
@@ -46,10 +45,10 @@
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
           <div class="ui-card-text">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Sabit ödemeler</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('dashboard.cards.recurring') }}</div>
             <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.recurring.total ?? 0) }}</div>
             <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-              Ödenen {{ formatMoney(data?.recurring.paidTotal ?? 0) }} · Bekleyen {{ formatMoney(data?.recurring.pendingTotal ?? 0) }}
+              {{ t('dashboard.cards.recurringBreakdown', { paid: formatMoney(data?.recurring.paidTotal ?? 0), pending: formatMoney(data?.recurring.pendingTotal ?? 0) }) }}
             </div>
           </div>
         </UiCard>
@@ -58,7 +57,7 @@
         <!-- Borçlar sayfasındaki kartla aynı kurallar -->
         <UiCard class="h-full !bg-[#fea619]/[0.12] !text-[#fea619]">
           <div class="ui-card-text">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Açık borç (TL karşılığı)</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('dashboard.cards.openDebt') }}</div>
             <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">
               {{ formatMoney(data?.debts.openTotalInTry) }}
             </div>
@@ -66,17 +65,17 @@
             <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
               {{ formatOpenLine(data?.debts.openTry ?? 0, data?.debts.foreign ?? []) }}
             </div>
-            <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ missingRateLabels.join(", ") }} kuru girilmemiş</div>
+            <div v-if="missingRateLabels.length" class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('dashboard.cards.missingRate', { currencies: missingRateLabels.join(", ") }) }}</div>
           </div>
         </UiCard>
       </div>
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <UiCard class="h-full !bg-secondary/[0.12] !text-secondary">
           <div class="ui-card-text">
-            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">Yemek kartı</div>
+            <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('dashboard.cards.mealCard') }}</div>
             <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(data?.mealCard.total ?? 0) }}</div>
             <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">
-              Harcanan {{ formatMoney(data?.mealCard.spent ?? 0) }} · Bekleyen {{ formatMoney(data?.mealCard.pending ?? 0) }}
+              {{ t('dashboard.cards.mealCardBreakdown', { spent: formatMoney(data?.mealCard.spent ?? 0), pending: formatMoney(data?.mealCard.pending ?? 0) }) }}
             </div>
           </div>
         </UiCard>
@@ -87,15 +86,15 @@
     <div class="ui-row !mb-2">
       <div class="ui-col ui-col-12 ui-col-md-6">
         <UiCard elevation="0" border class="h-full">
-          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Ödeme aracına göre</div>
+          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('dashboard.byPaymentMethod') }}</div>
           <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
             <thead>
               <tr>
-                <th>Ad</th>
-                <th>Tür</th>
-                <th class="!text-right">Gerçekleşen</th>
-                <th class="!text-right">Bekleyen</th>
-                <th class="!text-right">Toplam</th>
+                <th>{{ t('dashboard.columns.name') }}</th>
+                <th>{{ t('dashboard.columns.type') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.spent') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.pending') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.total') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -107,7 +106,7 @@
                 <td class="!text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPaymentMethod?.length">
-                <td colspan="5" class="text-black/60 dark:text-white/70">Kayıt yok</td>
+                <td colspan="5" class="text-black/60 dark:text-white/70">{{ t('dashboard.noRecords') }}</td>
               </tr>
             </tbody>
           </table></div>
@@ -115,30 +114,30 @@
       </div>
       <div class="ui-col ui-col-12 ui-col-md-6">
         <UiCard elevation="0" border class="h-full">
-          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">Kişiye göre</div>
+          <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('dashboard.byPerson') }}</div>
           <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
             <thead>
               <tr>
-                <th>Ad</th>
-                <th class="!text-right">Gerçekleşen</th>
-                <th class="!text-right">Bekleyen</th>
-                <th class="!text-right">Toplam</th>
+                <th>{{ t('dashboard.columns.name') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.spent') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.pending') }}</th>
+                <th class="!text-right">{{ t('dashboard.columns.total') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in data?.byPerson ?? []" :key="row.personId ?? 'household'">
-                <td>{{ row.name ?? "Hane" }}</td>
+                <td>{{ row.name ?? t("dashboard.household") }}</td>
                 <td class="!text-right">{{ formatMoney(row.spent) }}</td>
                 <td class="!text-right">{{ formatMoney(row.pending) }}</td>
                 <td class="!text-right font-medium">{{ formatMoney(row.total) }}</td>
               </tr>
               <tr v-if="!data?.byPerson?.length">
-                <td colspan="4" class="text-black/60 dark:text-white/70">Kayıt yok</td>
+                <td colspan="4" class="text-black/60 dark:text-white/70">{{ t('dashboard.noRecords') }}</td>
               </tr>
             </tbody>
             <tfoot v-if="data?.byPerson?.length">
               <tr class="font-bold">
-                <td>Toplam</td>
+                <td>{{ t('dashboard.columns.total') }}</td>
                 <td class="!text-right">{{ formatMoney(personTotals.spent) }}</td>
                 <td class="!text-right">{{ formatMoney(personTotals.pending) }}</td>
                 <td class="!text-right">{{ formatMoney(personTotals.total) }}</td>
@@ -153,20 +152,20 @@
     <UiCard elevation="0" border>
       <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">
         <div class="flex items-center">
-          Yaklaşan ödemeler
+          {{ t('dashboard.upcoming.title') }}
           <div class="flex-1" />
-          <NuxtLink to="/recurring-payments" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-[rgb(var(--color-brand))]">Sabit ödemeler'e git</NuxtLink>
+          <NuxtLink to="/recurring-payments" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal text-[rgb(var(--color-brand))]">{{ t('dashboard.upcoming.goToRecurring') }}</NuxtLink>
         </div>
       </div>
       <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
         <thead>
           <tr>
-            <th>Vade</th>
-            <th>Ad</th>
-            <th>Tür</th>
-            <th>Ödeme aracı</th>
-            <th class="!text-right">Tutar</th>
-            <th>Durum</th>
+            <th>{{ t('dashboard.upcoming.dueDate') }}</th>
+            <th>{{ t('dashboard.columns.name') }}</th>
+            <th>{{ t('dashboard.columns.type') }}</th>
+            <th>{{ t('dashboard.upcoming.paymentMethod') }}</th>
+            <th class="!text-right">{{ t('dashboard.upcoming.amount') }}</th>
+            <th>{{ t('dashboard.upcoming.status') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -186,15 +185,15 @@
             <td>{{ item.source === 'vehicle' ? '—' : item.paymentMethodName }}</td>
             <td class="!text-right">
               {{ formatMoney(item.amount) }}
-              <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">tahmini</UiChip>
+              <UiChip v-if="item.isEstimated" size="x-small" variant="tonal" class="ml-1">{{ t('dashboard.upcoming.estimated') }}</UiChip>
             </td>
             <td>
-              <UiChip v-if="item.isOverdue" size="small" color="error" variant="tonal">Gecikti</UiChip>
+              <UiChip v-if="item.isOverdue" size="small" color="error" variant="tonal">{{ t('dashboard.upcoming.overdue') }}</UiChip>
               <span v-else>{{ dueLabel(item.dueDate) }}</span>
             </td>
           </tr>
           <tr v-if="!data?.upcoming?.length">
-            <td colspan="6" class="text-black/60 dark:text-white/70">Yaklaşan ödeme yok</td>
+            <td colspan="6" class="text-black/60 dark:text-white/70">{{ t('dashboard.upcoming.empty') }}</td>
           </tr>
         </tbody>
       </table></div>
@@ -216,8 +215,10 @@ definePageMeta({
   requiresAuth: true,
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Özet",
+  title: computed(() => t("dashboard.title")),
 });
 
 //#region Composables
@@ -233,7 +234,7 @@ const { getDashboard } = useDashboard();
 const hasHousehold = computed(() => !!authStore.user?.activeTenant);
 const createDialog = ref(false);
 const canRead = computed(() => hasPermission("Dashboard.Read"));
-const greeting = computed(() => (authStore.userFullName ? `Merhaba, ${authStore.userFullName}` : "Merhaba"));
+const greeting = computed(() => (authStore.userFullName ? t("dashboard.helloName", { name: authStore.userFullName }) : t("dashboard.hello")));
 
 //#region Dönem ve veri
 const paymentMethods = ref<PaymentMethod[]>([]);
@@ -274,7 +275,7 @@ const personTotals = computed(() => {
 // Vadeye kalan gün; tarihler 'YYYY-MM-DD', saat dilimi etkisi olmasın diye UTC'de karşılaştırılır
 const dueLabel = (dueDate: string) => {
   const days = Math.round((Date.parse(`${dueDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
-  return days === 0 ? "Bugün" : `${days} gün kaldı`;
+  return days === 0 ? t("dashboard.upcoming.today") : t("dashboard.upcoming.daysLeft", { days });
 };
 
 //#region Lifecycle

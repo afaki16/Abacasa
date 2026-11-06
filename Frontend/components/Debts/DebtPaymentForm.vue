@@ -4,7 +4,7 @@
       <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
         <UiTextField
           v-model="formData.date"
-          label="Tarih"
+          :label="t('debts.columns.date')"
           type="date"
           :disabled="loading"
           density="compact"
@@ -42,7 +42,7 @@
       <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
         <UiTextField
           v-model="formData.note"
-          label="Not"
+          :label="t('debts.columns.note')"
           :disabled="loading"
           density="compact"
           hide-details="auto"
@@ -52,13 +52,13 @@
     </div>
 
     <div class="flex items-center mt-3 gap-2">
-      <span class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
-        TL karşılığı: <strong>{{ formatMoney(amountInTry) }}</strong>
-      </span>
+      <i18n-t keypath="debts.payments.amountInTryLine" tag="span" scope="global" class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
+        <template #amount><strong>{{ formatMoney(amountInTry) }}</strong></template>
+      </i18n-t>
       <div class="flex-1" />
-      <UiBtn v-if="payment" variant="text" :disabled="loading" @click="$emit('cancel')">İptal</UiBtn>
+      <UiBtn v-if="payment" variant="text" :disabled="loading" @click="$emit('cancel')">{{ t('common.cancel') }}</UiBtn>
       <UiBtn color="primary" :loading="loading" :disabled="loading || !isFormValid" type="submit">
-        {{ payment ? 'Güncelle' : 'Ödeme ekle' }}
+        {{ payment ? t('common.update') : t('debts.payments.add') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -86,6 +86,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney } = useMoney()
 
@@ -101,13 +102,13 @@ const formData = reactive({
 const isForeign = computed(() => props.currency !== Currency.TRY)
 const isGold = computed(() => props.currency === Currency.QuarterGold)
 const amountLabel = computed(() =>
-  isGold.value ? 'Adet' : props.currency === Currency.USD ? 'Tutar ($)' : props.currency === Currency.EUR ? 'Tutar (€)' : 'Tutar (₺)'
+  isGold.value ? t('debts.form.quantity') : props.currency === Currency.USD ? t('debts.payments.amountUsd') : props.currency === Currency.EUR ? t('debts.payments.amountEur') : t('debts.payments.amountTry')
 )
-const rateLabel = computed(() => (isGold.value ? 'Çeyrek fiyatı (₺)' : 'Kur'))
-const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || 'Çeyrek altın tam sayı olmalı.'
+const rateLabel = computed(() => (isGold.value ? t('exchangeRates.goldPrice') : t('debts.payments.rate')))
+const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || t('debts.form.goldWhole')
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || '0\'dan büyük olmalıdır'
+const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || t('debts.payments.positive')
 
 // Backend ile aynı: dövizde tutar × kur, 2 haneye yuvarlanır
 const amountInTry = computed(() => {

@@ -3,17 +3,16 @@
     <div class="verify-card">
       <div v-if="state === 'loading'" class="state-block">
         <UiProgressCircular indeterminate color="white" :size="56" :width="4" />
-        <h2 class="title">E-posta adresiniz değiştiriliyor...</h2>
-        <p class="subtitle">Lütfen bekleyin.</p>
+        <h2 class="title">{{ $t('auth.emailChange.inProgress') }}</h2>
+        <p class="subtitle">{{ $t('auth.pleaseWait') }}</p>
       </div>
 
       <div v-else-if="state === 'success'" class="state-block">
         <UiIcon icon="mdi-check-circle-outline" :size="72" color="success" />
-        <h2 class="title">E-posta adresiniz değiştirildi</h2>
-        <p class="subtitle">
-          Güvenliğiniz için tüm oturumlarınız kapatıldı. Yeni adresinizle
-          (<strong>{{ email }}</strong>) giriş yapabilirsiniz.
-        </p>
+        <h2 class="title">{{ $t('auth.emailChange.done') }}</h2>
+        <i18n-t keypath="auth.emailChange.doneText" tag="p" class="subtitle" scope="global">
+          <template #email><strong>{{ email }}</strong></template>
+        </i18n-t>
         <UiBtn
           color="white"
           variant="outlined"
@@ -21,15 +20,15 @@
           class="action-btn"
           @click="goToLogin"
         >
-          Giriş Sayfasına Git
+          {{ $t('auth.goToLogin') }}
         </UiBtn>
       </div>
 
       <div v-else class="state-block">
         <UiIcon icon="mdi-alert-circle-outline" :size="72" color="error" />
-        <h2 class="title">Bağlantı geçersiz</h2>
+        <h2 class="title">{{ $t('auth.linkInvalid') }}</h2>
         <p class="subtitle">{{ errorMessage }}</p>
-        <p class="subtitle">E-posta adresiniz değişmedi. Gerekirse profil sayfanızdan yeniden talep edebilirsiniz.</p>
+        <p class="subtitle">{{ $t('auth.emailChange.notChanged') }}</p>
         <UiBtn
           color="white"
           variant="text"
@@ -37,7 +36,7 @@
           class="action-btn"
           @click="goToLogin"
         >
-          Giriş Sayfası
+          {{ $t('auth.loginPage') }}
         </UiBtn>
       </div>
     </div>
@@ -57,9 +56,10 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const state = ref<'loading' | 'success' | 'error'>('loading')
-const errorMessage = ref('Onay bağlantısı geçersiz veya süresi dolmuş.')
+const errorMessage = ref(t('auth.emailChange.linkExpired'))
 
 // Token yalnızca bellekte tutulur; query hemen URL'den (ve tarayıcı geçmişinden) silinir.
 const email = ref((route.query.email as string) || '')
@@ -74,7 +74,7 @@ onMounted(async () => {
 
   if (!email.value || !token.value) {
     state.value = 'error'
-    errorMessage.value = 'Bağlantı eksik veya hatalı.'
+    errorMessage.value = t('auth.linkMalformed')
     return
   }
 
@@ -91,7 +91,7 @@ onMounted(async () => {
 })
 
 useHead({
-  title: 'E-posta Değişikliği - Abacasa'
+  title: computed(() => t('auth.pageTitleEmailChange'))
 })
 </script>
 

@@ -4,7 +4,7 @@
       <div class="ui-card-title">
         <div class="flex items-center">
           <UiIcon icon="mdi-hand-heart" class="mr-2" />
-          Dağıtımlar · {{ fund.fromPersonName }} · {{ getKindLabel(fund.kind) }}
+          {{ t('donationFunds.distributions.title') }} · {{ fund.fromPersonName }} · {{ getKindLabel(fund.kind) }}
           <div class="flex-1" />
           <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
         </div>
@@ -13,7 +13,7 @@
       <div class="ui-card-text">
         <div class="flex items-center mb-2">
           <span class="text-[0.875rem] leading-[1.425] tracking-[0.0178571429em] font-normal">
-            Kalan {{ formatMoney(fund.remaining) }} · Elde {{ formatMoney(fund.onHand) }}
+            {{ t('donationFunds.distributions.summary', { remaining: formatMoney(fund.remaining), onHand: formatMoney(fund.onHand) }) }}
           </span>
           <div class="flex-1" />
           <!-- Bağış formunu emanet seçili ve tür kilitli açar -->
@@ -25,18 +25,18 @@
             :disabled="fund.onHand <= 0"
             @click="formOpen = true"
           >
-            Dağıtım ekle
+            {{ t('donationFunds.distributions.add') }}
           </UiBtn>
         </div>
 
         <div class="overflow-x-auto"><table v-stack-table class="ui-table ui-table--compact">
           <thead>
             <tr>
-              <th>Tarih</th>
-              <th>Kime</th>
-              <th>Ödeme aracı</th>
-              <th class="!text-right">Tutar</th>
-              <th>Not</th>
+              <th>{{ t('budget.date') }}</th>
+              <th>{{ t('budget.recipient') }}</th>
+              <th>{{ t('budget.paymentMethod') }}</th>
+              <th class="!text-right">{{ t('budget.amount') }}</th>
+              <th>{{ t('budget.note') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -48,7 +48,7 @@
               <td>{{ d.note }}</td>
             </tr>
             <tr v-if="!distributions.length">
-              <td colspan="5" class="text-black/60 dark:text-white/70">Dağıtım yok</td>
+              <td colspan="5" class="text-black/60 dark:text-white/70">{{ t('donationFunds.distributions.none') }}</td>
             </tr>
           </tbody>
         </table></div>
@@ -57,8 +57,8 @@
 
     <ResizableDrawer
       v-model="formOpen"
-      title="Dağıtım Ekle"
-      subtitle="Emanetten bağış"
+      :title="t('donationFunds.distributions.drawerTitle')"
+      :subtitle="t('donationFunds.distributions.drawerSubtitle')"
       icon="mdi-hand-heart"
       :default-width="600"
       :min-width="400"
@@ -98,6 +98,7 @@ const emit = defineEmits<{
   changed: []
 }>()
 
+const { t } = useI18n()
 const { formatMoney } = useMoney()
 const { hasPermission } = useAuth()
 const { getKindLabel, getDonations, createDonation } = useDonations()
@@ -129,7 +130,7 @@ const saveDistribution = async (data: CreateDonationRequest) => {
   isSaving.value = true
   try {
     await createDonation(data)
-    toastStore.add('success', 'Dağıtım eklendi')
+    toastStore.add('success', t('donationFunds.distributions.added'))
     formOpen.value = false
     await load()
     emit('changed')

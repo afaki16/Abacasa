@@ -44,7 +44,7 @@
           type="button"
           tabindex="-1"
           class="password-eye"
-          :aria-label="(isPasswordVisible || showPassword) ? 'Şifreyi gizle' : 'Şifreyi göster'"
+          :aria-label="(isPasswordVisible || showPassword) ? $t('ui.textBox.hidePassword') : $t('ui.textBox.showPassword')"
           @click.prevent="togglePssword"
         >
           <UiIcon :icon="(isPasswordVisible || showPassword) ? 'mdi-eye-outline' : 'mdi-eye-off-outline'" :size="16" />
@@ -64,6 +64,8 @@
   </div>
 </template>
 <script setup lang="ts">
+const { t } = useI18n()
+
 const props = defineProps({
   modelValue: { required: true },
   label: { type: String, default: '' },
@@ -129,49 +131,49 @@ watch(
 
     if (props.minLength) {
       if (newVal.minLengthValid) {
-        hint.push(`En az ${props.minLength} karakter ✓`)
+        hint.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✓')
       } else {
-        hint.push(`En az ${props.minLength} karakter ✕`)
+        hint.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✕')
       }
     }
 
     if (props.maxLength) {
       if (newVal.maxLengthValid) {
-        hint.push(`En fazla ${props.maxLength} karakter ✓`)
+        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✓')
       } else {
-        hint.push(`En fazla ${props.maxLength} karakter ✕`)
+        hint.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✕')
       }
     }
 
     if (props.requireUppercase) {
       if (newVal.uppercaseValid) {
-        hint.push('En az bir büyük harf ✓')
+        hint.push(t('ui.textBox.uppercase') + ' ✓')
       } else {
-        hint.push('En az bir büyük harf ✕')
+        hint.push(t('ui.textBox.uppercase') + ' ✕')
       }
     }
 
     if (props.requireLowercase) {
       if (newVal.lowercaseValid) {
-        hint.push('En az bir küçük harf ✓')
+        hint.push(t('ui.textBox.lowercase') + ' ✓')
       } else {
-        hint.push('En az bir küçük harf ✕')
+        hint.push(t('ui.textBox.lowercase') + ' ✕')
       }
     }
 
     if (props.requireNumber) {
       if (newVal.numberValid) {
-        hint.push('En az bir rakam ✓')
+        hint.push(t('ui.textBox.number') + ' ✓')
       } else {
-        hint.push('En az bir rakam ✕')
+        hint.push(t('ui.textBox.number') + ' ✕')
       }
     }
 
     if (props.requireSpecialCharacter) {
       if (newVal.specialCharacterValid) {
-        hint.push('En az bir özel karakter ✓')
+        hint.push(t('ui.textBox.special') + ' ✓')
       } else {
-        hint.push('En az bir özel karakter ✕')
+        hint.push(t('ui.textBox.special') + ' ✕')
       }
     }
 
@@ -212,7 +214,7 @@ const computedAttrs = computed(() => {
 
 function validateRequired(value: any) {
   if (value) return true
-  return 'Girilmesi zorunludur.'
+  return t('ui.textBox.required')
 }
 
 const handleKeyDown = (event) => {
@@ -224,30 +226,30 @@ const handleKeyDown = (event) => {
 function validateMaxLength(value: any) {
   if (props.isLengthMustMatch) {
     if (value?.length == props.maxLength) return true
-    return `${props.label} ${props.maxLength} karakter olmalıdır.`
+    return t('ui.textBox.exactLength', { label: props.label, n: props.maxLength })
   } else {
     if (value?.length <= props.maxLength!) return true
-    return `${props.label} en fazla ${props.maxLength} karakter olabilir.`
+    return t('ui.textBox.maxLength', { label: props.label, n: props.maxLength })
   }
 }
 
 function validateMinLength(value: any) {
   if (value?.length >= props.minLength!) return true
-  return `${props.label} en az ${props.minLength} karakter olmalıdır.`
+  return t('ui.textBox.minLength', { label: props.label, n: props.minLength })
 }
 
 function validateMaxNumber(value: any) {
   if (Number(value) <= Number(props.max)) return true
-  return `${props.label} en fazla ${props.max} olabilir.`
+  return t('ui.textBox.maxNumber', { label: props.label, n: props.max })
 }
 
 function validateMinNumber(value: any) {
   if (Number(value) >= Number(props.min)) return true
-  return `${props.label} en az ${props.min} olabilir.`
+  return t('ui.textBox.minNumber', { label: props.label, n: props.min })
 }
 
 function validateEmail(value: any) {
-  return !value || emailRegex.test(value) || 'Geçerli bir e-posta giriniz.'
+  return !value || emailRegex.test(value) || t('ui.textBox.email')
 }
 
 function validatePassword(value: any) {
@@ -255,20 +257,20 @@ function validatePassword(value: any) {
 
   if (props.minLength) {
     if (value?.length >= props.minLength && value) {
-      messages.push(`En az ${props.minLength} karakter ✓`)
+      messages.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✓')
       passwordSteps.value.minLengthValid = true
     } else {
-      messages.push(`En az ${props.minLength} karakter ✕`)
+      messages.push(t('ui.textBox.minChars', { n: props.minLength }) + ' ✕')
       passwordSteps.value.minLengthValid = false
     }
   }
 
   if (props.maxLength) {
     if (value?.length <= props.maxLength && value) {
-      messages.push(`En fazla ${props.maxLength} karakter ✓`)
+      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✓')
       passwordSteps.value.maxLengthValid = true
     } else {
-      messages.push(`En fazla ${props.maxLength} karakter ✕`)
+      messages.push(t('ui.textBox.maxChars', { n: props.maxLength }) + ' ✕')
       passwordSteps.value.maxLengthValid = false
     }
   }
@@ -276,10 +278,10 @@ function validatePassword(value: any) {
   if (props.requireUppercase) {
     const regex = /(?=.*[A-Z])/
     if (regex.test(value) && value) {
-      messages.push('En az bir büyük harf ✓')
+      messages.push(t('ui.textBox.uppercase') + ' ✓')
       passwordSteps.value.uppercaseValid = true
     } else {
-      messages.push('En az bir büyük harf ✕')
+      messages.push(t('ui.textBox.uppercase') + ' ✕')
       passwordSteps.value.uppercaseValid = false
     }
   }
@@ -287,10 +289,10 @@ function validatePassword(value: any) {
   if (props.requireLowercase) {
     const regex = /^(?=.*[a-z]).+$/
     if (regex.test(value) && value) {
-      messages.push('En az bir küçük harf ✓')
+      messages.push(t('ui.textBox.lowercase') + ' ✓')
       passwordSteps.value.lowercaseValid = true
     } else {
-      messages.push('En az bir küçük harf ✕')
+      messages.push(t('ui.textBox.lowercase') + ' ✕')
       passwordSteps.value.lowercaseValid = false
     }
   }
@@ -298,10 +300,10 @@ function validatePassword(value: any) {
   if (props.requireNumber) {
     const regex = /(?=.*\d)/
     if (regex.test(value) && value) {
-      messages.push('En az bir rakam ✓')
+      messages.push(t('ui.textBox.number') + ' ✓')
       passwordSteps.value.numberValid = true
     } else {
-      messages.push('En az bir rakam ✕')
+      messages.push(t('ui.textBox.number') + ' ✕')
       passwordSteps.value.numberValid = false
     }
   }
@@ -309,10 +311,10 @@ function validatePassword(value: any) {
   if (props.requireSpecialCharacter) {
     const regex = /(?=.*[!@#$%^&*,.])/
     if (regex.test(value) && value) {
-      messages.push('En az bir özel karakter ✓')
+      messages.push(t('ui.textBox.special') + ' ✓')
       passwordSteps.value.specialCharacterValid = true
     } else {
-      messages.push('En az bir özel karakter ✕')
+      messages.push(t('ui.textBox.special') + ' ✕')
       passwordSteps.value.specialCharacterValid = false
     }
   }

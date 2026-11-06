@@ -101,7 +101,70 @@
     "resendCode": "Resend",
     "codeSent": "A verification code has been sent to your email.",
     "codeSendFailed": "The code could not be sent.",
-    "secondsShort": "{s}s"
+    "secondsShort": "{s}s",
+    "pageTitleLogin": "Abacasa - Authentication System",
+    "metaDescriptionLogin": "Sign in to your Abacasa account",
+    "passwordChangedRelogin": "Your password has been changed. Please sign in again with your new password.",
+    "passwordChanged": "Your password has been changed.",
+    "passwordChangedLogin": "Your password has been changed. Please sign in with your new password.",
+    "invite": {
+      "loading": "Loading invitation...",
+      "invitedAs": "{inviter} invited you to this household as {role}.",
+      "accept": "Accept invitation",
+      "otherAccount": "This invitation was sent to {email}. Sign in with that account.",
+      "signIn": "Sign in",
+      "register": "Sign up",
+      "pageTitle": "Household invitation - Abacasa",
+      "alreadyAccepted": "Invitation already accepted",
+      "revoked": "Invitation revoked",
+      "expired": "Invitation expired",
+      "notFound": "Invitation not found",
+      "alreadyUsed": "This invitation has already been used.",
+      "askAdmin": "Ask the household admin for a new invitation.",
+      "acceptFailed": "Could not accept invitation",
+      "signOut": "Sign out"
+    },
+    "backToLoginLower": "Back to sign in",
+    "checkEmail": {
+      "title": "Check your inbox",
+      "sentTo": "We sent a verification link to {email}.",
+      "sent": "We sent a verification link to your email address.",
+      "spamHint": "If you don't see the email, remember to check your {spam} folder.",
+      "spam": "spam"
+    },
+    "resendAgain": "Resend",
+    "verificationResent": "Verification link sent again.",
+    "requestFailed": "The request could not be sent.",
+    "pageTitleVerifyEmail": "Email Verification - Abacasa",
+    "emailChange": {
+      "inProgress": "Changing your email address...",
+      "done": "Your email address has been changed",
+      "doneText": "For your security, all your sessions have been closed. You can sign in with your new address ({email}).",
+      "notChanged": "Your email address was not changed. If needed, you can request it again from your profile page.",
+      "linkExpired": "The confirmation link is invalid or has expired."
+    },
+    "pleaseWait": "Please wait.",
+    "goToLogin": "Go to Sign In",
+    "linkInvalid": "Invalid link",
+    "loginPage": "Sign In Page",
+    "linkMalformed": "The link is incomplete or malformed.",
+    "pageTitleEmailChange": "Email Change - Abacasa",
+    "verify": {
+      "inProgress": "Verifying your email address...",
+      "done": "Your email has been verified",
+      "canSignIn": "You can now sign in.",
+      "linkExpired": "The verification link is invalid or has expired.",
+      "resent": "Verification link sent again. Please check your inbox."
+    },
+    "register": {
+      "invitedTo": "You have been invited to the {household} household. You will join it right after signing up.",
+      "mustAcceptTerms": "You must accept the terms of use",
+      "mustAcknowledgePrivacy": "You must confirm that you have read the privacy notice",
+      "failed": "Registration could not be completed",
+      "householdPlaceholder": "E.g. Smith Household"
+    },
+    "metaDescriptionRegister": "Create your Abacasa account",
+    "accountDeleted": "Your account has been deleted."
   },
   "sidebar": {
     "context": {
@@ -174,7 +237,63 @@
       "sat": "Sat",
       "sun": "Sun"
     },
-    "pageTitle": "Dashboard - Abacasa"
+    "pageTitle": "Dashboard - Abacasa",
+    "title": "Summary",
+    "noHousehold": {
+      "title": "You don't have a household yet",
+      "description": "You can create your own household or use the link in the invitation email you received.",
+      "create": "Create household"
+    },
+    "welcomeApp": "Welcome to Abacasa.",
+    "hello": "Hello",
+    "helloName": "Hello, {name}",
+    "household": "Household",
+    "noRecords": "No records",
+    "cards": {
+      "periodTotal": "Period total (excluding meal card)",
+      "periodBreakdown": "Expenses {expenses} · Donations {donations} · Pending {pending}",
+      "unknownAmounts": "{count} line items have no known amount",
+      "recurring": "Recurring payments",
+      "recurringBreakdown": "Paid {paid} · Pending {pending}",
+      "openDebt": "Open debt (TRY equivalent)",
+      "missingRate": "No exchange rate entered for {currencies}",
+      "mealCard": "Meal card",
+      "mealCardBreakdown": "Spent {spent} · Pending {pending}"
+    },
+    "byPaymentMethod": "By payment method",
+    "byPerson": "By person",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "spent": "Spent",
+      "pending": "Pending",
+      "total": "Total"
+    },
+    "upcoming": {
+      "title": "Upcoming payments",
+      "goToRecurring": "Go to Recurring payments",
+      "dueDate": "Due date",
+      "paymentMethod": "Payment method",
+      "amount": "Amount",
+      "status": "Status",
+      "estimated": "estimated",
+      "overdue": "Overdue",
+      "empty": "No upcoming payments",
+      "today": "Today",
+      "daysLeft": "{days} days left"
+    },
+    "trendVsLastWeek": "vs last week",
+    "profileCard": {
+      "roles": "Roles",
+      "permissions": "Permissions",
+      "sessions": "Sessions",
+      "editProfile": "Edit Profile",
+      "myRoles": "My roles",
+      "viewAllRoles": "View all roles",
+      "system": "System",
+      "more": "+{count} more",
+      "defaultName": "User"
+    }
   },
   "paymentMethodTypes": {
     "cash": "Cash",
@@ -472,5 +591,788 @@
       "roles": "Roles",
       "permissions": "Permissions"
     }
+  },
+  "budget": {
+    "date": "Date",
+    "amount": "Amount",
+    "category": "Category",
+    "paymentMethod": "Payment method",
+    "person": "Person",
+    "household": "Household",
+    "kind": "Type",
+    "note": "Note",
+    "recipient": "Recipient",
+    "giver": "Given by",
+    "status": "Status",
+    "name": "Name",
+    "add": "Add",
+    "noRecords": "No records",
+    "recordCount": "{count} records",
+    "periodTotal": "Period total",
+    "byPaymentMethod": "By payment method",
+    "amountPositive": "Amount must be greater than 0",
+    "recipientRequired": "Recipient is required",
+    "period": {
+      "calendarMonth": "Calendar month",
+      "statementPeriod": "Statement period",
+      "creditCard": "Credit card"
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "subtitle": "Record and track your expenses for the period.",
+    "itemName": "Expense",
+    "periodTotalExcludingMealCard": "Period total (excluding meal card)",
+    "mealCard": "Meal card",
+    "transactionCount": "Transactions",
+    "byCategory": "By category",
+    "searchPlaceholder": "Search descriptions...",
+    "add": "Add New Expense",
+    "loading": "Loading expenses...",
+    "empty": "No expenses found",
+    "editTitle": "Edit Expense",
+    "editSubtitle": "Update the expense details",
+    "createSubtitle": "Enter the new expense details",
+    "deleteTitle": "Delete Expense",
+    "deleteMessage": "Are you sure you want to delete the {amount} expense dated {date}?",
+    "form": {
+      "descriptionPlaceholder": "E.g. Weekly grocery shopping"
+    }
+  },
+  "donations": {
+    "title": "Donations",
+    "subtitle": "Record and track your donations for the period.",
+    "itemName": "Donation",
+    "recordCountLabel": "Records",
+    "fundDistributed": "Distributed from funds",
+    "byKind": "By type",
+    "byGiver": "By giver",
+    "searchPlaceholder": "Search recipient or note",
+    "add": "Add New Donation",
+    "loading": "Loading donations...",
+    "empty": "No donations found",
+    "fundChip": "Fund: {name}",
+    "editTitle": "Edit Donation",
+    "editSubtitle": "Update the donation details",
+    "createSubtitle": "Enter the new donation details",
+    "deleteTitle": "Delete Donation",
+    "deleteMessage": "Are you sure you want to delete the {amount} donation dated {date}?",
+    "form": {
+      "fromFund": "From fund",
+      "fundOption": "{from} · {kind} · on hand {amount}"
+    }
+  },
+  "donationTargets": {
+    "title": "Donation targets",
+    "addTarget": "Add target",
+    "emptyYear": "No targets or donations for {year}.",
+    "target": "Target",
+    "given": "Given",
+    "remaining": "Remaining",
+    "remainingAfterPlan": "Remaining after plan",
+    "planned": "Planned",
+    "expectedYearEnd": "Expected at year end",
+    "overpaid": "Overpaid {amount}",
+    "noTargetForKind": "No targets for this type.",
+    "voluntaryTitle": "Donations without a target (voluntary)",
+    "noVoluntary": "No donations without a target",
+    "editTitle": "Edit Target",
+    "createTitle": "Add Target",
+    "editSubtitle": "Update the target details",
+    "createSubtitle": "Target amount for a person, year and type",
+    "deleteTitle": "Delete Target",
+    "deleteMessage": "Are you sure you want to delete the {kind} target for {owner}?",
+    "created": "Target added",
+    "updated": "Target updated",
+    "deleted": "Target deleted",
+    "form": {
+      "year": "Year",
+      "yearRange": "Year must be between 2000 and 2100"
+    }
+  },
+  "donationFunds": {
+    "title": "Funds",
+    "subtitle": "Track donation money entrusted to you and its distributions.",
+    "itemName": "Fund",
+    "remainingToDistribute": "Remaining to distribute",
+    "from": "From",
+    "distributed": "Distributed",
+    "inUse": "In use",
+    "remaining": "Remaining",
+    "onHand": "On hand",
+    "searchPlaceholder": "Search giver or note",
+    "add": "Add New Fund",
+    "loading": "Loading funds...",
+    "empty": "No funds found",
+    "closed": "Done",
+    "open": "Open",
+    "distributionsButton": "Distributions ({count})",
+    "movementsButton": "Movements ({count})",
+    "editTitle": "Edit Fund",
+    "createTitle": "Add New Fund",
+    "editSubtitle": "Update the fund details",
+    "createSubtitle": "Money given to be distributed",
+    "deleteTitle": "Delete Fund",
+    "deleteMessage": "Are you sure you want to delete the fund from {from} ({amount})?",
+    "statusOptions": {
+      "open": "Open",
+      "closed": "Done"
+    },
+    "form": {
+      "kindLocked": "The type of a fund with distributions cannot be changed"
+    },
+    "distributions": {
+      "title": "Distributions",
+      "summary": "Remaining {remaining} · On hand {onHand}",
+      "add": "Add distribution",
+      "none": "No distributions",
+      "drawerTitle": "Add Distribution",
+      "drawerSubtitle": "Donation from fund",
+      "added": "Distribution added"
+    },
+    "movements": {
+      "title": "Movements",
+      "summary": "In use {inUse} · On hand {onHand}",
+      "none": "No movements",
+      "editHeading": "Edit movement",
+      "addHeading": "Add movement",
+      "deleteTitle": "Delete Movement",
+      "deleteMessage": "Are you sure you want to delete the {amount} movement dated {date}?",
+      "added": "Movement added",
+      "updated": "Movement updated",
+      "deleted": "Movement deleted",
+      "types": {
+        "use": "Use",
+        "return": "Return"
+      }
+    }
+  },
+  "recurringPayments": {
+    "title": "Recurring payments",
+    "subtitle": "Manage recurring payment plans and the period's due dates.",
+    "tabs": {
+      "period": "Period",
+      "plans": "Plans"
+    },
+    "occurrences": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "total": "Total",
+      "unknownAmount": "Amount unknown for {count} line items",
+      "paymentMethodSummary": "Paid {paid} · Pending {pending}",
+      "title": "Due dates",
+      "searchPlaceholder": "Search due dates...",
+      "loading": "Loading due dates...",
+      "empty": "No due dates in this period",
+      "dueDate": "Due date",
+      "estimated": "estimated",
+      "paidOn": "Paid · {date}",
+      "waiting": "Pending",
+      "pay": "Pay",
+      "undo": "Undo",
+      "undoTitle": "Undo payment",
+      "undoMessageDonation": "The created donation record will be deleted.",
+      "undoMessageExpense": "The created expense record will be deleted.",
+      "paymentSaved": "Payment recorded",
+      "paymentUndone": "Payment undone"
+    },
+    "plans": {
+      "title": "Plans",
+      "itemName": "Plan",
+      "searchPlaceholder": "Search name or recipient...",
+      "add": "Add New Plan",
+      "loading": "Loading plans...",
+      "empty": "No plans found",
+      "categoryOrRecipient": "Category / Recipient",
+      "editTitle": "Edit Plan",
+      "createTitle": "Add New Plan",
+      "editSubtitle": "Update the plan details",
+      "createSubtitle": "Enter the new recurring payment plan details",
+      "deleteTitle": "Delete Plan",
+      "deleteMessage": "Are you sure you want to delete the {name} plan?"
+    },
+    "form": {
+      "namePlaceholder": "E.g. Rent",
+      "kindLocked": "Cannot be changed on a plan with payments",
+      "startMonth": "Start month",
+      "dueDay": "Due day",
+      "donationKind": "Donation type",
+      "totalAmount": "Total amount",
+      "installmentCount": "Number of installments",
+      "firstDueDate": "First installment date",
+      "expectedAmount": "Expected amount",
+      "nameRequired": "Name is required",
+      "dueDayRange": "Due day must be between 1 and 31",
+      "installmentCountRange": "Number of installments must be between 2 and 120"
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Manage expense and donation categories.",
+    "searchPlaceholder": "Search categories...",
+    "add": "Add New Category",
+    "loading": "Loading categories...",
+    "empty": "No categories found",
+    "editTitle": "Edit Category",
+    "editSubtitle": "Update the category details",
+    "createSubtitle": "Enter the new category details",
+    "deleteTitle": "Delete Category",
+    "deleteConfirm": "Are you sure you want to delete the category '{name}'?",
+    "columns": {
+      "name": "Category Name"
+    },
+    "itemName": "category",
+    "namePlaceholder": "e.g. Groceries"
+  },
+  "debts": {
+    "title": "Debts",
+    "subtitle": "Track borrowed debts and their repayments; debt transactions are not included in period expenses.",
+    "searchPlaceholder": "Search notes",
+    "add": "Add New Debt",
+    "loading": "Loading debts...",
+    "empty": "No debts found",
+    "household": "Household",
+    "editTitle": "Edit Debt",
+    "editSubtitle": "Update the debt details",
+    "createSubtitle": "Enter the new debt details",
+    "deleteTitle": "Delete Debt",
+    "deleteConfirm": "Are you sure you want to delete the {amount} debt to {creditor}?",
+    "itemName": "debt",
+    "summary": {
+      "openTotal": "Open debt (TRY equivalent)",
+      "missingRate": "No exchange rate entered for {currencies}",
+      "openCount": "{count} open debts",
+      "tryDebt": "TRY debt",
+      "goldDebt": "Gold debt",
+      "foreignDebt": "{currency} debt",
+      "rates": "Exchange rates",
+      "noRates": "No exchange rates"
+    },
+    "byCreditor": {
+      "title": "By creditor",
+      "open": "Open",
+      "totalTry": "Total TRY",
+      "empty": "No open debts"
+    },
+    "columns": {
+      "date": "Date",
+      "creditor": "Creditor",
+      "debtor": "Debtor",
+      "amount": "Amount",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "status": "Status",
+      "note": "Note"
+    },
+    "filters": {
+      "currency": "Currency",
+      "closed": "Closed",
+      "all": "All"
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "form": {
+      "currencyLocked": "The currency of a debt with payments cannot be changed",
+      "quantity": "Quantity",
+      "amountPositive": "Amount must be greater than 0",
+      "goldWhole": "Quarter gold must be a whole number."
+    },
+    "payments": {
+      "button": "Payments",
+      "buttonAria": "Payments ({count})",
+      "title": "Payments · {creditor}",
+      "rate": "Exchange rate",
+      "amountInTry": "TRY equivalent",
+      "amountInTryLine": "TRY equivalent: {amount}",
+      "empty": "No payments",
+      "editHeading": "Edit payment",
+      "add": "Add payment",
+      "deleteTitle": "Delete Payment",
+      "deleteConfirm": "Are you sure you want to delete the {amount} payment dated {date}?",
+      "updated": "Payment updated",
+      "created": "Payment added",
+      "deleted": "Payment deleted",
+      "amountUsd": "Amount ($)",
+      "amountEur": "Amount (€)",
+      "amountTry": "Amount (₺)",
+      "positive": "Must be greater than 0"
+    }
+  },
+  "exchangeRates": {
+    "title": "Exchange rates (manual)",
+    "currency": "Currency",
+    "goldPrice": "Quarter gold price (₺)",
+    "rate": "Exchange rate (₺)",
+    "date": "Date",
+    "recent": "Recent entries",
+    "empty": "No exchange rates entered",
+    "deleteTitle": "Delete Exchange Rate",
+    "deleteConfirm": "Are you sure you want to delete the exchange rate dated {date}?",
+    "positive": "Exchange rate must be greater than 0",
+    "saved": "Exchange rate saved",
+    "deleted": "Exchange rate deleted"
+  },
+  "ledger": {
+    "title": "Annual table",
+    "addItem": "Add line item",
+    "editTitle": "Edit Line Item",
+    "createTitle": "Add Line Item",
+    "editSubtitle": "Update the line item details",
+    "createSubtitle": "New income or expense line item",
+    "deleteTitle": "Delete Line Item",
+    "deleteConfirm": "Are you sure you want to delete the line item '{name}'?",
+    "updated": "Line item updated",
+    "created": "Line item added",
+    "deleted": "Line item deleted",
+    "household": "Household",
+    "direction": {
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "form": {
+      "name": "Name",
+      "direction": "Direction",
+      "directionLocked": "The direction of a line item with amounts cannot be changed",
+      "person": "Person",
+      "nameRequired": "Name is required"
+    },
+    "table": {
+      "item": "Line item",
+      "total": "Total",
+      "average": "Average",
+      "noRecords": "No records",
+      "incomeTotal": "Total income",
+      "expenseTotal": "Total expenses",
+      "net": "Net (income − expenses)"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "sections": {
+      "income": "Income",
+      "recurring": "Expenses · Recurring payments",
+      "expenses": "Expenses · Spending",
+      "manual": "Expenses · Manual"
+    },
+    "rows": {
+      "category": "Spending · {name}",
+      "donations": "Donations (unplanned)"
+    }
+  },
+  "paymentMethods": {
+    "title": "Payment methods",
+    "subtitle": "Manage payment methods such as cards, accounts and cash.",
+    "searchPlaceholder": "Search payment methods...",
+    "add": "Add New Payment Method",
+    "loading": "Loading payment methods...",
+    "empty": "No payment methods found",
+    "household": "Household",
+    "editTitle": "Edit Payment Method",
+    "editSubtitle": "Update the payment method details",
+    "createSubtitle": "Enter the new payment method details",
+    "deleteTitle": "Delete Payment Method",
+    "deleteConfirm": "Are you sure you want to delete the payment method '{name}'?",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "bank": "Bank",
+      "owner": "Owner",
+      "statementDay": "Statement day"
+    },
+    "itemName": "payment method",
+    "namePlaceholder": "e.g. Salary card",
+    "bankPlaceholder": "e.g. Ziraat Bank",
+    "statementDayRange": "Must be between 1 and 31"
+  },
+  "people": {
+    "title": "People",
+    "subtitle": "Manage the people in your household.",
+    "searchPlaceholder": "Search people...",
+    "add": "Add New Person",
+    "loading": "Loading people...",
+    "empty": "No people found",
+    "editTitle": "Edit Person",
+    "editSubtitle": "Update the person's details",
+    "createSubtitle": "Enter the new person's details",
+    "deleteTitle": "Delete Person",
+    "deleteConfirm": "Are you sure you want to delete '{name}'?",
+    "columns": {
+      "name": "Name",
+      "relation": "Relationship"
+    },
+    "itemName": "person",
+    "namePlaceholder": "e.g. Jane",
+    "relationPlaceholder": "e.g. Spouse, mother"
+  },
+  "vehicles": {
+    "title": "Vehicles",
+    "subtitle": "Track your vehicles and their maintenance and obligation dates.",
+    "searchPlaceholder": "Search by name or plate",
+    "add": "Add vehicle",
+    "loading": "Loading vehicles...",
+    "empty": "No vehicles found",
+    "household": "Household",
+    "editTitle": "Edit Vehicle",
+    "createTitle": "Add Vehicle",
+    "editSubtitle": "Update the vehicle details",
+    "createSubtitle": "Enter the new vehicle details",
+    "deleteTitle": "Delete Vehicle",
+    "deleteConfirm": "Are you sure you want to delete the vehicle {name} ({plate})?",
+    "itemName": "vehicle",
+    "columns": {
+      "name": "Name",
+      "plate": "Plate",
+      "owner": "Owner"
+    },
+    "upcoming": {
+      "title": "Upcoming and overdue",
+      "vehicle": "Vehicle",
+      "type": "Type",
+      "validUntil": "Valid until",
+      "status": "Status",
+      "lastAmount": "Last amount",
+      "overdue": "Overdue · {days} days",
+      "today": "Today",
+      "daysLeft": "{days} days left",
+      "empty": "No upcoming dates"
+    },
+    "form": {
+      "namePlaceholder": "e.g. Family car",
+      "note": "Note",
+      "nameRequired": "Name is required",
+      "plateRequired": "Plate is required"
+    },
+    "obligations": {
+      "button": "Records",
+      "title": "Records · {name} ({plate})",
+      "type": "Type",
+      "date": "Date",
+      "validUntil": "Valid until",
+      "amount": "Amount",
+      "expense": "Expense",
+      "note": "Note",
+      "empty": "No records",
+      "editHeading": "Edit record",
+      "addHeading": "Add record",
+      "linkedExpenseNote": "A linked expense exists; date and amount changes also apply to the expense.",
+      "createExpense": "Also save as an expense",
+      "category": "Category",
+      "paymentMethod": "Payment method",
+      "add": "Add",
+      "deleteTitle": "Delete Record",
+      "validUntilRule": "Valid until must be after the date",
+      "amountRequired": "An amount is required for the expense",
+      "amountPositive": "Amount must be greater than 0",
+      "deleteConfirm": "Are you sure you want to delete the {type} record ({date})?",
+      "deleteLinkedExpense": "The linked expense will also be deleted.",
+      "updated": "Record updated",
+      "created": "Record added",
+      "deleted": "Record deleted"
+    }
+  },
+  "ui": {
+    "select": {
+      "loading": "Loading…",
+      "noData": "No records found"
+    },
+    "richText": {
+      "bold": "Bold (Ctrl+B)",
+      "italic": "Italic (Ctrl+I)",
+      "underline": "Underline (Ctrl+U)",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "link": "Link",
+      "unlink": "Remove link",
+      "clearFormat": "Clear formatting",
+      "undo": "Undo (Ctrl+Z)",
+      "redo": "Redo (Ctrl+Y)",
+      "pasteHint": "You can copy from Word and paste here — formatting is kept.",
+      "charCount": "{count} characters",
+      "placeholder": "Type here or paste from Word…",
+      "linkPrompt": "Link URL (https://...)"
+    },
+    "textBox": {
+      "minChars": "At least {n} characters",
+      "maxChars": "At most {n} characters",
+      "uppercase": "At least one uppercase letter",
+      "lowercase": "At least one lowercase letter",
+      "number": "At least one digit",
+      "special": "At least one special character",
+      "required": "This field is required.",
+      "exactLength": "{label} must be {n} characters.",
+      "maxLength": "{label} can be at most {n} characters.",
+      "minLength": "{label} must be at least {n} characters.",
+      "maxNumber": "{label} can be at most {n}.",
+      "minNumber": "{label} must be at least {n}.",
+      "email": "Enter a valid email address.",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password"
+    },
+    "textField": {
+      "clear": "Clear"
+    }
+  },
+  "errorPage": {
+    "tryAgain": "Try Again",
+    "goHome": "Go Home",
+    "needAccess": "Need Access?",
+    "needAccessText": "If you believe you should have access to this resource, please contact your administrator.",
+    "contactSupport": "Contact Support",
+    "title403": "Access Denied",
+    "title404": "Page Not Found",
+    "title500": "Server Error",
+    "titleDefault": "Something went wrong",
+    "message403": "You don't have permission to access this resource. Please check your credentials or contact an administrator.",
+    "message404": "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+    "message500": "An internal server error occurred. Our team has been notified and is working to fix this issue.",
+    "messageDefault": "An unexpected error occurred. Please try again later."
+  },
+  "layout": {
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "searchPlaceholder": "Search...",
+    "householdSettings": "Household settings",
+    "privacyAndTerms": "Privacy and terms",
+    "menu": "Menu",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "defaultUserName": "User",
+    "noHousehold": "No household"
+  },
+  "household": {
+    "roles": {
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "invitationStatus": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "create": {
+      "title": "Create new household",
+      "subtitle": "You will be its admin.",
+      "submit": "Create",
+      "failed": "Could not create household"
+    },
+    "nameLabel": "Household name",
+    "namePlaceholder": "E.g. Smith family",
+    "nameRequired": "Household name is required",
+    "nameMax": "Household name can be at most 100 characters",
+    "switcher": {
+      "select": "Select household",
+      "failed": "Could not switch household"
+    },
+    "fallbackName": "Household",
+    "memberCount": "{count} members",
+    "export": "Download household data (Excel)",
+    "exportFailed": "Could not download household data",
+    "email": "Email",
+    "role": "Role",
+    "linkedPerson": "Linked person",
+    "rules": {
+      "required": "{label} is required",
+      "max": "{label} can be at most {max} characters",
+      "email": "Enter a valid email address"
+    },
+    "members": {
+      "title": "Members",
+      "name": "Name",
+      "joinedAt": "Joined on",
+      "you": "(you)",
+      "roleAndPerson": "Role and person",
+      "remove": "Remove",
+      "empty": "No members",
+      "editSubtitle": "Role in the household and linked person",
+      "removeTitle": "Remove member",
+      "removeConfirm": "Remove {name} from the household?",
+      "updateFailed": "Could not update member"
+    },
+    "leave": {
+      "title": "Leave household",
+      "confirm": "Are you sure you want to leave the {name} household?",
+      "thisFallback": "current",
+      "submit": "Leave"
+    },
+    "modules": {
+      "title": "Modules",
+      "donationExtras": "Donation targets and funds",
+      "donationExtrasHint": "Annual donation and zakat targets, and tracking of funds entrusted by others.",
+      "donationExtrasOn": "Donation targets and funds turned on",
+      "donationExtrasOff": "Donation targets and funds turned off"
+    },
+    "invitations": {
+      "title": "Invitations",
+      "invite": "Invite",
+      "status": "Status",
+      "expiresAt": "Expires on",
+      "resend": "Resend",
+      "empty": "No invitations",
+      "validity": "The invitation link is valid for 7 days.",
+      "personOptional": "Person to link (optional)",
+      "revokeTitle": "Revoke invitation",
+      "revokeConfirm": "Revoke the invitation sent to {email}?",
+      "revoke": "Revoke",
+      "emailNotSent": "The invitation was created but the email could not be sent; try resending it",
+      "sent": "Invitation sent",
+      "resent": "Invitation resent",
+      "createFailed": "Could not create invitation"
+    },
+    "delete": {
+      "title": "Delete household",
+      "hint": "All of the household's records (expenses, debts, plans, people…), memberships and invitations are permanently deleted. This cannot be undone.",
+      "confirmName": "Type the household name to confirm",
+      "submit": "Permanently delete household",
+      "failed": "Could not delete household"
+    },
+    "rename": {
+      "title": "Edit household name",
+      "subtitle": "The household name is visible to all members.",
+      "success": "Household name updated"
+    }
+  },
+  "legal": {
+    "consent": {
+      "title": "Terms updated",
+      "intro": "To continue, please read and accept the updated documents.",
+      "acceptTerms": "I have read and accept the {link}.",
+      "termsLink": "Terms of Use",
+      "acknowledgePrivacy": "I have read the {link} on the processing of my personal data.",
+      "privacyLink": "Privacy Notice",
+      "logout": "Sign out",
+      "continue": "Continue",
+      "saveFailed": "Could not save your consent"
+    },
+    "document": {
+      "meta": "Version {version} · Effective: {date}",
+      "privacyLink": "Privacy notice",
+      "termsLink": "Terms of use"
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "pageTitle": "Terms of use - Abacasa"
+    },
+    "privacy": {
+      "title": "Privacy Notice on the Processing of Personal Data",
+      "pageTitle": "Privacy notice - Abacasa"
+    }
+  },
+  "account": {
+    "delete": {
+      "title": "Delete account",
+      "hint": "When your account is deleted, your personal information is permanently removed and this cannot be undone. The records you entered stay in their households.",
+      "start": "I want to delete my account",
+      "lastSuperAdmin": "You are the last super admin in the system; your account cannot be deleted.",
+      "blockedHouseholds": "You are the last admin of these households; make another member an admin first: {names}",
+      "householdsToDelete": "These households will also be deleted with all their data: {names}",
+      "confirmHouseholds": "I confirm that these households will be deleted too",
+      "password": "Password",
+      "submit": "Permanently delete my account",
+      "failed": "Could not delete account"
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "pageTitle": "My profile - Abacasa",
+    "stats": {
+      "memberDays": "Days as Member"
+    },
+    "lastLogin": "Last Sign-in",
+    "account": {
+      "title": "Account Information",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "changeEmail": "Change email",
+      "phone": "Phone",
+      "notSpecified": "Not specified",
+      "createdDate": "Registration Date"
+    },
+    "password": {
+      "title": "Change Password",
+      "knowCurrent": "I know my current password",
+      "forgot": "I forgot my password",
+      "codeInfo": "A 6-digit code will be sent to {email}. The code is valid for 10 minutes.",
+      "codeLabel": "Verification Code",
+      "codePlaceholder": "6-digit code",
+      "sendCode": "Send Code",
+      "confirmNew": "Repeat New Password"
+    },
+    "sessions": {
+      "title": "My Active Sessions",
+      "logoutAll": "Sign Out of All",
+      "empty": "No active sessions found.",
+      "thisDevice": "This device",
+      "remaining": "{time} left",
+      "history": "Past sessions ({count})",
+      "ended": "Ended",
+      "logoutAllTitle": "Sign out of all devices",
+      "logoutAllConfirm": "Your sessions on all devices will be closed, including this one. Do you want to continue?",
+      "logoutAllSubmit": "Yes, sign out"
+    },
+    "data": {
+      "groupTitle": "Account and data",
+      "title": "My data",
+      "hint": "Your account information, memberships, consents, sessions and sign-in attempts as an Excel file.",
+      "export": "Download my data (Excel)",
+      "exportFailed": "Could not download data"
+    },
+    "edit": {
+      "title": "Edit My Information",
+      "subtitle": "Your first name, last name and phone",
+      "firstNamePlaceholder": "Your first name",
+      "lastNamePlaceholder": "Your last name",
+      "success": "Your information has been updated.",
+      "failed": "Could not update your information."
+    },
+    "email": {
+      "title": "Change Email Address",
+      "subtitle": "The new address takes effect via a confirmation link",
+      "sent": "We sent a confirmation link to {email}. Until you click the link, you will keep signing in with your current address.",
+      "info": "A confirmation link is sent to the new address. Your email changes once the link is confirmed, and all your sessions are closed.",
+      "newEmail": "New email",
+      "currentPassword": "Current password",
+      "submit": "Send Confirmation Link"
+    },
+    "status": {
+      "banned": "Banned",
+      "pendingVerification": "Pending verification",
+      "unknown": "Unknown"
+    },
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{n} days ago",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security"
+    },
+    "duration": {
+      "days": "{n} days",
+      "hours": "{n} hours",
+      "minutes": "{n} minutes",
+      "lessThanMinute": "< 1 minute"
+    }
+  },
+  "currencies": {
+    "try": "TRY",
+    "usd": "US dollar",
+    "eur": "Euro",
+    "quarterGold": "Quarter gold",
+    "quarterCount": "{n} quarters"
   }
 }

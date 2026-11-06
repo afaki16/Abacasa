@@ -4,10 +4,10 @@
     <table class="ledger-table">
       <thead>
         <tr>
-          <th class="sticky-col">Kalem</th>
-          <th v-for="label in MONTH_LABELS" :key="label" class="num">{{ label }}</th>
-          <th class="num">Toplam</th>
-          <th class="num">Ortalama</th>
+          <th class="sticky-col">{{ t('ledger.table.item') }}</th>
+          <th v-for="key in MONTH_KEYS" :key="key" class="num">{{ t(`ledger.months.${key}`) }}</th>
+          <th class="num">{{ t('ledger.table.total') }}</th>
+          <th class="num">{{ t('ledger.table.average') }}</th>
         </tr>
       </thead>
 
@@ -28,8 +28,8 @@
               </span>
               <template v-if="row.source === 'manual'">
                 <div class="flex-1" />
-                <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" title="Düzenle" @click="$emit('edit', row)" />
-                <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" title="Sil" @click="$emit('delete', row)" />
+                <UiBtn v-if="canUpdate" icon="mdi-pencil" size="x-small" variant="text" :title="t('common.edit')" @click="$emit('edit', row)" />
+                <UiBtn v-if="canDelete" icon="mdi-delete" size="x-small" variant="text" color="error" :title="t('common.delete')" @click="$emit('delete', row)" />
               </template>
             </div>
           </td>
@@ -58,26 +58,26 @@
           <td class="num">{{ formatMoney(row.average) }}</td>
         </tr>
         <tr v-if="!section.rows.length">
-          <td class="sticky-col text-black/60 dark:text-white/70">Kayıt yok</td>
+          <td class="sticky-col text-black/60 dark:text-white/70">{{ t('ledger.table.noRecords') }}</td>
           <td :colspan="14" />
         </tr>
       </tbody>
 
       <tfoot v-if="data">
         <tr>
-          <td class="sticky-col">Gelir toplamı</td>
+          <td class="sticky-col">{{ t('ledger.table.incomeTotal') }}</td>
           <td v-for="(value, m) in data.totals.incomeByMonth" :key="m" class="num">{{ formatMoney(value) }}</td>
           <td class="num">{{ formatMoney(data.totals.incomeTotal) }}</td>
           <td class="num">{{ formatMoney(data.totals.incomeAverage) }}</td>
         </tr>
         <tr>
-          <td class="sticky-col">Gider toplamı</td>
+          <td class="sticky-col">{{ t('ledger.table.expenseTotal') }}</td>
           <td v-for="(value, m) in data.totals.expenseByMonth" :key="m" class="num">{{ formatMoney(value) }}</td>
           <td class="num">{{ formatMoney(data.totals.expenseTotal) }}</td>
           <td class="num">{{ formatMoney(data.totals.expenseAverage) }}</td>
         </tr>
         <tr>
-          <td class="sticky-col">Net (gelir − gider)</td>
+          <td class="sticky-col">{{ t('ledger.table.net') }}</td>
           <td v-for="(value, m) in data.totals.netByMonth" :key="m" class="num" :class="{ negative: value < 0 }">
             {{ formatMoney(value) }}
           </td>
@@ -93,7 +93,7 @@
 import { ref, computed, nextTick } from 'vue'
 import type { LedgerRow, LedgerYear } from '~/types'
 
-const MONTH_LABELS = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara']
+const MONTH_KEYS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
 const props = defineProps<{
   data: LedgerYear | null
@@ -106,6 +106,7 @@ const emit = defineEmits<{
   'save-cell': [row: LedgerRow, month: number, amount: number | null]
 }>()
 
+const { t } = useI18n()
 const { formatMoney } = useMoney()
 const { hasPermission } = useAuth()
 const { getKindLabel } = useRecurringPayments()
@@ -116,16 +117,16 @@ const canDelete = computed(() => hasPermission('Ledger.Delete'))
 const sections = computed(() => {
   const expense = props.data?.expenseRows ?? []
   return [
-    { title: 'Gelirler', rows: props.data?.incomeRows ?? [] },
-    { title: 'Giderler · Sabit ödemeler', rows: expense.filter((r) => r.source === 'plan') },
-    { title: 'Giderler · Harcamalar', rows: expense.filter((r) => r.source === 'category' || r.source === 'donations') },
-    { title: 'Giderler · Elle', rows: expense.filter((r) => r.source === 'manual') },
+    { title: t('ledger.sections.income'), rows: props.data?.incomeRows ?? [] },
+    { title: t('ledger.sections.recurring'), rows: expense.filter((r) => r.source === 'plan') },
+    { title: t('ledger.sections.expenses'), rows: expense.filter((r) => r.source === 'category' || r.source === 'donations') },
+    { title: t('ledger.sections.manual'), rows: expense.filter((r) => r.source === 'manual') },
   ]
 })
 
 const rowLabel = (row: LedgerRow) => {
-  if (row.source === 'category') return `Harcamalar · ${row.name}`
-  if (row.source === 'donations') return 'Bağışlar (plan dışı)'
+  if (row.source === 'category') return t('ledger.rows.category', { name: row.name })
+  if (row.source === 'donations') return t('ledger.rows.donations')
   return row.name
 }
 

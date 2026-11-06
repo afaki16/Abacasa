@@ -41,7 +41,7 @@
           <!-- Register Form Component -->
           <!-- Davet modu: hane adı gizli, e-posta davetteki adres -->
           <UiAlert v-if="invite" type="info" variant="flat" density="compact" class="mb-4">
-            {{ invite.householdName }} hanesine davet edildiniz. Kayıttan sonra doğrudan haneye katılırsınız.
+            {{ t('auth.register.invitedTo', { household: invite.householdName }) }}
           </UiAlert>
           <UiAlert v-if="inviteError" type="error" variant="flat" density="compact" class="mb-4">
             {{ inviteError }}
@@ -58,31 +58,32 @@
               <div class="terms-section mb-4">
                 <UiCheckbox
                   v-model="acceptTerms"
-                  :rules="[v => !!v || 'Kullanım koşullarını kabul etmelisiniz']"
+                  :rules="[v => !!v || t('auth.register.mustAcceptTerms')]"
                   density="compact"
                   color="white"
                   hide-details="auto"
                 >
                   <template #label>
-                    <span class="terms-text">
-                      <a :href="LEGAL_ROUTES.terms" target="_blank" rel="noopener" class="terms-link" @click.stop>Kullanım koşullarını</a>
-                      okudum ve kabul ediyorum.
-                    </span>
+                    <i18n-t keypath="legal.consent.acceptTerms" tag="span" class="terms-text" scope="global">
+                      <template #link>
+                        <a :href="LEGAL_ROUTES.terms" target="_blank" rel="noopener" class="terms-link" @click.stop>{{ t('legal.consent.termsLink') }}</a>
+                      </template>
+                    </i18n-t>
                   </template>
                 </UiCheckbox>
                 <UiCheckbox
                   v-model="acknowledgePrivacy"
-                  :rules="[v => !!v || 'Aydınlatma metnini okuduğunuzu onaylamalısınız']"
+                  :rules="[v => !!v || t('auth.register.mustAcknowledgePrivacy')]"
                   density="compact"
                   color="white"
                   hide-details="auto"
                 >
                   <template #label>
-                    <span class="terms-text">
-                      Kişisel verilerimin işlenmesine ilişkin
-                      <a :href="LEGAL_ROUTES.privacy" target="_blank" rel="noopener" class="terms-link" @click.stop>Aydınlatma Metni'ni</a>
-                      okudum.
-                    </span>
+                    <i18n-t keypath="legal.consent.acknowledgePrivacy" tag="span" class="terms-text" scope="global">
+                      <template #link>
+                        <a :href="LEGAL_ROUTES.privacy" target="_blank" rel="noopener" class="terms-link" @click.stop>{{ t('legal.consent.privacyLink') }}</a>
+                      </template>
+                    </i18n-t>
                   </template>
                 </UiCheckbox>
               </div>
@@ -114,9 +115,9 @@
           </div>
 
           <div class="legal-links">
-            <NuxtLink :to="LEGAL_ROUTES.privacy" class="terms-link">Aydınlatma metni</NuxtLink>
+            <NuxtLink :to="LEGAL_ROUTES.privacy" class="terms-link">{{ t('legal.document.privacyLink') }}</NuxtLink>
             <span>·</span>
-            <NuxtLink :to="LEGAL_ROUTES.terms" class="terms-link">Kullanım koşulları</NuxtLink>
+            <NuxtLink :to="LEGAL_ROUTES.terms" class="terms-link">{{ t('legal.document.termsLink') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -202,7 +203,7 @@ const registerWithInvite = async (formData: RegisterRequest) => {
     await auth.login({ email: formData.email, password: formData.password, rememberMe: false, deviceId: '', deviceName: '' })
     reloadToDashboard()
   } catch (error) {
-    inviteError.value = parseApiErrorMessages(error, 'Kayıt tamamlanamadı').join(' ')
+    inviteError.value = parseApiErrorMessages(error, t('auth.register.failed')).join(' ')
     inviteBusy.value = false
   }
 }
@@ -265,9 +266,9 @@ onUnmounted(() => {
 
 // SEO
 useHead({
-  title: 'Hesap Oluştur - Abacasa',
+  title: computed(() => t('auth.pageTitleRegister')),
   meta: [
-    { name: 'description', content: 'Create your Abacasa account' }
+    { name: 'description', content: computed(() => t('auth.metaDescriptionRegister')) }
   ]
 })
 </script>

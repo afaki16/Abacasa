@@ -36,15 +36,15 @@
       >
         <div class="text-center">
           <p class="text-body-md font-bold text-on-surface">{{ rolesCount }}</p>
-          <p class="text-label-sm text-on-surface-variant">Rol</p>
+          <p class="text-label-sm text-on-surface-variant">{{ t('dashboard.profileCard.roles') }}</p>
         </div>
         <div class="text-center">
           <p class="text-body-md font-bold text-on-surface">{{ permissionsCount }}</p>
-          <p class="text-label-sm text-on-surface-variant">İzin</p>
+          <p class="text-label-sm text-on-surface-variant">{{ t('dashboard.profileCard.permissions') }}</p>
         </div>
         <div class="text-center">
           <p class="text-body-md font-bold text-on-surface">{{ activeSessionsCount }}</p>
-          <p class="text-label-sm text-on-surface-variant">Oturum</p>
+          <p class="text-label-sm text-on-surface-variant">{{ t('dashboard.profileCard.sessions') }}</p>
         </div>
       </div>
 
@@ -53,7 +53,7 @@
         @click="$router.push('/profile')"
         class="w-full mt-md py-2.5 bg-primary text-on-primary font-bold rounded-[10px] hover:opacity-90 transition-all text-body-sm"
       >
-        Profili Düzenle
+        {{ t('dashboard.profileCard.editProfile') }}
       </button>
     </div>
 
@@ -66,12 +66,12 @@
         <h5
           class="text-label-sm font-bold text-on-surface-variant uppercase tracking-widest"
         >
-          Rollerim
+          {{ t('dashboard.profileCard.myRoles') }}
         </h5>
         <NuxtLink
           to="/roles"
           class="text-on-surface-variant hover:text-primary transition-colors"
-          title="Tüm rolleri görüntüle"
+          :title="t('dashboard.profileCard.viewAllRoles')"
         >
           <Icon name="mdi:arrow-right" class="w-4 h-4" />
         </NuxtLink>
@@ -109,7 +109,7 @@
             v-if="role.isSystemRole"
             class="text-label-sm bg-secondary-container/20 text-on-secondary-container px-2 py-0.5 rounded font-bold"
           >
-            Sistem
+            {{ t('dashboard.profileCard.system') }}
           </span>
         </div>
 
@@ -118,7 +118,7 @@
           v-if="userRoles.length > displayRoles.length"
           class="text-label-sm text-on-surface-variant text-center pt-1"
         >
-          +{{ userRoles.length - displayRoles.length }} daha
+          {{ t('dashboard.profileCard.more', { count: userRoles.length - displayRoles.length }) }}
         </p>
       </div>
     </div>
@@ -129,13 +129,14 @@
 import { computed } from 'vue'
 
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 // MOCK DATA — backend bağlantısı 2B sonrası bir adımda yapılacak.
 // Şu an aktif session sayısı için gerçek endpoint yok, mock 3 kullanıyoruz.
 const MOCK_ACTIVE_SESSIONS = 3
 
 const userFullName = computed(
-  () => authStore.userFullName || 'Kullanıcı'
+  () => authStore.userFullName || t('dashboard.profileCard.defaultName')
 )
 
 const userEmail = computed(() => authStore.user?.email || '')

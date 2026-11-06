@@ -5,11 +5,12 @@ import { useApi } from './useApi'
 
 export const useLedger = () => {
   const api = useApi()
+  const { t } = useI18n()
 
-  const directionOptions = [
-    { value: LedgerDirection.Income, title: 'Gelir' },
-    { value: LedgerDirection.Expense, title: 'Gider' },
-  ]
+  const directionOptions = computed(() => [
+    { value: LedgerDirection.Income, title: t('ledger.direction.income') },
+    { value: LedgerDirection.Expense, title: t('ledger.direction.expense') },
+  ])
 
   const getLedgerYear = async (year: number) => {
     try {

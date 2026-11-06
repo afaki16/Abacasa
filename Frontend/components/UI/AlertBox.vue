@@ -58,7 +58,7 @@
       v-if="closable"
       type="button"
       class="alert-close"
-      :aria-label="closeLabel"
+      :aria-label="closeLabel ?? $t('common.close')"
       @click="emit('close')"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -89,7 +89,7 @@ const props = withDefaults(
     title: "",
     message: () => [],
     closable: true,
-    closeLabel: "Kapat",
+    closeLabel: undefined,
   },
 );
 

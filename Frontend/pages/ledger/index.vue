@@ -2,7 +2,7 @@
   <!-- Breadcrumb -->
   <div class="mb-6">
     <BreadCrumb
-      :items="[{ text: 'Ana Sayfa', to: '/' }, { text: 'Yıllık tablo' }]"
+      :items="[{ text: t('common.home'), to: '/' }, { text: t('ledger.title') }]"
     />
   </div>
 
@@ -12,7 +12,7 @@
     <div class="text-[1.25rem] leading-[2rem] tracking-[0.0125em] font-medium">{{ year }}</div>
     <UiBtn icon="mdi-chevron-right" variant="text" :disabled="isLoading" @click="year++" />
     <div class="flex-1" />
-    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">Kalem ekle</UiBtn>
+    <UiBtn v-if="canCreate" color="primary" prepend-icon="mdi-plus" @click="openCreate">{{ t('ledger.addItem') }}</UiBtn>
   </div>
 
   <UiCard elevation="0" border>
@@ -23,8 +23,8 @@
   <!-- Kalem formu -->
   <ResizableDrawer
     v-model="formDialog"
-    :title="editingItem ? 'Kalemi Düzenle' : 'Kalem Ekle'"
-    :subtitle="editingItem ? 'Kalem bilgilerini güncelleyin' : 'Yeni gelir ya da gider kalemi'"
+    :title="editingItem ? t('ledger.editTitle') : t('ledger.createTitle')"
+    :subtitle="editingItem ? t('ledger.editSubtitle') : t('ledger.createSubtitle')"
     icon="mdi-table-large"
     :default-width="520"
     :min-width="400"
@@ -41,10 +41,10 @@
   <!-- Silme onayı -->
   <ConfirmDialog
     :model-value="!!rowToDelete"
-    title="Kalemi Sil"
-    :message="`'${rowToDelete?.name ?? ''}' kalemini silmek istediğinizden emin misiniz?`"
+    :title="t('ledger.deleteTitle')"
+    :message="t('ledger.deleteConfirm', { name: rowToDelete?.name ?? '' })"
     type="error"
-    confirm-text="Sil"
+    :confirm-text="t('common.delete')"
     :loading="isSaving"
     @confirm="confirmDelete"
     @cancel="rowToDelete = null"
@@ -69,8 +69,10 @@ definePageMeta({
   permissions: ["Ledger.Read"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Yıllık tablo",
+  title: computed(() => t("ledger.title")),
 });
 //#endregion
 
@@ -148,10 +150,10 @@ const submitItem = async (payload: CreateLedgerItemRequest | UpdateLedgerItemReq
   try {
     if (editingItem.value) {
       await updateLedgerItem(editingItem.value.id, payload as UpdateLedgerItemRequest);
-      toastStore.add("success", "Kalem güncellendi");
+      toastStore.add("success", t("ledger.updated"));
     } else {
       await createLedgerItem(payload as CreateLedgerItemRequest);
-      toastStore.add("success", "Kalem eklendi");
+      toastStore.add("success", t("ledger.created"));
     }
     formDialog.value = false;
     await load();
@@ -167,7 +169,7 @@ const confirmDelete = async () => {
   isSaving.value = true;
   try {
     await deleteLedgerItem(rowToDelete.value.id);
-    toastStore.add("success", "Kalem silindi");
+    toastStore.add("success", t("ledger.deleted"));
     rowToDelete.value = null;
     await load();
   } catch {

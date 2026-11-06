@@ -5,8 +5,8 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.name"
-            label="Ad"
-            placeholder="Örn. Aile arabası"
+            :label="t('vehicles.columns.name')"
+            :placeholder="t('vehicles.form.namePlaceholder')"
             :disabled="loading"
             prepend-inner-icon="mdi-car"
             density="comfortable"
@@ -19,7 +19,7 @@
           <!-- Plaka büyük harfle saklanır -->
           <UiTextField
             v-model="formData.plate"
-            label="Plaka"
+            :label="t('vehicles.columns.plate')"
             placeholder="34 ABC 123"
             :disabled="loading"
             prepend-inner-icon="mdi-card-text-outline"
@@ -39,7 +39,7 @@
             :items="ownerOptions"
             item-title="name"
             item-value="id"
-            label="Sahip"
+            :label="t('vehicles.columns.owner')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -50,7 +50,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.note"
-            label="Not"
+            :label="t('vehicles.form.note')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -64,7 +64,7 @@
       <!-- Aktif yalnızca düzenlemede; yeni araç aktif başlar -->
       <div class="ui-row" v-if="vehicle">
         <div class="ui-col ui-col-12">
-          <UiSwitch v-model="formData.isActive" label="Aktif" color="primary" :disabled="loading" hide-details />
+          <UiSwitch v-model="formData.isActive" :label="t('common.active')" color="primary" :disabled="loading" hide-details />
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -87,7 +87,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ vehicle ? 'Güncelle' : 'Kaydet' }}
+        {{ vehicle ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -111,6 +111,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()
@@ -124,11 +125,11 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const nameRule = (v: string) => !!v?.trim() || 'Ad alanı zorunludur'
-const plateRule = (v: string) => !!v?.trim() || 'Plaka alanı zorunludur'
+const nameRule = (v: string) => !!v?.trim() || t('vehicles.form.nameRequired')
+const plateRule = (v: string) => !!v?.trim() || t('vehicles.form.plateRequired')
 
 const ownerOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('vehicles.household') },
   ...props.people,
 ])
 

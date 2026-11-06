@@ -4,7 +4,7 @@
       <div class="ui-card-title">
         <div class="flex items-center">
           <UiIcon icon="mdi-swap-horizontal" class="mr-2" />
-          Kurlar (elle)
+          {{ t('exchangeRates.title') }}
           <div class="flex-1" />
           <UiBtn icon="mdi-close" variant="text" size="small" @click="$emit('update:modelValue', false)" />
         </div>
@@ -20,7 +20,7 @@
                 :items="rateCurrencyOptions"
                 item-title="title"
                 item-value="value"
-                label="Birim"
+                :label="t('exchangeRates.currency')"
                 density="compact"
                 hide-details="auto"
                 :disabled="isBusy"
@@ -29,7 +29,7 @@
             <div class="ui-col ui-col-12 ui-col-sm-5">
               <UiTextField
                 v-model.number="formData.rate"
-                :label="formData.currency === Currency.QuarterGold ? 'Çeyrek fiyatı (₺)' : 'Kur (₺)'"
+                :label="formData.currency === Currency.QuarterGold ? t('exchangeRates.goldPrice') : t('exchangeRates.rate')"
                 type="number"
                 min="0"
                 step="0.0001"
@@ -42,7 +42,7 @@
             <div class="ui-col ui-col-12 ui-col-sm-5">
               <UiTextField
                 v-model="formData.date"
-                label="Tarih"
+                :label="t('exchangeRates.date')"
                 type="date"
                 density="compact"
                 hide-details="auto"
@@ -51,12 +51,12 @@
               />
             </div>
             <div class="ui-col ui-col-12 ui-col-sm-2 flex items-center">
-              <UiBtn color="primary" type="submit" block :loading="isBusy" :disabled="isBusy || !isFormValid">Kaydet</UiBtn>
+              <UiBtn color="primary" type="submit" block :loading="isBusy" :disabled="isBusy || !isFormValid">{{ t('common.save') }}</UiBtn>
             </div>
           </div>
         </UiForm>
 
-        <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mt-4 mb-1">Son kayıtlar</div>
+        <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mt-4 mb-1">{{ t('exchangeRates.recent') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="r in rates" :key="r.id">
             <div class="ui-list-item__content">
@@ -75,7 +75,7 @@
           </li>
           <li class="ui-list-item" v-if="!rates.length">
             <div class="ui-list-item__content">
-              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">Kur girilmemiş</span></div>
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ t('exchangeRates.empty') }}</span></div>
             </div>
           </li>
         </ul>
@@ -84,10 +84,10 @@
 
     <ConfirmDialog
       :model-value="!!rateToDelete"
-      title="Kuru Sil"
-      :message="`${formatDisplayDate(rateToDelete?.date)} tarihli kuru silmek istediğinizden emin misiniz?`"
+      :title="t('exchangeRates.deleteTitle')"
+      :message="t('exchangeRates.deleteConfirm', { date: formatDisplayDate(rateToDelete?.date) })"
       type="error"
-      confirm-text="Sil"
+      :confirm-text="t('common.delete')"
       :loading="isBusy"
       @confirm="remove"
       @cancel="rateToDelete = null"
@@ -113,6 +113,7 @@ const emit = defineEmits<{
   changed: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney, currencyLabel } = useMoney()
 const { hasPermission } = useAuth()
@@ -127,7 +128,7 @@ const isBusy = ref(false)
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 const canDelete = computed(() => hasPermission('ExchangeRates.Delete'))
-const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Kur 0\'dan büyük olmalıdır'
+const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || t('exchangeRates.positive')
 
 const load = async () => {
   // Bütün birimlerin elle girilen kurları (geçmiş listesinde birim sütunu)
@@ -151,7 +152,7 @@ const save = async () => {
   isBusy.value = true
   try {
     await saveExchangeRate({ currency: formData.currency, rate: Number(formData.rate), date: formData.date })
-    toastStore.add('success', 'Kur kaydedildi')
+    toastStore.add('success', t('exchangeRates.saved'))
     formData.rate = null
     await load()
     emit('changed')
@@ -168,7 +169,7 @@ const remove = async () => {
   isBusy.value = true
   try {
     await deleteExchangeRate(rate.id)
-    toastStore.add('success', 'Kur silindi')
+    toastStore.add('success', t('exchangeRates.deleted'))
     rateToDelete.value = null
     await load()
     emit('changed')

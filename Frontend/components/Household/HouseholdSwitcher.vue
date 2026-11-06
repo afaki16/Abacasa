@@ -1,9 +1,9 @@
 <template>
   <UiMenu :offset="8" location="bottom end" min-width="240">
     <template #activator="{ props: menuProps }">
-      <button v-bind="menuProps" class="household-btn" type="button" :disabled="isBusy" aria-label="Hane seç">
+      <button v-bind="menuProps" class="household-btn" type="button" :disabled="isBusy" :aria-label="$t('household.switcher.select')">
         <UiIcon icon="mdi-home-outline" :size="20" />
-        <span class="household-name">{{ activeTenant?.name ?? 'Hane yok' }}</span>
+        <span class="household-name">{{ activeTenant?.name ?? $t('layout.noHousehold') }}</span>
         <UiChip v-if="activeTenant" class="household-role" size="x-small" :color="activeTenant.role === 'Admin' ? 'primary' : undefined" variant="tonal">
           {{ getRoleLabel(activeTenant.role) }}
         </UiChip>
@@ -34,7 +34,7 @@
 
       <button type="button" role="menuitem" class="ui-list-item ui-list-item--link" @click="createDialog = true">
         <span class="ui-list-item__prepend"><UiIcon icon="mdi-plus" :size="24" /></span>
-        <span class="ui-list-item__content ui-list-title household-list-title">Yeni hane oluştur</span>
+        <span class="ui-list-item__content ui-list-title household-list-title">{{ $t('household.create.title') }}</span>
       </button>
     </div>
   </UiMenu>
@@ -49,6 +49,7 @@ import { parseApiErrorMessages } from '~/utils/apiError'
 
 const { activeTenant, memberships, getRoleLabel, switchHousehold } = useHousehold()
 const toast = useToast()
+const { t } = useI18n()
 
 const createDialog = ref(false)
 const isBusy = ref(false)
@@ -60,7 +61,7 @@ const select = async (tenantId: number) => {
   try {
     await switchHousehold(tenantId)
   } catch (error) {
-    toast.error(parseApiErrorMessages(error, 'Haneye geçilemedi'))
+    toast.error(parseApiErrorMessages(error, t('household.switcher.failed')))
     isBusy.value = false
   }
 }

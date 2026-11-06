@@ -5,7 +5,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.date"
-            label="Tarih"
+            :label="t('debts.columns.date')"
             type="date"
             :disabled="loading"
             prepend-inner-icon="mdi-calendar"
@@ -21,7 +21,7 @@
             :items="people"
             item-title="name"
             item-value="id"
-            label="Alacaklı"
+            :label="t('debts.columns.creditor')"
             :disabled="loading"
             prepend-inner-icon="mdi-account-arrow-left"
             density="comfortable"
@@ -39,7 +39,7 @@
             :items="debtorOptions"
             item-title="name"
             item-value="id"
-            label="Borçlu"
+            :label="t('debts.columns.debtor')"
             :disabled="loading"
             prepend-inner-icon="mdi-account"
             density="comfortable"
@@ -54,9 +54,9 @@
             :items="currencyOptions"
             item-title="title"
             item-value="value"
-            label="Para birimi"
+            :label="t('debts.filters.currency')"
             :disabled="loading || !!debt?.hasPayments"
-            :hint="debt?.hasPayments ? 'Ödemesi olan borcun para birimi değiştirilemez' : ''"
+            :hint="debt?.hasPayments ? t('debts.form.currencyLocked') : ''"
             persistent-hint
             prepend-inner-icon="mdi-cash"
             density="comfortable"
@@ -71,7 +71,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model.number="formData.amount"
-            :label="isGold ? 'Adet' : 'Tutar'"
+            :label="isGold ? t('debts.form.quantity') : t('debts.columns.amount')"
             type="number"
             min="0"
             :step="isGold ? 1 : 0.01"
@@ -86,7 +86,7 @@
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiTextField
             v-model="formData.note"
-            label="Not"
+            :label="t('debts.columns.note')"
             :disabled="loading"
             prepend-inner-icon="mdi-text"
             density="comfortable"
@@ -106,7 +106,7 @@
         :disabled="loading"
         class="btn-gradient-dark"
       >
-        İptal
+        {{ t('common.cancel') }}
       </UiBtn>
 
       <UiBtn
@@ -116,7 +116,7 @@
         type="submit"
         class="btn-gradient-primary"
       >
-        {{ debt ? 'Güncelle' : 'Kaydet' }}
+        {{ debt ? t('common.update') : t('common.save') }}
       </UiBtn>
     </div>
   </UiForm>
@@ -142,6 +142,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { currencyOptions } = useDebts()
 
@@ -157,11 +158,11 @@ const formData = reactive({
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
-const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || 'Tutar 0\'dan büyük olmalıdır'
+const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('debts.form.amountPositive')
 
 // Çeyrek altın adettir: etiket "Adet", yalnızca tam sayı
 const isGold = computed(() => formData.currency === Currency.QuarterGold)
-const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || 'Çeyrek altın tam sayı olmalı.'
+const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || t('debts.form.goldWhole')
 const amountIcon = computed(() =>
   ({
     [Currency.TRY]: 'mdi-currency-try',
@@ -172,7 +173,7 @@ const amountIcon = computed(() =>
 )
 
 const debtorOptions = computed(() => [
-  { id: HOUSEHOLD, name: 'Hane' },
+  { id: HOUSEHOLD, name: t('debts.household') },
   ...props.people,
 ])
 

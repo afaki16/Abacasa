@@ -203,7 +203,7 @@ const onLogout = async () => {
 }
 
 useHead({
-  title: t('auth.pageTitleForceChangePassword')
+  title: computed(() => t('auth.pageTitleForceChangePassword'))
 })
 </script>
 

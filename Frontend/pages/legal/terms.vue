@@ -1,5 +1,5 @@
 <template>
-  <LegalDocument title="Kullanım Koşulları" :version="version">
+  <LegalDocument :title="$t('legal.terms.title')" :version="version">
     <h2>1. Hizmet</h2>
     <p>
       Abacasa, hanelerin harcama, gelir, sabit ödeme, borç ve bağış kayıtlarını tutmasını sağlayan bir bütçe uygulamasıdır.
@@ -63,7 +63,8 @@ import { legal } from '~/utils/legal'
 
 // Herkese açık (auth.global'de serbest); giriş sayfası gibi yalın düzen
 definePageMeta({ layout: false })
-useHead({ title: 'Kullanım koşulları - Abacasa' })
+const { t } = useI18n()
+useHead({ title: computed(() => t('legal.terms.pageTitle')) })
 
 const { getVersions } = useLegal()
 const version = ref<string | null>(null)

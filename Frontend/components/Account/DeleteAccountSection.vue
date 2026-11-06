@@ -3,17 +3,16 @@
   <div class="panel-card delete-account-card">
     <div class="panel-card__header">
       <div class="panel-card__icon panel-card__icon--danger"><UiIcon icon="mdi-account-remove" :size="16" /></div>
-      <span class="text-error">Hesabı sil</span>
+      <span class="text-error">{{ $t('account.delete.title') }}</span>
     </div>
     <div class="panel-card__divider" />
 
     <div class="panel-card__body">
       <p class="panel-card__hint">
-        Hesabınız silindiğinde kişisel bilgileriniz kalıcı olarak silinir ve bu işlem geri alınamaz. Girdiğiniz kayıtlar ait
-        oldukları hanelerde kalır.
+        {{ $t('account.delete.hint') }}
       </p>
 
-      <UiBtn v-if="!opened" color="error" variant="outlined" @click="open">Hesabımı silmek istiyorum</UiBtn>
+      <UiBtn v-if="!opened" color="error" variant="outlined" @click="open">{{ $t('account.delete.start') }}</UiBtn>
 
       <template v-else>
         <div v-if="loadingPreview" class="py-4 text-center">
@@ -22,18 +21,18 @@
 
         <template v-else-if="preview">
           <UiAlert v-if="preview.isLastSuperAdmin" type="error" variant="tonal" density="compact" class="mb-3">
-            Sistemdeki son süper yöneticisiniz; hesabınız silinemez.
+            {{ $t('account.delete.lastSuperAdmin') }}
           </UiAlert>
           <UiAlert v-if="preview.blockedHouseholds.length" type="warning" variant="tonal" density="compact" class="mb-3">
-            Şu hanelerde son yöneticisiniz; önce başka bir üyeyi yönetici yapın: {{ names(preview.blockedHouseholds) }}
+            {{ $t('account.delete.blockedHouseholds', { names: names(preview.blockedHouseholds) }) }}
           </UiAlert>
           <template v-if="preview.householdsToDelete.length">
             <UiAlert type="warning" variant="tonal" density="compact" class="mb-2">
-              Şu haneler de bütün verileriyle silinecek: {{ names(preview.householdsToDelete) }}
+              {{ $t('account.delete.householdsToDelete', { names: names(preview.householdsToDelete) }) }}
             </UiAlert>
             <UiCheckbox
               v-model="confirmSoleHouseholds"
-              label="Bu hanelerin de silinmesini onaylıyorum"
+              :label="$t('account.delete.confirmHouseholds')"
               color="error"
               density="compact"
               hide-details
@@ -44,7 +43,7 @@
           <UiForm @submit="submit">
             <UiTextField
               v-model="password"
-              label="Parola"
+              :label="$t('account.delete.password')"
               placeholder="••••••••"
               type="password"
               density="comfortable"
@@ -56,7 +55,7 @@
               <div v-for="(e, i) in errors" :key="i">{{ e }}</div>
             </UiAlert>
             <UiBtn type="submit" color="error" block :loading="busy" :disabled="!canSubmit">
-              Hesabımı kalıcı olarak sil
+              {{ $t('account.delete.submit') }}
             </UiBtn>
           </UiForm>
         </template>
@@ -70,6 +69,7 @@ import { ref, computed } from 'vue'
 import type { AccountDeletionPreview, HouseholdRef } from '~/types'
 import { parseApiErrorMessages } from '~/utils/apiError'
 
+const { t } = useI18n()
 const { getAccountDeletionPreview, deleteAccount } = useAuth()
 
 const opened = ref(false)
@@ -113,7 +113,7 @@ const submit = async () => {
   try {
     await deleteAccount(password.value, preview.value.householdsToDelete.length > 0 && confirmSoleHouseholds.value)
   } catch (error) {
-    errors.value = parseApiErrorMessages(error, 'Hesap silinemedi')
+    errors.value = parseApiErrorMessages(error, t('account.delete.failed'))
     busy.value = false
   }
 }

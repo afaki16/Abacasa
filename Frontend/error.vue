@@ -19,22 +19,22 @@
 
           <div class="flex justify-center gap-4 flex-wrap">
             <UiBtn color="primary" size="large" prepend-icon="mdi-refresh" @click="handleError">
-              Try Again
+              {{ $t('errorPage.tryAgain') }}
             </UiBtn>
 
             <UiBtn variant="outlined" color="primary" size="large" prepend-icon="mdi-home" @click="$router.push('/')">
-              Go Home
+              {{ $t('errorPage.goHome') }}
             </UiBtn>
           </div>
 
           <!-- Additional help for 403 errors -->
           <div v-if="error.statusCode === 403" class="mt-6">
-            <UiAlert type="info" variant="tonal" title="Need Access?" class="text-left">
+            <UiAlert type="info" variant="tonal" :title="$t('errorPage.needAccess')" class="text-left">
               <p class="mb-2">
-                If you believe you should have access to this resource, please contact your administrator.
+                {{ $t('errorPage.needAccessText') }}
               </p>
               <UiBtn variant="text" size="small" color="info" @click="contactSupport">
-                Contact Support
+                {{ $t('errorPage.contactSupport') }}
               </UiBtn>
             </UiAlert>
           </div>
@@ -45,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 // Props
 const props = defineProps<{
   error: {
@@ -74,23 +76,23 @@ const errorIcon = computed(() => {
 
 const errorTitle = computed(() => {
   switch (props.error.statusCode) {
-    case 403: return 'Access Denied'
-    case 404: return 'Page Not Found'
-    case 500: return 'Server Error'
-    default: return 'Something went wrong'
+    case 403: return t('errorPage.title403')
+    case 404: return t('errorPage.title404')
+    case 500: return t('errorPage.title500')
+    default: return t('errorPage.titleDefault')
   }
 })
 
 const errorMessage = computed(() => {
   switch (props.error.statusCode) {
     case 403: 
-      return 'You don\'t have permission to access this resource. Please check your credentials or contact an administrator.'
+      return t('errorPage.message403')
     case 404: 
-      return 'The page you\'re looking for doesn\'t exist. It might have been moved, deleted, or you entered the wrong URL.'
+      return t('errorPage.message404')
     case 500: 
-      return 'An internal server error occurred. Our team has been notified and is working to fix this issue.'
+      return t('errorPage.message500')
     default: 
-      return props.error.statusMessage || 'An unexpected error occurred. Please try again later.'
+      return props.error.statusMessage || t('errorPage.messageDefault')
   }
 })
 

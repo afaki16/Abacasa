@@ -34,7 +34,7 @@
         <button
           @click="toggleSidebar"
           class="flex items-center justify-center w-10 h-10 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
-          :title="isMobile ? 'Kapat' : (expanded ? 'Daralt' : 'Genişlet')"
+          :title="isMobile ? $t('common.close') : (expanded ? $t('layout.collapse') : $t('layout.expand'))"
         >
           <Icon :name="isMobile ? 'mdi:close' : 'mdi:menu'" class="w-6 h-6" />
         </button>
@@ -47,7 +47,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Ara..."
+            :placeholder="$t('layout.searchPlaceholder')"
             class="w-full bg-surface-container-low border border-solid border-outline-variant/[0.12] rounded-[10px] py-2 pl-10 pr-4 text-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder-on-surface-variant/50 outline-none"
           />
         </div>
@@ -163,7 +163,7 @@
                 class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
               >
                 <Icon name="mdi:home-heart" class="w-5 h-5 text-on-surface-variant" />
-                <span class="text-body-sm font-medium">Hane ayarları</span>
+                <span class="text-body-sm font-medium">{{ $t('layout.householdSettings') }}</span>
               </NuxtLink>
 
               <NuxtLink
@@ -172,7 +172,7 @@
                 class="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-colors border-t border-solid border-outline-variant/[0.12]"
               >
                 <Icon name="mdi:shield-account" class="w-5 h-5 text-on-surface-variant" />
-                <span class="text-body-sm font-medium">Gizlilik ve koşullar</span>
+                <span class="text-body-sm font-medium">{{ $t('layout.privacyAndTerms') }}</span>
               </NuxtLink>
 
               <!-- Ayarlar sol menüde (Admin/SuperAdmin); çıkış artık bu menüde -->
@@ -200,8 +200,8 @@
           type="button"
           class="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
           :class="{ 'mr-auto': !isSuperAdmin }"
-          title="Menü"
-          aria-label="Menü"
+          :title="$t('layout.menu')"
+          :aria-label="$t('layout.menu')"
           @click="isMobileMenuOpen = true"
         >
           <Icon name="mdi:menu" class="w-6 h-6" />
@@ -224,7 +224,7 @@
         <button
           @click="toggleTheme"
           class="w-10 h-10 rounded-[24px] bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center"
-          :title="isDark ? 'Light moda geç' : 'Dark moda geç'"
+          :title="isDark ? $t('layout.switchToLight') : $t('layout.switchToDark')"
         >
           <Icon
             :name="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'"
@@ -256,6 +256,8 @@ import HouseholdSwitcher from '~/components/Household/HouseholdSwitcher.vue'
 import TenantSelector from '~/components/UI/TenantSelector.vue'
 import ConsentGate from '~/components/Legal/ConsentGate.vue'
 import { LEGAL_ROUTES } from '~/utils/legal'
+
+const { t, locale } = useI18n()
 
 // Auth state
 const authStore = useAuthStore()
@@ -297,9 +299,9 @@ const showLanguageSwitcher = computed(() => true)
 
 // User info
 const userInfo = computed(() => ({
-  name: authStore.userFullName || 'Kullanıcı',
+  name: authStore.userFullName || t('layout.defaultUserName'),
   email: authStore.user?.email || '',
-  household: activeTenant.value ? `${activeTenant.value.name} · ${getRoleLabel(activeTenant.value.role)}` : 'Hane yok'
+  household: activeTenant.value ? `${activeTenant.value.name} · ${getRoleLabel(activeTenant.value.role)}` : t('layout.noHousehold')
 }))
 
 // Yetkiye göre menüleri filtrele; öğesi kalmayan grup tamamen gizlenir
@@ -316,15 +318,16 @@ const visibleMenus = computed(() =>
 const filteredMenus = computed(() => {
   if (!searchQuery.value.trim()) return visibleMenus.value
 
-  const query = searchQuery.value.toLowerCase()
+  // Menü başlıkları i18n anahtarı; arama ekranda görünen (çevrilmiş) adda, dile duyarlı küçük harfle yapılır (İ/ı)
+  const lower = (s: string) => s.toLocaleLowerCase(locale.value)
+  const query = lower(searchQuery.value.trim())
+  const matches = (title: string) => lower(t(title)).includes(query)
   const filterChildren = (items: typeof visibleMenus.value): typeof visibleMenus.value => {
     return items
       .map((item) => {
-        const titleMatch = item.title.toLowerCase().includes(query)
+        const titleMatch = matches(item.title)
         if (item.children) {
-          const matchedChildren = item.children.filter((c) =>
-            c.title.toLowerCase().includes(query)
-          )
+          const matchedChildren = item.children.filter((c) => matches(c.title))
           if (titleMatch || matchedChildren.length > 0) {
             return { ...item, children: matchedChildren.length > 0 ? matchedChildren : item.children }
           }
