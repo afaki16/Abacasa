@@ -539,3 +539,32 @@ hr.ui-divider {
 .dialog-head__sub { margin: 2px 0 0; font-size: 0.8125rem; color: rgb(var(--color-on-surface-variant)); }
 .dialog-body { padding: 8px 24px 4px; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px 20px; }
+
+/* ── Telefon (≤600px) ──
+   Özet kartları: ilki tam genişlik, sonrakiler ikişer yan yana; tek kalan son kart tam genişlik.
+   Sayfa filtreleri ikişer yan yana. Küçük düğmeler parmakla rahat basılsın diye 34px. */
+@media (max-width: 599.98px) {
+  .ui-row--stats > .ui-col,
+  .ui-row--filters > .ui-col { flex: 0 0 50%; max-width: 50%; }
+  .ui-row--stats > .ui-col:first-child,
+  .ui-row--stats > .ui-col:last-child:nth-child(even),
+  .ui-row--filters > .ui-col:last-child:nth-child(odd),
+  .ui-row--stats > .ui-col.ui-col--wide { flex-basis: 100%; max-width: 100%; }
+  .ui-row--stats > .ui-col:not(:first-child) .ui-card-text { padding: 0.75rem; }
+  .ui-row--stats > .ui-col:not(:first-child) .ui-card-text .text-\[1\.5rem\] { font-size: 1.2rem; line-height: 1.6rem; }
+  .ui-btn.ui-btn--size-small:not(.ui-btn--icon) { --ui-btn-h: 34px; height: 34px; }
+  .ui-btn.ui-btn--size-x-small:not(.ui-btn--icon) { --ui-btn-h: 28px; height: 28px; font-size: 0.75rem; }
+
+  /* Hap sekmeler pencereyi yana taşırmasın: ikonlar gizli, sığmazsa yalnızca sekme şeridi kayar */
+  .tabs-container.modern-tabs { min-width: 0; gap: 4px; padding: 4px; overflow-x: auto; scrollbar-width: none; }
+  .tabs-container.modern-tabs::-webkit-scrollbar { display: none; }
+  .tabs-container.modern-tabs .tab-item { flex: 1 0 auto; padding: 8px 12px; min-height: 40px; }
+  .tabs-container.modern-tabs .tab-item .tab-icon-wrapper { display: none; }
+}
+
+/* Telefonda üst bar: dil seçici yalnızca bayrak (hane adına yer kalsın) */
+@media (max-width: 599.98px) {
+  header .lang-code,
+  header .lang-chevron { display: none; }
+  header .lang-switcher-btn { min-height: 40px; }
+}

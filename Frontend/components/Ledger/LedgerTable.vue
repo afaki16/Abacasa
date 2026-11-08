@@ -1,13 +1,20 @@
 <template>
+  <!-- Telefonda tek ay gösterilir: ay seçici yalnızca dar ekranda görünür (CSS) -->
+  <div class="month-bar">
+    <UiBtn icon="mdi-chevron-left" variant="text" :title="t('ledger.table.previousMonth')" :disabled="selMonth === 0" @click="selMonth--" />
+    <span class="month-bar__label">{{ monthLong(selMonth) }}</span>
+    <UiBtn icon="mdi-chevron-right" variant="text" :title="t('ledger.table.nextMonth')" :disabled="selMonth === 11" @click="selMonth++" />
+  </div>
+
   <!-- Tablo kendi kabında yatay kayar; ilk sütun sabit -->
   <div class="ledger-scroll">
     <table class="ledger-table">
       <thead>
         <tr>
           <th class="sticky-col">{{ t('ledger.table.item') }}</th>
-          <th v-for="key in MONTH_KEYS" :key="key" class="num">{{ t(`ledger.months.${key}`) }}</th>
+          <th v-for="(key, i) in MONTH_KEYS" :key="key" class="num" :class="{ 'm-off': i !== selMonth }">{{ t(`ledger.months.${key}`) }}</th>
           <th class="num">{{ t('ledger.table.total') }}</th>
-          <th class="num">{{ t('ledger.table.average') }}</th>
+          <th class="num col-avg">{{ t('ledger.table.average') }}</th>
         </tr>
       </thead>
 
@@ -37,7 +44,7 @@
             v-for="(value, m) in row.months"
             :key="m"
             class="num"
-            :class="isEditable(row) ? 'cell-manual' : 'cell-auto'"
+            :class="[isEditable(row) ? 'cell-manual' : 'cell-auto', { 'm-off': m !== selMonth }]"
             @click="startEdit(row, m)"
           >
             <input
@@ -55,7 +62,7 @@
             <template v-else>{{ formatMoney(value) }}</template>
           </td>
           <td class="num font-medium">{{ formatMoney(row.total) }}</td>
-          <td class="num">{{ formatMoney(row.average) }}</td>
+          <td class="num col-avg">{{ formatMoney(row.average) }}</td>
         </tr>
         <tr v-if="!section.rows.length">
           <td class="sticky-col text-black/60 dark:text-white/70">{{ t('ledger.table.noRecords') }}</td>
@@ -66,23 +73,23 @@
       <tfoot v-if="data">
         <tr>
           <td class="sticky-col">{{ t('ledger.table.incomeTotal') }}</td>
-          <td v-for="(value, m) in data.totals.incomeByMonth" :key="m" class="num">{{ formatMoney(value) }}</td>
+          <td v-for="(value, m) in data.totals.incomeByMonth" :key="m" class="num" :class="{ 'm-off': m !== selMonth }">{{ formatMoney(value) }}</td>
           <td class="num">{{ formatMoney(data.totals.incomeTotal) }}</td>
-          <td class="num">{{ formatMoney(data.totals.incomeAverage) }}</td>
+          <td class="num col-avg">{{ formatMoney(data.totals.incomeAverage) }}</td>
         </tr>
         <tr>
           <td class="sticky-col">{{ t('ledger.table.expenseTotal') }}</td>
-          <td v-for="(value, m) in data.totals.expenseByMonth" :key="m" class="num">{{ formatMoney(value) }}</td>
+          <td v-for="(value, m) in data.totals.expenseByMonth" :key="m" class="num" :class="{ 'm-off': m !== selMonth }">{{ formatMoney(value) }}</td>
           <td class="num">{{ formatMoney(data.totals.expenseTotal) }}</td>
-          <td class="num">{{ formatMoney(data.totals.expenseAverage) }}</td>
+          <td class="num col-avg">{{ formatMoney(data.totals.expenseAverage) }}</td>
         </tr>
         <tr>
           <td class="sticky-col">{{ t('ledger.table.net') }}</td>
-          <td v-for="(value, m) in data.totals.netByMonth" :key="m" class="num" :class="{ negative: value < 0 }">
+          <td v-for="(value, m) in data.totals.netByMonth" :key="m" class="num" :class="{ negative: value < 0, 'm-off': m !== selMonth }">
             {{ formatMoney(value) }}
           </td>
           <td class="num" :class="{ negative: data.totals.netTotal < 0 }">{{ formatMoney(data.totals.netTotal) }}</td>
-          <td class="num" :class="{ negative: data.totals.netAverage < 0 }">{{ formatMoney(data.totals.netAverage) }}</td>
+          <td class="num col-avg" :class="{ negative: data.totals.netAverage < 0 }">{{ formatMoney(data.totals.netAverage) }}</td>
         </tr>
       </tfoot>
     </table>
@@ -106,10 +113,14 @@ const emit = defineEmits<{
   'save-cell': [row: LedgerRow, month: number, amount: number | null]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { formatMoney } = useMoney()
 const { hasPermission } = useAuth()
 const { getKindLabel } = useRecurringPayments()
+
+// Telefonda gösterilen ay (0–11); açılışta bu ay
+const selMonth = ref(new Date().getMonth())
+const monthLong = (m: number) => new Intl.DateTimeFormat(locale.value, { month: 'long' }).format(new Date(2000, m, 1))
 
 const canUpdate = computed(() => hasPermission('Ledger.Update'))
 const canDelete = computed(() => hasPermission('Ledger.Delete'))
@@ -253,5 +264,47 @@ tfoot td {
 
 .negative {
   color: rgb(var(--color-error));
+}
+
+.month-bar {
+  display: none;
+}
+
+/* Telefon: seçili ay + yıl toplamı; diğer aylar ve ortalama gizli, kalem sütunu daralır */
+@media (max-width: 599.98px) {
+  .month-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    border-bottom: 1px solid rgb(var(--color-on-surface) / 0.12);
+  }
+  .month-bar__label {
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .m-off,
+  .col-avg {
+    display: none;
+  }
+  .ledger-table .sticky-col {
+    min-width: 0;
+    white-space: normal;
+  }
+  /* Kalem adı, kişi ve düğmeler sığmazsa alt satıra geçer; ay ve yıl toplamı sütunları ekranda kalır */
+  .sticky-col > div {
+    flex-wrap: wrap;
+  }
+  .ledger-table {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+  .ledger-table th,
+  .ledger-table td {
+    padding: 6px;
+  }
+  .num {
+    min-width: 0;
+  }
 }
 </style>

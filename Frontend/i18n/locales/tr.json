@@ -945,7 +945,9 @@
       "noRecords": "Kayıt yok",
       "incomeTotal": "Gelir toplamı",
       "expenseTotal": "Gider toplamı",
-      "net": "Net (gelir − gider)"
+      "net": "Net (gelir − gider)",
+      "previousMonth": "Önceki ay",
+      "nextMonth": "Sonraki ay"
     },
     "months": {
       "jan": "Oca",

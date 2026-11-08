@@ -13,7 +13,7 @@
   />
 
   <!-- Özet -->
-  <div class="ui-row !mb-2">
+  <div class="ui-row ui-row--stats !mb-2">
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
       <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
         <div class="ui-card-text">
@@ -45,7 +45,7 @@
         </div>
       </UiCard>
     </div>
-    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
+    <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3 ui-col--wide">
       <UiCard class="h-full !bg-secondary/[0.12] !text-secondary">
         <div class="ui-card-text">
           <div class="flex items-center">
@@ -102,7 +102,7 @@
   </div>
 
   <!-- Filtreler -->
-  <div class="ui-row ui-row--dense !mb-2">
+  <div class="ui-row ui-row--filters ui-row--dense !mb-2">
     <div class="ui-col ui-col-12 ui-col-sm-4 ui-col-md-4">
       <UiSelect
         v-model="filterStatus"

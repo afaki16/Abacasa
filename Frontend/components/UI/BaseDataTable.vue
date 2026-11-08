@@ -1666,8 +1666,19 @@ watch(() => props.itemsPerPage, (newValue) => {
 
 @media (max-width: 640px) {
   .title-wrapper { @apply flex-col items-start; }
-  .header-right { @apply flex-col; }
   .filters-grid { @apply grid-cols-1; }
+
+  /* Araç çubuğu: arama tam genişlik, düğmeler altında tek satırda (yenile solda, ekle sağda) */
+  .header-content { @apply px-3 py-3 gap-3; }
+  .header-right-search { @apply pl-0 w-full; }
+  .header-right-search .search-input-wrapper,
+  .header-right-search .search-input { @apply w-full; }
+  .header-right { @apply flex-row flex-nowrap justify-between w-full gap-2; }
+
+  /* Sayfalama tek satır: "Sayfa/Sonuç [10] 1-4 / 4" üstte, düğmeler altta */
+  .pagination { @apply px-3 py-2; }
+  .pagination-info { @apply mb-2; }
+  .results-info { @apply flex-row items-center justify-center text-left gap-2; }
 
   /* Telefonda tablo yerine kart listesi: her satır bir kart, her hücrenin solunda sütun adı (data-label) */
   .data-table,
@@ -1684,12 +1695,16 @@ watch(() => props.itemsPerPage, (newValue) => {
   .table-row {
     padding: 10px 16px;
   }
+  /* Kart satırları sık: sütun adı solda, değer sağda; uzun kartlar listeyi ekran ekran uzatmasın */
   .data-table .table-cell {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 6px 0;
+    padding: 2px 0;
+    min-height: 28px;
+    font-size: 0.875rem;
+    line-height: 1.35;
     white-space: normal;
     text-align: right;
     word-break: break-word;

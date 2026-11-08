@@ -37,7 +37,7 @@
                   variant="text"
                   size="small"
                   @click="toggleFullscreen"
-                  class="mr-2"
+                  class="mr-2 drawer-fullscreen-btn"
                 ></UiBtn>
                 <UiBtn
                   icon="mdi-close"
@@ -73,7 +73,7 @@
                 <!-- Sağ: Actions -->
                 <div class="drawer-header-modern__actions">
                   <button
-                    class="drawer-header-modern__action-btn"
+                    class="drawer-header-modern__action-btn drawer-fullscreen-btn"
                     :title="isFullscreen ? t('common.exitFullscreen') : t('common.fullscreen')"
                     @click="toggleFullscreen"
                   >
@@ -494,5 +494,13 @@ onUnmounted(() => {
 
 .dark .drawer-header-modern__avatar {
   box-shadow: 0 0 32px rgb(var(--color-primary) / 0.4);
+}
+
+/* Telefonda pencere tam ekran: büyüt/küçült düğmesi gereksiz */
+@media (max-width: 640px) {
+  .drawer-fullscreen-btn { display: none !important; }
+  /* Pencere ekranı tam kaplar; 400px alt sınır dar telefonda sol kenarı ekran dışına itmesin */
+  .drawer-container { width: 100vw !important; min-width: 0; max-width: 100vw; }
+  .resize-handle { display: none; }
 }
 </style>

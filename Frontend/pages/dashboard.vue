@@ -27,7 +27,7 @@
     />
 
     <!-- Kartlar -->
-    <div class="ui-row !mb-2">
+    <div class="ui-row ui-row--stats !mb-2">
       <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
         <UiCard class="h-full !bg-[rgb(var(--color-brand)/0.12)] !text-[rgb(var(--color-brand))]">
           <div class="ui-card-text">

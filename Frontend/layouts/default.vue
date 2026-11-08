@@ -209,7 +209,7 @@
 
         <!-- SuperAdmin hane filtresi: yalnızca sistem listelerini (kullanıcılar, oturumlar) süzer; bütçe verisini değiştirmez -->
         <div v-if="isSuperAdmin" class="flex items-center gap-2 mr-auto min-w-0">
-          <Icon name="mdi:shield-crown-outline" class="w-4 h-4 text-on-surface-variant flex-shrink-0" />
+          <Icon name="mdi:shield-crown-outline" class="hidden sm:block w-4 h-4 text-on-surface-variant flex-shrink-0" />
           <span class="text-body-sm text-on-surface-variant font-medium hidden lg:inline whitespace-nowrap">{{ $t('sidebar.context.activeTenant') }}</span>
           <TenantSelector />
         </div>
@@ -223,7 +223,7 @@
         <!-- Theme Toggle -->
         <button
           @click="toggleTheme"
-          class="w-10 h-10 rounded-[24px] bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center"
+          class="w-10 h-10 flex-shrink-0 rounded-[24px] bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-center"
           :title="isDark ? $t('layout.switchToLight') : $t('layout.switchToDark')"
         >
           <Icon

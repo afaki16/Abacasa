@@ -945,7 +945,9 @@
       "noRecords": "No records",
       "incomeTotal": "Total income",
       "expenseTotal": "Total expenses",
-      "net": "Net (income − expenses)"
+      "net": "Net (income − expenses)",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
     },
     "months": {
       "jan": "Jan",
