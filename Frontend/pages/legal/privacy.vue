@@ -57,6 +57,10 @@
       <li>{{ legal.emailProvider }}, for sending emails.</li>
       <li>Authorised public institutions, upon request.</li>
     </ul>
+    <p>
+      Because the servers of {{ legal.emailProvider }}, which is used for sending emails, are located outside Türkiye, your
+      email address and the content of the emails sent to you are transferred abroad in accordance with Article 9 of the KVKK.
+    </p>
 
     <h2>6. Collection method</h2>
     <p>
@@ -150,6 +154,10 @@
       <li>E-posta gönderimi için {{ legal.emailProvider }}.</li>
       <li>Talep hâlinde yetkili kamu kurum ve kuruluşları.</li>
     </ul>
+    <p>
+      E-posta gönderimi için kullanılan {{ legal.emailProvider }} hizmetinin sunucuları yurt dışında bulunduğundan, e-posta
+      adresiniz ve size gönderilen e-postaların içeriği KVKK'nın 9. maddesine uygun olarak yurt dışına aktarılır.
+    </p>
 
     <h2>6. Toplama yöntemi</h2>
     <p>

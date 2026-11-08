@@ -144,8 +144,6 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
 
 const { t } = useI18n()
 
@@ -217,12 +215,12 @@ const editor = new Editor({
       codeBlock: false,
       code: false,
       blockquote: false,
-      horizontalRule: false
-    }),
-    Underline,
-    Link.configure({
-      openOnClick: false,
-      HTMLAttributes: { rel: 'noopener noreferrer nofollow', target: '_blank' }
+      horizontalRule: false,
+      // Tiptap v3: altı çizili ve bağlantı StarterKit'in içinde; ayrıca eklenirse çift kayıt uyarısı verir
+      link: {
+        openOnClick: false,
+        HTMLAttributes: { rel: 'noopener noreferrer nofollow', target: '_blank' }
+      }
     })
   ],
   editorProps: {
