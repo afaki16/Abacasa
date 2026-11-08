@@ -1,0 +1,49 @@
+name: Mobile Checks
+
+# Mobil uygulamanın lint + typecheck + testleri. Yalnızca Mobile/ değişince çalışır.
+# Mobil istemeyen projede Mobile/ klasörünü silmek yeterli: iş kendini atlar (hashFiles kontrolü);
+# istersen bu dosyayı da silebilirsin.
+# Store build'leri burada alınmaz — EAS Build ile (Mobile/README.md → Yayın).
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'Mobile/**'
+      - '.github/workflows/mobile.yml'
+  pull_request:
+    paths:
+      - 'Mobile/**'
+      - '.github/workflows/mobile.yml'
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: ${{ hashFiles('Mobile/package.json') != '' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Mobile/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test -- --ci

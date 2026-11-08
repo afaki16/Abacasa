@@ -5,6 +5,7 @@
 - Sadece istenen değişikliği yap; ekstra geliştirme veya refactor yapma.
 - Backend değişikliğinden sonra Backend klasöründe `dotnet build` çalıştır ve hatasız olduğunu doğrula.
 - Frontend değişikliğinden sonra Frontend klasöründe `npm run build` çalıştır.
+- Mobil değişikliğinden sonra Mobile klasöründe `npm run check` (lint + typecheck + test) çalıştır.
 - Git işlemi (commit, branch, push, stash) yapma; bunları kullanıcı yönetiyor.
 - Demo hanesinde (demo-admin) kalıcı örnek veri var; testler ona dokunmaz, yalnızca 'Test' ile başlayan kayıtları kullanır ve siler.
 - Bütçe sayfalarında her işlem düğmesi kendi iznine bağlıdır; yeni düğme eklerken izin kontrolü zorunlu.
@@ -14,6 +15,7 @@
 ## Yapı
 - .NET 10 Clean Architecture (API / Application / Domain / Infrastructure), Nuxt 3 SPA (ssr: false), PostgreSQL.
 - Yeni entity için Backend/ENTITY_CREATION_GUIDE.md, yeni sayfa için Frontend/PAGE_CREATION_GUIDE.md.
+- Mobile: Expo + React Native (Mobile/README.md; yeni modül için Mobile/MODULE_CREATION_GUIDE.md). Backend mobil istemciyi `X-Client: mobile` başlığından tanır.
 - Yerel portlar: API http://localhost:5166, frontend http://localhost:3010.
 - Sayfa route'u, izin adının kebab-case hali olmalı (PaymentMethods → /payment-methods). BaseDataTable ekle/düzenle/sil butonlarının izinlerini route'tan üretir.
 
