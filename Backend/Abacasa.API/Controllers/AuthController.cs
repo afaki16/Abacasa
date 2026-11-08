@@ -71,13 +71,10 @@ namespace Abacasa.API.Controllers
 
             var result = await _mediator.Send(command);
 
-            // On success, also drop an HttpOnly cookie so web clients can stop storing the
-            // refresh token in JS-accessible places (localStorage / non-HttpOnly cookie).
-            // The body still contains the token for backwards compatibility with mobile/CLI
-            // clients that don't have a cookie jar - they'll keep working unchanged.
+            // The refresh token goes out only as an HttpOnly cookie (see DeliverRefreshToken).
             if (result.IsSuccess && result.Value is not null)
             {
-                WriteRefreshTokenCookie(result.Value.RefreshToken, result.Value.ExpiresAt);
+                DeliverRefreshToken(result.Value);
             }
 
             return HandleResult(result);
@@ -111,7 +108,7 @@ namespace Abacasa.API.Controllers
             // Rotate the cookie too so the new refresh token (with the new household) replaces the old one.
             if (result.IsSuccess && result.Value is not null)
             {
-                WriteRefreshTokenCookie(result.Value.RefreshToken, result.Value.ExpiresAt);
+                DeliverRefreshToken(result.Value);
             }
 
             return HandleResult(result);
@@ -201,7 +198,7 @@ namespace Abacasa.API.Controllers
             // Rotate the cookie too so the new refresh token replaces the old one.
             if (result.IsSuccess && result.Value is not null)
             {
-                WriteRefreshTokenCookie(result.Value.RefreshToken, result.Value.ExpiresAt);
+                DeliverRefreshToken(result.Value);
             }
 
             return HandleResult(result);
@@ -425,6 +422,7 @@ namespace Abacasa.API.Controllers
         /// <returns>Success message</returns>
         [HttpPost("change-password")]
         [Authorize]
+        [EnableRateLimiting("sensitive")]
         [AllowWhenPasswordChangeRequired]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -714,6 +712,14 @@ namespace Abacasa.API.Controllers
         // The body always wins as a fallback so old clients keep working until they switch.
 
         private const string RefreshCookieName = "refresh_token";
+
+        // Refresh token only as an HttpOnly cookie, never in the body, so an XSS can't read a long-lived
+        // credential from the response. A future native client needs Kickstart items 26 + 29 (X-Client: mobile).
+        private void DeliverRefreshToken(LoginResponseDto response)
+        {
+            WriteRefreshTokenCookie(response.RefreshToken, response.ExpiresAt);
+            response.RefreshToken = null!;
+        }
 
         private void WriteRefreshTokenCookie(string token, DateTime expiresAtUtc)
         {
