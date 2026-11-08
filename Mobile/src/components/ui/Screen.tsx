@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { makeStyles, Spacing } from '@/constants/theme';
 
 export interface ScreenProps {
   children: ReactNode;
@@ -19,6 +19,7 @@ export interface ScreenProps {
  * bırakabiliyor — react-native-keyboard-controller kullanılır.
  */
 export function Screen({ children, scroll, edges = ['top', 'bottom'], contentStyle }: ScreenProps) {
+  const styles = useStyles();
   return (
     <SafeAreaView edges={edges} style={styles.safeArea}>
       {scroll ? (
@@ -36,8 +37,8 @@ export function Screen({ children, scroll, edges = ['top', 'bottom'], contentSty
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.background },
+const useStyles = makeStyles((c) => ({
+  safeArea: { flex: 1, backgroundColor: c.background },
   fill: { flex: 1 },
   content: { flexGrow: 1, padding: Spacing.xl, gap: Spacing.lg },
-});
+}));

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { z } from 'zod';
@@ -9,28 +10,28 @@ import type { UserStatus } from '@/features/auth/types';
 import {
   emailSchema,
   nameSchema,
-  PASSWORD_HINT,
+  PASSWORD_HINT_KEY,
   passwordSchema,
   phoneSchema,
   toNullable,
 } from '@/features/auth/validation';
 import type { ApiError } from '@/lib/api';
 
-import { USER_STATUS_OPTIONS } from '../constants';
+import { SELECTABLE_USER_STATUSES } from '../constants';
 import { useRoleOptions } from '../hooks';
 import type { UserDetail } from '../types';
 
 const schema = z
   .object({
-    firstName: nameSchema('Ad'),
-    lastName: nameSchema('Soyad'),
+    firstName: nameSchema('firstName'),
+    lastName: nameSchema('lastName'),
     email: emailSchema,
     phoneNumber: phoneSchema,
     password: z.string(),
     sendInvitation: z.boolean(),
     status: z.enum(['Active', 'Inactive', 'Banned', 'PendingVerification']),
     mustChangePassword: z.boolean(),
-    roleIds: z.array(z.number()).min(1, 'En az bir rol seç'),
+    roleIds: z.array(z.number()).min(1, 'validation.rolesRequired'),
     /** Yalnızca oluşturmada şifre istenir (davet gönderilmiyorsa). */
     isCreate: z.boolean(),
   })
@@ -69,6 +70,7 @@ export interface UserFormProps {
 
 /** Kullanıcı oluşturma/düzenleme formu (ekranlar arasında ortak). */
 export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }: UserFormProps) {
+  const { t } = useTranslation();
   const isCreate = !user;
   const roles = useRoleOptions();
 
@@ -91,6 +93,12 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
   // watch() yerine useWatch: React Compiler ile uyumlu (watch memo'lanamaz).
   const sendInvitation = useWatch({ control, name: 'sendInvitation' });
 
+  const statusOptions = SELECTABLE_USER_STATUSES.map((value) => ({
+    value,
+    label: t(`users.status.${value}`),
+    description: t(`users.statusDescription.${value}`),
+  }));
+
   const submit = () =>
     handleSubmit((v) =>
       onSubmit({
@@ -110,32 +118,32 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
     <View style={styles.container}>
       <FormError messages={error?.messages} />
 
-      <Card title="Kişisel bilgiler">
-        <FormField control={control} name="firstName" label="Ad" {...next(() => setFocus('lastName'))} />
-        <FormField control={control} name="lastName" label="Soyad" {...next(() => setFocus('email'))} />
+      <Card title={t('common.personalInfo')}>
+        <FormField control={control} name="firstName" label={t('common.firstName')} {...next(() => setFocus('lastName'))} />
+        <FormField control={control} name="lastName" label={t('common.lastName')} {...next(() => setFocus('email'))} />
       </Card>
 
-      <Card title="İletişim">
+      <Card title={t('common.contact')}>
         <FormField
           control={control}
           name="email"
-          label="E-posta"
+          label={t('common.email')}
           autoCapitalize="none"
           keyboardType="email-address"
           {...next(() => setFocus('phoneNumber'))}
         />
-        <FormField control={control} name="phoneNumber" label="Telefon (isteğe bağlı)" keyboardType="phone-pad" />
+        <FormField control={control} name="phoneNumber" label={t('common.phoneOptional')} keyboardType="phone-pad" />
       </Card>
 
       {isCreate && (
-        <Card title="Giriş bilgileri">
+        <Card title={t('users.form.loginSection')}>
           <Controller
             control={control}
             name="sendInvitation"
             render={({ field }) => (
               <SwitchCard
-                title="Davet e-postası gönder"
-                description="Şifreyi kullanıcı e-postadaki bağlantıyla kendisi belirler."
+                title={t('users.form.sendInvitation')}
+                description={t('users.form.sendInvitationDescription')}
                 value={field.value}
                 onChange={field.onChange}
               />
@@ -145,8 +153,8 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
             <FormField
               control={control}
               name="password"
-              label="Geçici şifre"
-              hint={PASSWORD_HINT}
+              label={t('users.form.tempPassword')}
+              hint={t(PASSWORD_HINT_KEY)}
               secureTextEntry
               autoComplete="new-password"
             />
@@ -154,13 +162,13 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
         </Card>
       )}
 
-      <Card title="Hesap durumu">
+      <Card title={t('users.form.statusSection')}>
         <Controller
           control={control}
           name="status"
           render={({ field, fieldState }) => (
             <OptionCards
-              options={USER_STATUS_OPTIONS}
+              options={statusOptions}
               value={field.value}
               onChange={field.onChange}
               error={fieldState.error?.message}
@@ -174,8 +182,8 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
             name="mustChangePassword"
             render={({ field }) => (
               <SwitchCard
-                title="Bir sonraki girişte şifre değiştirsin"
-                description="Kullanıcı giriş yapınca önce yeni şifre belirler."
+                title={t('users.form.mustChangePassword')}
+                description={t('users.form.mustChangePasswordDescription')}
                 value={field.value}
                 onChange={field.onChange}
               />
@@ -184,16 +192,16 @@ export function UserForm({ user, isSelf, pending, error, submitLabel, onSubmit }
         )}
         {isSelf && (
           <Text variant="caption" muted>
-            Kendi hesabının durumunu buradan değiştiremezsin.
+            {t('users.form.selfStatusNote')}
           </Text>
         )}
       </Card>
 
-      <Card title="Roller">
+      <Card title={t('users.form.rolesSection')}>
         {roles.isPending ? (
           <StateView kind="loading" />
         ) : roles.isError ? (
-          <FormError messages={['Roller yüklenemedi.']} />
+          <FormError messages={[t('users.form.rolesLoadError')]} />
         ) : (
           <Controller
             control={control}

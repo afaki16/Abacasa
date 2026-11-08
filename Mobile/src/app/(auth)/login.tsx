@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { z } from 'zod';
 
@@ -13,12 +14,13 @@ import { ErrorCode, isApiError } from '@/lib/api';
 
 const schema = z.object({
   email: emailSchema,
-  password: z.string().min(1, 'Şifre gerekli'),
+  password: z.string().min(1, 'validation.password.required'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const login = useLogin();
 
   const { control, handleSubmit, getValues, setFocus } = useForm<FormValues>({
@@ -41,14 +43,14 @@ export default function LoginScreen() {
         accessibilityLabel="Abacasa"
       />
       <View style={styles.header}>
-        <Text variant="heading">Giriş yap</Text>
-        <Text muted>Hesabınla devam et</Text>
+        <Text variant="heading">{t('auth.login.title')}</Text>
+        <Text muted>{t('auth.login.subtitle')}</Text>
       </View>
 
       <FormError messages={login.error?.messages} />
       {emailNotConfirmed && (
         <Button
-          title="Doğrulama e-postasını tekrar gönder"
+          title={t('auth.login.resendVerification')}
           variant="secondary"
           onPress={() => router.push({ pathname: '/verify-email', params: { email: getValues('email') } })}
         />
@@ -57,7 +59,7 @@ export default function LoginScreen() {
       <FormField
         control={control}
         name="email"
-        label="E-posta"
+        label={t('common.email')}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
@@ -67,7 +69,7 @@ export default function LoginScreen() {
       <FormField
         control={control}
         name="password"
-        label="Şifre"
+        label={t('common.password')}
         secureTextEntry
         autoComplete="current-password"
         textContentType="password"
@@ -76,17 +78,17 @@ export default function LoginScreen() {
       />
 
       <Button
-        title="Şifremi unuttum"
+        title={t('auth.login.forgotPassword')}
         variant="ghost"
         style={styles.forgot}
         onPress={() => router.push({ pathname: '/forgot-password', params: { email: getValues('email') } })}
       />
 
-      <Button title="Giriş yap" loading={login.isPending} onPress={onSubmit} />
+      <Button title={t('auth.login.submit')} loading={login.isPending} onPress={onSubmit} />
 
       <View style={styles.footer}>
-        <Text muted>Hesabın yok mu?</Text>
-        <Button title="Kayıt ol" variant="ghost" onPress={() => router.push('/register')} />
+        <Text muted>{t('auth.login.noAccount')}</Text>
+        <Button title={t('auth.login.register')} variant="ghost" onPress={() => router.push('/register')} />
       </View>
     </Screen>
   );

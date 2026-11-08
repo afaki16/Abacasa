@@ -1,31 +1,51 @@
-import { Text as RNText, StyleSheet, type TextProps as RNTextProps } from 'react-native';
+import { Text as RNText, StyleSheet, type TextProps as RNTextProps, type TextStyle } from 'react-native';
 
-import { Colors, FontSize } from '@/constants/theme';
+import { fontFamilyFor, makeStyles, Typography, type TypographyVariant } from '@/constants/theme';
 
-type Variant = 'heading' | 'title' | 'body' | 'label' | 'caption';
+/**
+ * Yazı ölçeği (Bilesenler · 2). Eski adlar geriye uyum için durur:
+ * heading → h1, title → h2.
+ */
+type Variant = TypographyVariant | 'heading' | 'title';
 
 export interface TextProps extends RNTextProps {
   variant?: Variant;
   muted?: boolean;
   color?: string;
+  /** Tutarlar: rakamlar eşit genişlikte (alt alta hizalı). */
+  tabular?: boolean;
 }
 
-/** RN Text yerine her yerde bunu kullan — tipografi tek yerden yönetilir. */
-export function Text({ variant = 'body', muted, color, style, ...rest }: TextProps) {
-  return (
-    <RNText
-      style={[styles.base, styles[variant], muted && styles.muted, color ? { color } : null, style]}
-      {...rest}
-    />
-  );
+const ALIASES: Record<'heading' | 'title', TypographyVariant> = { heading: 'h1', title: 'h2' };
+
+/**
+ * RN Text yerine her yerde bunu kullan — tipografi tek yerden yönetilir.
+ * Stilde fontWeight verilirse karşılık gelen Inter dosyasına çevrilir (Android'de fontWeight
+ * özel fontta işe yaramaz).
+ */
+export function Text({ variant = 'body', muted, color, tabular, style, ...rest }: TextProps) {
+  const styles = useStyles();
+  const resolved = variant === 'heading' || variant === 'title' ? ALIASES[variant] : variant;
+  const flat = StyleSheet.flatten([
+    styles.base,
+    styles[resolved],
+    muted && styles.muted,
+    color ? { color } : null,
+    tabular && TABULAR,
+    style,
+  ]) as TextStyle;
+
+  if (flat.fontWeight !== undefined) {
+    const { fontWeight, ...restStyle } = flat;
+    return <RNText style={{ ...restStyle, fontFamily: fontFamilyFor(fontWeight) }} {...rest} />;
+  }
+  return <RNText style={flat} {...rest} />;
 }
 
-const styles = StyleSheet.create({
-  base: { color: Colors.text, fontSize: FontSize.body },
-  heading: { fontSize: FontSize.heading, fontWeight: '700' },
-  title: { fontSize: FontSize.title, fontWeight: '600' },
-  body: { fontSize: FontSize.body },
-  label: { fontSize: FontSize.label, fontWeight: '500' },
-  caption: { fontSize: FontSize.caption },
-  muted: { color: Colors.textMuted },
-});
+const TABULAR: TextStyle = { fontVariant: ['tabular-nums'] };
+
+const useStyles = makeStyles((c) => ({
+  base: { color: c.text },
+  ...Typography,
+  muted: { color: c.textMuted },
+}));

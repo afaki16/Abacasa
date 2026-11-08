@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { Screen, StateView } from '@/components/ui';
 import { RequirePermission } from '@/features/auth/components/RequirePermission';
@@ -16,6 +17,7 @@ export default function EditUserScreen() {
 }
 
 function EditUser() {
+  const { t } = useTranslation();
   const id = Number(useLocalSearchParams<{ id: string }>().id);
   const user = useUser(id);
   const update = useUpdateUser();
@@ -31,7 +33,7 @@ function EditUser() {
         isSelf={isSelf}
         pending={update.isPending}
         error={update.error}
-        submitLabel="Kaydet"
+        submitLabel={t('common.save')}
         onSubmit={(v) =>
           update.mutate(
             {

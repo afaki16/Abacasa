@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Screen, Text } from '@/components/ui';
@@ -11,18 +12,19 @@ import { useLogout } from '@/features/auth/hooks';
  * Başarıda yönlendirme yok: yeniden girişle bayrak iner, guard (app)'e geçer.
  */
 export default function ForceChangePasswordScreen() {
+  const { t } = useTranslation();
   const logout = useLogout();
 
   return (
     <Screen scroll>
       <View style={styles.header}>
-        <Text variant="heading">Şifreni değiştir</Text>
-        <Text muted>Devam etmeden önce hesabın için yeni bir şifre belirlemen gerekiyor.</Text>
+        <Text variant="heading">{t('auth.forceChangePassword.title')}</Text>
+        <Text muted>{t('auth.forceChangePassword.subtitle')}</Text>
       </View>
 
       <ChangePasswordForm />
 
-      <Button title="Çıkış yap" variant="ghost" loading={logout.isPending} onPress={() => logout.mutate()} />
+      <Button title={t('common.logout')} variant="ghost" loading={logout.isPending} onPress={() => logout.mutate()} />
     </Screen>
   );
 }

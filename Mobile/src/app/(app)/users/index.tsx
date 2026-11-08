@@ -2,10 +2,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { FlashList } from '@shopify/flash-list';
 import { router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native';
 
 import { Card, ListItem, SearchBar, StateView } from '@/components/ui';
-import { Colors, Spacing } from '@/constants/theme';
+import { makeStyles, Spacing, useColors } from '@/constants/theme';
 import { RequirePermission } from '@/features/auth/components/RequirePermission';
 import { useHasPermission } from '@/features/auth/permissions';
 import { UserStatusBadge } from '@/features/users/components/UserStatusBadge';
@@ -24,6 +25,9 @@ export default function UsersScreen() {
 }
 
 function UsersList() {
+  const { t } = useTranslation();
+  const styles = useStyles();
+  const colors = useColors();
   const [search, setSearch] = useState('');
   const searchTerm = useDebouncedValue(search);
   const canCreate = useHasPermission(USER_PERMISSIONS.CREATE);
@@ -36,8 +40,8 @@ function UsersList() {
         options={{
           headerRight: canCreate
             ? () => (
-                <Pressable accessibilityRole="button" accessibilityLabel="Kullanıcı ekle" hitSlop={8} onPress={() => router.push('/users/new')}>
-                  <Ionicons name="add" size={26} color={Colors.primary} />
+                <Pressable accessibilityRole="button" accessibilityLabel={t('users.add')} hitSlop={8} onPress={() => router.push('/users/new')}>
+                  <Ionicons name="add" size={26} color={colors.primary} />
                 </Pressable>
               )
             : undefined,
@@ -45,13 +49,13 @@ function UsersList() {
       />
 
       <View style={styles.search}>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Ad, soyad veya e-posta ara" />
+        <SearchBar value={search} onChangeText={setSearch} placeholder={t('users.searchPlaceholder')} />
       </View>
 
       {query.isPending ? (
         <StateView kind="loading" />
       ) : query.isError && users.length === 0 ? (
-        <StateView kind="error" message={query.error.message} actionLabel="Tekrar dene" onAction={() => query.refetch()} />
+        <StateView kind="error" message={query.error.message} actionLabel={t('common.retry')} onAction={() => query.refetch()} />
       ) : (
         <FlashList
           data={users}
@@ -66,6 +70,9 @@ function UsersList() {
           refreshControl={
             <RefreshControl
               refreshing={query.isRefetching && !query.isFetchingNextPage}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+              progressBackgroundColor={colors.background}
               onRefresh={() => {
                 void query.refetch();
               }}
@@ -73,9 +80,9 @@ function UsersList() {
           }
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
-            <StateView kind="empty" title={searchTerm ? 'Sonuç bulunamadı' : 'Henüz kullanıcı yok'} />
+            <StateView kind="empty" title={searchTerm ? t('users.noResults') : t('users.empty')} />
           }
-          ListFooterComponent={query.isFetchingNextPage ? <ActivityIndicator style={styles.footer} color={Colors.primary} /> : null}
+          ListFooterComponent={query.isFetchingNextPage ? <ActivityIndicator style={styles.footer} color={colors.primary} /> : null}
           renderItem={({ item }) => (
             <Card padded={false}>
               <ListItem
@@ -93,10 +100,10 @@ function UsersList() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.surface },
+const useStyles = makeStyles((c) => ({
+  container: { flex: 1, backgroundColor: c.background },
   search: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md, paddingBottom: Spacing.sm },
   list: { paddingHorizontal: Spacing.xl, paddingBottom: Spacing.xxl },
   separator: { height: Spacing.sm },
   footer: { marginVertical: Spacing.lg },
-});
+}));

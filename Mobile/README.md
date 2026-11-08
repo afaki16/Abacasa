@@ -141,15 +141,16 @@ src/
 │   ├── _layout.tsx           # splash, rehydrate, Provider'lar, Stack.Protected guard'ları
 │   ├── (auth)/               # girişsiz: login, register, verify-email, forgot-password
 │   ├── (app)/                # girişli — yeni modüller buraya
-│   │   ├── (tabs)/           # alt sekmeler: index (ana sayfa), profile
-│   │   ├── account, change-password, sessions   # sekmelerin üstüne açılan, yerel başlıklı ekranlar
+│   │   ├── (tabs)/           # alt sekmeler: index (Özet), expenses, add (yuva; Ekle sayfasını açar), recurring, more (Diğer)
+│   │   ├── profile, account, change-password, sessions   # sekmelerin üstüne açılan, StackHeader başlıklı ekranlar
 │   │   └── users/            # ÖRNEK MODÜL: liste, [id] detay, new, [id]/edit
 │   └── force-change-password.tsx
-├── components/ui/            # UI kiti: Text, Button, TextField, FormField, FormError, Card, ListItem,
-│                             #   OptionCards (kart seçici), SwitchCard, SearchBar, StateView, Screen
+├── components/ui/            # UI kiti (aşağıda "UI kiti")
+├── components/navigation/    # TabBar, HouseholdBar (HaneBar), StackHeader (StackBar)
 ├── constants/theme.ts        # renk / boşluk / yazı token'ları
 ├── features/<modül>/         # api.ts, hooks.ts, types.ts, constants.ts, components/ (modül başına)
 │   ├── auth/                 # + validation.ts, RequirePermission
+│   ├── shell/                # TabScreen (sekme kabı), AddSheet (Ekle alttan sayfası)
 │   └── users/                # ÖRNEK MODÜL — yeni modül için şablon
 ├── hooks/                    # modülden bağımsız hook'lar (useCooldown, useDebouncedValue)
 ├── lib/
@@ -157,9 +158,27 @@ src/
 │   ├── api/                  # axios client, refresh interceptor, hata tipi, queryClient
 │   ├── config/env.ts         # TEK env okuma noktası
 │   └── storage/              # secureStorage (token + kullanıcı)
-└── stores/authStore.ts       # oturumun tek doğruluk kaynağı
+└── stores/                   # authStore (oturumun tek doğruluk kaynağı), preferencesStore, toastStore
 plugins/                      # Expo config plugin'leri (native ayar — android/ ios/ elle düzenlenmez)
 ```
+
+## UI kiti
+
+Tasarım kaynağı Claude Design bileşen sayfasıdır (Bilesenler). Renkler `constants/theme.ts` token'larından
+(açık + koyu), yazı Inter (`Typography`: amountLarge, h1, h2, section, bodyStrong, body, label, caption), ikonlar
+`Icon` (MaterialIcons; tasarımdaki Material Symbols adı kebab-case). Tutarlar `<Text tabular>` ve sağa hizalı.
+
+- **Text, Icon, Button** (primary · secondary · ghost · destructive · danger), **Card**, **Screen**: her ekranın temeli.
+- **TextField / FormField** form alanı; **AmountField** tutar (hero: hızlı giriş, inline: form) + **CurrencyPickerSheet**.
+- **DatePickerSheet** tarih, **SelectSheet** aranabilir seçim (+ "yeni ekle"), **SegmentedControl** 2–4 kısa seçenek,
+  **OptionCards** açıklamalı seçenekler, **Chip** filtre/hızlı seçim, **Switch / SwitchCard**, **Checkbox**.
+- **ListItem** (menu: Diğer satırı · record: kayıt satırı, tutar sağda) ve **SwipeableRow** (Düzenle/Sil yalnızca izin varsa verilir).
+- **SummaryCard** (ana renk dolgulu dönem toplamı, ekranda bir tane) ve **StatCard** (beyaz kart, turkuaz/ana renk vurgu + ilerleme).
+- **Badge**: durum metinle (paid, pending, overdue, admin, member, info, neutral).
+- **BottomSheet** tek birincil eylemli alttan sayfa; **ConfirmDialog** silme/çıkış onayı.
+- Durumlar: liste yüklenirken **SkeletonList**, **EmptyState**, **ErrorState** (StateView bunların ince sarmalayıcısı),
+  **OfflineBanner** (sekme kabında hazır).
+- Geri bildirim: `toast.success / error / info(mesaj, { action })` (`stores/toastStore`; ToastHost kök layout'ta).
 
 ## Yeni modül eklemek
 

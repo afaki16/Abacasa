@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { Screen } from '@/components/ui';
 import { RequirePermission } from '@/features/auth/components/RequirePermission';
@@ -15,6 +16,7 @@ export default function NewUserScreen() {
 }
 
 function NewUser() {
+  const { t } = useTranslation();
   const create = useCreateUser();
 
   return (
@@ -22,7 +24,7 @@ function NewUser() {
       <UserForm
         pending={create.isPending}
         error={create.error}
-        submitLabel="Kullanıcı oluştur"
+        submitLabel={t('users.create')}
         onSubmit={(v) =>
           create.mutate(v, {
             // Oluşturulan kaydın detayına geç; geri tuşu listeye döner.

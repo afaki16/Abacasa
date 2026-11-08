@@ -1,27 +1,18 @@
-import type { Option } from '@/components/ui';
-import { Colors } from '@/constants/theme';
+import type { ColorToken } from '@/constants/theme';
 import type { UserStatus } from '@/features/auth/types';
 
-export const USER_STATUS_LABELS: Record<UserStatus, string> = {
-  Active: 'Aktif',
-  Inactive: 'Pasif',
-  Banned: 'Engelli',
-  PendingVerification: 'Doğrulama bekliyor',
-};
+// Durum adları ve açıklamaları çeviriden gelir: users.status.<durum>, users.statusDescription.<durum>.
 
-export const USER_STATUS_COLORS: Record<UserStatus, string> = {
-  Active: Colors.success,
-  Inactive: Colors.textMuted,
-  Banned: Colors.danger,
-  PendingVerification: Colors.primary,
+/** Rozet rengi: tema token'ı (açık/koyu temada ayrı değer alır). */
+export const USER_STATUS_COLORS: Record<UserStatus, ColorToken> = {
+  Active: 'success',
+  Inactive: 'textMuted',
+  Banned: 'danger',
+  PendingVerification: 'primary',
 };
 
 /** Formda seçilebilen durumlar ("Doğrulama bekliyor" sistem durumudur, elle seçilmez). */
-export const USER_STATUS_OPTIONS: Option<UserStatus>[] = [
-  { value: 'Active', label: 'Aktif', description: 'Giriş yapabilir.' },
-  { value: 'Inactive', label: 'Pasif', description: 'Giriş yapamaz; kayıt silinmez.' },
-  { value: 'Banned', label: 'Engelli', description: 'Hesap kilitli.' },
-];
+export const SELECTABLE_USER_STATUSES: Exclude<UserStatus, 'PendingVerification'>[] = ['Active', 'Inactive', 'Banned'];
 
 /** Yetki adları (backend PermissionDto.Name). */
 export const USER_PERMISSIONS = {

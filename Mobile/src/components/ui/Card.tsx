@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, Radius, Spacing } from '@/constants/theme';
 
 import { Text } from './Text';
 
@@ -16,11 +16,12 @@ export interface CardProps {
 }
 
 export function Card({ title, description, children, padded = true, style }: CardProps) {
+  const styles = useStyles();
   return (
     <View style={[styles.card, padded && styles.padded, style]}>
       {(title || description) && (
         <View style={[styles.header, !padded && styles.headerUnpadded]}>
-          {title ? <Text variant="label">{title}</Text> : null}
+          {title ? <Text variant="bodyStrong">{title}</Text> : null}
           {description ? (
             <Text variant="caption" muted>
               {description}
@@ -33,15 +34,15 @@ export function Card({ title, description, children, padded = true, style }: Car
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((c) => ({
   card: {
-    backgroundColor: Colors.background,
+    backgroundColor: c.card,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: c.border,
     borderRadius: Radius.lg,
     overflow: 'hidden',
   },
   padded: { padding: Spacing.lg, gap: Spacing.lg },
   header: { gap: 2 },
   headerUnpadded: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.sm },
-});
+}));

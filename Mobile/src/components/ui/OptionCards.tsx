@@ -1,7 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet, View } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useTranslation } from 'react-i18next';
+import { Pressable, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
+import { translateMessage } from '@/features/auth/validation';
 
 import { Text } from './Text';
 
@@ -38,6 +40,9 @@ export type OptionCardsProps<V extends string | number> = SingleProps<V> | Multi
  */
 export function OptionCards<V extends string | number>(props: OptionCardsProps<V>) {
   const { label, options, error, disabled } = props;
+  useTranslation(); // dil değişince hata metni yeniden çevrilsin
+  const styles = useStyles();
+  const colors = useColors();
 
   const isSelected = (v: V) => (props.multiple ? props.value.includes(v) : props.value === v);
 
@@ -51,7 +56,11 @@ export function OptionCards<V extends string | number>(props: OptionCardsProps<V
 
   return (
     <View style={styles.container}>
-      {label ? <Text variant="label">{label}</Text> : null}
+      {label ? (
+        <Text variant="label" muted>
+          {label}
+        </Text>
+      ) : null}
       <View style={styles.list}>
         {options.map((option) => {
           const selected = isSelected(option.value);
@@ -70,7 +79,7 @@ export function OptionCards<V extends string | number>(props: OptionCardsProps<V
               ]}
             >
               <View style={styles.texts}>
-                <Text variant="label" color={selected ? Colors.primary : Colors.text}>
+                <Text variant="bodyStrong" color={selected ? colors.primarySoftText : colors.text}>
                   {option.label}
                 </Text>
                 {option.description ? (
@@ -79,33 +88,34 @@ export function OptionCards<V extends string | number>(props: OptionCardsProps<V
                   </Text>
                 ) : null}
               </View>
-              <Ionicons
+              <MaterialIcons
                 name={
                   props.multiple
                     ? selected
-                      ? 'checkbox'
-                      : 'square-outline'
+                      ? 'check-box'
+                      : 'check-box-outline-blank'
                     : selected
-                      ? 'radio-button-on'
-                      : 'radio-button-off'
+                      ? 'radio-button-checked'
+                      : 'radio-button-unchecked'
                 }
                 size={22}
-                color={selected ? Colors.primary : Colors.textDisabled}
+                color={selected ? colors.primary : colors.textDisabled}
+                accessible={false}
               />
             </Pressable>
           );
         })}
       </View>
       {error ? (
-        <Text variant="caption" color={Colors.danger}>
-          {error}
+        <Text variant="caption" color={colors.danger}>
+          {translateMessage(error)}
         </Text>
       ) : null}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((c) => ({
   container: { gap: Spacing.xs },
   list: { gap: Spacing.sm },
   card: {
@@ -114,12 +124,13 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: c.fieldBorder,
     borderRadius: Radius.md,
-    backgroundColor: Colors.background,
+    backgroundColor: c.card,
+    minHeight: 52,
   },
-  cardSelected: { borderColor: Colors.primary, backgroundColor: Colors.surface },
+  cardSelected: { borderColor: c.primarySoftBorder, backgroundColor: c.primarySoft },
   texts: { flex: 1, gap: 2 },
   pressed: { opacity: 0.7 },
   disabled: { opacity: 0.5 },
-});
+}));

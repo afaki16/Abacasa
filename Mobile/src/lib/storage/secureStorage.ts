@@ -12,6 +12,9 @@ export const SECURE_KEYS = {
   REFRESH_TOKEN: 'auth.refreshToken',
   USER: 'auth.user',
   DEVICE_ID: 'device.id',
+  /** Kullanıcı tercihleri (hassas değil; cihazdaki tek kalıcı depo olduğu için burada). */
+  PREF_LOCALE: 'pref.locale',
+  PREF_THEME: 'pref.themeMode',
 } as const;
 
 export type SecureKey = (typeof SECURE_KEYS)[keyof typeof SECURE_KEYS];

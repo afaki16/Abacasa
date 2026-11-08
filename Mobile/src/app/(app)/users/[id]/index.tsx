@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { Button, Card, FormError, ListItem, Screen, StateView, Text } from '@/components/ui';
@@ -8,10 +9,18 @@ import { useHasPermission } from '@/features/auth/permissions';
 import { UserStatusBadge } from '@/features/users/components/UserStatusBadge';
 import { USER_PERMISSIONS } from '@/features/users/constants';
 import { useDeleteUser, useUser } from '@/features/users/hooks';
+import { formatDisplayDate } from '@/lib/format/period';
 import { useAuthStore } from '@/stores/authStore';
 
-const dateFormat = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' });
-const formatDate = (value: string | null) => (value ? dateFormat.format(new Date(value)) : '—');
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** Tarih-saat (cihazın saat diliminde): "dd.MM.yyyy HH:mm"; boşsa "—". Tarih kısmı ortak biçimleyiciden. */
+const formatDate = (value: string | null) => {
+  if (!value) return '—';
+  const d = new Date(value);
+  const localDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `${formatDisplayDate(localDate)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 /** Örnek modül — detay: salt okunur bilgiler + yetkiye göre düzenle / sil. */
 export default function UserDetailScreen() {
@@ -23,6 +32,7 @@ export default function UserDetailScreen() {
 }
 
 function UserDetail() {
+  const { t } = useTranslation();
   const id = Number(useLocalSearchParams<{ id: string }>().id);
   const user = useUser(id);
   const remove = useDeleteUser();
@@ -32,14 +42,25 @@ function UserDetail() {
 
   if (user.isPending) return <StateView kind="loading" />;
   if (user.isError || !user.data) {
-    return <StateView kind="error" message={user.error?.message} actionLabel="Tekrar dene" onAction={() => user.refetch()} />;
+    return (
+      <StateView
+        kind="error"
+        message={user.error?.message}
+        actionLabel={t('common.retry')}
+        onAction={() => user.refetch()}
+      />
+    );
   }
   const u = user.data;
 
   const confirmDelete = () =>
-    Alert.alert('Kullanıcıyı sil', `${u.fullName} silinecek.`, [
-      { text: 'Vazgeç', style: 'cancel' },
-      { text: 'Sil', style: 'destructive', onPress: () => remove.mutate(u.id, { onSuccess: () => router.back() }) },
+    Alert.alert(t('users.deleteTitle'), t('users.deleteMessage', { name: u.fullName }), [
+      { text: t('common.dismiss'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => remove.mutate(u.id, { onSuccess: () => router.back() }),
+      },
     ]);
 
   return (
@@ -51,26 +72,36 @@ function UserDetail() {
 
       <FormError messages={remove.error?.messages} />
 
-      <Card title="İletişim" padded={false}>
-        <ListItem icon="mail-outline" title={u.email} subtitle={u.emailConfirmed ? 'E-posta doğrulandı' : 'E-posta doğrulanmadı'} />
-        <ListItem icon="call-outline" title={u.phoneNumber || '—'} subtitle="Telefon" last />
+      <Card title={t('common.contact')} padded={false}>
+        <ListItem
+          icon="mail-outline"
+          title={u.email}
+          subtitle={u.emailConfirmed ? t('users.emailConfirmed') : t('users.emailNotConfirmed')}
+        />
+        <ListItem icon="phone" title={u.phoneNumber || '—'} subtitle={t('common.phone')} last />
       </Card>
 
-      <Card title="Hesap" padded={false}>
-        <ListItem icon="shield-checkmark-outline" title={u.roles.map((r) => r.name).join(', ') || '—'} subtitle="Roller" />
-        {u.tenantName ? <ListItem icon="business-outline" title={u.tenantName} subtitle="Tenant" /> : null}
-        <ListItem icon="log-in-outline" title={formatDate(u.lastLoginDate)} subtitle="Son giriş" />
-        <ListItem icon="calendar-outline" title={formatDate(u.createdDate)} subtitle="Oluşturulma" last />
+      <Card title={t('users.accountSection')} padded={false}>
+        <ListItem
+          icon="verified-user"
+          title={u.roles.map((r) => r.name).join(', ') || '—'}
+          subtitle={t('users.roles')}
+        />
+        {u.tenantName ? <ListItem icon="business" title={u.tenantName} subtitle={t('users.tenant')} /> : null}
+        <ListItem icon="login" title={formatDate(u.lastLoginDate)} subtitle={t('users.lastLogin')} />
+        <ListItem icon="calendar-today" title={formatDate(u.createdDate)} subtitle={t('users.createdAt')} last />
       </Card>
 
       {canUpdate && (
         <Button
-          title="Düzenle"
+          title={t('common.edit')}
           variant="secondary"
           onPress={() => router.push({ pathname: '/users/[id]/edit', params: { id: String(u.id) } })}
         />
       )}
-      {canDelete && <Button title="Sil" variant="danger" loading={remove.isPending} onPress={confirmDelete} />}
+      {canDelete && (
+        <Button title={t('common.delete')} variant="danger" loading={remove.isPending} onPress={confirmDelete} />
+      )}
     </Screen>
   );
 }

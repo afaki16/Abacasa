@@ -1,0 +1,410 @@
+{
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "close": "Kapat",
+    "confirm": "Onayla",
+    "ok": "Tamam",
+    "retry": "Tekrar dene",
+    "search": "Ara",
+    "loading": "Yükleniyor…",
+    "error": "Bir şeyler ters gitti",
+    "noRecords": "Kayıt yok",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "yes": "Evet",
+    "no": "Hayır",
+    "household": "Hane",
+    "today": "Bugün",
+    "dismiss": "Vazgeç",
+    "logout": "Çıkış yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "phone": "Telefon",
+    "phoneOptional": "Telefon (isteğe bağlı)",
+    "personalInfo": "Kişisel bilgiler",
+    "contact": "İletişim"
+  },
+  "enums": {
+    "currency": {
+      "TRY": "TL",
+      "USD": "Dolar",
+      "EUR": "Euro",
+      "QuarterGold": "Çeyrek altın"
+    },
+    "paymentMethodType": {
+      "Cash": "Nakit",
+      "BankAccount": "Banka hesabı",
+      "CreditCard": "Kredi kartı",
+      "MealCard": "Yemek kartı"
+    },
+    "recurringPaymentKind": {
+      "Subscription": "Abonelik",
+      "Bill": "Fatura",
+      "Installment": "Taksit",
+      "Donation": "Bağış"
+    },
+    "donationKind": {
+      "Donation": "Bağış",
+      "Zakat": "Zekat",
+      "Scholarship": "Burs"
+    },
+    "fundMovementType": {
+      "Use": "Kullanım",
+      "Return": "Yerine koyma"
+    },
+    "vehicleObligationType": {
+      "TrafficInsurance": "Trafik sigortası",
+      "Kasko": "Kasko",
+      "Inspection": "Muayene",
+      "Mtv": "MTV"
+    },
+    "ledgerDirection": {
+      "Income": "Gelir",
+      "Expense": "Gider"
+    },
+    "householdRole": {
+      "Admin": "Yönetici",
+      "Member": "Üye"
+    }
+  },
+  "money": {
+    "quarterCount_one": "{{n}} çeyrek",
+    "quarterCount_other": "{{n}} çeyrek"
+  },
+  "ui": {
+    "stateView": {
+      "empty": "Henüz kayıt yok",
+      "forbidden": "Bu sayfayı görme yetkin yok"
+    },
+    "searchBar": {
+      "clear": "Aramayı temizle"
+    },
+    "comingSoon": "Bu ekran yakında geliyor",
+    "undo": "Geri al",
+    "header": {
+      "back": "Geri"
+    },
+    "amount": {
+      "label": "Tutar"
+    },
+    "currency": {
+      "pickerTitle": "Para birimi",
+      "wholeNumber": "tam sayı",
+      "change": "Para birimi: {{currency}}. Değiştirmek için dokun",
+      "short": {
+        "TRY": "TL",
+        "USD": "USD",
+        "EUR": "EUR",
+        "QuarterGold": "Çeyrek"
+      },
+      "symbol": {
+        "TRY": "₺",
+        "USD": "$",
+        "EUR": "€",
+        "QuarterGold": "Ç"
+      }
+    },
+    "datePicker": {
+      "title": "Tarih seç",
+      "previousMonth": "Önceki ay",
+      "nextMonth": "Sonraki ay",
+      "yesterday": "Dün",
+      "weekdays": {
+        "mon": "Pzt",
+        "tue": "Sal",
+        "wed": "Çar",
+        "thu": "Per",
+        "fri": "Cum",
+        "sat": "Cmt",
+        "sun": "Paz"
+      }
+    },
+    "select": {
+      "noResults": "Sonuç bulunamadı"
+    },
+    "offline": {
+      "message": "İnternet bağlantısı yok"
+    }
+  },
+  "tabs": {
+    "overview": "Özet",
+    "expenses": "Harcamalar",
+    "add": "Ekle",
+    "recurring": "Sabit ödemeler",
+    "more": "Diğer"
+  },
+  "legal": {
+    "terms": "Kullanım koşulları",
+    "privacyNotice": "Aydınlatma metni"
+  },
+  "validation": {
+    "required": "Bu alan gerekli",
+    "maxLength": "En fazla {{max}} karakter olabilir",
+    "positive": "Sıfırdan büyük olmalı",
+    "wholeNumber": "Tam sayı olmalı",
+    "range": "{{min}} ile {{max}} arasında olmalı",
+    "email": {
+      "invalid": "Geçerli bir e-posta gir",
+      "max": "E-posta en fazla 100 karakter olabilir"
+    },
+    "password": {
+      "min": "Şifre en az 8 karakter olmalı",
+      "max": "Şifre en fazla 100 karakter olabilir",
+      "lowercase": "Şifre en az bir küçük harf içermeli",
+      "uppercase": "Şifre en az bir büyük harf içermeli",
+      "digit": "Şifre en az bir rakam içermeli",
+      "hint": "En az 8 karakter; büyük harf, küçük harf ve rakam içermeli.",
+      "mismatch": "Şifreler eşleşmiyor",
+      "required": "Şifre gerekli",
+      "currentRequired": "Mevcut şifre gerekli",
+      "sameAsCurrent": "Yeni şifre mevcut şifreden farklı olmalı"
+    },
+    "firstName": {
+      "required": "Ad gerekli",
+      "max": "Ad en fazla 50 karakter olabilir"
+    },
+    "lastName": {
+      "required": "Soyad gerekli",
+      "max": "Soyad en fazla 50 karakter olabilir"
+    },
+    "phone": {
+      "max": "Telefon en fazla 20 karakter olabilir"
+    },
+    "otp": "6 haneli kodu gir",
+    "householdName": {
+      "required": "Hane adı gerekli",
+      "max": "Hane adı en fazla 100 karakter olabilir"
+    },
+    "acceptTerms": "Kullanım koşullarını kabul etmelisin",
+    "acknowledgePrivacy": "Aydınlatma metnini okuduğunu onaylamalısın",
+    "rolesRequired": "En az bir rol seç"
+  },
+  "auth": {
+    "login": {
+      "title": "Giriş yap",
+      "subtitle": "Hesabınla devam et",
+      "resendVerification": "Doğrulama e-postasını tekrar gönder",
+      "forgotPassword": "Şifremi unuttum",
+      "submit": "Giriş yap",
+      "noAccount": "Hesabın yok mu?",
+      "register": "Kayıt ol"
+    },
+    "register": {
+      "title": "Kayıt ol",
+      "subtitle": "Birkaç bilgiyle hesabını oluştur.",
+      "householdSection": "Hane",
+      "householdDescription": "Bütçeni tutacağın hane. E-postanı doğrulayınca açılır; sonra aile üyelerini davet edebilirsin.",
+      "householdName": "Hane adı",
+      "householdPlaceholder": "Örn. Yılmaz Hanesi",
+      "securitySection": "Hesap güvenliği",
+      "passwordConfirm": "Şifre (tekrar)",
+      "consentsSection": "Onaylar",
+      "readTerms": "Kullanım koşullarını oku",
+      "acceptTerms": "Kullanım koşullarını okudum ve kabul ediyorum",
+      "readPrivacy": "Aydınlatma metnini oku",
+      "acknowledgePrivacy": "Kişisel verilerimin işlenmesine ilişkin aydınlatma metnini okudum",
+      "submit": "Hesap oluştur",
+      "haveAccount": "Zaten hesabın var mı?",
+      "login": "Giriş yap"
+    },
+    "verifyEmail": {
+      "title": "E-postanı doğrula",
+      "sentTo": "{{email}} adresine bir doğrulama bağlantısı gönderdik. Bağlantıyı açıp hesabını doğruladıktan sonra giriş yapabilirsin.",
+      "sentGeneric": "E-posta adresine bir doğrulama bağlantısı gönderdik. Bağlantıyı açıp hesabını doğruladıktan sonra giriş yapabilirsin.",
+      "resent": "Doğrulama e-postası tekrar gönderildi.",
+      "backToLogin": "Giriş ekranına dön",
+      "resend": "E-postayı tekrar gönder",
+      "resendCountdown": "E-postayı tekrar gönder ({{seconds}})",
+      "spamHint": "E-posta gelmediyse gereksiz (spam) klasörünü kontrol et."
+    },
+    "forgotPassword": {
+      "title": "Şifremi unuttum",
+      "intro": "E-posta adresini gir, şifreni sıfırlaman için bir kod gönderelim.",
+      "codeSent": "{{email}} adresine bir hesap kayıtlıysa 6 haneli bir kod gönderdik.",
+      "sendCode": "Kod gönder",
+      "submit": "Şifreyi sıfırla",
+      "differentEmail": "Farklı bir e-posta gir",
+      "successTitle": "Şifren güncellendi",
+      "successMessage": "Yeni şifrenle giriş yapabilirsin."
+    },
+    "password": {
+      "codeSection": "Doğrulama kodu",
+      "code": "Kod",
+      "newPasswordSection": "Yeni şifre belirle",
+      "newPassword": "Yeni şifre",
+      "newPasswordConfirm": "Yeni şifre (tekrar)",
+      "resendCode": "Kodu tekrar gönder",
+      "resendCodeCountdown": "Kodu tekrar gönder ({{seconds}})"
+    },
+    "changePassword": {
+      "title": "Şifre değiştir",
+      "intro": "Şifren değişince diğer cihazlardaki oturumların kapanır.",
+      "verifySection": "Kimliğini doğrula",
+      "currentPassword": "Mevcut şifre",
+      "forgotCurrent": "Mevcut şifremi hatırlamıyorum",
+      "useCurrent": "Mevcut şifremle değiştir",
+      "codeSentTo": "{{email}} adresine 6 haneli bir kod gönderdik.",
+      "submit": "Şifreyi değiştir",
+      "successTitle": "Şifren değiştirildi",
+      "successMessage": "Diğer cihazlardaki oturumların kapatıldı."
+    },
+    "forceChangePassword": {
+      "title": "Şifreni değiştir",
+      "subtitle": "Devam etmeden önce hesabın için yeni bir şifre belirlemen gerekiyor."
+    },
+    "consents": {
+      "title": "Güncellenen metinler",
+      "subtitle": "Devam etmek için aşağıdaki metinleri okuyup onaylaman gerekiyor.",
+      "read": "Metni oku",
+      "accept": "Okudum ve kabul ediyorum",
+      "acknowledge": "Okudum",
+      "continue": "Devam et"
+    }
+  },
+  "profile": {
+    "accountSection": "Hesap",
+    "accountInfo": "Hesap bilgileri",
+    "changePassword": "Şifre değiştir",
+    "sessions": "Oturumlarım",
+    "sessionsSubtitle": "Hesabının açık olduğu cihazlar",
+    "adminSection": "Yönetim",
+    "users": "Kullanıcılar",
+    "logoutMessage": "Bu cihazdaki oturumun kapatılacak.",
+    "appearanceSection": "Görünüm ve dil",
+    "language": "Dil",
+    "theme": "Tema",
+    "languages": {
+      "tr": "Türkçe",
+      "en": "English"
+    },
+    "themes": {
+      "system": "Sistem",
+      "light": "Açık",
+      "dark": "Koyu"
+    },
+    "themeSystemDescription": "Cihazın temasını izler.",
+    "title": "Profil ve ayarlar"
+  },
+  "account": {
+    "title": "Hesap bilgileri",
+    "emailHint": "E-posta adresi buradan değiştirilemez."
+  },
+  "sessions": {
+    "title": "Oturumlarım",
+    "signedIn": "Giriş: {{date}}",
+    "thisDevice": "Bu cihaz",
+    "unknownDevice": "Bilinmeyen cihaz",
+    "revoke": "Kapat",
+    "revokeTitle": "Oturumu kapat",
+    "revokeMessage": "{{device}} oturumu kapatılacak.",
+    "logoutAll": "Tüm cihazlardan çık",
+    "logoutAllMessage": "Bu cihaz dahil bütün oturumların kapatılacak.",
+    "logoutAllConfirm": "Hepsinden çık",
+    "empty": "Açık oturum yok."
+  },
+  "users": {
+    "title": "Kullanıcılar",
+    "newTitle": "Yeni kullanıcı",
+    "detailTitle": "Kullanıcı",
+    "editTitle": "Kullanıcıyı düzenle",
+    "add": "Kullanıcı ekle",
+    "searchPlaceholder": "Ad, soyad veya e-posta ara",
+    "noResults": "Sonuç bulunamadı",
+    "empty": "Henüz kullanıcı yok",
+    "create": "Kullanıcı oluştur",
+    "deleteTitle": "Kullanıcıyı sil",
+    "deleteMessage": "{{name}} silinecek.",
+    "emailConfirmed": "E-posta doğrulandı",
+    "emailNotConfirmed": "E-posta doğrulanmadı",
+    "accountSection": "Hesap",
+    "roles": "Roller",
+    "tenant": "Tenant",
+    "lastLogin": "Son giriş",
+    "createdAt": "Oluşturulma",
+    "status": {
+      "Active": "Aktif",
+      "Inactive": "Pasif",
+      "Banned": "Engelli",
+      "PendingVerification": "Doğrulama bekliyor"
+    },
+    "statusDescription": {
+      "Active": "Giriş yapabilir.",
+      "Inactive": "Giriş yapamaz; kayıt silinmez.",
+      "Banned": "Hesap kilitli."
+    },
+    "form": {
+      "loginSection": "Giriş bilgileri",
+      "sendInvitation": "Davet e-postası gönder",
+      "sendInvitationDescription": "Şifreyi kullanıcı e-postadaki bağlantıyla kendisi belirler.",
+      "tempPassword": "Geçici şifre",
+      "statusSection": "Hesap durumu",
+      "mustChangePassword": "Bir sonraki girişte şifre değiştirsin",
+      "mustChangePasswordDescription": "Kullanıcı giriş yapınca önce yeni şifre belirler.",
+      "selfStatusNote": "Kendi hesabının durumunu buradan değiştiremezsin.",
+      "rolesSection": "Roller",
+      "rolesLoadError": "Roller yüklenemedi."
+    }
+  },
+  "shell": {
+    "placeholderMessage": "Bu ekran hazırlanıyor; yakında burada olacak."
+  },
+  "add": {
+    "title": "Ne eklemek istersin?",
+    "mostUsed": "En sık kullanılan",
+    "noPermission": "Bu hanede kayıt ekleme yetkin yok.",
+    "items": {
+      "expense": "Harcama",
+      "donation": "Bağış",
+      "debt": "Borç",
+      "recurringPayment": "Sabit ödeme ödemesi",
+      "vehicleOperation": "Araç işlemi"
+    }
+  },
+  "more": {
+    "groups": {
+      "records": "Kayıtlar",
+      "definitions": "Hane ve tanımlar",
+      "account": "Hesap"
+    },
+    "items": {
+      "donations": "Bağışlar",
+      "debts": "Borçlar",
+      "ledger": "Yıllık tablo",
+      "vehicles": "Araçlar",
+      "household": "Hane ve üyeler",
+      "categories": "Kategoriler",
+      "people": "Kişiler",
+      "paymentMethods": "Ödeme araçları",
+      "exchangeRates": "Döviz kurları",
+      "profile": "Profil ve ayarlar",
+      "users": "Kullanıcılar"
+    }
+  },
+  "household": {
+    "noHousehold": "Abacasa",
+    "noHouseholdTitle": "Henüz bir hanen yok",
+    "noHouseholdMessage": "Üstteki hane seçiciden yeni hane oluşturabilir ya da bir davet bağlantısıyla haneye katılabilirsin.",
+    "bar": {
+      "label": "Aktif hane: {{name}}",
+      "hint": "Haneyi değiştirmek için dokun"
+    },
+    "switcher": {
+      "title": "Haneler",
+      "create": "Yeni hane oluştur",
+      "switched": "{{name}} hanesine geçildi"
+    },
+    "create": {
+      "title": "Yeni hane",
+      "name": "Hane adı",
+      "placeholder": "Örn. Yazlık ev",
+      "submit": "Oluştur",
+      "created": "{{name}} oluşturuldu"
+    }
+  }
+}

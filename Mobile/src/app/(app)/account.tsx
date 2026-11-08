@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Button, Card, FormError, FormField, next, Screen, TextField } from '@/components/ui';
@@ -9,8 +10,8 @@ import { nameSchema, phoneSchema, toNullable } from '@/features/auth/validation'
 import { useAuthStore } from '@/stores/authStore';
 
 const schema = z.object({
-  firstName: nameSchema('Ad'),
-  lastName: nameSchema('Soyad'),
+  firstName: nameSchema('firstName'),
+  lastName: nameSchema('lastName'),
   phoneNumber: phoneSchema,
 });
 
@@ -18,6 +19,7 @@ type FormValues = z.infer<typeof schema>;
 
 /** Ad, soyad, telefon. E-posta burada salt okunur (değişikliği doğrulama gerektirir). */
 export default function AccountScreen() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const update = useUpdateProfile();
 
@@ -39,29 +41,34 @@ export default function AccountScreen() {
     <Screen scroll edges={['bottom']}>
       <FormError messages={update.error?.messages} />
 
-      <Card title="Kişisel bilgiler">
+      <Card title={t('common.personalInfo')}>
         <FormField
           control={control}
           name="firstName"
-          label="Ad"
+          label={t('common.firstName')}
           autoComplete="given-name"
           {...next(() => setFocus('lastName'))}
         />
         <FormField
           control={control}
           name="lastName"
-          label="Soyad"
+          label={t('common.lastName')}
           autoComplete="family-name"
           {...next(() => setFocus('phoneNumber'))}
         />
       </Card>
 
-      <Card title="İletişim">
-        <TextField label="E-posta" value={user?.email ?? ''} editable={false} hint="E-posta adresi buradan değiştirilemez." />
+      <Card title={t('common.contact')}>
+        <TextField
+          label={t('common.email')}
+          value={user?.email ?? ''}
+          editable={false}
+          hint={t('account.emailHint')}
+        />
         <FormField
           control={control}
           name="phoneNumber"
-          label="Telefon (isteğe bağlı)"
+          label={t('common.phoneOptional')}
           keyboardType="phone-pad"
           autoComplete="tel"
           returnKeyType="done"
@@ -69,7 +76,7 @@ export default function AccountScreen() {
         />
       </Card>
 
-      <Button title="Kaydet" loading={update.isPending} disabled={!formState.isDirty} onPress={onSubmit} />
+      <Button title={t('common.save')} loading={update.isPending} disabled={!formState.isDirty} onPress={onSubmit} />
     </Screen>
   );
 }

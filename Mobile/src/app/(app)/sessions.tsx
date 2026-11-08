@@ -1,39 +1,56 @@
-import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, FlatList, RefreshControl, View } from 'react-native';
 
 import { Button, Card, FormError, ListItem, Screen, Text } from '@/components/ui';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
 import { useLogoutAll, useRevokeSession, useSessions, type SessionItem } from '@/features/auth/hooks';
+import { formatDisplayDate } from '@/lib/format/period';
 
-const dateFormat = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' });
+const pad = (n: number) => String(n).padStart(2, '0');
 
-function describe(session: SessionItem) {
-  const parts = [`Giriş: ${dateFormat.format(new Date(session.createdDate))}`];
+/** Tarih-saat (cihazın saat diliminde): "dd.MM.yyyy HH:mm". Tarih kısmı ortak biçimleyiciden. */
+function formatDateTime(value: string) {
+  const d = new Date(value);
+  const localDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `${formatDisplayDate(localDate)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function describe(session: SessionItem, t: TFunction) {
+  const parts = [t('sessions.signedIn', { date: formatDateTime(session.createdDate) })];
   if (session.ipAddress) parts.push(session.ipAddress);
   return parts.join(' · ');
 }
 
 /** Hesabın açık olduğu cihazlar. Tek oturum ya da hepsi kapatılabilir. */
 export default function SessionsScreen() {
+  const { t } = useTranslation();
+  const styles = useStyles();
+  const colors = useColors();
   const sessions = useSessions();
   const revoke = useRevokeSession();
   const logoutAll = useLogoutAll();
 
   const confirmRevoke = (session: SessionItem) =>
-    Alert.alert('Oturumu kapat', `${session.deviceName || 'Bu cihaz'} oturumu kapatılacak.`, [
-      { text: 'Vazgeç', style: 'cancel' },
-      { text: 'Kapat', style: 'destructive', onPress: () => revoke.mutate(session.id) },
-    ]);
+    Alert.alert(
+      t('sessions.revokeTitle'),
+      t('sessions.revokeMessage', { device: session.deviceName || t('sessions.thisDevice') }),
+      [
+        { text: t('common.dismiss'), style: 'cancel' },
+        { text: t('sessions.revoke'), style: 'destructive', onPress: () => revoke.mutate(session.id) },
+      ],
+    );
 
   const confirmLogoutAll = () =>
-    Alert.alert('Tüm cihazlardan çık', 'Bu cihaz dahil bütün oturumların kapatılacak.', [
-      { text: 'Vazgeç', style: 'cancel' },
-      { text: 'Hepsinden çık', style: 'destructive', onPress: () => logoutAll.mutate() },
+    Alert.alert(t('sessions.logoutAll'), t('sessions.logoutAllMessage'), [
+      { text: t('common.dismiss'), style: 'cancel' },
+      { text: t('sessions.logoutAllConfirm'), style: 'destructive', onPress: () => logoutAll.mutate() },
     ]);
 
   if (sessions.isPending) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={Colors.primary} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
@@ -47,6 +64,9 @@ export default function SessionsScreen() {
         refreshControl={
           <RefreshControl
             refreshing={sessions.isRefetching}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+            progressBackgroundColor={colors.background}
             onRefresh={() => {
               void sessions.refetch();
             }}
@@ -56,27 +76,27 @@ export default function SessionsScreen() {
         ListEmptyComponent={
           sessions.isError ? undefined : (
             <Text muted style={styles.empty}>
-              Açık oturum yok.
+              {t('sessions.empty')}
             </Text>
           )
         }
         renderItem={({ item }) => (
           <Card padded={false}>
             <ListItem
-              icon={item.deviceType === 'Desktop' ? 'desktop-outline' : 'phone-portrait-outline'}
-              title={item.deviceName || 'Bilinmeyen cihaz'}
-              subtitle={describe(item)}
+              icon={item.deviceType === 'Desktop' ? 'computer' : 'smartphone'}
+              title={item.deviceName || t('sessions.unknownDevice')}
+              subtitle={describe(item, t)}
               last
               trailing={
                 item.isThisDevice ? (
                   <View style={styles.badge}>
-                    <Text variant="caption" color={Colors.primary}>
-                      Bu cihaz
+                    <Text variant="caption" color={colors.primary}>
+                      {t('sessions.thisDevice')}
                     </Text>
                   </View>
                 ) : (
                   <Button
-                    title="Kapat"
+                    title={t('sessions.revoke')}
                     variant="ghost"
                     style={styles.revoke}
                     disabled={revoke.isPending}
@@ -90,7 +110,7 @@ export default function SessionsScreen() {
         ListFooterComponent={
           (sessions.data?.length ?? 0) > 0 ? (
             <Button
-              title="Tüm cihazlardan çık"
+              title={t('sessions.logoutAll')}
               variant="secondary"
               loading={logoutAll.isPending}
               onPress={confirmLogoutAll}
@@ -102,18 +122,19 @@ export default function SessionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((c) => ({
   screen: { padding: 0 },
   list: { padding: Spacing.xl, gap: Spacing.md },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background },
   empty: { textAlign: 'center', marginTop: Spacing.xl },
   badge: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: c.border,
   },
   revoke: { minHeight: 36, paddingHorizontal: Spacing.sm },
-});
+}));
+

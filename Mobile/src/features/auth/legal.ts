@@ -7,9 +7,10 @@ import { env } from '@/lib/config/env';
 
 import type { ConsentDocument } from './types';
 
-export const LEGAL_DOCUMENTS: Record<ConsentDocument, { title: string; path: string }> = {
-  Terms: { title: 'Kullanım koşulları', path: '/legal/terms' },
-  PrivacyNotice: { title: 'Aydınlatma metni', path: '/legal/privacy' },
+/** titleKey: çeviri anahtarı, t(titleKey) ile gösterilir. */
+export const LEGAL_DOCUMENTS: Record<ConsentDocument, { titleKey: string; path: string }> = {
+  Terms: { titleKey: 'legal.terms', path: '/legal/terms' },
+  PrivacyNotice: { titleKey: 'legal.privacyNotice', path: '/legal/privacy' },
 };
 
 export function openLegalDocument(document: ConsentDocument): Promise<true> {

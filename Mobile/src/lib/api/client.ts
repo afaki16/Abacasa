@@ -6,6 +6,7 @@ import { create, type AxiosInstance, type InternalAxiosRequestConfig } from 'axi
 
 import { env } from '@/lib/config/env';
 import { useAuthStore } from '@/stores/authStore';
+import { usePreferencesStore } from '@/stores/preferencesStore';
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
@@ -35,13 +36,13 @@ export const apiClient: AxiosInstance = create({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    // Backend hata mesajlarını bu dile göre yerelleştirir (tr | en).
-    'Accept-Language': 'tr',
     ...CLIENT_HEADERS,
   },
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  // Backend hata mesajlarını ve varsayılan adları (ör. yeni hanenin kategorileri) bu dile göre yazar.
+  config.headers['Accept-Language'] = usePreferencesStore.getState().locale;
   if (!config._skipAuth) {
     const token = useAuthStore.getState().accessToken;
     if (token) config.headers.Authorization = `Bearer ${token}`;

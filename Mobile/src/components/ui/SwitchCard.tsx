@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, Radius, Spacing } from '@/constants/theme';
 
+import { Switch } from './Switch';
 import { Text } from './Text';
 
 export interface SwitchCardProps {
@@ -14,6 +15,8 @@ export interface SwitchCardProps {
 
 /** Switch kartı (web'deki "switch kartı"): açıklamalı açık/kapalı ayarı. Tüm kart dokunulabilir. */
 export function SwitchCard({ title, description, value, onChange, disabled }: SwitchCardProps) {
+  const styles = useStyles();
+
   return (
     <Pressable
       accessibilityRole="switch"
@@ -24,36 +27,31 @@ export function SwitchCard({ title, description, value, onChange, disabled }: Sw
       style={({ pressed }) => [styles.card, pressed && styles.pressed, disabled && styles.disabled]}
     >
       <View style={styles.texts}>
-        <Text variant="label">{title}</Text>
+        <Text variant="bodyStrong">{title}</Text>
         {description ? (
           <Text variant="caption" muted>
             {description}
           </Text>
         ) : null}
       </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled}
-        trackColor={{ true: Colors.primary, false: Colors.border }}
-        thumbColor={Colors.background}
-      />
+      <Switch value={value} onValueChange={onChange} disabled={disabled} />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((c) => ({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    minHeight: 56,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.background,
+    borderColor: c.border,
+    borderRadius: Radius.lg,
+    backgroundColor: c.card,
   },
   texts: { flex: 1, gap: 2 },
-  pressed: { opacity: 0.7 },
+  pressed: { backgroundColor: c.surface },
   disabled: { opacity: 0.5 },
-});
+}));

@@ -41,7 +41,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     : { enabled: false },
   // Deep link şeması (abacasa://...).
   scheme: 'abacasa',
-  userInterfaceStyle: 'light',
+  // Koyu tema: uygulama içi tercih (Sistem/Açık/Koyu); sistem teması da izlenir.
+  userInterfaceStyle: 'automatic',
   ios: {
     icon: './assets/images/icon.png',
     supportsTablet: true,

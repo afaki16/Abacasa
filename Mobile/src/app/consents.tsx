@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Card, FormError, Screen, SwitchCard, Text } from '@/components/ui';
@@ -17,6 +18,7 @@ const NO_PENDING: ConsentDocument[] = [];
  * bekleyen liste boşalınca guard uygulamaya geçer.
  */
 export default function ConsentsScreen() {
+  const { t } = useTranslation();
   const pending = useAuthStore((s) => s.user?.pendingConsents ?? NO_PENDING);
   const accept = useAcceptConsents();
   const logout = useLogout();
@@ -27,17 +29,17 @@ export default function ConsentsScreen() {
   return (
     <Screen scroll>
       <View style={styles.header}>
-        <Text variant="heading">Güncellenen metinler</Text>
-        <Text muted>Devam etmek için aşağıdaki metinleri okuyup onaylaman gerekiyor.</Text>
+        <Text variant="heading">{t('auth.consents.title')}</Text>
+        <Text muted>{t('auth.consents.subtitle')}</Text>
       </View>
 
       <FormError messages={accept.error?.messages} />
 
       {pending.map((doc) => (
-        <Card key={doc} title={LEGAL_DOCUMENTS[doc].title}>
-          <Button title="Metni oku" variant="secondary" onPress={() => openLegalDocument(doc)} />
+        <Card key={doc} title={t(LEGAL_DOCUMENTS[doc].titleKey)}>
+          <Button title={t('auth.consents.read')} variant="secondary" onPress={() => openLegalDocument(doc)} />
           <SwitchCard
-            title={doc === 'Terms' ? 'Okudum ve kabul ediyorum' : 'Okudum'}
+            title={doc === 'Terms' ? t('auth.consents.accept') : t('auth.consents.acknowledge')}
             value={!!checked[doc]}
             onChange={(value) => setChecked((prev) => ({ ...prev, [doc]: value }))}
           />
@@ -45,12 +47,12 @@ export default function ConsentsScreen() {
       ))}
 
       <Button
-        title="Devam et"
+        title={t('auth.consents.continue')}
         disabled={!allChecked}
         loading={accept.isPending}
         onPress={() => accept.mutate(pending)}
       />
-      <Button title="Çıkış yap" variant="ghost" loading={logout.isPending} onPress={() => logout.mutate()} />
+      <Button title={t('common.logout')} variant="ghost" loading={logout.isPending} onPress={() => logout.mutate()} />
     </Screen>
   );
 }

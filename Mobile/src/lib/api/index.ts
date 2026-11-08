@@ -3,6 +3,8 @@
 
 import './refreshInterceptor';
 
+export { refreshOnce as refreshSession } from './refreshInterceptor';
+
 export { apiClient, DEFAULT_TIMEOUT_MS } from './client';
 export { AUTH_ENDPOINTS } from './endpoints';
 export { ApiError, ErrorCode, isApiError, type ApiEnvelope } from './errors';

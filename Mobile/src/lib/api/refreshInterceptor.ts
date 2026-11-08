@@ -53,7 +53,11 @@ async function performRefresh(): Promise<string> {
   }
 }
 
-function refreshOnce(): Promise<string> {
+/**
+ * Token yenileme; eşzamanlı çağrılar tek isteği paylaşır. Interceptor dışında da kullanılır:
+ * haneden ayrılma / hane silme sonrası sunucu yeni aktif haneyi seçsin diye (features/household).
+ */
+export function refreshOnce(): Promise<string> {
   refreshPromise ??= performRefresh().finally(() => {
     refreshPromise = null;
   });

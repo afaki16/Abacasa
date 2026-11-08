@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm, type Control, type FieldPath } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { z } from 'zod';
 
@@ -10,13 +11,13 @@ import { useCooldown } from '@/hooks/useCooldown';
 import { useAuthStore } from '@/stores/authStore';
 
 import { useChangePassword, useSendPasswordChangeCode } from '../hooks';
-import { otpSchema, PASSWORD_HINT, withPasswordConfirmation } from '../validation';
+import { otpSchema, PASSWORD_HINT_KEY, withPasswordConfirmation } from '../validation';
 
 const currentSchema = withPasswordConfirmation({
-  currentPassword: z.string().min(1, 'Mevcut şifre gerekli'),
+  currentPassword: z.string().min(1, 'validation.password.currentRequired'),
 }).refine((v) => v.newPassword !== v.currentPassword, {
   path: ['newPassword'],
-  message: 'Yeni şifre mevcut şifreden farklı olmalı',
+  message: 'validation.password.sameAsCurrent',
 });
 const codeSchema = withPasswordConfirmation({ code: otpSchema });
 
@@ -33,6 +34,7 @@ export interface ChangePasswordFormProps {
  * Backend tüm oturumları kapatır; useChangePassword yeni şifreyle bu cihazda yeniden girer.
  */
 export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'current' | 'code'>('current');
   const change = useChangePassword();
   const sendCode = useSendPasswordChangeCode();
@@ -70,7 +72,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
 
       {mode === 'current' ? (
         <Button
-          title="Mevcut şifremi hatırlamıyorum"
+          title={t('auth.changePassword.forgotCurrent')}
           variant="ghost"
           loading={sendCode.isPending}
           disabled={change.isPending}
@@ -79,14 +81,18 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
       ) : (
         <View style={styles.row}>
           <Button
-            title={cooldown.isActive ? `Kodu tekrar gönder (${cooldown.remaining})` : 'Kodu tekrar gönder'}
+            title={
+              cooldown.isActive
+                ? t('auth.password.resendCodeCountdown', { seconds: cooldown.remaining })
+                : t('auth.password.resendCode')
+            }
             variant="ghost"
             loading={sendCode.isPending}
             disabled={cooldown.isActive || change.isPending}
             onPress={requestCode}
           />
           <Button
-            title="Mevcut şifremle değiştir"
+            title={t('auth.changePassword.useCurrent')}
             variant="ghost"
             disabled={change.isPending}
             onPress={() => setMode('current')}
@@ -98,6 +104,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
 }
 
 function CurrentPasswordForm({ pending, onSubmit }: { pending: boolean; onSubmit: (v: CurrentValues) => void }) {
+  const { t } = useTranslation();
   const { control, handleSubmit, setFocus } = useForm<CurrentValues>({
     resolver: zodResolver(currentSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
@@ -107,23 +114,24 @@ function CurrentPasswordForm({ pending, onSubmit }: { pending: boolean; onSubmit
 
   return (
     <>
-      <Card title="Kimliğini doğrula">
+      <Card title={t('auth.changePassword.verifySection')}>
         <FormField
           control={control}
           name="currentPassword"
-          label="Mevcut şifre"
+          label={t('auth.changePassword.currentPassword')}
           secureTextEntry
           autoComplete="current-password"
           {...next(() => setFocus('newPassword'))}
         />
       </Card>
       <NewPasswordCard control={control} onNewPasswordNext={() => setFocus('confirmPassword')} onSubmitEditing={submit} />
-      <Button title="Şifreyi değiştir" loading={pending} onPress={submit} />
+      <Button title={t('auth.changePassword.submit')} loading={pending} onPress={submit} />
     </>
   );
 }
 
 function CodeForm({ email, pending, onSubmit }: { email?: string; pending: boolean; onSubmit: (v: CodeValues) => void }) {
+  const { t } = useTranslation();
   const { control, handleSubmit, setFocus } = useForm<CodeValues>({
     resolver: zodResolver(codeSchema),
     defaultValues: { code: '', newPassword: '', confirmPassword: '' },
@@ -132,11 +140,14 @@ function CodeForm({ email, pending, onSubmit }: { email?: string; pending: boole
 
   return (
     <>
-      <Card title="Doğrulama kodu" description={email ? `${email} adresine 6 haneli bir kod gönderdik.` : undefined}>
+      <Card
+        title={t('auth.password.codeSection')}
+        description={email ? t('auth.changePassword.codeSentTo', { email }) : undefined}
+      >
         <FormField
           control={control}
           name="code"
-          label="Kod"
+          label={t('auth.password.code')}
           keyboardType="number-pad"
           maxLength={6}
           autoComplete="one-time-code"
@@ -145,7 +156,7 @@ function CodeForm({ email, pending, onSubmit }: { email?: string; pending: boole
         />
       </Card>
       <NewPasswordCard control={control} onNewPasswordNext={() => setFocus('confirmPassword')} onSubmitEditing={submit} />
-      <Button title="Şifreyi değiştir" loading={pending} onPress={submit} />
+      <Button title={t('auth.changePassword.submit')} loading={pending} onPress={submit} />
     </>
   );
 }
@@ -162,13 +173,14 @@ function NewPasswordCard<T extends NewPasswordFields>({
   onNewPasswordNext: () => void;
   onSubmitEditing: () => void;
 }) {
+  const { t } = useTranslation();
   return (
-    <Card title="Yeni şifre belirle">
+    <Card title={t('auth.password.newPasswordSection')}>
       <FormField
         control={control}
         name={'newPassword' as FieldPath<T>}
-        label="Yeni şifre"
-        hint={PASSWORD_HINT}
+        label={t('auth.password.newPassword')}
+        hint={t(PASSWORD_HINT_KEY)}
         secureTextEntry
         autoComplete="new-password"
         {...next(onNewPasswordNext)}
@@ -176,7 +188,7 @@ function NewPasswordCard<T extends NewPasswordFields>({
       <FormField
         control={control}
         name={'confirmPassword' as FieldPath<T>}
-        label="Yeni şifre (tekrar)"
+        label={t('auth.password.newPasswordConfirm')}
         secureTextEntry
         autoComplete="new-password"
         returnKeyType="go"

@@ -1,33 +1,49 @@
 import { useState, type ComponentRef, type Ref } from 'react';
-import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { TextInput, View, type TextInputProps } from 'react-native';
 
-import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
+import { FontFamily, FontSize, makeStyles, Radius, Spacing, useColorSchemeName, useColors } from '@/constants/theme';
+import { translateMessage } from '@/features/auth/validation';
 
+import { Icon } from './Icon';
 import { Text } from './Text';
 
 export interface TextFieldProps extends TextInputProps {
   /** Alanın ÜSTÜNDE gösterilen etiket (web form standardıyla aynı). */
   label: string;
+  /** Doğrulama anahtarı (validation.*) ya da hazır metin; anahtar gösterimde çevrilir. */
   error?: string;
   hint?: string;
   ref?: Ref<ComponentRef<typeof TextInput>>;
 }
 
+/** Metin alanı (Bilesenler · 4): varsayılan, odakta (2px ana renk), hatalı (2px kırmızı + ikon), salt okunur. */
 export function TextField({ label, error, hint, style, onFocus, onBlur, ref, ...rest }: TextFieldProps) {
+  useTranslation(); // dil değişince hata metni yeniden çevrilsin
+  const styles = useStyles();
+  const colors = useColors();
+  const scheme = useColorSchemeName();
   const [focused, setFocused] = useState(false);
+  const readOnly = rest.editable === false;
 
   return (
     <View style={styles.container}>
-      <Text variant="label">{label}</Text>
+      <Text variant="label" color={error ? colors.danger : colors.textMuted}>
+        {label}
+      </Text>
       <TextInput
         ref={ref}
         accessibilityLabel={label}
-        placeholderTextColor={Colors.textDisabled}
+        accessibilityHint={error ? translateMessage(error) : undefined}
+        placeholderTextColor={colors.placeholder}
+        selectionColor={colors.primary}
+        cursorColor={colors.primary}
+        keyboardAppearance={scheme}
         style={[
           styles.input,
           focused && styles.inputFocused,
           !!error && styles.inputError,
-          rest.editable === false && styles.inputDisabled,
+          readOnly && styles.inputReadOnly,
           style,
         ]}
         onFocus={(e) => {
@@ -41,9 +57,12 @@ export function TextField({ label, error, hint, style, onFocus, onBlur, ref, ...
         {...rest}
       />
       {error ? (
-        <Text variant="caption" color={Colors.danger}>
-          {error}
-        </Text>
+        <View style={styles.errorRow}>
+          <Icon name="error" size={16} color={colors.danger} />
+          <Text variant="label" color={colors.danger} style={styles.errorText}>
+            {translateMessage(error)}
+          </Text>
+        </View>
       ) : hint ? (
         <Text variant="caption" muted>
           {hint}
@@ -53,19 +72,23 @@ export function TextField({ label, error, hint, style, onFocus, onBlur, ref, ...
   );
 }
 
-const styles = StyleSheet.create({
-  container: { gap: Spacing.xs },
+const useStyles = makeStyles((c) => ({
+  container: { gap: 6 },
   input: {
-    minHeight: 48,
+    minHeight: 52,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: c.fieldBorder,
     borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    fontSize: FontSize.body,
-    color: Colors.text,
-    backgroundColor: Colors.background,
+    // Odakta kenar 2px olur; iç boşluk 1px azalır ki metin kaymasın.
+    paddingHorizontal: 14,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.input,
+    color: c.text,
+    backgroundColor: c.card,
   },
-  inputFocused: { borderColor: Colors.borderFocus },
-  inputError: { borderColor: Colors.danger },
-  inputDisabled: { backgroundColor: Colors.surface, color: Colors.textMuted },
-});
+  inputFocused: { borderWidth: 2, borderColor: c.borderFocus, paddingHorizontal: 13 },
+  inputError: { borderWidth: 2, borderColor: c.danger, paddingHorizontal: 13 },
+  inputReadOnly: { backgroundColor: c.surface, borderColor: c.border, color: c.textMuted },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
+  errorText: { flex: 1 },
+}));

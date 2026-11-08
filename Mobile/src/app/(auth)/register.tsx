@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { z } from 'zod';
 
@@ -11,7 +12,7 @@ import { openLegalDocument } from '@/features/auth/legal';
 import {
   emailSchema,
   nameSchema,
-  PASSWORD_HINT,
+  PASSWORD_HINT_KEY,
   passwordSchema,
   phoneSchema,
   toNullable,
@@ -19,25 +20,26 @@ import {
 
 const schema = z
   .object({
-    firstName: nameSchema('Ad'),
-    lastName: nameSchema('Soyad'),
+    firstName: nameSchema('firstName'),
+    lastName: nameSchema('lastName'),
     email: emailSchema,
     phoneNumber: phoneSchema,
-    householdName: z.string().trim().min(1, 'Hane adı gerekli').max(100, 'Hane adı en fazla 100 karakter olabilir'),
+    householdName: z.string().trim().min(1, 'validation.householdName.required').max(100, 'validation.householdName.max'),
     password: passwordSchema,
     confirmPassword: z.string(),
     // Backend de zorunlu tutar (RegisterCommandValidator); onaylar ConsentRecord'a yazılır.
-    acceptTerms: z.boolean().refine((v) => v, 'Kullanım koşullarını kabul etmelisin'),
-    acknowledgePrivacy: z.boolean().refine((v) => v, 'Aydınlatma metnini okuduğunu onaylamalısın'),
+    acceptTerms: z.boolean().refine((v) => v, 'validation.acceptTerms'),
+    acknowledgePrivacy: z.boolean().refine((v) => v, 'validation.acknowledgePrivacy'),
   })
   .refine((v) => v.password === v.confirmPassword, {
     path: ['confirmPassword'],
-    message: 'Şifreler eşleşmiyor',
+    message: 'validation.password.mismatch',
   });
 
 type FormValues = z.infer<typeof schema>;
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const register = useRegister();
 
   const {
@@ -76,17 +78,17 @@ export default function RegisterScreen() {
   return (
     <Screen scroll edges={['bottom']}>
       <View style={styles.header}>
-        <Text variant="heading">Kayıt ol</Text>
-        <Text muted>Birkaç bilgiyle hesabını oluştur.</Text>
+        <Text variant="heading">{t('auth.register.title')}</Text>
+        <Text muted>{t('auth.register.subtitle')}</Text>
       </View>
 
       <FormError messages={register.error?.messages} />
 
-      <Card title="Kişisel bilgiler">
+      <Card title={t('common.personalInfo')}>
         <FormField
           control={control}
           name="firstName"
-          label="Ad"
+          label={t('common.firstName')}
           autoComplete="given-name"
           textContentType="givenName"
           {...next(() => setFocus('lastName'))}
@@ -94,18 +96,18 @@ export default function RegisterScreen() {
         <FormField
           control={control}
           name="lastName"
-          label="Soyad"
+          label={t('common.lastName')}
           autoComplete="family-name"
           textContentType="familyName"
           {...next(() => setFocus('email'))}
         />
       </Card>
 
-      <Card title="İletişim">
+      <Card title={t('common.contact')}>
         <FormField
           control={control}
           name="email"
-          label="E-posta"
+          label={t('common.email')}
           autoCapitalize="none"
           autoComplete="email"
           keyboardType="email-address"
@@ -115,7 +117,7 @@ export default function RegisterScreen() {
         <FormField
           control={control}
           name="phoneNumber"
-          label="Telefon (isteğe bağlı)"
+          label={t('common.phoneOptional')}
           keyboardType="phone-pad"
           autoComplete="tel"
           textContentType="telephoneNumber"
@@ -123,22 +125,22 @@ export default function RegisterScreen() {
         />
       </Card>
 
-      <Card title="Hane" description="Bütçeni tutacağın hane. E-postanı doğrulayınca açılır; sonra aile üyelerini davet edebilirsin.">
+      <Card title={t('auth.register.householdSection')} description={t('auth.register.householdDescription')}>
         <FormField
           control={control}
           name="householdName"
-          label="Hane adı"
-          placeholder="Örn. Yılmaz Hanesi"
+          label={t('auth.register.householdName')}
+          placeholder={t('auth.register.householdPlaceholder')}
           {...next(() => setFocus('password'))}
         />
       </Card>
 
-      <Card title="Hesap güvenliği">
+      <Card title={t('auth.register.securitySection')}>
         <FormField
           control={control}
           name="password"
-          label="Şifre"
-          hint={PASSWORD_HINT}
+          label={t('common.password')}
+          hint={t(PASSWORD_HINT_KEY)}
           secureTextEntry
           autoComplete="new-password"
           textContentType="newPassword"
@@ -147,7 +149,7 @@ export default function RegisterScreen() {
         <FormField
           control={control}
           name="confirmPassword"
-          label="Şifre (tekrar)"
+          label={t('auth.register.passwordConfirm')}
           secureTextEntry
           autoComplete="new-password"
           returnKeyType="go"
@@ -155,22 +157,22 @@ export default function RegisterScreen() {
         />
       </Card>
 
-      <Card title="Onaylar">
-        <Button title="Kullanım koşullarını oku" variant="ghost" onPress={() => openLegalDocument('Terms')} />
+      <Card title={t('auth.register.consentsSection')}>
+        <Button title={t('auth.register.readTerms')} variant="ghost" onPress={() => openLegalDocument('Terms')} />
         <Controller
           control={control}
           name="acceptTerms"
           render={({ field }) => (
-            <SwitchCard title="Kullanım koşullarını okudum ve kabul ediyorum" value={field.value} onChange={field.onChange} />
+            <SwitchCard title={t('auth.register.acceptTerms')} value={field.value} onChange={field.onChange} />
           )}
         />
-        <Button title="Aydınlatma metnini oku" variant="ghost" onPress={() => openLegalDocument('PrivacyNotice')} />
+        <Button title={t('auth.register.readPrivacy')} variant="ghost" onPress={() => openLegalDocument('PrivacyNotice')} />
         <Controller
           control={control}
           name="acknowledgePrivacy"
           render={({ field }) => (
             <SwitchCard
-              title="Kişisel verilerimin işlenmesine ilişkin aydınlatma metnini okudum"
+              title={t('auth.register.acknowledgePrivacy')}
               value={field.value}
               onChange={field.onChange}
             />
@@ -179,11 +181,11 @@ export default function RegisterScreen() {
         <FormError messages={consentErrors} />
       </Card>
 
-      <Button title="Hesap oluştur" loading={register.isPending} onPress={onSubmit} />
+      <Button title={t('auth.register.submit')} loading={register.isPending} onPress={onSubmit} />
 
       <View style={styles.footer}>
-        <Text muted>Zaten hesabın var mı?</Text>
-        <Button title="Giriş yap" variant="ghost" onPress={() => router.back()} />
+        <Text muted>{t('auth.register.haveAccount')}</Text>
+        <Button title={t('auth.register.login')} variant="ghost" onPress={() => router.back()} />
       </View>
     </Screen>
   );

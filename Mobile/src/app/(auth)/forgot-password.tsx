@@ -2,13 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, View } from 'react-native';
 import { z } from 'zod';
 
 import { Button, Card, FormError, FormField, next, Screen, Text } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { useResetPasswordWithCode, useSendPasswordResetCode } from '@/features/auth/hooks';
-import { emailSchema, otpSchema, PASSWORD_HINT, withPasswordConfirmation } from '@/features/auth/validation';
+import { emailSchema, otpSchema, PASSWORD_HINT_KEY, withPasswordConfirmation } from '@/features/auth/validation';
 import { useCooldown } from '@/hooks/useCooldown';
 
 const emailFormSchema = z.object({ email: emailSchema });
@@ -23,6 +24,7 @@ type ResetValues = z.infer<typeof resetFormSchema>;
  * kapanır; kullanıcı yeni şifreyle giriş yapar.
  */
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ email?: string }>();
   const [email, setEmail] = useState<string | null>(null);
   const sendCode = useSendPasswordResetCode();
@@ -54,8 +56,8 @@ export default function ForgotPasswordScreen() {
         { email: email!, code, newPassword },
         {
           onSuccess: () =>
-            Alert.alert('Şifren güncellendi', 'Yeni şifrenle giriş yapabilirsin.', [
-              { text: 'Tamam', onPress: () => router.dismissTo('/login') },
+            Alert.alert(t('auth.forgotPassword.successTitle'), t('auth.forgotPassword.successMessage'), [
+              { text: t('common.ok'), onPress: () => router.dismissTo('/login') },
             ]),
         },
       ),
@@ -64,11 +66,11 @@ export default function ForgotPasswordScreen() {
   return (
     <Screen scroll edges={['bottom']}>
       <View style={styles.header}>
-        <Text variant="heading">Şifremi unuttum</Text>
+        <Text variant="heading">{t('auth.forgotPassword.title')}</Text>
         <Text muted>
           {email
-            ? `${email} adresine bir hesap kayıtlıysa 6 haneli bir kod gönderdik.`
-            : 'E-posta adresini gir, şifreni sıfırlaman için bir kod gönderelim.'}
+            ? t('auth.forgotPassword.codeSent', { email })
+            : t('auth.forgotPassword.intro')}
         </Text>
       </View>
 
@@ -79,7 +81,7 @@ export default function ForgotPasswordScreen() {
           <FormField
             control={emailForm.control}
             name="email"
-            label="E-posta"
+            label={t('common.email')}
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
@@ -87,15 +89,15 @@ export default function ForgotPasswordScreen() {
             returnKeyType="send"
             onSubmitEditing={onSendCode}
           />
-          <Button title="Kod gönder" loading={sendCode.isPending} onPress={onSendCode} />
+          <Button title={t('auth.forgotPassword.sendCode')} loading={sendCode.isPending} onPress={onSendCode} />
         </>
       ) : (
         <>
-          <Card title="Doğrulama kodu">
+          <Card title={t('auth.password.codeSection')}>
             <FormField
               control={resetForm.control}
               name="code"
-              label="Kod"
+              label={t('auth.password.code')}
               keyboardType="number-pad"
               maxLength={6}
               autoComplete="one-time-code"
@@ -103,12 +105,12 @@ export default function ForgotPasswordScreen() {
               {...next(() => resetForm.setFocus('newPassword'))}
             />
           </Card>
-          <Card title="Yeni şifre belirle">
+          <Card title={t('auth.password.newPasswordSection')}>
             <FormField
               control={resetForm.control}
               name="newPassword"
-              label="Yeni şifre"
-              hint={PASSWORD_HINT}
+              label={t('auth.password.newPassword')}
+              hint={t(PASSWORD_HINT_KEY)}
               secureTextEntry
               autoComplete="new-password"
               {...next(() => resetForm.setFocus('confirmPassword'))}
@@ -116,23 +118,27 @@ export default function ForgotPasswordScreen() {
             <FormField
               control={resetForm.control}
               name="confirmPassword"
-              label="Yeni şifre (tekrar)"
+              label={t('auth.password.newPasswordConfirm')}
               secureTextEntry
               autoComplete="new-password"
               returnKeyType="go"
               onSubmitEditing={onReset}
             />
           </Card>
-          <Button title="Şifreyi sıfırla" loading={reset.isPending} onPress={onReset} />
+          <Button title={t('auth.forgotPassword.submit')} loading={reset.isPending} onPress={onReset} />
           <Button
-            title={cooldown.isActive ? `Kodu tekrar gönder (${cooldown.remaining})` : 'Kodu tekrar gönder'}
+            title={
+              cooldown.isActive
+                ? t('auth.password.resendCodeCountdown', { seconds: cooldown.remaining })
+                : t('auth.password.resendCode')
+            }
             variant="ghost"
             disabled={cooldown.isActive || reset.isPending}
             loading={sendCode.isPending}
             onPress={() => requestCode(email)}
           />
           <Button
-            title="Farklı bir e-posta gir"
+            title={t('auth.forgotPassword.differentEmail')}
             variant="ghost"
             disabled={reset.isPending}
             onPress={() => {
