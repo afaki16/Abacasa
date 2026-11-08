@@ -21,7 +21,7 @@
    *   #eaedff = 234 237 255
    *   #e2e7ff = 226 231 255
    *   #dae2fd = 218 226 253
-   *   #006c49 = 0 108 73
+   *   #0a5be8 = 10 91 232 (logo mavisi)
    */
   --color-surface-bright: 250 248 255;
   --color-surface: 250 248 255;
@@ -32,40 +32,37 @@
   --color-surface-container-high: 226 231 255;
   --color-surface-container-highest: 218 226 253;
   --color-surface-variant: 218 226 253;
-  --color-surface-tint: 0 108 73;
+  --color-surface-tint: 10 91 232;
 
   /* On-surface (text on surfaces)
    *   #131b2e = 19 27 46
-   *   #3c4a42 = 60 74 66
+   *   #434756 = 67 71 86
    */
   --color-on-surface: 19 27 46;
-  --color-on-surface-variant: 60 74 66;
+  --color-on-surface-variant: 67 71 86;
 
   /* Background */
   --color-background: 250 248 255;
   --color-on-background: 19 27 46;
 
-  /* Primary (brand)
-   *   #006c49 = 0 108 73
-   *   #ffffff = 255 255 255
-   *   #10b981 = 16 185 129
-   *   #00422b = 0 66 43
-   *   #6ffbbe = 111 251 190
-   *   #4edea3 = 78 222 163
-   *   #002113 = 0 33 19
-   *   #005236 = 0 82 54
+  /* Primary (brand) — logo mavisi
+   *   #0a5be8 = 10 91 232   (ana)
+   *   #0593fe = 5 147 254   (logo gradyanının açık ucu; container, koyu tema ana)
+   *   #0044e1 = 0 68 225    (logo gradyanının koyu ucu)
+   *   #dbe6ff = 219 230 255 / #b3c7ff = 179 199 255 (açık tonlar)
+   *   #001e5a = 0 30 90 / #001a48 = 0 26 72 / #001640 = 0 22 64 (koyu lacivert, açık zemin üstü yazı)
    */
-  /* Ana renk markadan (data.json → plugins/brand.client.ts) gelir; yoksa varsayılan yeşil.
+  /* Ana renk markadan (data.json → plugins/brand.client.ts) gelir; yoksa varsayılan logo mavisi.
      Böylece text-primary, bg-primary, çekmece başlığı, sekmeler… hepsi marka rengini izler. */
-  --color-primary: var(--color-brand-light, 0 108 73);
+  --color-primary: var(--color-brand-light, 10 91 232);
   --color-on-primary: 255 255 255;
-  --color-primary-container: 16 185 129;
-  --color-on-primary-container: 0 66 43;
-  --color-primary-fixed: 111 251 190;
-  --color-primary-fixed-dim: 78 222 163;
-  --color-on-primary-fixed: 0 33 19;
-  --color-on-primary-fixed-variant: 0 82 54;
-  --color-inverse-primary: 78 222 163;
+  --color-primary-container: 5 147 254;
+  --color-on-primary-container: 0 30 90;
+  --color-primary-fixed: 219 230 255;
+  --color-primary-fixed-dim: 179 199 255;
+  --color-on-primary-fixed: 0 26 72;
+  --color-on-primary-fixed-variant: 0 68 225;
+  --color-inverse-primary: 179 199 255;
 
   /* Secondary (accent / orange)
    *   #855300 = 133 83 0
@@ -117,8 +114,8 @@
    *   #6c7a71 = 108 122 113
    *   #bbcabf = 187 202 191
    */
-  --color-outline: 108 122 113;
-  --color-outline-variant: 187 202 191;
+  --color-outline: 112 118 135;
+  --color-outline-variant: 194 199 214;
 
   /* Inverse
    *   #283044 = 40 48 68
@@ -136,7 +133,7 @@
    *   #1e293b = 30 41 59
    *   #222c45 = 34 44 69
    *   #2d3748 = 45 55 72
-   *   #4edea3 = 78 222 163
+   *   #0593fe = 5 147 254 (koyu tema ana renk)
    */
   --color-surface-bright: 26 34 53;
   --color-surface: 11 19 38;
@@ -147,7 +144,7 @@
   --color-surface-container-high: 34 44 69;
   --color-surface-container-highest: 45 55 72;
   --color-surface-variant: 30 41 59;
-  --color-surface-tint: 78 222 163;
+  --color-surface-tint: 5 147 254;
 
   /* On-surface
    *   #ffffff = 255 255 255
@@ -161,15 +158,15 @@
   --color-on-background: 255 255 255;
 
   /* Primary (dark mode'da daha açık yeşil ön planda) */
-  --color-primary: var(--color-brand-dark, 78 222 163);
-  --color-on-primary: 0 33 19;
-  --color-primary-container: 16 185 129;
-  --color-on-primary-container: 0 66 43;
-  --color-primary-fixed: 111 251 190;
-  --color-primary-fixed-dim: 78 222 163;
-  --color-on-primary-fixed: 0 33 19;
-  --color-on-primary-fixed-variant: 0 82 54;
-  --color-inverse-primary: 0 108 73;
+  --color-primary: var(--color-brand-dark, 5 147 254);
+  --color-on-primary: 0 22 64;
+  --color-primary-container: 5 147 254;
+  --color-on-primary-container: 0 30 90;
+  --color-primary-fixed: 219 230 255;
+  --color-primary-fixed-dim: 179 199 255;
+  --color-on-primary-fixed: 0 26 72;
+  --color-on-primary-fixed-variant: 0 68 225;
+  --color-inverse-primary: 10 91 232;
 
   /* Secondary
    *   #fea619 = 254 166 25

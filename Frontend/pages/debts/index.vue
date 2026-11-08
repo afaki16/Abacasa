@@ -28,7 +28,7 @@
       </UiCard>
     </div>
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3">
-      <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+      <UiCard class="h-full !bg-[#0d9488]/[0.12] !text-[#0d9488]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ t('debts.summary.tryDebt') }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatMoney(summary?.openTry ?? 0) }}</div>
@@ -37,7 +37,7 @@
     </div>
     <!-- Açığı olan her yabancı birim için bir kart -->
     <div class="ui-col ui-col-12 ui-col-sm-6 ui-col-md-3" v-for="f in summary?.foreign ?? []" :key="f.currency">
-      <UiCard class="h-full !bg-[#3b82f6]/[0.12] !text-[#3b82f6]">
+      <UiCard class="h-full !bg-[#0d9488]/[0.12] !text-[#0d9488]">
         <div class="ui-card-text">
           <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal">{{ foreignCardTitle(f.currency) }}</div>
           <div class="text-[1.5rem] leading-[2rem] tracking-normal font-bold">{{ formatAmount(f.open, f.currency) }}</div>

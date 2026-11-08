@@ -4,7 +4,7 @@
   },
   "app": {
     "logo": {
-      "src": "/images/logo.svg",
+      "src": "/images/logo-icon.png",
       "alt": "Abacasa Logo"
     },
     "brand": {
@@ -13,7 +13,7 @@
   },
   "theme": {
     "colors": {
-      "primary": "linear-gradient(180deg, #14532d 0%, #166534 50%, #064e3b 100%)"
+      "primary": "linear-gradient(180deg, #0044E1 0%, #0A5BE8 50%, #0593FE 100%)"
     }
   },
   "login": {

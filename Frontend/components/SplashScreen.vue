@@ -10,7 +10,7 @@
         <div class="splash-logo-wrapper modern-scan-effect">
           <UiIcon icon="mdi-cog" class="splash-logo-pulse-gear" :size="700" />
           <img
-            :src="appData?.app?.logo?.src || '/images/logo.png'"
+            :src="appData?.app?.logo?.src || '/images/logo-icon.png'"
             :alt="appData?.app?.logo?.alt || 'Logo'"
             class="splash-logo-img"
           />

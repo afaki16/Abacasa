@@ -243,7 +243,7 @@ const authStore = useAuthStore();
 const { validationRules } = useValidators();
 const { getBackgroundImages, getLoginConfig, getLogo } = useAppData();
 
-const logoSrc = computed(() => getLogo.value?.src || "/favicon.ico");
+const logoSrc = computed(() => getLogo.value?.src || "/images/logo-icon.png");
 const logoAlt = computed(() => getLogo.value?.alt || "Logo");
 
 const showPassword = ref(false);
@@ -453,9 +453,9 @@ onUnmounted(() => {
   --lp-card-border: rgba(255, 255, 255, 0.06);
   --lp-input-bg: rgba(255, 255, 255, 0.04);
   --lp-input-border: rgba(255, 255, 255, 0.1);
-  --lp-accent: #818cf8;
-  --lp-accent-glow: rgba(129, 140, 248, 0.25);
-  --lp-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+  --lp-accent: #4d9bff;
+  --lp-accent-glow: rgba(77, 155, 255, 0.25);
+  --lp-gradient: linear-gradient(135deg, #0044e1, #0a5be8, #0593fe); /* logo mavisi */
   --lp-text: #f1f1f4;
   --lp-text-secondary: rgba(255, 255, 255, 0.5);
   --lp-text-muted: rgba(255, 255, 255, 0.3);
@@ -585,7 +585,7 @@ onUnmounted(() => {
   height: 500px;
   background: radial-gradient(
     circle,
-    rgba(99, 102, 241, 0.06),
+    rgba(10, 91, 232, 0.06),
     transparent 70%
   );
   pointer-events: none;
@@ -674,7 +674,7 @@ onUnmounted(() => {
 
 .custom-input:focus-within {
   border-color: var(--lp-accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(10, 91, 232, 0.1);
 }
 
 .custom-input--error,
@@ -766,7 +766,7 @@ onUnmounted(() => {
 }
 
 .forgot-link:hover {
-  color: #a5b4fc;
+  color: #93c5fd;
 }
 
 /* Login Button */
@@ -789,7 +789,7 @@ onUnmounted(() => {
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 12px 40px rgba(10, 91, 232, 0.35);
 }
 
 .login-btn:disabled {
@@ -894,7 +894,7 @@ onUnmounted(() => {
 
 .register-btn:hover {
   border-color: var(--lp-accent);
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(10, 91, 232, 0.06);
   transform: translateY(-1px);
 }
 

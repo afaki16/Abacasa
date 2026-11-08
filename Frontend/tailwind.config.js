@@ -17,9 +17,9 @@ module.exports = {
       colors: {
         // CSS variables RGB channel formatında ("R G B" — değer theme.css'te).
         // rgb(var(--color-x) / <alpha-value>) wrapper'ı Tailwind opacity modifier'larını destekler:
-        //   bg-primary    → rgb(0 108 73 / 1)
-        //   bg-primary/10 → rgb(0 108 73 / 0.1)
-        //   bg-primary/50 → rgb(0 108 73 / 0.5)
+        //   bg-primary    → rgb(10 91 232 / 1)
+        //   bg-primary/10 → rgb(10 91 232 / 0.1)
+        //   bg-primary/50 → rgb(10 91 232 / 0.5)
 
         // Surface palette
         'surface': 'rgb(var(--color-surface) / <alpha-value>)',

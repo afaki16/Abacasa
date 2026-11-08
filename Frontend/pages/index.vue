@@ -55,6 +55,6 @@ useHead({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--theme-gradient-sidebar, #14532d);
+  background: var(--theme-gradient-sidebar, #0A5BE8);
 }
 </style>

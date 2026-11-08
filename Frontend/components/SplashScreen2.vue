@@ -38,13 +38,13 @@
           />
           <defs>
             <linearGradient id="hexGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.8" />
-              <stop offset="50%" stop-color="#7c4dff" stop-opacity="0.6" />
-              <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.8" />
+              <stop offset="0%" stop-color="#0593fe" stop-opacity="0.8" />
+              <stop offset="50%" stop-color="#0a5be8" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#0593fe" stop-opacity="0.8" />
             </linearGradient>
             <linearGradient id="hexGrad2" x1="1" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#7c4dff" stop-opacity="0.4" />
-              <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.4" />
+              <stop offset="0%" stop-color="#0a5be8" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#0593fe" stop-opacity="0.4" />
             </linearGradient>
           </defs>
         </svg>
@@ -54,7 +54,7 @@
 
         <!-- Logo -->
         <img
-          :src="appData?.app?.logo?.src || '/images/logo.png'"
+          :src="appData?.app?.logo?.src || '/images/logo-icon.png'"
           :alt="appData?.app?.logo?.alt || 'Logo'"
           class="splash-logo"
         />
@@ -72,12 +72,12 @@
 
       <!-- Corner accents -->
       <svg class="corner-accent top-left" viewBox="0 0 120 120">
-        <path d="M0,60 Q0,0 60,0" fill="none" stroke="rgba(0,229,255,0.15)" stroke-width="1" />
-        <path d="M0,40 Q0,0 40,0" fill="none" stroke="rgba(0,229,255,0.08)" stroke-width="1" />
+        <path d="M0,60 Q0,0 60,0" fill="none" stroke="rgba(5,147,254,0.15)" stroke-width="1" />
+        <path d="M0,40 Q0,0 40,0" fill="none" stroke="rgba(5,147,254,0.08)" stroke-width="1" />
       </svg>
       <svg class="corner-accent bottom-right" viewBox="0 0 120 120">
-        <path d="M120,60 Q120,120 60,120" fill="none" stroke="rgba(124,77,255,0.15)" stroke-width="1" />
-        <path d="M120,80 Q120,120 80,120" fill="none" stroke="rgba(124,77,255,0.08)" stroke-width="1" />
+        <path d="M120,60 Q120,120 60,120" fill="none" stroke="rgba(10,91,232,0.15)" stroke-width="1" />
+        <path d="M120,80 Q120,120 80,120" fill="none" stroke="rgba(10,91,232,0.08)" stroke-width="1" />
       </svg>
     </div>
   </Transition>
@@ -127,7 +127,7 @@ const getMoteStyle = (index: number) => {
     width: `${size}px`,
     height: `${size}px`,
     '--drift': `${drift}px`,
-    '--mote-color': isCyan ? 'rgba(0,229,255,0.7)' : 'rgba(124,77,255,0.6)',
+    '--mote-color': isCyan ? 'rgba(5,147,254,0.7)' : 'rgba(10,91,232,0.6)',
     animationDelay: `${delay}s`,
     animationDuration: `${duration}s`
   } as Record<string, string>
@@ -166,8 +166,8 @@ onMounted(() => {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(5, 147, 254, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(5, 147, 254, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
@@ -189,8 +189,8 @@ onMounted(() => {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(124, 77, 255, 0.08) 0%,
-    rgba(0, 229, 255, 0.04) 40%,
+    rgba(10, 91, 232, 0.08) 0%,
+    rgba(5, 147, 254, 0.04) 40%,
     transparent 70%
   );
   animation: radial-breathe 3s ease-in-out infinite alternate;
@@ -225,7 +225,7 @@ onMounted(() => {
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(5, 147, 254, 0.12);
   animation: ring-expand ease-out infinite;
 }
 
@@ -250,9 +250,9 @@ onMounted(() => {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: #00e5ff;
+  background: #0593fe;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 8px rgba(5, 147, 254, 0.6);
   top: 50%;
   left: 50%;
   transform-origin: 0 0;
@@ -330,9 +330,9 @@ onMounted(() => {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 229, 255, 0.06) 48%,
-    rgba(0, 229, 255, 0.25) 50%,
-    rgba(0, 229, 255, 0.06) 52%,
+    rgba(5, 147, 254, 0.06) 48%,
+    rgba(5, 147, 254, 0.25) 50%,
+    rgba(5, 147, 254, 0.06) 52%,
     transparent 100%
   );
   background-size: 100% 40px;
@@ -352,8 +352,8 @@ onMounted(() => {
   height: 200px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.4))
-          drop-shadow(0 0 80px rgba(124, 77, 255, 0.2));
+  filter: drop-shadow(0 0 40px rgba(5, 147, 254, 0.4))
+          drop-shadow(0 0 80px rgba(10, 91, 232, 0.2));
   animation: logo-hover 3s ease-in-out infinite alternate;
 }
 
@@ -373,8 +373,8 @@ onMounted(() => {
 .mote {
   position: absolute;
   border-radius: 50%;
-  background: var(--mote-color, rgba(0,229,255,0.6));
-  box-shadow: 0 0 6px var(--mote-color, rgba(0,229,255,0.4));
+  background: var(--mote-color, rgba(5,147,254,0.6));
+  box-shadow: 0 0 6px var(--mote-color, rgba(5,147,254,0.4));
   animation: mote-float linear infinite;
 }
 
