@@ -32,7 +32,7 @@ import type { VehicleObligation, VehicleObligationFormValues } from '../types';
 
 const schema = z
   .object({
-    type: z.enum(['TrafficInsurance', 'Kasko', 'Inspection', 'Mtv']),
+    type: z.enum(['TrafficInsurance', 'Kasko', 'Inspection', 'Mtv', 'Maintenance']),
     date: z.string().min(1, 'validation.required'),
     validUntil: z.string().min(1, 'validation.required'),
     amount: z.string(),

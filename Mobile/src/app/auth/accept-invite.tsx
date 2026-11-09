@@ -8,7 +8,8 @@ import { makeStyles, Spacing, useColors } from '@/constants/theme';
 import { AuthHeader } from '@/features/auth/components/AuthParts';
 import { InviteSummary } from '@/features/auth/components/InviteSummary';
 import { useLogout } from '@/features/auth/hooks';
-import { resolveInviteAction, resolveInviteView } from '@/features/auth/invite';
+import { inviteDaysLeft, resolveInviteAction, resolveInviteView } from '@/features/auth/invite';
+import { plural } from '@/lib/i18n';
 import { useAcceptInvitation, useInvitationInfo } from '@/features/household/hooks';
 import { toast } from '@/stores/toastStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -75,6 +76,7 @@ export default function AcceptInviteScreen() {
   const { info } = view;
   const action = resolveInviteAction(info, userEmail);
   const roleLabel = t(`enums.householdRole.${info.role}`);
+  const daysLeft = inviteDaysLeft(info.expiresAt);
   const inviteParams = { inviteToken: token ?? '', email: info.email, household: info.householdName };
 
   const onAccept = () =>
@@ -102,6 +104,9 @@ export default function AcceptInviteScreen() {
             accessibilityValue: roleLabel,
           },
           { label: t('invite.email'), value: info.email },
+          ...(daysLeft !== null
+            ? [{ label: t('invite.validity'), value: plural('invite.daysLeft', daysLeft) }]
+            : []),
         ]}
       />
 

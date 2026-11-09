@@ -63,6 +63,8 @@ export interface InvitationInfo {
   email: string;
   role: HouseholdRole;
   status: InvitationStatus;
+  /** Son geçerlilik anı (UTC ISO); davet 7 gün geçerlidir. */
+  expiresAt?: string;
   /** Bu e-postayla hesap var mı (giriş mi kayıt mı). */
   userExists: boolean;
 }

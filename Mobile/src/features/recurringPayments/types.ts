@@ -126,6 +126,8 @@ export interface PayRecurringPaymentRequest {
   amount?: number;
   /** 'YYYY-MM-DD' ödeme tarihi */
   date: string;
+  /** Boşsa planın ödeme aracı; doluysa bu ödeme o araçla kaydedilir (plan değişmez). */
+  paymentMethodId?: number;
 }
 
 /** Ödeme, plan türüne göre harcama ya da bağış kaydı oluşturur. */

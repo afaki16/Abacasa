@@ -316,7 +316,8 @@
     "trafficInsurance": "Traffic insurance",
     "kasko": "Comprehensive insurance",
     "inspection": "Inspection",
-    "mtv": "Motor vehicle tax"
+    "mtv": "Motor vehicle tax",
+    "maintenance": "Maintenance"
   },
   "validation": {
     "required": "This field is required",

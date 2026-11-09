@@ -31,6 +31,7 @@ export const VehicleObligationType = {
   Kasko: 'Kasko',
   Inspection: 'Inspection',
   Mtv: 'Mtv',
+  Maintenance: 'Maintenance',
 } as const;
 export type VehicleObligationType = (typeof VehicleObligationType)[keyof typeof VehicleObligationType];
 

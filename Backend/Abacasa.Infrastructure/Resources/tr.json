@@ -215,7 +215,8 @@
     "trafficInsurance": "Trafik sigortası",
     "kasko": "Kasko",
     "inspection": "Muayene",
-    "mtv": "MTV"
+    "mtv": "MTV",
+    "maintenance": "Bakım"
   },
   "password": {
     "generationFailed": "Şifre oluşturulamadı",

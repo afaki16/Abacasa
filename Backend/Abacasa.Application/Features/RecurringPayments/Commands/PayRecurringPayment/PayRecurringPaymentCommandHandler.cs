@@ -67,7 +67,16 @@ public class PayRecurringPaymentCommandHandler : IRequestHandler<PayRecurringPay
                 ErrorCode.ValidationFailed,
                 _localizer["validation.required", _localizer["validation.fields.date"]]));
 
-        if (!plan.PaymentMethod.IsActive)
+        // Ödeme aracı: istekte verilmişse o (filtreli yükleme; başka hanenin aracı bulunamaz), yoksa planınki
+        var paymentMethod = plan.PaymentMethod;
+        if (request.PaymentMethodId.HasValue && request.PaymentMethodId.Value != plan.PaymentMethodId)
+        {
+            paymentMethod = await _unitOfWork.PaymentMethods.GetByIdAsync(request.PaymentMethodId.Value);
+            if (paymentMethod == null)
+                return Invalid("recurringPayments.paymentMethodNotFound");
+        }
+
+        if (!paymentMethod.IsActive)
             return Invalid("recurringPayments.paymentMethodInactive");
 
         // TenantId ApplicationDbContext tarafından atanır
@@ -80,7 +89,7 @@ public class PayRecurringPaymentCommandHandler : IRequestHandler<PayRecurringPay
                 Kind = plan.DonationKind!.Value,
                 Recipient = plan.Recipient!,
                 GiverPersonId = plan.OwnerPersonId,
-                PaymentMethodId = plan.PaymentMethodId,
+                PaymentMethodId = paymentMethod.Id,
                 Note = plan.Name,
                 RecurringPaymentId = plan.Id,
                 RecurringPaymentMonth = month
@@ -98,7 +107,7 @@ public class PayRecurringPaymentCommandHandler : IRequestHandler<PayRecurringPay
             Amount = amount.Value,
             Description = installmentNo.HasValue ? $"{plan.Name} ({installmentNo}/{plan.InstallmentCount})" : plan.Name,
             CategoryId = plan.CategoryId!.Value,
-            PaymentMethodId = plan.PaymentMethodId,
+            PaymentMethodId = paymentMethod.Id,
             OwnerPersonId = plan.OwnerPersonId,
             RecurringPaymentId = plan.Id,
             RecurringPaymentMonth = month

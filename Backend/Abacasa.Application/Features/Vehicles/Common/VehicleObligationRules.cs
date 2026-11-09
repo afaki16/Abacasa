@@ -31,6 +31,7 @@ public static class VehicleObligationRules
         VehicleObligationType.TrafficInsurance => "vehicleObligationTypes.trafficInsurance",
         VehicleObligationType.Kasko => "vehicleObligationTypes.kasko",
         VehicleObligationType.Inspection => "vehicleObligationTypes.inspection",
+        VehicleObligationType.Maintenance => "vehicleObligationTypes.maintenance",
         _ => "vehicleObligationTypes.mtv"
     };
 

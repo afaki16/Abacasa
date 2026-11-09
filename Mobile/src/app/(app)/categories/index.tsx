@@ -14,6 +14,8 @@ import { DefinitionList } from '@/features/categories/components/DefinitionList'
 import { CATEGORY_PERMISSIONS } from '@/features/categories/constants';
 import { useCategoriesInfinite } from '@/features/categories/hooks';
 import { categoryRoutes } from '@/features/categories/routes';
+import { categoryIcon } from '@/features/expenses/icons';
+import { plural } from '@/lib/i18n';
 
 /** Kategoriler: harcama ve sabit ödemelerin kategorileri. Kullanımdaki kategori silinemez. */
 export default function CategoriesScreen() {
@@ -52,8 +54,9 @@ function Categories() {
         onAdd={canCreate ? add : undefined}
         renderRow={(item) => (
           <DefinitionRow
-            leading={<IconTile icon="category" />}
+            leading={<IconTile icon={categoryIcon(item.name)} />}
             title={item.name}
+            subtitle={item.usageCount !== undefined ? plural('categories.usage', item.usageCount) : null}
             onPress={
               canUpdate || canDelete ? () => router.push(categoryRoutes.edit(item.id)) : undefined
             }

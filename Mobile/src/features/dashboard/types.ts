@@ -120,6 +120,8 @@ export interface DashboardUpcomingItem {
   kind: RecurringPaymentKind | null;
   /** Yalnızca araç satırında. */
   obligationType: VehicleObligationType | null;
+  /** Yalnızca araç satırında: plaka. */
+  plate?: string | null;
   /** 'YYYY-MM-DD'; araç satırında geçerlilik sonu. */
   dueDate: string;
   /** null: tutar belli değil; araç satırında son tutar. */

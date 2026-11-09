@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { AmountField, BottomSheet, DatePickerSheet, FormError, Text } from '@/components/ui';
+import { AmountField, BottomSheet, DatePickerSheet, FormError, SelectSheet, Text } from '@/components/ui';
 import { makeStyles, Spacing } from '@/constants/theme';
+import { useHasPermission } from '@/features/auth/permissions';
+import { PAYMENT_METHOD_PERMISSIONS } from '@/features/paymentMethods/constants';
+import { usePaymentMethodOptions } from '@/features/paymentMethods/hooks';
 import type { ApiError } from '@/lib/api';
 import { amountToInput, parseAmountInput } from '@/lib/format/amountInput';
 import { formatDisplayDate, formatShortDate, todayIso } from '@/lib/format/period';
@@ -23,7 +26,8 @@ export interface PaySheetProps {
 
 /**
  * "Ödendi olarak işaretle" alttan sayfası: tutar (vadenin tutarıyla dolar; belli değilse girilir) ve
- * ödeme tarihi. Ödeme aracı planınkidir (istekte gönderilmez), bilgi olarak gösterilir.
+ * ödeme tarihi. Ödeme aracı planınkiyle gelir; değiştirilirse yalnızca bu ödeme o araçla kaydedilir (plan
+ * değişmez). Ödeme araçlarını görme izni yoksa planın aracı salt okunur gösterilir.
  */
 export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PaySheetProps) {
   const { t } = useTranslation();
@@ -32,6 +36,13 @@ export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PayS
   const [date, setDate] = useState(todayIso());
   const [dateOpen, setDateOpen] = useState(false);
   const [amountError, setAmountError] = useState<string | undefined>();
+  const [methodId, setMethodId] = useState<number | null>(null);
+  const [methodOpen, setMethodOpen] = useState(false);
+  const canPickMethod = useHasPermission(PAYMENT_METHOD_PERMISSIONS.READ);
+  const methods = usePaymentMethodOptions();
+  const activeMethods = (methods.data ?? []).filter((m) => m.isActive || m.id === occurrence?.paymentMethodId);
+  const selectedMethodName =
+    activeMethods.find((m) => m.id === methodId)?.name ?? occurrence?.paymentMethodName;
 
   // Her açılışta vadenin değerleriyle başla (render sırasında türetilen durum).
   const [shownKey, setShownKey] = useState<string | null>(null);
@@ -42,10 +53,11 @@ export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PayS
       setAmount(amountToInput(occurrence.amount, 'TRY'));
       setDate(todayIso());
       setAmountError(undefined);
+      setMethodId(occurrence.paymentMethodId);
     }
   }
 
-  const server = splitFieldErrors(error, ['amount', 'date'] as const);
+  const server = splitFieldErrors(error, ['amount', 'date', 'paymentMethodId'] as const);
 
   const submit = () => {
     if (!occurrence) return;
@@ -59,7 +71,13 @@ export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PayS
       return;
     }
     setAmountError(undefined);
-    onSubmit({ month: occurrence.month, amount: value, date });
+    onSubmit({
+      month: occurrence.month,
+      amount: value,
+      date,
+      // Yalnızca planınkinden farklıysa gönderilir.
+      ...(methodId !== null && methodId !== occurrence.paymentMethodId ? { paymentMethodId: methodId } : {}),
+    });
   };
 
   const subtitle = occurrence
@@ -74,7 +92,7 @@ export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PayS
   return (
     <>
       <BottomSheet
-        visible={!!occurrence && !dateOpen}
+        visible={!!occurrence && !dateOpen && !methodOpen}
         onClose={onClose}
         actionLabel={t('recurring.pay.submit')}
         onAction={submit}
@@ -111,13 +129,31 @@ export function PaySheet({ occurrence, onClose, onSubmit, pending, error }: PayS
           onPress={() => setDateOpen(true)}
           error={server.fields.date}
         />
-        <PickerField
-          label={t('recurring.fields.paymentMethod')}
-          value={occurrence?.paymentMethodName}
-          disabled
-          hint={t('recurring.pay.methodHint')}
-        />
+        {canPickMethod ? (
+          <PickerField
+            label={t('recurring.fields.paymentMethod')}
+            value={selectedMethodName}
+            icon="credit-card"
+            onPress={() => setMethodOpen(true)}
+            error={server.fields.paymentMethodId}
+          />
+        ) : (
+          <PickerField
+            label={t('recurring.fields.paymentMethod')}
+            value={occurrence?.paymentMethodName}
+            disabled
+            hint={t('recurring.pay.methodHint')}
+          />
+        )}
       </BottomSheet>
+      <SelectSheet
+        visible={methodOpen}
+        title={t('recurring.fields.paymentMethod')}
+        options={activeMethods.map((m) => ({ value: m.id, label: m.name }))}
+        value={methodId}
+        onClose={() => setMethodOpen(false)}
+        onSelect={(value) => setMethodId(value)}
+      />
       <DatePickerSheet
         visible={dateOpen}
         value={date}

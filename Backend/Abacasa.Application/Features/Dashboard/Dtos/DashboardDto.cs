@@ -96,6 +96,8 @@ public class DashboardUpcomingDto
     public string Name { get; set; }
     /// Yalnızca sabit ödeme satırında
     public RecurringPaymentKind? Kind { get; set; }
+    /// Yalnızca araç satırında: aracın plakası
+    public string? Plate { get; set; }
     /// Yalnızca araç satırında işlem türü
     public VehicleObligationType? ObligationType { get; set; }
     /// Araç satırında geçerlilik sonu

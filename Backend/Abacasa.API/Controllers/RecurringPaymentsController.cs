@@ -194,7 +194,8 @@ public class RecurringPaymentsController : BaseController
             Id = id,
             Month = dto.Month,
             Amount = dto.Amount,
-            Date = dto.Date
+            Date = dto.Date,
+            PaymentMethodId = dto.PaymentMethodId
         });
 
         if (result.IsSuccess)

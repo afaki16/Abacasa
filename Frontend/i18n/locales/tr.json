@@ -316,7 +316,8 @@
     "trafficInsurance": "Trafik sigortası",
     "kasko": "Kasko",
     "inspection": "Muayene",
-    "mtv": "MTV"
+    "mtv": "MTV",
+    "maintenance": "Bakım"
   },
   "validation": {
     "required": "Bu alan zorunludur",

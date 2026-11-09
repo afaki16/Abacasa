@@ -44,3 +44,11 @@ export function resolveInviteAction(info: InvitationInfo, userEmail: string | nu
   }
   return info.userExists ? 'login' : 'register';
 }
+
+/** Davetin bitmesine kalan gün (yukarı yuvarlanır: 3 saat kaldıysa 1). Geçmişse 0; tarih yoksa null. */
+export function inviteDaysLeft(expiresAt: string | null | undefined, now: Date = new Date()): number | null {
+  if (!expiresAt) return null;
+  const ms = Date.parse(expiresAt) - now.getTime();
+  if (Number.isNaN(ms)) return null;
+  return Math.max(0, Math.ceil(ms / 86_400_000));
+}

@@ -31,6 +31,10 @@ jest.mock('../hooks', () => ({
 }));
 
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+// Ödeme sayfasındaki ödeme aracı seçicisi (aktif araçlar).
+jest.mock('@/features/paymentMethods/hooks', () => ({
+  usePaymentMethodOptions: () => ({ data: [], isPending: false, isError: false }),
+}));
 // Native klavye modülü testte bağlı değil; paketin kendi sahtesi.
 jest.mock('react-native-keyboard-controller', () =>
   jest.requireActual('react-native-keyboard-controller/jest'),

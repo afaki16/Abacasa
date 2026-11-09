@@ -2,7 +2,8 @@ export enum VehicleObligationType {
   TrafficInsurance = 'TrafficInsurance',
   Kasko = 'Kasko',
   Inspection = 'Inspection',
-  Mtv = 'Mtv'
+  Mtv = 'Mtv',
+  Maintenance = 'Maintenance'
 }
 
 export interface Vehicle {

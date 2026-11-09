@@ -146,6 +146,8 @@
   },
   "categories": {
     "title": "Categories",
+    "usage_one": "{{count}} record",
+    "usage_other": "{{count}} records",
     "newTitle": "Add category",
     "editTitle": "Edit category",
     "add": "Add category",

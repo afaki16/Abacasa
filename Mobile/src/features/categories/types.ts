@@ -5,6 +5,8 @@ export interface Category {
   id: number;
   name: string;
   createdDate: string;
+  /** Bağlı harcama + sabit ödeme sayısı; yalnızca listede gelir. */
+  usageCount?: number;
 }
 
 /** GET /api/Categories/{id}: liste alanları + denetim alanları. */

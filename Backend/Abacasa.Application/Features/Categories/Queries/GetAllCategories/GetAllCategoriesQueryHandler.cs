@@ -4,6 +4,7 @@ using Abacasa.Application.Features.Categories.Dtos;
 using Abacasa.Domain.Common.Interfaces;
 using MediatR;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Abacasa.Application.Features.Categories.Queries.GetAllCategories;
 
@@ -23,7 +24,11 @@ public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuer
         var (categories, totalCount) = await _unitOfWork.Categories.GetCategoriesPagedAsync(
             request.Page, request.PageSize, request.SearchTerm);
 
-        var dtos = _mapper.Map<IEnumerable<CategoryListDto>>(categories);
+        var dtos = _mapper.Map<List<CategoryListDto>>(categories);
+
+        var usage = await _unitOfWork.Categories.GetUsageCountsAsync(dtos.Select(d => d.Id));
+        foreach (var dto in dtos)
+            dto.UsageCount = usage.GetValueOrDefault(dto.Id);
         var totalPages = (int)System.Math.Ceiling(totalCount / (double)request.PageSize);
 
         return PagedResult<CategoryListDto>.Success(dtos, request.Page, totalPages, totalCount);

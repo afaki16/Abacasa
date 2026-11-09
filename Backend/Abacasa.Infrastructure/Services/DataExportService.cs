@@ -376,6 +376,7 @@ public class DataExportService : IDataExportService
         VehicleObligationType.Kasko => "Kasko",
         VehicleObligationType.Inspection => "Muayene",
         VehicleObligationType.Mtv => "MTV",
+        VehicleObligationType.Maintenance => "Bakım",
         _ => type.ToString()
     };
 

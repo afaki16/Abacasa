@@ -142,6 +142,9 @@
     "loadErrorTitle": "Couldn't load the invitation",
     "loadErrorText": "Check your connection and try again.",
     "backToLogin": "Back to sign in",
-    "backToApp": "Back to home"
+    "backToApp": "Back to home",
+    "validity": "Valid for",
+    "daysLeft_one": "{{count}} day left",
+    "daysLeft_other": "{{count}} days left"
   }
 }

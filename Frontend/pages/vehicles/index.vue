@@ -166,6 +166,7 @@ const OBLIGATION_TYPES = [
   VehicleObligationType.Kasko,
   VehicleObligationType.Inspection,
   VehicleObligationType.Mtv,
+  VehicleObligationType.Maintenance,
 ];
 
 //#region Composables

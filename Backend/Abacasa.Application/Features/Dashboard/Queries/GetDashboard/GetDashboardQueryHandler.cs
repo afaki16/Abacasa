@@ -157,6 +157,7 @@ public class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery, Resul
                 Source = DashboardUpcomingSource.Vehicle,
                 VehicleId = r.VehicleId,
                 Name = $"{r.VehicleName} · {VehicleObligationRules.TypeLabel(r.Type, _localizer)}",
+                Plate = r.Plate,
                 ObligationType = r.Type,
                 DueDate = r.ValidUntil,
                 Amount = r.LastAmount,

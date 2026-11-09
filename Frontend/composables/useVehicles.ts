@@ -21,6 +21,7 @@ export const useVehicles = () => {
     [VehicleObligationType.Kasko]: 'vehicleObligationTypes.kasko',
     [VehicleObligationType.Inspection]: 'vehicleObligationTypes.inspection',
     [VehicleObligationType.Mtv]: 'vehicleObligationTypes.mtv',
+    [VehicleObligationType.Maintenance]: 'vehicleObligationTypes.maintenance',
   }
 
   const getTypeLabel = (type: VehicleObligationType) => (typeLabelKeys[type] ? t(typeLabelKeys[type]) : String(type))
@@ -40,7 +41,7 @@ export const useVehicles = () => {
     return `${year}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }
 
-  /** Geçerlilik sonu önerisi: sigorta/kasko +1 yıl, muayene +2 yıl; MTV Oca–Haz → 31 Temmuz, Tem–Ara → ertesi yıl 31 Ocak */
+  /** Geçerlilik sonu önerisi: sigorta/kasko +1 yıl, muayene +2 yıl, bakım +1 yıl; MTV Oca–Haz → 31 Temmuz, Tem–Ara → ertesi yıl 31 Ocak */
   const suggestValidUntil = (type: VehicleObligationType, date: string) => {
     if (!date) return ''
     const [y, m] = date.split('-').map(Number)

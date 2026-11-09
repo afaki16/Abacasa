@@ -9,6 +9,8 @@ public class PayRecurringPaymentDto
     /// Boşsa planın beklenen tutarı
     public decimal? Amount { get; set; }
     public DateOnly? Date { get; set; }
+    /// Boşsa planın ödeme aracı; doluysa bu ödeme o araçla yapılır (plan değişmez)
+    public int? PaymentMethodId { get; set; }
 }
 
 public class RecurringPaymentPayResultDto

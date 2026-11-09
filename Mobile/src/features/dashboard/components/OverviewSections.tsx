@@ -143,7 +143,8 @@ export function VehicleSection({ items, today }: { items: DashboardUpcomingItem[
           const info = dueInfo(item, today);
           const badge = dueText(info, t);
           const variant = info.tone === 'overdue' ? 'overdue' : info.tone === 'later' ? 'neutral' : 'pending';
-          const meta = formatDisplayDate(item.dueDate);
+          // "34 ABC 123 · 20.11.2026" (plaka eski API yanıtlarında yok)
+          const meta = [item.plate, formatDisplayDate(item.dueDate)].filter(Boolean).join(' · ');
           return (
             <Pressable
               key={upcomingKey(item)}

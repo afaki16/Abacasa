@@ -78,6 +78,8 @@ public class InvitationInfoDto
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    /// Davetin son geçerlilik anı (UTC); davet 7 gün geçerlidir
+    public DateTime ExpiresAt { get; set; }
     public bool UserExists { get; set; }
 }
 

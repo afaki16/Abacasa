@@ -36,6 +36,7 @@ public class GetInvitationByTokenQueryHandler : IRequestHandler<GetInvitationByT
             Email = invitation.Email,
             Role = invitation.Role.ToString(),
             Status = invitation.GetStatus(DateTime.UtcNow).ToString(),
+            ExpiresAt = invitation.ExpiresAt,
             UserExists = await _unitOfWork.Users.EmailExistsAsync(invitation.Email)
         });
     }

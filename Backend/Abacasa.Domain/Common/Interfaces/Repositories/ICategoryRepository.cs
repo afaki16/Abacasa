@@ -15,4 +15,7 @@ public interface ICategoryRepository : IRepository<Category, int>
     Task<Category> GetByIdReadOnlyAsync(int id);
 
     Task<bool> IsInUseAsync(int categoryId);
+
+    // Kategori başına bağlı harcama + sabit ödeme sayısı; kaydı olmayan kategori sözlükte yer almaz
+    Task<Dictionary<int, int>> GetUsageCountsAsync(IEnumerable<int> categoryIds);
 }

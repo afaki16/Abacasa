@@ -146,6 +146,8 @@
   },
   "categories": {
     "title": "Kategoriler",
+    "usage_one": "{{count}} kayıt",
+    "usage_other": "{{count}} kayıt",
     "newTitle": "Kategori ekle",
     "editTitle": "Kategoriyi düzenle",
     "add": "Kategori ekle",

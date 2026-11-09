@@ -17,6 +17,7 @@ export const OBLIGATION_TYPES: readonly VehicleObligationType[] = [
   'TrafficInsurance',
   'Kasko',
   'Mtv',
+  'Maintenance',
 ];
 
 export const OBLIGATION_ICONS: Record<VehicleObligationType, IconName> = {
@@ -24,6 +25,7 @@ export const OBLIGATION_ICONS: Record<VehicleObligationType, IconName> = {
   TrafficInsurance: 'shield',
   Kasko: 'verified-user',
   Mtv: 'receipt-long',
+  Maintenance: 'build',
 };
 
 export type DueTone = 'overdue' | 'pending' | 'neutral';

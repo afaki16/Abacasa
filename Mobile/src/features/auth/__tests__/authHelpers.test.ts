@@ -1,7 +1,7 @@
 import type { InvitationInfo } from '@/features/household/types';
 import { ApiError } from '@/lib/api/errors';
 
-import { resolveInviteAction, resolveInviteView } from '../invite';
+import { inviteDaysLeft, resolveInviteAction, resolveInviteView } from '../invite';
 import { evaluatePasswordRules, formatCountdown, INLINE_MARKER, sanitizeOtp, splitAroundMarker } from '../passwordRules';
 import { makeRegisterSchema, toRegisterRequest, type RegisterFormValues } from '../registerForm';
 import { passwordSchema } from '../validation';
@@ -138,5 +138,16 @@ describe('davet durumu', () => {
     expect(resolveInviteAction(info, 'veli@ornek.com')).toBe('otherAccount');
     expect(resolveInviteAction(info, null)).toBe('register');
     expect(resolveInviteAction({ ...info, userExists: true }, null)).toBe('login');
+  });
+});
+
+describe('inviteDaysLeft', () => {
+  const now = new Date('2026-11-09T10:00:00Z');
+  it('kalan gün yukarı yuvarlanır, geçmişte 0, tarih yoksa null', () => {
+    expect(inviteDaysLeft('2026-11-16T10:00:00Z', now)).toBe(7);
+    expect(inviteDaysLeft('2026-11-09T13:00:00Z', now)).toBe(1);
+    expect(inviteDaysLeft('2026-11-08T10:00:00Z', now)).toBe(0);
+    expect(inviteDaysLeft(undefined, now)).toBeNull();
+    expect(inviteDaysLeft('bozuk', now)).toBeNull();
   });
 });

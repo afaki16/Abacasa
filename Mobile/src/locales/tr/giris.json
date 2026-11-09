@@ -142,6 +142,9 @@
     "loadErrorTitle": "Davet yüklenemedi",
     "loadErrorText": "Bağlantını kontrol edip tekrar dene.",
     "backToLogin": "Girişe dön",
-    "backToApp": "Ana sayfaya dön"
+    "backToApp": "Ana sayfaya dön",
+    "validity": "Geçerlilik",
+    "daysLeft_one": "{{count}} gün kaldı",
+    "daysLeft_other": "{{count}} gün kaldı"
   }
 }

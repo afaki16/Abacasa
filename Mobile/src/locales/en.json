@@ -62,7 +62,8 @@
       "TrafficInsurance": "Traffic insurance",
       "Kasko": "Comprehensive insurance",
       "Inspection": "Inspection",
-      "Mtv": "Motor vehicle tax"
+      "Mtv": "Motor vehicle tax",
+      "Maintenance": "Maintenance"
     },
     "ledgerDirection": {
       "Income": "Income",

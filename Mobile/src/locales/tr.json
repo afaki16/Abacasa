@@ -62,7 +62,8 @@
       "TrafficInsurance": "Trafik sigortası",
       "Kasko": "Kasko",
       "Inspection": "Muayene",
-      "Mtv": "MTV"
+      "Mtv": "MTV",
+      "Maintenance": "Bakım"
     },
     "ledgerDirection": {
       "Income": "Gelir",
