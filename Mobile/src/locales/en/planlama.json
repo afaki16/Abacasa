@@ -1,1 +1,335 @@
-{}
+{
+  "recurring": {
+    "segments": { "period": "Period", "plans": "Plans" },
+    "status": { "paid": "Paid", "pending": "Pending", "overdue": "Overdue" },
+    "group": { "expense": "Expense", "donation": "Donation" },
+    "schedule": { "monthly": "Monthly", "installment": "Installments" },
+    "period": {
+      "paid": "Paid · {{n}}",
+      "pending": "Pending · {{n}}",
+      "unknownWarning_one": "{{count}} item has no known amount. Enter the amount when marking it paid.",
+      "unknownWarning_other": "{{count}} items have no known amount. Enter the amount when marking them paid.",
+      "emptyTitle": "Nothing due this month",
+      "emptyMessage": "Add regular payments like rent, bills or installments as plans; their due dates show up here."
+    },
+    "occurrence": {
+      "installment": "Installment {{no}} / {{count}}",
+      "paidOn": "Paid {{date}}",
+      "due": "Due {{date}}",
+      "dueToday": "Due today · {{date}}",
+      "daysLate": "{{days}} days late",
+      "unknownAmount": "Amount unknown",
+      "estimated": "Estimated"
+    },
+    "pay": {
+      "markPaid": "Mark as paid",
+      "submit": "Save as paid",
+      "amount": "Amount paid",
+      "date": "Payment date",
+      "amountWasUnknown": "Amount was unknown",
+      "methodHint": "The plan's payment method is used."
+    },
+    "undo": {
+      "title": "Undo this payment?",
+      "messageExpense": "The expense created for {{name}} is deleted and the due date becomes pending again.",
+      "messageDonation": "The donation created for {{name}} is deleted and the due date becomes pending again.",
+      "confirm": "Undo",
+      "hint": "Tap to undo the payment"
+    },
+    "plans": {
+      "activeCount_one": "{{count}} active plan",
+      "activeCount_other": "{{count}} active plans",
+      "inactiveCount_one": "{{count}} inactive plan",
+      "inactiveCount_other": "{{count}} inactive plans",
+      "add": "Add plan",
+      "showInactive": "Inactive plans",
+      "perMonth": "per month",
+      "emptyTitle": "No plans yet",
+      "emptyMessage": "Add your regular payments; each month their due dates appear in the Period tab.",
+      "emptyInactive": "No inactive plans"
+    },
+    "plan": {
+      "everyMonth": "every month on the {{day}}",
+      "installmentShort": "Installments",
+      "installmentCount": "{{count}} installments",
+      "variableAmount": "variable amount"
+    },
+    "fields": {
+      "name": "Name",
+      "group": "Type",
+      "schedule": "Schedule",
+      "monthlyKind": "Item",
+      "startMonth": "Start month",
+      "dueDay": "Due day",
+      "expectedAmount": "Expected amount",
+      "totalAmount": "Total amount",
+      "installmentCount": "Number of installments",
+      "firstDueDate": "First installment date",
+      "category": "Category",
+      "donationKind": "Donation type",
+      "recipient": "Recipient",
+      "paymentMethod": "Payment method",
+      "person": "Person",
+      "giver": "Given by",
+      "household": "Household",
+      "isActive": "Active"
+    },
+    "form": {
+      "newTitle": "Add plan",
+      "editTitle": "Edit plan",
+      "save": "Save plan",
+      "delete": "Delete plan",
+      "planSection": "Plan",
+      "scheduleSection": "Schedule and amount",
+      "detailsSection": "Details",
+      "namePlaceholder": "e.g. Rent",
+      "pick": "Select",
+      "pickDate": "Pick a date",
+      "pickDueDay": "Pick a day",
+      "dueDayHint": "Day 1–31 of the month. In shorter months the last day is used.",
+      "expectedAmountHint": "Leave empty for items that vary, like bills.",
+      "installmentCountHint": "Between {{min}} and {{max}}.",
+      "monthlyInstallment": "Monthly installment",
+      "lockedHint": "Can't be changed because it has payments.",
+      "isActiveHint": "An inactive plan creates no new due dates."
+    },
+    "delete": {
+      "title": "Delete this plan?",
+      "message": "The plan {{name}} is deleted.",
+      "messageHasPayments": "The plan {{name}} has payments; if it can't be deleted you can make it inactive."
+    },
+    "toast": {
+      "created": "Plan added",
+      "updated": "Plan saved",
+      "deleted": "Plan deleted",
+      "paid": "Saved as paid",
+      "undone": "Payment undone"
+    }
+  },
+  "donations": {
+    "title": "Donations",
+    "newTitle": "Add donation",
+    "editTitle": "Edit donation",
+    "add": "Add donation",
+    "delete": "Delete donation",
+    "deleteTitle": "Delete this donation?",
+    "deleteMessage": "This donation is deleted. If it belongs to a plan, the due date becomes pending again.",
+    "household": "Household",
+    "yearTotal": "{{year}} total",
+    "yearTitle": "Year",
+    "pickYear": "Year: {{year}}. Tap to change",
+    "count_one": "{{count}} donation",
+    "count_other": "{{count}} donations",
+    "fundDistributed": "{{amount}} distributed from funds (not in totals)",
+    "breakdownLabel": "Breakdown",
+    "byKind": "By type",
+    "byGiver": "By giver",
+    "percent": "{{value}}%",
+    "recent": "Recent donations",
+    "fromFund": "From fund",
+    "emptyTitle": "No donations in {{year}}",
+    "emptyMessage": "Add the donations you make; totals by type and giver show up here.",
+    "fields": {
+      "date": "Date",
+      "kind": "Type",
+      "recipient": "Recipient",
+      "giver": "Given by",
+      "paymentMethod": "Payment method",
+      "note": "Note",
+      "fund": "Fund"
+    },
+    "form": {
+      "pick": "Select",
+      "optional": "Optional",
+      "recipientPlaceholder": "Who received it",
+      "fromFund": "Give from a fund",
+      "fromFundHint": "Distribute from a fund left with you",
+      "onHand": "On hand: {{amount}}",
+      "fundHint": "A donation from a fund has the fund's type and is not included in any total.",
+      "noFunds": "You hold no funds"
+    },
+    "toast": {
+      "created": "Donation saved",
+      "updated": "Donation updated",
+      "deleted": "Donation deleted"
+    }
+  },
+  "donationTargets": {
+    "title": "Donation goals",
+    "newTitle": "Add goal",
+    "editTitle": "Edit goal",
+    "add": "Add goal",
+    "delete": "Delete goal",
+    "deleteTitle": "Delete this goal?",
+    "deleteMessage": "The goal is deleted; donations are not affected.",
+    "yearTitle": "Donation goals · {{year}}",
+    "completed": "Completed",
+    "given": "Given {{amount}}",
+    "target": "Goal {{amount}}",
+    "planned": "Planned {{amount}} · left after plans {{after}}",
+    "voluntary": "Donations without a goal",
+    "emptyTitle": "No goals for {{year}}",
+    "emptyMessage": "Add yearly donation goals such as zakat or scholarships; progress shows up here.",
+    "fields": {
+      "year": "Year",
+      "kind": "Type",
+      "owner": "Whose goal",
+      "amount": "Goal amount"
+    },
+    "toast": {
+      "created": "Goal added",
+      "updated": "Goal saved",
+      "deleted": "Goal deleted"
+    }
+  },
+  "donationFunds": {
+    "title": "Funds held",
+    "newTitle": "Receive fund",
+    "editTitle": "Edit fund",
+    "detailTitle": "Fund",
+    "add": "Receive fund",
+    "edit": "Edit fund",
+    "delete": "Delete fund",
+    "deleteTitle": "Delete this fund?",
+    "deleteMessage": "A fund with distributions or movements can't be deleted.",
+    "intro": "Donations others left with you to distribute. Funds are not included in any total.",
+    "open": "Open",
+    "closedPlural": "Closed",
+    "closed": "Closed",
+    "onHand": "On hand",
+    "receivedOn": "Received {{date}}",
+    "foot": "Received {{amount}} · Distributed {{distributed}}",
+    "notInTotals": "Funds and donations distributed from them are not included in any total or goal.",
+    "donateFrom": "Donate from this fund",
+    "movements": "Movements",
+    "distributions": "Distributions ({{count}})",
+    "noMovements": "No movements yet.",
+    "noDistributions": "Nothing has been donated from this fund yet.",
+    "emptyTitle": "No open funds",
+    "emptyMessage": "When someone leaves a donation with you to distribute, record it as a fund.",
+    "emptyClosed": "No closed funds",
+    "amounts": {
+      "received": "Received",
+      "distributed": "Distributed",
+      "inUse": "In use"
+    },
+    "fields": {
+      "from": "From",
+      "kind": "Type",
+      "amount": "Amount",
+      "date": "Date"
+    },
+    "form": {
+      "kindLocked": "The type can't be changed because it has distributions.",
+      "noPeople": "Add a person in People first"
+    },
+    "movement": {
+      "add": "Add movement",
+      "newTitle": "Add movement",
+      "editTitle": "Edit movement",
+      "type": "Movement",
+      "onHand": "On hand: {{amount}}",
+      "useHint": "Temporarily using money from the fund; on hand decreases.",
+      "returnHint": "Putting used money back; on hand increases.",
+      "delete": "Delete movement",
+      "deleteTitle": "Delete this movement?"
+    },
+    "moduleOff": {
+      "title": "Extra donation modules are off",
+      "message": "Donation goals and funds aren't enabled for this household. A household admin can turn them on in household settings."
+    },
+    "toast": {
+      "created": "Fund saved",
+      "updated": "Fund updated",
+      "deleted": "Fund deleted",
+      "movementCreated": "Movement added",
+      "movementUpdated": "Movement saved",
+      "movementDeleted": "Movement deleted"
+    }
+  },
+  "debts": {
+    "title": "Debts",
+    "newTitle": "Add debt",
+    "editTitle": "Edit debt",
+    "add": "Add debt",
+    "edit": "Edit debt",
+    "delete": "Delete debt",
+    "deleteTitle": "Delete this debt?",
+    "deleteMessage": "This debt is deleted.",
+    "deleteHasPayments": "A debt with payments can't be deleted; delete its payments first.",
+    "household": "Household",
+    "closed": "Closed",
+    "payments": "Payments",
+    "emptyTitle": "No open debts",
+    "emptyMessage": "Add debts you've taken and track what's left as you pay. Debt movements are not counted as spending.",
+    "emptyClosed": "No closed debts",
+    "filters": { "open": "Open", "closed": "Closed" },
+    "currency": { "TRY": "TRY", "USD": "Dollar", "EUR": "Euro", "QuarterGold": "Quarter" },
+    "rateSource": { "TCMB": "Central bank", "Elle": "Entered" },
+    "summary": {
+      "openInTry": "Open debt · in TRY",
+      "openCount_one": "{{count}} open debt",
+      "openCount_other": "{{count}} open debts",
+      "noRate": "A currency has no rate; the TRY value can't be calculated.",
+      "try": "TRY",
+      "gold": "Gold",
+      "fx": "Foreign",
+      "rates": "Current rate: {{rates}}"
+    },
+    "card": {
+      "total": "Total {{amount}}",
+      "paid": "Paid",
+      "left": "Left"
+    },
+    "detail": {
+      "parties": "Creditor: {{creditor}} · Debtor: {{debtor}}",
+      "total": "Total",
+      "date": "Debt date {{date}}",
+      "leftInTry": "Left ≈ {{amount}}",
+      "paymentCount_one": "{{count}} payment",
+      "paymentCount_other": "{{count}} payments",
+      "noPayments": "No payments yet",
+      "rate": "Rate ₺{{rate}}"
+    },
+    "fields": {
+      "currency": "Currency",
+      "amount": "Amount",
+      "count": "Count",
+      "date": "Date",
+      "creditor": "Creditor",
+      "debtor": "Debtor"
+    },
+    "form": {
+      "quarterHint": "Quarter gold is entered as a whole number.",
+      "currencyLocked": "The currency can't be changed because it has payments.",
+      "noteHint": "Shown as the debt's title in the list (e.g. Home renovation).",
+      "decrease": "Decrease by one",
+      "increase": "Increase by one"
+    },
+    "payment": {
+      "add": "Add payment",
+      "newTitle": "Add payment",
+      "editTitle": "Edit payment",
+      "subtitle": "{{title}} · Left {{left}}",
+      "save": "Save payment",
+      "delete": "Delete payment",
+      "deleteTitle": "Delete this payment?",
+      "rateLabel": "Rate (1 {{currency}})",
+      "currentRate": "Current: {{source}} · {{date}}",
+      "rateHint": "Enter the rate on the payment day.",
+      "inTry": "= {{amount}}"
+    },
+    "validation": {
+      "exceedsRemaining": "Can't exceed the remaining debt ({{max}})",
+      "beforeDebt": "Payment date can't be before the debt date"
+    },
+    "toast": {
+      "created": "Debt saved",
+      "updated": "Debt updated",
+      "deleted": "Debt deleted",
+      "paymentCreated": "Payment saved",
+      "paymentUpdated": "Payment updated",
+      "paymentDeleted": "Payment deleted"
+    }
+  }
+}

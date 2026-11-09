@@ -29,3 +29,16 @@ jest.mock('expo-secure-store', () => {
 beforeEach(() => {
   jest.requireMock('expo-secure-store').__store.clear();
 });
+
+// UI kiti (@/components/ui) native modüllere dayanır; Jest'te bunların resmî sahteleri kullanılır.
+// Bileşen testleri kendi dosyalarında yeniden tanımlamak zorunda kalmasın diye burada.
+jest.mock('react-native-keyboard-controller', () => jest.requireActual('react-native-keyboard-controller/jest'));
+jest.mock(
+  'react-native-safe-area-context',
+  () => jest.requireActual<{ default: unknown }>('react-native-safe-area-context/jest/mock').default,
+);
+// Kaydırmalı satır testlerde düz içerik olarak çizilir (reanimated jest ortamında çalışmaz).
+jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => ({
+  __esModule: true,
+  default: ({ children }: { children: unknown }) => children,
+}));

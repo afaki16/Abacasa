@@ -1,1 +1,142 @@
-{}
+{
+  "summary": {
+    "all": "Tümü",
+    "household": "Hane",
+    "pendingAmount": "{{amount}} bekleyen",
+    "loadError": "Özet yüklenemedi",
+    "period": {
+      "title": "Dönem",
+      "previous": "Önceki dönem",
+      "next": "Sonraki dönem",
+      "calendarMonth": "Takvim ayı",
+      "statementDay": "Kart dönemi · kesim günü {{day}}",
+      "changeHint": "Dönem türünü değiştirmek için dokun"
+    },
+    "card": {
+      "periodTotal": "Dönem toplamı",
+      "expenses": "Harcama",
+      "donations": "Bağış",
+      "pending": "Bekleyen",
+      "unknownAmounts_one": "{{count}} vadenin tutarı belli değil",
+      "unknownAmounts_other": "{{count}} vadenin tutarı belli değil"
+    },
+    "recurring": {
+      "title": "Sabit ödemeler",
+      "paid": "Ödenen",
+      "pending": "Bekleyen",
+      "a11y": "Sabit ödemeler: ödenen {{paid}}, bekleyen {{pending}}"
+    },
+    "debts": {
+      "title": "Açık borç",
+      "inTry": "TL karşılığı",
+      "count_one": "{{count}} açık borç",
+      "count_other": "{{count}} açık borç",
+      "missingRate": "{{currencies}} kuru girilmemiş"
+    },
+    "mealCard": {
+      "title": "Yemek kartı",
+      "notIncluded": "Dönem toplamına dahil değil"
+    },
+    "upcoming": {
+      "title": "Yaklaşan ödemeler",
+      "empty": "Yaklaşan ödeme yok",
+      "estimated": "tahmini"
+    },
+    "due": {
+      "overdue": "Gecikti",
+      "overdueDays_one": "Gecikti · {{count}} gün",
+      "overdueDays_other": "Gecikti · {{count}} gün",
+      "daysLeft_one": "{{count}} gün kaldı",
+      "daysLeft_other": "{{count}} gün kaldı"
+    },
+    "vehicles": {
+      "title": "Araç hatırlatmaları"
+    },
+    "breakdown": {
+      "title": "Kırılımlar",
+      "category": "Kategori",
+      "paymentMethod": "Ödeme aracı",
+      "person": "Kişi",
+      "empty": "Bu dönemde kayıt yok",
+      "loadError": "Kırılım yüklenemedi",
+      "rowLabel": "{{name}}, {{amount}}, {{percent}}"
+    },
+    "empty": {
+      "title": "Bu ay henüz kayıt yok",
+      "message": "İlk harcamanı ekle; özet ve kırılımlar burada oluşmaya başlar.",
+      "action": "İlk harcamayı ekle"
+    },
+    "forbidden": {
+      "title": "Özeti görme yetkin yok",
+      "message": "Bu hanede özet ve kırılımlar yalnızca yetkili üyelere açık.",
+      "addExpense": "Harcama ekle"
+    }
+  },
+  "expenses": {
+    "newTitle": "Harcama ekle",
+    "editTitle": "Harcamayı düzenle",
+    "mealCard": "Yemek kartı",
+    "validation": {
+      "categoryRequired": "Kategori seçmelisin.",
+      "paymentMethodRequired": "Ödeme aracı seçmelisin."
+    },
+    "form": {
+      "amount": "Tutar",
+      "date": "Tarih",
+      "category": "Kategori",
+      "paymentMethod": "Ödeme aracı",
+      "person": "Kişi",
+      "household": "Hane (ortak)",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Ekle (isteğe bağlı)",
+      "select": "Seç",
+      "noCategories": "Henüz kategori yok",
+      "noPaymentMethods": "Aktif ödeme aracı yok",
+      "mealCardHint": "Yemek kartı · toplama dahil değil",
+      "saveAndNew": "Kaydet ve yeni ekle",
+      "saving": "Kaydediliyor…"
+    },
+    "toast": {
+      "created": "Harcama kaydedildi",
+      "createdAddNext": "Harcama kaydedildi, yenisini ekleyebilirsin",
+      "updated": "Harcama güncellendi",
+      "deleted": "Harcama silindi"
+    },
+    "list": {
+      "searchPlaceholder": "Ara",
+      "periodButton": "Dönem: {{period}}. Değiştirmek için dokun",
+      "cardPeriod": "{{card}} · kart dönemi",
+      "periodTotal": "Dönem toplamı",
+      "mealCardSeparate": "Yemek kartı (ayrı)",
+      "byCategoryHint": "Kategoriye göre özeti açar",
+      "loadError": "Harcamalar yüklenemedi",
+      "noResults": "Sonuç bulunamadı",
+      "noResultsMessage": "Aramayı ya da süzgeçleri değiştirip yeniden dene.",
+      "empty": "Bu dönemde harcama yok",
+      "emptyMessage": "Eklediğin harcamalar güne göre burada listelenir.",
+      "add": "Harcama ekle",
+      "editHint": "Düzenlemek için dokun"
+    },
+    "filter": {
+      "title": "Filtrele",
+      "clear": "Temizle",
+      "show": "Kayıtları göster",
+      "showCount_one": "{{count}} kaydı göster",
+      "showCount_other": "{{count}} kaydı göster",
+      "category": "Kategori",
+      "paymentMethod": "Ödeme aracı",
+      "person": "Kişi",
+      "remove": "{{filter}} süzgecini kaldır"
+    },
+    "delete": {
+      "title": "Harcama silinsin mi?",
+      "message": "{{name}} ({{amount}}) kalıcı olarak silinecek."
+    },
+    "byCategory": {
+      "title": "Kategoriye göre",
+      "loadError": "Özet yüklenemedi",
+      "empty": "Bu dönemde harcama yok",
+      "mealCardNote": "Yemek kartı harcamaları ({{amount}}) bu kırılıma dahil değil."
+    }
+  }
+}

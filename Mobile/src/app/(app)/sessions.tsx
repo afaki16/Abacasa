@@ -1,140 +1,166 @@
-import type { TFunction } from 'i18next';
+import { Stack } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Card, FormError, ListItem, Screen, Text } from '@/components/ui';
-import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
-import { useLogoutAll, useRevokeSession, useSessions, type SessionItem } from '@/features/auth/hooks';
-import { formatDisplayDate } from '@/lib/format/period';
+import { Button, ConfirmDialog, EmptyState, ErrorState, SkeletonList } from '@/components/ui';
+import { makeStyles, Spacing, useColors } from '@/constants/theme';
+import { SessionRow } from '@/features/account/components/SessionRow';
+import { SectionLabel, SettingsGroup } from '@/features/account/components/SettingsKit';
+import { useRevokeOtherSessions, useSessionOverview } from '@/features/account/hooks';
+import type { SessionRowModel } from '@/features/account/sessionsView';
+import { useRevokeSession } from '@/features/auth/hooks';
+import { plural } from '@/lib/i18n';
+import { toast } from '@/stores/toastStore';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** Tarih-saat (cihazın saat diliminde): "dd.MM.yyyy HH:mm". Tarih kısmı ortak biçimleyiciden. */
-function formatDateTime(value: string) {
-  const d = new Date(value);
-  const localDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  return `${formatDisplayDate(localDate)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function describe(session: SessionItem, t: TFunction) {
-  const parts = [t('sessions.signedIn', { date: formatDateTime(session.createdDate) })];
-  if (session.ipAddress) parts.push(session.ipAddress);
-  return parts.join(' · ');
-}
-
-/** Hesabın açık olduğu cihazlar. Tek oturum ya da hepsi kapatılabilir. */
+/** Oturumlar: aktif cihazlar ("Bu cihaz" üstte), tek tek ya da hepsini kapat, kapanmış oturum geçmişi. */
 export default function SessionsScreen() {
   const { t } = useTranslation();
   const styles = useStyles();
   const colors = useColors();
-  const sessions = useSessions();
+  const insets = useSafeAreaInsets();
+  const overview = useSessionOverview();
   const revoke = useRevokeSession();
-  const logoutAll = useLogoutAll();
+  const revokeOthers = useRevokeOtherSessions();
+  const [target, setTarget] = useState<SessionRowModel | null>(null);
+  const [othersOpen, setOthersOpen] = useState(false);
+  // Göreli zamanlar verinin alındığı ana göre (render saf kalsın).
+  const now = overview.dataUpdatedAt;
 
-  const confirmRevoke = (session: SessionItem) =>
-    Alert.alert(
-      t('sessions.revokeTitle'),
-      t('sessions.revokeMessage', { device: session.deviceName || t('sessions.thisDevice') }),
-      [
-        { text: t('common.dismiss'), style: 'cancel' },
-        { text: t('sessions.revoke'), style: 'destructive', onPress: () => revoke.mutate(session.id) },
-      ],
-    );
+  const title = <Stack.Screen options={{ title: t('sessionsScreen.title') }} />;
 
-  const confirmLogoutAll = () =>
-    Alert.alert(t('sessions.logoutAll'), t('sessions.logoutAllMessage'), [
-      { text: t('common.dismiss'), style: 'cancel' },
-      { text: t('sessions.logoutAllConfirm'), style: 'destructive', onPress: () => logoutAll.mutate() },
-    ]);
-
-  if (sessions.isPending) {
+  if (overview.isPending) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
+      <View style={styles.container}>
+        {title}
+        <SkeletonList rows={4} />
       </View>
     );
   }
 
+  if (overview.isError) {
+    return (
+      <View style={styles.container}>
+        {title}
+        <ErrorState
+          title={t('sessionsScreen.loadError')}
+          message={overview.error.message}
+          actionLabel={t('common.retry')}
+          onAction={() => void overview.refetch()}
+        />
+      </View>
+    );
+  }
+
+  const { active, history } = overview.data;
+  const others = active.filter((s) => !s.isThisDevice);
+
+  const confirmRevoke = () => {
+    if (!target) return;
+    const device = target.name ?? t('sessionsScreen.unknownDevice');
+    revoke.mutate(target.id, {
+      onSuccess: () => toast.success(t('sessionsScreen.revokedToast', { device })),
+      onError: (e) => toast.error(e.message),
+      onSettled: () => setTarget(null),
+    });
+  };
+
+  const confirmOthers = () =>
+    revokeOthers.mutate(
+      others.map((s) => s.id),
+      {
+        onSuccess: () => toast.success(t('sessionsScreen.othersRevoked')),
+        onError: (e) => toast.error(e.message),
+        onSettled: () => setOthersOpen(false),
+      },
+    );
+
   return (
-    <Screen edges={['bottom']} contentStyle={styles.screen}>
-      <FlatList
-        data={sessions.data ?? []}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.list}
+    <View style={styles.container}>
+      {title}
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.xl }]}
         refreshControl={
           <RefreshControl
-            refreshing={sessions.isRefetching}
+            refreshing={overview.isRefetching}
             tintColor={colors.primary}
             colors={[colors.primary]}
             progressBackgroundColor={colors.background}
-            onRefresh={() => {
-              void sessions.refetch();
-            }}
+            onRefresh={() => void overview.refetch()}
           />
         }
-        ListHeaderComponent={<FormError messages={(sessions.error ?? revoke.error ?? logoutAll.error)?.messages} />}
-        ListEmptyComponent={
-          sessions.isError ? undefined : (
-            <Text muted style={styles.empty}>
-              {t('sessions.empty')}
-            </Text>
-          )
-        }
-        renderItem={({ item }) => (
-          <Card padded={false}>
-            <ListItem
-              icon={item.deviceType === 'Desktop' ? 'computer' : 'smartphone'}
-              title={item.deviceName || t('sessions.unknownDevice')}
-              subtitle={describe(item, t)}
-              last
-              trailing={
-                item.isThisDevice ? (
-                  <View style={styles.badge}>
-                    <Text variant="caption" color={colors.primary}>
-                      {t('sessions.thisDevice')}
-                    </Text>
-                  </View>
-                ) : (
-                  <Button
-                    title={t('sessions.revoke')}
-                    variant="ghost"
-                    style={styles.revoke}
-                    disabled={revoke.isPending}
-                    onPress={() => confirmRevoke(item)}
-                  />
-                )
-              }
-            />
-          </Card>
+      >
+        {active.length === 0 ? (
+          <EmptyState icon="devices" title={t('sessionsScreen.emptyTitle')} message={t('sessionsScreen.emptyMessage')} />
+        ) : (
+          <>
+            <SectionLabel label={plural('sessionsScreen.activeSection', active.length)} first />
+            <SettingsGroup>
+              {active.map((s, i) => (
+                <SessionRow
+                  key={s.id}
+                  session={s}
+                  now={now}
+                  first={i === 0}
+                  busy={(revoke.isPending && revoke.variables === s.id) || revokeOthers.isPending}
+                  onRevoke={s.isThisDevice ? undefined : () => setTarget(s)}
+                />
+              ))}
+            </SettingsGroup>
+            {others.length > 0 ? (
+              <Button
+                title={t('sessionsScreen.revokeOthers')}
+                variant="danger"
+                size="sm"
+                loading={revokeOthers.isPending}
+                onPress={() => setOthersOpen(true)}
+                style={styles.othersButton}
+              />
+            ) : null}
+          </>
         )}
-        ListFooterComponent={
-          (sessions.data?.length ?? 0) > 0 ? (
-            <Button
-              title={t('sessions.logoutAll')}
-              variant="secondary"
-              loading={logoutAll.isPending}
-              onPress={confirmLogoutAll}
-            />
-          ) : undefined
+
+        {history.length > 0 ? (
+          <>
+            <SectionLabel label={t('sessionsScreen.historySection')} />
+            <SettingsGroup>
+              {history.map((s, i) => (
+                <SessionRow key={s.id} session={s} now={now} first={i === 0} />
+              ))}
+            </SettingsGroup>
+          </>
+        ) : null}
+      </ScrollView>
+
+      <ConfirmDialog
+        visible={!!target}
+        title={t('sessionsScreen.revokeTitle')}
+        message={
+          target ? t('sessionsScreen.revokeMessage', { device: target.name ?? t('sessionsScreen.unknownDevice') }) : undefined
         }
+        confirmLabel={t('sessionsScreen.revoke')}
+        destructive
+        loading={revoke.isPending}
+        onConfirm={confirmRevoke}
+        onCancel={() => setTarget(null)}
       />
-    </Screen>
+      <ConfirmDialog
+        visible={othersOpen}
+        title={t('sessionsScreen.revokeOthers')}
+        message={plural('sessionsScreen.revokeOthersMessage', others.length)}
+        confirmLabel={t('sessionsScreen.revokeOthersConfirm')}
+        destructive
+        loading={revokeOthers.isPending}
+        onConfirm={confirmOthers}
+        onCancel={() => setOthersOpen(false)}
+      />
+    </View>
   );
 }
 
 const useStyles = makeStyles((c) => ({
-  screen: { padding: 0 },
-  list: { padding: Spacing.xl, gap: Spacing.md },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background },
-  empty: { textAlign: 'center', marginTop: Spacing.xl },
-  badge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
-    borderRadius: Radius.full,
-    backgroundColor: c.surface,
-    borderWidth: 1,
-    borderColor: c.border,
-  },
-  revoke: { minHeight: 36, paddingHorizontal: Spacing.sm },
+  container: { flex: 1, backgroundColor: c.background },
+  content: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.xs, gap: Spacing.sm },
+  othersButton: { borderWidth: 1, borderColor: c.dangerSurface, marginVertical: Spacing.xs },
 }));
-

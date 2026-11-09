@@ -1,1 +1,224 @@
-{}
+{
+  "householdScreen": {
+    "title": "Household & members",
+    "settingsAction": "Settings",
+    "settingsTitle": "Household settings",
+    "loadError": "Couldn't load the household",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "pendingCount_one": "{{count}} pending invitation",
+    "pendingCount_other": "{{count}} pending invitations",
+    "rename": {
+      "action": "Rename household",
+      "title": "Household name",
+      "label": "Household name",
+      "saved": "Household renamed to {{name}}"
+    },
+    "modules": {
+      "section": "Extra modules",
+      "donationExtras": "Donation targets & funds",
+      "donationExtrasDescription": "Yearly target vs. actual; money given by others to distribute. Turning it off keeps the records.",
+      "enabled": "Donation targets & funds turned on",
+      "disabled": "Donation targets & funds turned off"
+    },
+    "data": {
+      "section": "Data",
+      "export": "Download household data as Excel",
+      "webOnly": "Not available on mobile. Download it on the web."
+    },
+    "danger": {
+      "section": "Danger zone"
+    },
+    "leave": {
+      "action": "Leave household",
+      "title": "Leave this household?",
+      "message": "You won't see this household's records anymore. You'll need a new invitation to come back.",
+      "confirm": "Leave",
+      "done": "You left the household",
+      "lastAdmin": "You're the only admin. Make another member an admin first.",
+      "soleMember": "You're the only member. Delete the household instead of leaving."
+    },
+    "delete": {
+      "action": "Delete household",
+      "adminOnly": "Admins only",
+      "title": "Delete {{name}}?",
+      "message_one": "All records are permanently deleted for {{count}} member. This can't be undone. Type the household name and your password to confirm.",
+      "message_other": "All records are permanently deleted for {{count}} members. This can't be undone. Type the household name and your password to confirm.",
+      "nameLabel": "Household name",
+      "passwordLabel": "Your password",
+      "confirm": "Delete permanently",
+      "done": "{{name}} deleted"
+    }
+  },
+  "members": {
+    "section": "Members",
+    "you": "you",
+    "linkedPerson": "Person: {{name}}",
+    "noPerson": "No linked person",
+    "actionsHint": "Opens member actions",
+    "lastAdminNote": "A household always keeps at least one admin.",
+    "roleChanged": "{{name}} is now {{role}}",
+    "personLinked": "{{name}} linked to {{person}}",
+    "personUnlinked": "Person link removed for {{name}}",
+    "removed": "{{name}} removed from the household",
+    "personTitle": "Linked person",
+    "personHint": "The person record shown on the member's expenses and donations.",
+    "removeTitle": "Remove {{name}} from the household?",
+    "removeMessage": "Their records stay in the household. They'll need a new invitation to come back.",
+    "remove": "Remove from household",
+    "changePerson": "Change linked person",
+    "makeMember": "Change to member",
+    "makeAdmin": "Make admin",
+    "lastAdmin": "The only admin of this household. Make another member an admin first.",
+    "lastAdminSelf": "You're the only admin. Make another member an admin first."
+  },
+  "invitations": {
+    "section": "Pending invitations",
+    "expired": "Expired",
+    "daysLeft_one": "valid for {{count}} day",
+    "daysLeft_other": "valid for {{count}} days",
+    "resend": "Resend",
+    "resendFor": "Resend invitation to {{email}}",
+    "revoke": "Cancel",
+    "revokeFor": "Cancel invitation to {{email}}",
+    "sent": "Invitation sent to {{email}}",
+    "sentWithoutEmail": "Invitation created, but the email to {{email}} couldn't be sent",
+    "resent": "Invitation resent to {{email}}",
+    "revoked": "Invitation to {{email}} cancelled",
+    "sheetTitle": "Invite to household",
+    "submit": "Send invitation",
+    "role": "Role",
+    "memberDescription": "Adds and views records. Can't manage the household.",
+    "adminDescription": "Invites members, changes roles and household settings.",
+    "validity": "The invitation link is valid for 7 days.",
+    "open": "Send invitation",
+    "loadError": "Couldn't load invitations.",
+    "revokeTitle": "Cancel invitation?",
+    "revokeMessage": "The link sent to {{email}} will stop working."
+  },
+  "profileScreen": {
+    "title": "Profile",
+    "saved": "Profile saved",
+    "changeEmail": "Change",
+    "changePassword": "Change password",
+    "sessions": "Sessions",
+    "exportData": "Download my data",
+    "deleteAccount": "Delete account",
+    "logoutMessage": "You'll be signed out on this device.",
+    "email": {
+      "title": "Change email",
+      "current": "Current email",
+      "new": "New email",
+      "password": "Your password",
+      "info": "We'll send a verification link to the new address. Your current address stays valid until you confirm.",
+      "submit": "Send verification",
+      "sent": "Verification link sent to {{email}}",
+      "sameAsCurrent": "The new email must differ from your current one"
+    },
+    "password": {
+      "title": "Change password",
+      "method": "Verification method",
+      "withCurrent": "Current password",
+      "withCode": "Email code",
+      "code": "Code from your email",
+      "codeSentTo": "Code sent to {{email}}.",
+      "resend": "Resend",
+      "resendIn": "Resend · {{time}}",
+      "submit": "Change password",
+      "changed": "Password changed. Sessions on other devices were signed out.",
+      "ruleMet": "met",
+      "ruleUnmet": "not met",
+      "rules": {
+        "min": "At least 8 characters",
+        "uppercase": "Uppercase letter",
+        "lowercase": "Lowercase letter",
+        "digit": "Number"
+      }
+    }
+  },
+  "sessionsScreen": {
+    "title": "Sessions",
+    "loadError": "Couldn't load sessions",
+    "emptyTitle": "No open sessions",
+    "emptyMessage": "Devices where your account is signed in appear here.",
+    "activeSection_one": "Active · {{count}} device",
+    "activeSection_other": "Active · {{count}} devices",
+    "historySection": "History",
+    "thisDevice": "This device",
+    "unknownDevice": "Unknown device",
+    "activeNow": "Active now",
+    "signedIn": "Signed in {{time}}",
+    "signedInOn": "Signed in {{date}}",
+    "expiredOn": "Expired · {{date}}",
+    "revoked": "Signed out",
+    "revoke": "Sign out",
+    "revokeFor": "Sign out {{device}}",
+    "revokeTitle": "Sign out this session?",
+    "revokeMessage": "The session on {{device}} will end; that device will need to sign in again.",
+    "revokedToast": "{{device}} signed out",
+    "revokeOthers": "Sign out all other sessions",
+    "revokeOthersMessage_one": "{{count}} session other than this device will be signed out.",
+    "revokeOthersMessage_other": "{{count}} sessions other than this device will be signed out.",
+    "revokeOthersConfirm": "Sign out all",
+    "othersRevoked": "Other sessions signed out",
+    "time": {
+      "justNow": "just now",
+      "minutes_one": "{{count}} minute ago",
+      "minutes_other": "{{count}} minutes ago",
+      "hours_one": "{{count}} hour ago",
+      "hours_other": "{{count}} hours ago",
+      "days_one": "{{count}} day ago",
+      "days_other": "{{count}} days ago"
+    }
+  },
+  "accountScreen": {
+    "export": {
+      "title": "Download my data",
+      "intro": "Your account details and the records you entered in your households are prepared in a single file.",
+      "items": {
+        "profile": "Your profile details",
+        "expenses": "Your expense and donation records",
+        "debts": "Your debt and payment records",
+        "sessions": "Your session history"
+      },
+      "format": "Format",
+      "formatValue": "Excel (.xlsx)",
+      "webOnly": "File downloads aren't available on mobile yet. Download it on the web: Profile → Download my data.",
+      "submit": "Prepare file"
+    },
+    "delete": {
+      "title": "Delete account",
+      "loadError": "Couldn't load the deletion preview",
+      "intro": "Your account and personal details are permanently deleted.",
+      "blockedTitle": "Assign an admin to this household first",
+      "lastAdmin": "You're the last admin",
+      "goToMembers": "Go to members",
+      "goToMembersFor": "Go to {{name}} members",
+      "superAdminTitle": "You're the last system admin",
+      "superAdminMessage": "Make another user a system admin before deleting your account.",
+      "soleTitle": "This household will be deleted too",
+      "soleMessage": "You're the only member of {{names}}; it's deleted with all its records.",
+      "passwordLabel": "Your password to confirm",
+      "submit": "Delete my account",
+      "blockedHint": "You can delete your account once the blockers are resolved.",
+      "confirmTitle": "Delete your account?",
+      "confirmMessage": "This can't be undone. You'll be signed out on all devices.",
+      "confirm": "Delete permanently",
+      "done": "Your account was deleted"
+    }
+  },
+  "settingsScreen": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "legal": "Legal",
+    "opensInBrowser": "Opens in the browser",
+    "legalOpenFailed": "Couldn't open the document",
+    "version": "Abacasa · Version {{version}}"
+  }
+}

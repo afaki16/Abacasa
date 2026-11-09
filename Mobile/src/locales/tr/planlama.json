@@ -1,1 +1,335 @@
-{}
+{
+  "recurring": {
+    "segments": { "period": "Dönem", "plans": "Planlar" },
+    "status": { "paid": "Ödendi", "pending": "Bekliyor", "overdue": "Gecikti" },
+    "group": { "expense": "Harcama", "donation": "Bağış" },
+    "schedule": { "monthly": "Aylık", "installment": "Taksitli" },
+    "period": {
+      "paid": "Ödenen · {{n}}",
+      "pending": "Bekleyen · {{n}}",
+      "unknownWarning_one": "{{count}} kalemin tutarı belli değil. Ödendi olarak işaretlerken tutarı gir.",
+      "unknownWarning_other": "{{count}} kalemin tutarı belli değil. Ödendi olarak işaretlerken tutarı gir.",
+      "emptyTitle": "Bu ayda vade yok",
+      "emptyMessage": "Kira, fatura ya da taksit gibi düzenli ödemelerini plan olarak ekle; vadeleri burada görünür."
+    },
+    "occurrence": {
+      "installment": "{{no}} / {{count}} taksit",
+      "paidOn": "Ödendi {{date}}",
+      "due": "Vade {{date}}",
+      "dueToday": "Vade bugün · {{date}}",
+      "daysLate": "{{days}} gün gecikti",
+      "unknownAmount": "Tutar belli değil",
+      "estimated": "Tahmini"
+    },
+    "pay": {
+      "markPaid": "Ödendi olarak işaretle",
+      "submit": "Ödendi olarak kaydet",
+      "amount": "Ödenen tutar",
+      "date": "Ödeme tarihi",
+      "amountWasUnknown": "Tutar belli değildi",
+      "methodHint": "Planın ödeme aracı kullanılır."
+    },
+    "undo": {
+      "title": "Ödeme geri alınsın mı?",
+      "messageExpense": "{{name}} için oluşturulan harcama kaydı silinir ve vade yeniden bekliyor olur.",
+      "messageDonation": "{{name}} için oluşturulan bağış kaydı silinir ve vade yeniden bekliyor olur.",
+      "confirm": "Geri al",
+      "hint": "Ödemeyi geri almak için dokun"
+    },
+    "plans": {
+      "activeCount_one": "{{count}} aktif plan",
+      "activeCount_other": "{{count}} aktif plan",
+      "inactiveCount_one": "{{count}} pasif plan",
+      "inactiveCount_other": "{{count}} pasif plan",
+      "add": "Plan ekle",
+      "showInactive": "Pasif planlar",
+      "perMonth": "aylık taksit",
+      "emptyTitle": "Henüz plan yok",
+      "emptyMessage": "Düzenli ödemelerini ekle; her ay vadesi gelince Dönem sekmesinde görünür.",
+      "emptyInactive": "Pasif plan yok"
+    },
+    "plan": {
+      "everyMonth": "her ayın {{day}}",
+      "installmentShort": "Taksitli",
+      "installmentCount": "{{count}} taksit",
+      "variableAmount": "tutar değişken"
+    },
+    "fields": {
+      "name": "Ad",
+      "group": "Tür",
+      "schedule": "Ödeme tipi",
+      "monthlyKind": "Kalem",
+      "startMonth": "Başlangıç ayı",
+      "dueDay": "Vade günü",
+      "expectedAmount": "Beklenen tutar",
+      "totalAmount": "Toplam tutar",
+      "installmentCount": "Taksit sayısı",
+      "firstDueDate": "İlk taksit tarihi",
+      "category": "Kategori",
+      "donationKind": "Bağış türü",
+      "recipient": "Alıcı",
+      "paymentMethod": "Ödeme aracı",
+      "person": "Kişi",
+      "giver": "Veren kişi",
+      "household": "Hane",
+      "isActive": "Aktif"
+    },
+    "form": {
+      "newTitle": "Plan ekle",
+      "editTitle": "Planı düzenle",
+      "save": "Planı kaydet",
+      "delete": "Planı sil",
+      "planSection": "Plan",
+      "scheduleSection": "Takvim ve tutar",
+      "detailsSection": "Ayrıntılar",
+      "namePlaceholder": "Ör. Kira",
+      "pick": "Seç",
+      "pickDate": "Tarih seç",
+      "pickDueDay": "Gün seç",
+      "dueDayHint": "Ayın 1–31. günü. 31 olmayan aylarda son gün kullanılır.",
+      "expectedAmountHint": "Fatura gibi değişen kalemlerde boş bırakabilirsin.",
+      "installmentCountHint": "{{min}} ile {{max}} arasında.",
+      "monthlyInstallment": "Aylık taksit",
+      "lockedHint": "Ödemesi olduğu için değiştirilemez.",
+      "isActiveHint": "Pasif planın yeni vadeleri oluşmaz."
+    },
+    "delete": {
+      "title": "Plan silinsin mi?",
+      "message": "{{name}} planı silinir.",
+      "messageHasPayments": "{{name}} planının ödemeleri var; silinemezse pasif yapabilirsin."
+    },
+    "toast": {
+      "created": "Plan eklendi",
+      "updated": "Plan kaydedildi",
+      "deleted": "Plan silindi",
+      "paid": "Ödendi olarak kaydedildi",
+      "undone": "Ödeme geri alındı"
+    }
+  },
+  "donations": {
+    "title": "Bağışlar",
+    "newTitle": "Bağış ekle",
+    "editTitle": "Bağışı düzenle",
+    "add": "Bağış ekle",
+    "delete": "Bağışı sil",
+    "deleteTitle": "Bağış silinsin mi?",
+    "deleteMessage": "Bu bağış kaydı silinir. Bir plana bağlıysa vade yeniden bekliyor olur.",
+    "household": "Hane",
+    "yearTotal": "{{year}} toplamı",
+    "yearTitle": "Yıl",
+    "pickYear": "Yıl: {{year}}. Değiştirmek için dokun",
+    "count_one": "{{count}} bağış",
+    "count_other": "{{count}} bağış",
+    "fundDistributed": "Emanetten dağıtılan {{amount}} (toplama girmez)",
+    "breakdownLabel": "Kırılım",
+    "byKind": "Türe göre",
+    "byGiver": "Verene göre",
+    "percent": "%{{value}}",
+    "recent": "Son bağışlar",
+    "fromFund": "Emanetten",
+    "emptyTitle": "{{year}} yılında bağış yok",
+    "emptyMessage": "Verdiğin bağışları ekle; türe ve verene göre toplamlar burada görünür.",
+    "fields": {
+      "date": "Tarih",
+      "kind": "Tür",
+      "recipient": "Alıcı",
+      "giver": "Veren kişi",
+      "paymentMethod": "Ödeme aracı",
+      "note": "Not",
+      "fund": "Emanet"
+    },
+    "form": {
+      "pick": "Seç",
+      "optional": "İsteğe bağlı",
+      "recipientPlaceholder": "Kime verildi",
+      "fromFund": "Emanetten ver",
+      "fromFundHint": "Sana bırakılan bir emanetten dağıt",
+      "onHand": "Elde kalan: {{amount}}",
+      "fundHint": "Emanetten verilen bağış emanetle aynı türdedir ve hiçbir toplama girmez.",
+      "noFunds": "Elinde emanet yok"
+    },
+    "toast": {
+      "created": "Bağış kaydedildi",
+      "updated": "Bağış güncellendi",
+      "deleted": "Bağış silindi"
+    }
+  },
+  "donationTargets": {
+    "title": "Bağış hedefleri",
+    "newTitle": "Hedef ekle",
+    "editTitle": "Hedefi düzenle",
+    "add": "Hedef ekle",
+    "delete": "Hedefi sil",
+    "deleteTitle": "Hedef silinsin mi?",
+    "deleteMessage": "Bu hedef silinir; bağış kayıtları etkilenmez.",
+    "yearTitle": "Bağış hedefleri · {{year}}",
+    "completed": "Tamamlandı",
+    "given": "Gerçekleşen {{amount}}",
+    "target": "Hedef {{amount}}",
+    "planned": "Planlanan {{amount}} · plandan sonra kalan {{after}}",
+    "voluntary": "Hedef dışı bağışlar",
+    "emptyTitle": "{{year}} için hedef yok",
+    "emptyMessage": "Zekât, fitre ya da burs gibi yıllık bağış hedeflerini ekle; ilerlemesi burada görünür.",
+    "fields": {
+      "year": "Yıl",
+      "kind": "Tür",
+      "owner": "Kimin hedefi",
+      "amount": "Hedef tutar"
+    },
+    "toast": {
+      "created": "Hedef eklendi",
+      "updated": "Hedef kaydedildi",
+      "deleted": "Hedef silindi"
+    }
+  },
+  "donationFunds": {
+    "title": "Emanetler",
+    "newTitle": "Emanet al",
+    "editTitle": "Emaneti düzenle",
+    "detailTitle": "Emanet",
+    "add": "Emanet al",
+    "edit": "Emaneti düzenle",
+    "delete": "Emaneti sil",
+    "deleteTitle": "Emanet silinsin mi?",
+    "deleteMessage": "Dağıtımı ya da hareketi olan emanet silinemez.",
+    "intro": "Başkasının dağıtman için bıraktığı bağışlar. Emanetler hiçbir toplama girmez.",
+    "open": "Açık",
+    "closedPlural": "Kapanmış",
+    "closed": "Kapandı",
+    "onHand": "Elde kalan",
+    "receivedOn": "Alındı {{date}}",
+    "foot": "Alınan {{amount}} · Dağıtılan {{distributed}}",
+    "notInTotals": "Emanet ve emanetten dağıtılan bağışlar hiçbir toplama ve hedefe girmez.",
+    "donateFrom": "Bu emanetten bağış ver",
+    "movements": "Hareketler",
+    "distributions": "Dağıtımlar ({{count}})",
+    "noMovements": "Henüz hareket yok.",
+    "noDistributions": "Bu emanetten henüz bağış verilmedi.",
+    "emptyTitle": "Açık emanet yok",
+    "emptyMessage": "Biri sana dağıtman için bağış bıraktığında emanet olarak kaydet.",
+    "emptyClosed": "Kapanmış emanet yok",
+    "amounts": {
+      "received": "Alınan",
+      "distributed": "Dağıtılan",
+      "inUse": "Kullanımda"
+    },
+    "fields": {
+      "from": "Kimden",
+      "kind": "Tür",
+      "amount": "Tutar",
+      "date": "Tarih"
+    },
+    "form": {
+      "kindLocked": "Dağıtımı olduğu için tür değiştirilemez.",
+      "noPeople": "Önce Kişiler'den kişi ekle"
+    },
+    "movement": {
+      "add": "Hareket ekle",
+      "newTitle": "Hareket ekle",
+      "editTitle": "Hareketi düzenle",
+      "type": "Hareket",
+      "onHand": "Elde kalan: {{amount}}",
+      "useHint": "Emanetteki paranın geçici olarak kullanılması; elde kalan azalır.",
+      "returnHint": "Kullanılan paranın yerine konması; elde kalan artar.",
+      "delete": "Hareketi sil",
+      "deleteTitle": "Hareket silinsin mi?"
+    },
+    "moduleOff": {
+      "title": "Ek bağış modülleri kapalı",
+      "message": "Bağış hedefleri ve emanetler bu hanede açık değil. Hane yöneticisi Hane ayarlarından açabilir."
+    },
+    "toast": {
+      "created": "Emanet kaydedildi",
+      "updated": "Emanet güncellendi",
+      "deleted": "Emanet silindi",
+      "movementCreated": "Hareket eklendi",
+      "movementUpdated": "Hareket kaydedildi",
+      "movementDeleted": "Hareket silindi"
+    }
+  },
+  "debts": {
+    "title": "Borçlar",
+    "newTitle": "Borç ekle",
+    "editTitle": "Borcu düzenle",
+    "add": "Borç ekle",
+    "edit": "Borcu düzenle",
+    "delete": "Borcu sil",
+    "deleteTitle": "Borç silinsin mi?",
+    "deleteMessage": "Bu borç kaydı silinir.",
+    "deleteHasPayments": "Ödemesi olan borç silinemez; önce ödemelerini sil.",
+    "household": "Hane",
+    "closed": "Kapandı",
+    "payments": "Ödemeler",
+    "emptyTitle": "Açık borç yok",
+    "emptyMessage": "Aldığın borçları ekle; ödedikçe kalanı burada takip et. Borç hareketleri harcama toplamına girmez.",
+    "emptyClosed": "Kapanmış borç yok",
+    "filters": { "open": "Açık", "closed": "Kapanmış" },
+    "currency": { "TRY": "TL", "USD": "Dolar", "EUR": "Euro", "QuarterGold": "Çeyrek" },
+    "rateSource": { "TCMB": "Merkez bankası", "Elle": "Elle girilen" },
+    "summary": {
+      "openInTry": "Açık borç · TL karşılığı",
+      "openCount_one": "{{count}} açık borç",
+      "openCount_other": "{{count}} açık borç",
+      "noRate": "Bir birimin kuru yok; TL karşılığı hesaplanamadı.",
+      "try": "TL",
+      "gold": "Altın",
+      "fx": "Döviz",
+      "rates": "Güncel kur: {{rates}}"
+    },
+    "card": {
+      "total": "Toplam {{amount}}",
+      "paid": "Ödenen",
+      "left": "Kalan"
+    },
+    "detail": {
+      "parties": "Alacaklı: {{creditor}} · Borçlu: {{debtor}}",
+      "total": "Toplam",
+      "date": "Borç tarihi {{date}}",
+      "leftInTry": "Kalan ≈ {{amount}}",
+      "paymentCount_one": "{{count}} ödeme",
+      "paymentCount_other": "{{count}} ödeme",
+      "noPayments": "Henüz ödeme yok",
+      "rate": "Kur ₺{{rate}}"
+    },
+    "fields": {
+      "currency": "Para birimi",
+      "amount": "Tutar",
+      "count": "Adet",
+      "date": "Tarih",
+      "creditor": "Alacaklı",
+      "debtor": "Borçlu"
+    },
+    "form": {
+      "quarterHint": "Çeyrek altın tam sayı olarak girilir.",
+      "currencyLocked": "Ödemesi olduğu için para birimi değiştirilemez.",
+      "noteHint": "Listede borcun başlığı olarak görünür (ör. Ev tadilatı).",
+      "decrease": "Bir azalt",
+      "increase": "Bir artır"
+    },
+    "payment": {
+      "add": "Ödeme ekle",
+      "newTitle": "Ödeme ekle",
+      "editTitle": "Ödemeyi düzenle",
+      "subtitle": "{{title}} · Kalan {{left}}",
+      "save": "Ödemeyi kaydet",
+      "delete": "Ödemeyi sil",
+      "deleteTitle": "Ödeme silinsin mi?",
+      "rateLabel": "Kur (1 {{currency}})",
+      "currentRate": "Güncel: {{source}} · {{date}}",
+      "rateHint": "Ödeme günündeki kuru elle gir.",
+      "inTry": "= {{amount}}"
+    },
+    "validation": {
+      "exceedsRemaining": "Kalan borcu ({{max}}) aşamaz",
+      "beforeDebt": "Ödeme tarihi borç tarihinden önce olamaz"
+    },
+    "toast": {
+      "created": "Borç kaydedildi",
+      "updated": "Borç güncellendi",
+      "deleted": "Borç silindi",
+      "paymentCreated": "Ödeme kaydedildi",
+      "paymentUpdated": "Ödeme güncellendi",
+      "paymentDeleted": "Ödeme silindi"
+    }
+  }
+}

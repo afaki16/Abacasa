@@ -1,3 +1,4 @@
+import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -10,31 +11,33 @@ import { EXPENSE_PERMISSIONS } from '@/features/expenses/constants';
 import { RECURRING_PAYMENT_PERMISSIONS } from '@/features/recurringPayments/constants';
 import { VEHICLE_PERMISSIONS } from '@/features/vehicles/constants';
 import { useAuthStore } from '@/stores/authStore';
-import { toast } from '@/stores/toastStore';
 
 import type { User } from '@/features/auth/types';
 
 interface AddItem {
   key: 'expense' | 'donation' | 'debt' | 'recurringPayment' | 'vehicleOperation';
   icon: IconName;
+  /** Açılacak ekran. Araç işlemi önce araç seçtirir (işlem bir araca bağlıdır); vade ödemesi Dönem listesinden yapılır. */
+  href: Href;
   /** Kullanıcı bu kaydı ekleyebiliyor mu (yalnızca arayüz; asıl kontrol backend'de). */
   allowed: (user: User | null) => boolean;
 }
 
 const ITEMS: AddItem[] = [
-  { key: 'expense', icon: 'shopping-cart', allowed: (u) => hasPermission(u, EXPENSE_PERMISSIONS.CREATE) },
-  { key: 'donation', icon: 'volunteer-activism', allowed: (u) => hasPermission(u, DONATION_PERMISSIONS.CREATE) },
-  { key: 'debt', icon: 'account-balance-wallet', allowed: (u) => hasPermission(u, DEBT_PERMISSIONS.CREATE) },
+  { key: 'expense', icon: 'shopping-cart', href: '/expenses/new' as Href, allowed: (u) => hasPermission(u, EXPENSE_PERMISSIONS.CREATE) },
+  { key: 'donation', icon: 'volunteer-activism', href: '/donations/new' as Href, allowed: (u) => hasPermission(u, DONATION_PERMISSIONS.CREATE) },
+  { key: 'debt', icon: 'account-balance-wallet', href: '/debts/new' as Href, allowed: (u) => hasPermission(u, DEBT_PERMISSIONS.CREATE) },
   {
     // Sabit ödeme ödemesi bağlı bir harcama ya da bağış kaydı oluşturur.
     key: 'recurringPayment',
     icon: 'event-available',
+    href: '/recurring' as Href,
     allowed: (u) =>
       hasPermission(u, RECURRING_PAYMENT_PERMISSIONS.READ) &&
       (hasPermission(u, EXPENSE_PERMISSIONS.CREATE) || hasPermission(u, DONATION_PERMISSIONS.CREATE)),
   },
   // Araç işlemi ekleme Vehicles.Update ister.
-  { key: 'vehicleOperation', icon: 'directions-car', allowed: (u) => hasPermission(u, VEHICLE_PERMISSIONS.UPDATE) },
+  { key: 'vehicleOperation', icon: 'directions-car', href: '/vehicles' as Href, allowed: (u) => hasPermission(u, VEHICLE_PERMISSIONS.UPDATE) },
 ];
 
 export interface AddSheetProps {
@@ -44,7 +47,7 @@ export interface AddSheetProps {
 
 /**
  * Sekme çubuğundaki "Ekle" düğmesinin alttan sayfası ("Ne eklemek istersin?"). Yalnızca yetkili
- * olunan kayıt türleri listelenir; ilk (Harcama) vurgulu. Ekleme ekranları henüz yok: "yakında" toast'ı.
+ * olunan kayıt türleri listelenir; ilk (Harcama) vurgulu.
  */
 export function AddSheet({ visible, onClose }: AddSheetProps) {
   const { t } = useTranslation();
@@ -53,9 +56,9 @@ export function AddSheet({ visible, onClose }: AddSheetProps) {
   const user = useAuthStore((s) => s.user);
   const items = ITEMS.filter((i) => i.allowed(user));
 
-  const choose = () => {
+  const choose = (item: AddItem) => {
     onClose();
-    toast.info(t('ui.comingSoon'));
+    router.push(item.href);
   };
 
   return (
@@ -74,7 +77,7 @@ export function AddSheet({ visible, onClose }: AddSheetProps) {
                 key={item.key}
                 accessibilityRole="button"
                 accessibilityLabel={featured ? `${label}, ${t('add.mostUsed')}` : label}
-                onPress={choose}
+                onPress={() => choose(item)}
                 style={({ pressed }) => [styles.row, featured && styles.featured, pressed && styles.pressed]}
               >
                 <View style={[styles.tile, featured && styles.tileFeatured]}>

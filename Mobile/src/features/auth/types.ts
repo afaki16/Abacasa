@@ -102,6 +102,8 @@ export interface RegisterRequest {
   householdName: string;
   acceptTerms: boolean;
   acknowledgePrivacy: boolean;
+  /** Davetle kayıt: e-posta doğrulanmış sayılır, hane açılmaz (householdName gerekmez). */
+  inviteToken?: string | null;
 }
 
 export interface UpdateProfileRequest {

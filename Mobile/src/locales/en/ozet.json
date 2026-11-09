@@ -1,1 +1,142 @@
-{}
+{
+  "summary": {
+    "all": "All",
+    "household": "Household",
+    "pendingAmount": "{{amount}} pending",
+    "loadError": "Couldn't load the overview",
+    "period": {
+      "title": "Period",
+      "previous": "Previous period",
+      "next": "Next period",
+      "calendarMonth": "Calendar month",
+      "statementDay": "Card period · statement day {{day}}",
+      "changeHint": "Tap to change the period type"
+    },
+    "card": {
+      "periodTotal": "Period total",
+      "expenses": "Expenses",
+      "donations": "Donations",
+      "pending": "Pending",
+      "unknownAmounts_one": "{{count}} due amount unknown",
+      "unknownAmounts_other": "{{count}} due amounts unknown"
+    },
+    "recurring": {
+      "title": "Recurring payments",
+      "paid": "Paid",
+      "pending": "Pending",
+      "a11y": "Recurring payments: paid {{paid}}, pending {{pending}}"
+    },
+    "debts": {
+      "title": "Open debt",
+      "inTry": "In TRY",
+      "count_one": "{{count}} open debt",
+      "count_other": "{{count}} open debts",
+      "missingRate": "No {{currencies}} rate entered"
+    },
+    "mealCard": {
+      "title": "Meal card",
+      "notIncluded": "Not included in the period total"
+    },
+    "upcoming": {
+      "title": "Upcoming payments",
+      "empty": "No upcoming payments",
+      "estimated": "estimated"
+    },
+    "due": {
+      "overdue": "Overdue",
+      "overdueDays_one": "Overdue · {{count}} day",
+      "overdueDays_other": "Overdue · {{count}} days",
+      "daysLeft_one": "{{count}} day left",
+      "daysLeft_other": "{{count}} days left"
+    },
+    "vehicles": {
+      "title": "Vehicle reminders"
+    },
+    "breakdown": {
+      "title": "Breakdowns",
+      "category": "Category",
+      "paymentMethod": "Payment method",
+      "person": "Person",
+      "empty": "No records in this period",
+      "loadError": "Couldn't load the breakdown",
+      "rowLabel": "{{name}}, {{amount}}, {{percent}}"
+    },
+    "empty": {
+      "title": "No records this month yet",
+      "message": "Add your first expense; the overview and breakdowns will start building up here.",
+      "action": "Add your first expense"
+    },
+    "forbidden": {
+      "title": "You can't view the overview",
+      "message": "In this household the overview and breakdowns are only open to authorized members.",
+      "addExpense": "Add expense"
+    }
+  },
+  "expenses": {
+    "newTitle": "Add expense",
+    "editTitle": "Edit expense",
+    "mealCard": "Meal card",
+    "validation": {
+      "categoryRequired": "Choose a category.",
+      "paymentMethodRequired": "Choose a payment method."
+    },
+    "form": {
+      "amount": "Amount",
+      "date": "Date",
+      "category": "Category",
+      "paymentMethod": "Payment method",
+      "person": "Person",
+      "household": "Household (shared)",
+      "description": "Description",
+      "descriptionPlaceholder": "Add (optional)",
+      "select": "Select",
+      "noCategories": "No categories yet",
+      "noPaymentMethods": "No active payment methods",
+      "mealCardHint": "Meal card · not in totals",
+      "saveAndNew": "Save and add another",
+      "saving": "Saving…"
+    },
+    "toast": {
+      "created": "Expense saved",
+      "createdAddNext": "Expense saved, you can add the next one",
+      "updated": "Expense updated",
+      "deleted": "Expense deleted"
+    },
+    "list": {
+      "searchPlaceholder": "Search",
+      "periodButton": "Period: {{period}}. Tap to change",
+      "cardPeriod": "{{card}} · card period",
+      "periodTotal": "Period total",
+      "mealCardSeparate": "Meal card (separate)",
+      "byCategoryHint": "Opens the summary by category",
+      "loadError": "Couldn't load expenses",
+      "noResults": "No results",
+      "noResultsMessage": "Change the search or filters and try again.",
+      "empty": "No expenses in this period",
+      "emptyMessage": "Expenses you add are listed here by day.",
+      "add": "Add expense",
+      "editHint": "Tap to edit"
+    },
+    "filter": {
+      "title": "Filter",
+      "clear": "Clear",
+      "show": "Show records",
+      "showCount_one": "Show {{count}} record",
+      "showCount_other": "Show {{count}} records",
+      "category": "Category",
+      "paymentMethod": "Payment method",
+      "person": "Person",
+      "remove": "Remove filter {{filter}}"
+    },
+    "delete": {
+      "title": "Delete this expense?",
+      "message": "{{name}} ({{amount}}) will be permanently deleted."
+    },
+    "byCategory": {
+      "title": "By category",
+      "loadError": "Couldn't load the summary",
+      "empty": "No expenses in this period",
+      "mealCardNote": "Meal card expenses ({{amount}}) are not included in this breakdown."
+    }
+  }
+}

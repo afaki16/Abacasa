@@ -1,1 +1,147 @@
-{}
+{
+  "authScreens": {
+    "brand": "Abacasa",
+    "language": {
+      "label": "Language: {{language}}",
+      "sheetTitle": "Choose language",
+      "tr": "Türkçe",
+      "en": "English"
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "passwordRules": {
+      "label": "Password rules",
+      "min": "At least 8 characters",
+      "upper": "Uppercase letter",
+      "lower": "Lowercase letter",
+      "digit": "Number",
+      "met": "{{rule}}: met",
+      "unmet": "{{rule}}: not met yet"
+    },
+    "otp": {
+      "label": "6-digit verification code"
+    },
+    "step": "Step {{current}} of {{total}}",
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Pick up your household budget where you left off.",
+      "forgotPassword": "Forgot password",
+      "submit": "Sign in",
+      "noAccount": "No account yet?",
+      "register": "Sign up",
+      "resendVerification": "Resend verification email",
+      "inviteBanner": "You'll join {{household}} once you sign in.",
+      "inviteBannerGeneric": "You'll join the household you were invited to once you sign in."
+    },
+    "register": {
+      "title": "Sign up",
+      "email": "Email",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "passwordConfirmPlaceholder": "Type your password again",
+      "householdName": "Household name",
+      "householdPlaceholder": "e.g. The Smiths",
+      "termsLink": "Terms of use",
+      "privacyLink": "Privacy notice",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in",
+      "inviteBanner": "Create your account to join {{household}}. No new household is created; use the email the invitation was sent to.",
+      "inviteBannerGeneric": "Create your account to join the household you were invited to. Use the email the invitation was sent to.",
+      "joined": "Your account is ready and you've joined the household.",
+      "loginAfterInvite": "Your account is ready. Sign in to continue.",
+      "terms": "I have read and accept the {{link}}.",
+      "privacy": "I have read the {{link}}."
+    },
+    "verifyEmail": {
+      "title": "Check your email",
+      "sentGeneric": "We sent a verification link to your email. Tap the link to activate your account.",
+      "resend": "Resend",
+      "resendCountdown": "Resend · {{time}}",
+      "resent": "Verification email sent again.",
+      "backToLogin": "Back to sign in",
+      "spamHint": "Can't find it? Check your spam folder.",
+      "sentTo": "We sent a verification link to {{email}}. Tap the link to activate your account."
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "emailTitle": "Your email",
+      "emailIntro": "We'll send a 6-digit code to the email on your account.",
+      "sendCode": "Send code",
+      "codeTitle": "Enter the code",
+      "codeIntro": "Enter the 6-digit code sent to {{email}}.",
+      "resendCode": "Resend code",
+      "resendCodeCountdown": "Resend code · {{time}}",
+      "codeResent": "A new code is on its way.",
+      "continue": "Continue",
+      "newPasswordTitle": "Set a new password",
+      "newPassword": "New password",
+      "newPasswordConfirm": "Confirm new password",
+      "submit": "Save password",
+      "success": "Your password was updated. Sign in with your new password."
+    },
+    "changePassword": {
+      "modeLabel": "Verification method",
+      "withCurrent": "Current password",
+      "withCode": "Email code",
+      "currentPassword": "Current password",
+      "temporaryPassword": "Temporary password",
+      "newPassword": "New password",
+      "newPasswordConfirm": "Confirm new password",
+      "codeIntro": "We'll send a 6-digit code to {{email}}.",
+      "codeIntroGeneric": "We'll send a 6-digit code to your email.",
+      "sendCode": "Send code",
+      "codeSentTo": "Enter the 6-digit code sent to {{email}}.",
+      "codeSentGeneric": "Enter the 6-digit code sent to your email.",
+      "resendCode": "Resend code",
+      "resendCodeCountdown": "Resend code · {{time}}",
+      "submit": "Change password"
+    },
+    "forceChangePassword": {
+      "title": "Change your password",
+      "info": "Your household admin gave you a temporary password. Set your own password before you continue."
+    }
+  },
+  "consentScreen": {
+    "titleSingle": "{{document}} updated",
+    "titleMultiple": "Legal texts updated",
+    "subtitleSingle": "To continue, read and confirm the current version.",
+    "subtitleMultiple": "To continue, read and confirm the current versions.",
+    "readHint": "The full text opens in your browser.",
+    "read": "Read the text",
+    "acceptTerms": "I have read and accept the terms of use.",
+    "acknowledgePrivacy": "I have read and acknowledge the privacy notice.",
+    "submit": "Confirm and continue"
+  },
+  "invite": {
+    "loading": "Loading invitation…",
+    "title": "You're invited to {{household}}",
+    "subtitle": "Once you join, you can see the household's expense and payment records.",
+    "household": "Household",
+    "inviter": "Invited by",
+    "role": "Your role",
+    "email": "Invited email",
+    "register": "Sign up and join",
+    "haveAccount": "I have an account, sign in",
+    "loginAndJoin": "Sign in and join",
+    "accept": "Join household",
+    "otherAccount": "This invitation was sent to {{email}}. Sign in with that account to join.",
+    "switchAccount": "Sign out",
+    "joined": "You joined {{household}}.",
+    "joinedGeneric": "You joined the household.",
+    "acceptFailed": "The invitation couldn't be accepted.",
+    "notFoundTitle": "Invitation not found",
+    "notFoundText": "The link may be wrong or incomplete. Ask your household admin for a new invitation.",
+    "acceptedTitle": "This invitation was already used",
+    "acceptedText": "Invitations can be used once. Sign in with your account to reach the household.",
+    "revokedTitle": "Invitation revoked",
+    "expiredTitle": "Invitation expired",
+    "askAdmin": "Ask your household admin for a new invitation. Invitations are valid for 7 days.",
+    "loadErrorTitle": "Couldn't load the invitation",
+    "loadErrorText": "Check your connection and try again.",
+    "backToLogin": "Back to sign in",
+    "backToApp": "Back to home"
+  }
+}

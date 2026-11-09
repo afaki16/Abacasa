@@ -8,6 +8,7 @@
 //   - girişli           → yalnızca (app)
 //   - girişli + MustChangePassword → yalnızca force-change-password
 //   - girişli + bekleyen yasal onay (pendingConsents) → yalnızca consents
+//   - auth/accept-invite (davet linki) → girişsiz ya da zorunlu adımı olmayan girişli
 // Login, logout, refresh reddi veya 403/1014 state'i değiştirince router kendisi geçer.
 
 import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
@@ -16,7 +17,7 @@ import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
 import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { router, SplashScreen, Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -49,6 +50,7 @@ function RootLayout() {
   const rehydrate = useAuthStore((s) => s.rehydrate);
   const loadPreferences = usePreferencesStore((s) => s.load);
   const preferencesLoaded = usePreferencesStore((s) => s.isLoaded);
+  const locale = usePreferencesStore((s) => s.locale);
   const scheme = useColorSchemeName();
   const colors = useColors();
 
@@ -64,6 +66,8 @@ function RootLayout() {
     [FontFamily.semibold]: Inter_600SemiBold,
     [FontFamily.bold]: Inter_700Bold,
   });
+
+  useRemountOnLocaleChange(locale);
 
   const ready = !isRehydrating && preferencesLoaded && (fontsLoaded || !!fontError);
 
@@ -82,7 +86,11 @@ function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
           <KeyboardProvider>
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+            {/* key: dil değişince ekranlar yeni dilde baştan çizilir (bkz. useRemountOnLocaleChange). */}
+            <Stack
+              key={locale}
+              screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
+            >
               <Stack.Protected guard={!isAuthenticated} redirectTo="/">
                 <Stack.Screen name="(auth)" />
               </Stack.Protected>
@@ -97,6 +105,10 @@ function RootLayout() {
               </Stack.Protected>
               <Stack.Protected guard={isAuthenticated && !mustChangePassword && needsConsent} redirectTo="/">
                 <Stack.Screen name="consents" />
+              </Stack.Protected>
+              {/* Davet linki (abacasa://auth/accept-invite?token=…): girişsiz ve girişli açılır; zorunlu adımı olan önce onu bitirir. */}
+              <Stack.Protected guard={!isAuthenticated || (!mustChangePassword && !needsConsent)} redirectTo="/">
+                <Stack.Screen name="auth/accept-invite" />
               </Stack.Protected>
             </Stack>
             {/* Navigator'dan sonra: toast her ekranın üstünde kalır. */}
@@ -124,4 +136,29 @@ function useResetQueriesOnAccountChange() {
       queryClient.resetQueries();
     }
   }, [userId]);
+}
+
+/**
+ * React Compiler bileşen çıktısını önbelleğe alır; plural(), monthName(), enumLabel() gibi yardımcılar dili
+ * hook dışında (i18n örneğinden) okuduğu için dil değişince önbellekteki eski metin kalırdı. Bu yüzden navigator
+ * dil değişince yeniden kurulur (Stack key={locale}) ve kullanıcı bulunduğu sayfaya geri götürülür.
+ */
+function useRemountOnLocaleChange(locale: string) {
+  const pathname = usePathname();
+  const lastPath = useRef(pathname);
+  const previousLocale = useRef(locale);
+
+  useEffect(() => {
+    if (previousLocale.current === locale) {
+      lastPath.current = pathname;
+      return;
+    }
+    previousLocale.current = locale;
+    const target = lastPath.current;
+    // Yeniden kurulan navigator ilk ekranla açılır; bir sonraki karede kullanıcının sayfasına dönülür.
+    const timer = setTimeout(() => {
+      if (target && target !== '/') router.replace(target as never);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [locale, pathname]);
 }

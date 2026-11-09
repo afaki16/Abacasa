@@ -1,14 +1,52 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 
-import { EmptyState } from '@/components/ui';
+import { SegmentedControl } from '@/components/ui';
+import { makeStyles, Spacing } from '@/constants/theme';
+import { RequirePermission } from '@/features/auth/components/RequirePermission';
+import { PeriodView } from '@/features/recurringPayments/components/PeriodView';
+import { PlansView } from '@/features/recurringPayments/components/PlansView';
+import { RECURRING_PAYMENT_PERMISSIONS } from '@/features/recurringPayments/constants';
 import { TabScreen } from '@/features/shell/TabScreen';
 
-/** Sabit ödemeler sekmesi. Geçici: liste ekranı sonra gelecek. */
+type Segment = 'period' | 'plans';
+
+/** Sabit ödemeler sekmesi: Dönem (vadeler, öde / geri al) ve Planlar. */
 export default function RecurringPaymentsScreen() {
-  const { t } = useTranslation();
   return (
-    <TabScreen>
-      <EmptyState icon="event-repeat" title={t('tabs.recurring')} message={t('shell.placeholderMessage')} />
+    <TabScreen scroll={false}>
+      <RequirePermission permission={RECURRING_PAYMENT_PERMISSIONS.READ}>
+        <RecurringContent />
+      </RequirePermission>
     </TabScreen>
   );
 }
+
+function RecurringContent() {
+  const { t } = useTranslation();
+  const styles = useStyles();
+  const [segment, setSegment] = useState<Segment>('period');
+
+  return (
+    <View style={styles.fill}>
+      <View style={styles.segment}>
+        <SegmentedControl<Segment>
+          accessibilityLabel={t('tabs.recurring')}
+          segments={[
+            { value: 'period', label: t('recurring.segments.period') },
+            { value: 'plans', label: t('recurring.segments.plans') },
+          ]}
+          value={segment}
+          onChange={setSegment}
+        />
+      </View>
+      {segment === 'period' ? <PeriodView /> : <PlansView />}
+    </View>
+  );
+}
+
+const useStyles = makeStyles(() => ({
+  fill: { flex: 1 },
+  segment: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.xs, paddingBottom: Spacing.sm },
+}));

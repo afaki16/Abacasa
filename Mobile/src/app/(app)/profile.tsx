@@ -1,116 +1,154 @@
-import { router } from 'expo-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router, Stack } from 'expo-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { z } from 'zod';
 
-import { Card, ListItem, OptionCards, Screen, Text } from '@/components/ui';
-import { FontFamily, FontSize, makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
-import { useLogout } from '@/features/auth/hooks';
-import { useHasPermission } from '@/features/auth/permissions';
-import { USER_PERMISSIONS } from '@/features/users/constants';
+import { Button, ConfirmDialog, FormError, FormField, next, Screen } from '@/components/ui';
+import { makeStyles, Spacing } from '@/constants/theme';
+import { ProfileAvatar } from '@/features/account/components/ProfileAvatar';
+import { ReadOnlyActionField } from '@/features/account/components/ReadOnlyActionField';
+import { HeaderTextAction, SettingsGroup, SettingsRow } from '@/features/account/components/SettingsKit';
+import { accountRoutes } from '@/features/account/routes';
+import { mapFieldErrors } from '@/features/account/serverErrors';
+import { useLogout, useUpdateProfile } from '@/features/auth/hooks';
+import { nameSchema, phoneSchema, toNullable } from '@/features/auth/validation';
 import { useAuthStore } from '@/stores/authStore';
-import { SUPPORTED_LOCALES, usePreferencesStore, type ThemeMode } from '@/stores/preferencesStore';
+import { toast } from '@/stores/toastStore';
 
-const THEME_MODES: ThemeMode[] = ['system', 'light', 'dark'];
+const schema = z.object({
+  firstName: nameSchema('firstName'),
+  lastName: nameSchema('lastName'),
+  phoneNumber: phoneSchema,
+});
 
-function initials(firstName?: string, lastName?: string) {
-  return `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toLocaleUpperCase('tr-TR') || '?';
-}
+type FormValues = z.infer<typeof schema>;
 
+const SERVER_FIELDS = { FirstName: 'firstName', LastName: 'lastName', PhoneNumber: 'phoneNumber' } as const;
+
+/**
+ * Profil: fotoğraf / baş harfler, ad, soyad, e-posta (doğrulamalı değişiklik ayrı ekranda), telefon; üst barda Kaydet.
+ * Altında hesap işlemleri (şifre, oturumlar, verilerimi indir, hesabı sil) ve çıkış. Dil/tema Ayarlar'da (/settings).
+ */
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const styles = useStyles();
-  const colors = useColors();
   const user = useAuthStore((s) => s.user);
+  const update = useUpdateProfile();
   const logout = useLogout();
-  const canManageUsers = useHasPermission(USER_PERMISSIONS.READ);
-  // Dil ve tema anında uygulanır: i18n ve useColors() tercih store'unu dinler.
-  const locale = usePreferencesStore((s) => s.locale);
-  const themeMode = usePreferencesStore((s) => s.themeMode);
-  const setLocale = usePreferencesStore((s) => s.setLocale);
-  const setThemeMode = usePreferencesStore((s) => s.setThemeMode);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [formErrors, setFormErrors] = useState<string[]>();
 
-  const confirmLogout = () =>
-    Alert.alert(t('common.logout'), t('profile.logoutMessage'), [
-      { text: t('common.dismiss'), style: 'cancel' },
-      { text: t('common.logout'), style: 'destructive', onPress: () => logout.mutate() },
-    ]);
+  const { control, handleSubmit, formState, setFocus, setError, reset } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+      phoneNumber: user?.phoneNumber ?? '',
+    },
+  });
+
+  const save = () =>
+    handleSubmit((values) => {
+      setFormErrors(undefined);
+      update.mutate(
+        { firstName: values.firstName, lastName: values.lastName, phoneNumber: toNullable(values.phoneNumber) },
+        {
+          onSuccess: () => {
+            const fresh = useAuthStore.getState().user;
+            reset({
+              firstName: fresh?.firstName ?? values.firstName,
+              lastName: fresh?.lastName ?? values.lastName,
+              phoneNumber: fresh?.phoneNumber ?? '',
+            });
+            toast.success(t('profileScreen.saved'));
+          },
+          onError: (error) => {
+            const { fields, rest } = mapFieldErrors<keyof FormValues>(error.fieldErrors, SERVER_FIELDS);
+            fields.forEach((f) => setError(f.name, { message: f.message }));
+            setFormErrors(fields.length > 0 ? (rest.length > 0 ? rest : undefined) : error.messages);
+          },
+        },
+      );
+    })();
+
+  const canSave = formState.isDirty && !update.isPending;
 
   return (
-    <Screen scroll edges={['bottom']}>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text color={colors.onPrimary} style={styles.avatarText}>
-            {initials(user?.firstName, user?.lastName)}
-          </Text>
-        </View>
-        <View style={styles.headerTexts}>
-          <Text variant="title" numberOfLines={1}>
-            {user?.fullName}
-          </Text>
-          <Text muted numberOfLines={1}>
-            {user?.email}
-          </Text>
-        </View>
+    <Screen scroll edges={['bottom']} contentStyle={styles.content}>
+      <Stack.Screen
+        options={{
+          title: t('profileScreen.title'),
+          headerRight: () => <HeaderTextAction label={t('common.save')} disabled={!canSave} onPress={save} />,
+        }}
+      />
+
+      <View style={styles.avatar}>
+        <ProfileAvatar firstName={user?.firstName} lastName={user?.lastName} profileImageUrl={user?.profileImageUrl} />
       </View>
 
-      <Card title={t('profile.accountSection')} padded={false}>
-        <ListItem icon="person-outline" title={t('profile.accountInfo')} onPress={() => router.push('/account')} />
-        <ListItem
-          icon="vpn-key"
-          title={t('profile.changePassword')}
-          onPress={() => router.push('/change-password')}
-        />
-        <ListItem
-          icon="smartphone"
-          title={t('profile.sessions')}
-          subtitle={t('profile.sessionsSubtitle')}
-          last
-          onPress={() => router.push('/sessions')}
-        />
-      </Card>
+      <FormError messages={formErrors} />
+      <FormField
+        control={control}
+        name="firstName"
+        label={t('common.firstName')}
+        autoComplete="given-name"
+        {...next(() => setFocus('lastName'))}
+      />
+      <FormField
+        control={control}
+        name="lastName"
+        label={t('common.lastName')}
+        autoComplete="family-name"
+        {...next(() => setFocus('phoneNumber'))}
+      />
+      <ReadOnlyActionField
+        label={t('common.email')}
+        value={user?.email ?? ''}
+        actionLabel={t('profileScreen.changeEmail')}
+        onAction={() => router.push(accountRoutes.changeEmail)}
+      />
+      <FormField
+        control={control}
+        name="phoneNumber"
+        label={t('common.phone')}
+        keyboardType="phone-pad"
+        autoComplete="tel"
+        returnKeyType="go"
+        onSubmitEditing={save}
+      />
 
-      <Card title={t('profile.appearanceSection')}>
-        <OptionCards
-          label={t('profile.language')}
-          options={SUPPORTED_LOCALES.map((value) => ({ value, label: t(`profile.languages.${value}`) }))}
-          value={locale}
-          onChange={(value) => void setLocale(value)}
+      <SettingsGroup>
+        <SettingsRow first icon="lock" title={t('profileScreen.changePassword')} onPress={() => router.push(accountRoutes.changePassword)} />
+        <SettingsRow icon="devices" title={t('profileScreen.sessions')} onPress={() => router.push(accountRoutes.sessions)} />
+        <SettingsRow icon="download" title={t('profileScreen.exportData')} onPress={() => router.push(accountRoutes.exportData)} />
+        <SettingsRow
+          icon="person-remove"
+          destructive
+          title={t('profileScreen.deleteAccount')}
+          onPress={() => router.push(accountRoutes.deleteAccount)}
         />
-        <OptionCards
-          label={t('profile.theme')}
-          options={THEME_MODES.map((value) => ({
-            value,
-            label: t(`profile.themes.${value}`),
-            description: value === 'system' ? t('profile.themeSystemDescription') : undefined,
-          }))}
-          value={themeMode}
-          onChange={(value) => void setThemeMode(value)}
-        />
-      </Card>
+      </SettingsGroup>
 
-      {canManageUsers && (
-        <Card title={t('profile.adminSection')} padded={false}>
-          <ListItem icon="people-outline" title={t('profile.users')} last onPress={() => router.push('/users')} />
-        </Card>
-      )}
+      <Button title={t('common.logout')} variant="danger" onPress={() => setLogoutOpen(true)} />
 
-      <Card padded={false}>
-        <ListItem icon="logout" title={t('common.logout')} destructive last onPress={confirmLogout} />
-      </Card>
+      <ConfirmDialog
+        visible={logoutOpen}
+        title={t('common.logout')}
+        message={t('profileScreen.logoutMessage')}
+        confirmLabel={t('common.logout')}
+        destructive
+        loading={logout.isPending}
+        onConfirm={() => logout.mutate()}
+        onCancel={() => setLogoutOpen(false)}
+      />
     </Screen>
   );
 }
 
-const useStyles = makeStyles((c) => ({
-  header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.lg },
-  headerTexts: { flex: 1, gap: 2 },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: Radius.full,
-    backgroundColor: c.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: { fontFamily: FontFamily.bold, fontSize: FontSize.title },
+const useStyles = makeStyles(() => ({
+  content: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.xs, gap: Spacing.md },
+  avatar: { alignItems: 'center', paddingVertical: 6 },
 }));

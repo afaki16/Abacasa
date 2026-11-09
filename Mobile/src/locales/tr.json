@@ -186,127 +186,13 @@
     "rolesRequired": "En az bir rol seç"
   },
   "auth": {
-    "login": {
-      "title": "Giriş yap",
-      "subtitle": "Hesabınla devam et",
-      "resendVerification": "Doğrulama e-postasını tekrar gönder",
-      "forgotPassword": "Şifremi unuttum",
-      "submit": "Giriş yap",
-      "noAccount": "Hesabın yok mu?",
-      "register": "Kayıt ol"
-    },
-    "register": {
-      "title": "Kayıt ol",
-      "subtitle": "Birkaç bilgiyle hesabını oluştur.",
-      "householdSection": "Hane",
-      "householdDescription": "Bütçeni tutacağın hane. E-postanı doğrulayınca açılır; sonra aile üyelerini davet edebilirsin.",
-      "householdName": "Hane adı",
-      "householdPlaceholder": "Örn. Yılmaz Hanesi",
-      "securitySection": "Hesap güvenliği",
-      "passwordConfirm": "Şifre (tekrar)",
-      "consentsSection": "Onaylar",
-      "readTerms": "Kullanım koşullarını oku",
-      "acceptTerms": "Kullanım koşullarını okudum ve kabul ediyorum",
-      "readPrivacy": "Aydınlatma metnini oku",
-      "acknowledgePrivacy": "Kişisel verilerimin işlenmesine ilişkin aydınlatma metnini okudum",
-      "submit": "Hesap oluştur",
-      "haveAccount": "Zaten hesabın var mı?",
-      "login": "Giriş yap"
-    },
-    "verifyEmail": {
-      "title": "E-postanı doğrula",
-      "sentTo": "{{email}} adresine bir doğrulama bağlantısı gönderdik. Bağlantıyı açıp hesabını doğruladıktan sonra giriş yapabilirsin.",
-      "sentGeneric": "E-posta adresine bir doğrulama bağlantısı gönderdik. Bağlantıyı açıp hesabını doğruladıktan sonra giriş yapabilirsin.",
-      "resent": "Doğrulama e-postası tekrar gönderildi.",
-      "backToLogin": "Giriş ekranına dön",
-      "resend": "E-postayı tekrar gönder",
-      "resendCountdown": "E-postayı tekrar gönder ({{seconds}})",
-      "spamHint": "E-posta gelmediyse gereksiz (spam) klasörünü kontrol et."
-    },
-    "forgotPassword": {
-      "title": "Şifremi unuttum",
-      "intro": "E-posta adresini gir, şifreni sıfırlaman için bir kod gönderelim.",
-      "codeSent": "{{email}} adresine bir hesap kayıtlıysa 6 haneli bir kod gönderdik.",
-      "sendCode": "Kod gönder",
-      "submit": "Şifreyi sıfırla",
-      "differentEmail": "Farklı bir e-posta gir",
-      "successTitle": "Şifren güncellendi",
-      "successMessage": "Yeni şifrenle giriş yapabilirsin."
-    },
     "password": {
-      "codeSection": "Doğrulama kodu",
-      "code": "Kod",
-      "newPasswordSection": "Yeni şifre belirle",
       "newPassword": "Yeni şifre",
-      "newPasswordConfirm": "Yeni şifre (tekrar)",
-      "resendCode": "Kodu tekrar gönder",
-      "resendCodeCountdown": "Kodu tekrar gönder ({{seconds}})"
+      "newPasswordConfirm": "Yeni şifre (tekrar)"
     },
     "changePassword": {
-      "title": "Şifre değiştir",
-      "intro": "Şifren değişince diğer cihazlardaki oturumların kapanır.",
-      "verifySection": "Kimliğini doğrula",
-      "currentPassword": "Mevcut şifre",
-      "forgotCurrent": "Mevcut şifremi hatırlamıyorum",
-      "useCurrent": "Mevcut şifremle değiştir",
-      "codeSentTo": "{{email}} adresine 6 haneli bir kod gönderdik.",
-      "submit": "Şifreyi değiştir",
-      "successTitle": "Şifren değiştirildi",
-      "successMessage": "Diğer cihazlardaki oturumların kapatıldı."
-    },
-    "forceChangePassword": {
-      "title": "Şifreni değiştir",
-      "subtitle": "Devam etmeden önce hesabın için yeni bir şifre belirlemen gerekiyor."
-    },
-    "consents": {
-      "title": "Güncellenen metinler",
-      "subtitle": "Devam etmek için aşağıdaki metinleri okuyup onaylaman gerekiyor.",
-      "read": "Metni oku",
-      "accept": "Okudum ve kabul ediyorum",
-      "acknowledge": "Okudum",
-      "continue": "Devam et"
+      "currentPassword": "Mevcut şifre"
     }
-  },
-  "profile": {
-    "accountSection": "Hesap",
-    "accountInfo": "Hesap bilgileri",
-    "changePassword": "Şifre değiştir",
-    "sessions": "Oturumlarım",
-    "sessionsSubtitle": "Hesabının açık olduğu cihazlar",
-    "adminSection": "Yönetim",
-    "users": "Kullanıcılar",
-    "logoutMessage": "Bu cihazdaki oturumun kapatılacak.",
-    "appearanceSection": "Görünüm ve dil",
-    "language": "Dil",
-    "theme": "Tema",
-    "languages": {
-      "tr": "Türkçe",
-      "en": "English"
-    },
-    "themes": {
-      "system": "Sistem",
-      "light": "Açık",
-      "dark": "Koyu"
-    },
-    "themeSystemDescription": "Cihazın temasını izler.",
-    "title": "Profil ve ayarlar"
-  },
-  "account": {
-    "title": "Hesap bilgileri",
-    "emailHint": "E-posta adresi buradan değiştirilemez."
-  },
-  "sessions": {
-    "title": "Oturumlarım",
-    "signedIn": "Giriş: {{date}}",
-    "thisDevice": "Bu cihaz",
-    "unknownDevice": "Bilinmeyen cihaz",
-    "revoke": "Kapat",
-    "revokeTitle": "Oturumu kapat",
-    "revokeMessage": "{{device}} oturumu kapatılacak.",
-    "logoutAll": "Tüm cihazlardan çık",
-    "logoutAllMessage": "Bu cihaz dahil bütün oturumların kapatılacak.",
-    "logoutAllConfirm": "Hepsinden çık",
-    "empty": "Açık oturum yok."
   },
   "users": {
     "title": "Kullanıcılar",
@@ -351,9 +237,6 @@
       "rolesLoadError": "Roller yüklenemedi."
     }
   },
-  "shell": {
-    "placeholderMessage": "Bu ekran hazırlanıyor; yakında burada olacak."
-  },
   "add": {
     "title": "Ne eklemek istersin?",
     "mostUsed": "En sık kullanılan",
@@ -364,26 +247,6 @@
       "debt": "Borç",
       "recurringPayment": "Sabit ödeme ödemesi",
       "vehicleOperation": "Araç işlemi"
-    }
-  },
-  "more": {
-    "groups": {
-      "records": "Kayıtlar",
-      "definitions": "Hane ve tanımlar",
-      "account": "Hesap"
-    },
-    "items": {
-      "donations": "Bağışlar",
-      "debts": "Borçlar",
-      "ledger": "Yıllık tablo",
-      "vehicles": "Araçlar",
-      "household": "Hane ve üyeler",
-      "categories": "Kategoriler",
-      "people": "Kişiler",
-      "paymentMethods": "Ödeme araçları",
-      "exchangeRates": "Döviz kurları",
-      "profile": "Profil ve ayarlar",
-      "users": "Kullanıcılar"
     }
   },
   "household": {

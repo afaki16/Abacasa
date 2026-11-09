@@ -1,1 +1,147 @@
-{}
+{
+  "authScreens": {
+    "brand": "Abacasa",
+    "language": {
+      "label": "Dil: {{language}}",
+      "sheetTitle": "Dil seç",
+      "tr": "Türkçe",
+      "en": "English"
+    },
+    "password": {
+      "show": "Şifreyi göster",
+      "hide": "Şifreyi gizle"
+    },
+    "passwordRules": {
+      "label": "Şifre kuralları",
+      "min": "En az 8 karakter",
+      "upper": "Büyük harf",
+      "lower": "Küçük harf",
+      "digit": "Rakam",
+      "met": "{{rule}}: sağlandı",
+      "unmet": "{{rule}}: henüz sağlanmadı"
+    },
+    "otp": {
+      "label": "6 haneli doğrulama kodu"
+    },
+    "step": "Adım {{current}} / {{total}}",
+    "login": {
+      "title": "Giriş yap",
+      "subtitle": "Hanenin bütçesine kaldığın yerden devam et.",
+      "forgotPassword": "Şifremi unuttum",
+      "submit": "Giriş yap",
+      "noAccount": "Hesabın yok mu?",
+      "register": "Kayıt ol",
+      "resendVerification": "Doğrulama e-postasını yeniden gönder",
+      "inviteBanner": "Giriş yaptığında {{household}} hanesine katılacaksın.",
+      "inviteBannerGeneric": "Giriş yaptığında davet edildiğin haneye katılacaksın."
+    },
+    "register": {
+      "title": "Kayıt ol",
+      "email": "E-posta",
+      "password": "Şifre",
+      "passwordConfirm": "Şifre tekrarı",
+      "passwordConfirmPlaceholder": "Şifreni tekrar yaz",
+      "householdName": "Hane adı",
+      "householdPlaceholder": "Örn. Yılmaz Ailesi",
+      "termsLink": "Kullanım koşulları",
+      "privacyLink": "Aydınlatma metni",
+      "submit": "Hesap oluştur",
+      "haveAccount": "Zaten hesabın var mı?",
+      "login": "Giriş yap",
+      "inviteBanner": "{{household}} hanesine katılmak için hesabını oluştur. Yeni hane açılmaz; e-posta davetteki adres olmalı.",
+      "inviteBannerGeneric": "Davet edildiğin haneye katılmak için hesabını oluştur. E-posta davetteki adres olmalı.",
+      "joined": "Hesabın oluşturuldu, haneye katıldın.",
+      "loginAfterInvite": "Hesabın oluşturuldu. Giriş yaparak devam et.",
+      "terms": "{{link}}’nı okudum, kabul ediyorum.",
+      "privacy": "{{link}}’ni okudum."
+    },
+    "verifyEmail": {
+      "title": "E-postanı kontrol et",
+      "sentGeneric": "E-posta adresine doğrulama bağlantısı gönderdik. Bağlantıya dokunduğunda hesabın açılır.",
+      "resend": "Yeniden gönder",
+      "resendCountdown": "Yeniden gönder · {{time}}",
+      "resent": "Doğrulama e-postası yeniden gönderildi.",
+      "backToLogin": "Girişe dön",
+      "spamHint": "E-posta gelmediyse gereksiz (spam) klasörüne bak.",
+      "sentTo": "{{email}} adresine doğrulama bağlantısı gönderdik. Bağlantıya dokunduğunda hesabın açılır."
+    },
+    "forgotPassword": {
+      "title": "Şifremi unuttum",
+      "emailTitle": "E-posta adresin",
+      "emailIntro": "Hesabına kayıtlı adrese 6 haneli bir kod göndereceğiz.",
+      "sendCode": "Kod gönder",
+      "codeTitle": "Kodu gir",
+      "codeIntro": "{{email}} adresine gelen 6 haneli kodu yaz.",
+      "resendCode": "Kodu yeniden gönder",
+      "resendCodeCountdown": "Kodu yeniden gönder · {{time}}",
+      "codeResent": "Yeni kod gönderildi.",
+      "continue": "Devam et",
+      "newPasswordTitle": "Yeni şifre belirle",
+      "newPassword": "Yeni şifre",
+      "newPasswordConfirm": "Yeni şifre tekrarı",
+      "submit": "Şifreyi kaydet",
+      "success": "Şifren güncellendi. Yeni şifrenle giriş yapabilirsin."
+    },
+    "changePassword": {
+      "modeLabel": "Doğrulama yöntemi",
+      "withCurrent": "Mevcut şifreyle",
+      "withCode": "E-posta koduyla",
+      "currentPassword": "Mevcut şifre",
+      "temporaryPassword": "Geçici şifre",
+      "newPassword": "Yeni şifre",
+      "newPasswordConfirm": "Yeni şifre tekrarı",
+      "codeIntro": "{{email}} adresine 6 haneli bir kod göndereceğiz.",
+      "codeIntroGeneric": "E-posta adresine 6 haneli bir kod göndereceğiz.",
+      "sendCode": "Kod gönder",
+      "codeSentTo": "{{email}} adresine gelen 6 haneli kodu yaz.",
+      "codeSentGeneric": "E-postana gelen 6 haneli kodu yaz.",
+      "resendCode": "Kodu yeniden gönder",
+      "resendCodeCountdown": "Kodu yeniden gönder · {{time}}",
+      "submit": "Şifreyi değiştir"
+    },
+    "forceChangePassword": {
+      "title": "Şifreni değiştir",
+      "info": "Hane yöneticin sana geçici bir şifre verdi. Devam etmeden önce kendi şifreni belirlemelisin."
+    }
+  },
+  "consentScreen": {
+    "titleSingle": "{{document}} güncellendi",
+    "titleMultiple": "Yasal metinler güncellendi",
+    "subtitleSingle": "Devam etmek için güncel metni okuyup onaylaman gerekiyor.",
+    "subtitleMultiple": "Devam etmek için güncel metinleri okuyup onaylaman gerekiyor.",
+    "readHint": "Metnin tamamı tarayıcıda açılır.",
+    "read": "Metni oku",
+    "acceptTerms": "Kullanım koşullarını okudum, kabul ediyorum.",
+    "acknowledgePrivacy": "Aydınlatma metnini okudum, onaylıyorum.",
+    "submit": "Onayla ve devam et"
+  },
+  "invite": {
+    "loading": "Davet yükleniyor…",
+    "title": "{{household}} hanesine davet edildin",
+    "subtitle": "Katıldığında hanenin harcama ve ödeme kayıtlarını görebilirsin.",
+    "household": "Hane",
+    "inviter": "Daveti gönderen",
+    "role": "Rolün",
+    "email": "Davet edilen",
+    "register": "Kayıt ol ve katıl",
+    "haveAccount": "Hesabım var, giriş yap",
+    "loginAndJoin": "Giriş yap ve katıl",
+    "accept": "Haneye katıl",
+    "otherAccount": "Bu davet {{email}} adresine gönderildi. Katılmak için o hesapla giriş yapmalısın.",
+    "switchAccount": "Çıkış yap",
+    "joined": "{{household}} hanesine katıldın.",
+    "joinedGeneric": "Haneye katıldın.",
+    "acceptFailed": "Davet kabul edilemedi.",
+    "notFoundTitle": "Davet bulunamadı",
+    "notFoundText": "Bağlantı hatalı ya da eksik olabilir. Hane yöneticinden yeni bir davet iste.",
+    "acceptedTitle": "Bu davet kullanılmış",
+    "acceptedText": "Davetler tek kullanımlıktır. Hesabınla giriş yaparak haneye ulaşabilirsin.",
+    "revokedTitle": "Davet iptal edilmiş",
+    "expiredTitle": "Davetin süresi dolmuş",
+    "askAdmin": "Hane yöneticinden yeni bir davet iste. Davetler 7 gün geçerlidir.",
+    "loadErrorTitle": "Davet yüklenemedi",
+    "loadErrorText": "Bağlantını kontrol edip tekrar dene.",
+    "backToLogin": "Girişe dön",
+    "backToApp": "Ana sayfaya dön"
+  }
+}

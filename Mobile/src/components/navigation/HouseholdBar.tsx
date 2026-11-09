@@ -41,7 +41,7 @@ export function HouseholdBar({ name, roleLabel, roleVariant = 'member', onPress 
         </Text>
         {onPress ? <Icon name="expand-more" size={22} color={colors.text} /> : null}
       </Pressable>
-      {roleLabel ? <Badge label={roleLabel} variant={roleVariant} /> : null}
+      {roleLabel ? <Badge label={roleLabel} variant={roleVariant} style={styles.badge} /> : null}
     </View>
   );
 }
@@ -59,6 +59,8 @@ const useStyles = makeStyles(() => ({
   },
   icon: { width: 30, height: 30, borderRadius: 8 },
   name: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: MIN_TOUCH, flexShrink: 1 },
+  // Rozet varsayılan olarak üste yaslanır (alignSelf: flex-start); bar satırında hane adıyla ortalanır.
+  badge: { alignSelf: 'center' },
   nameText: { fontFamily: FontFamily.bold, fontSize: 17, lineHeight: 22, flexShrink: 1 },
   pressed: { opacity: 0.6 },
 }));

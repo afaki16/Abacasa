@@ -1,1 +1,224 @@
-{}
+{
+  "householdScreen": {
+    "title": "Hane ve üyeler",
+    "settingsAction": "Ayarlar",
+    "settingsTitle": "Hane ayarları",
+    "loadError": "Hane bilgileri yüklenemedi",
+    "memberCount_one": "{{count}} üye",
+    "memberCount_other": "{{count}} üye",
+    "pendingCount_one": "{{count}} bekleyen davet",
+    "pendingCount_other": "{{count}} bekleyen davet",
+    "rename": {
+      "action": "Hane adını değiştir",
+      "title": "Hane adı",
+      "label": "Hane adı",
+      "saved": "Hane adı {{name}} olarak değişti"
+    },
+    "modules": {
+      "section": "Ek modüller",
+      "donationExtras": "Bağış hedefleri ve emanetler",
+      "donationExtrasDescription": "Yıllık hedef ve gerçekleşen; başkasının verdiği, dağıtılacak para. Kapatınca kayıtlar silinmez.",
+      "enabled": "Bağış hedefleri ve emanetler açıldı",
+      "disabled": "Bağış hedefleri ve emanetler kapatıldı"
+    },
+    "data": {
+      "section": "Veri",
+      "export": "Hane verisini Excel olarak indir",
+      "webOnly": "Mobilde indirilemiyor. Web'den indirilebilir."
+    },
+    "danger": {
+      "section": "Tehlikeli bölge"
+    },
+    "leave": {
+      "action": "Haneden ayrıl",
+      "title": "Haneden ayrılınsın mı?",
+      "message": "Bu hanenin kayıtlarını artık göremezsin. Geri dönmek için yeni bir davet gerekir.",
+      "confirm": "Ayrıl",
+      "done": "Haneden ayrıldın",
+      "lastAdmin": "Hanenin tek yöneticisisin. Önce başka bir üyeyi yönetici yap.",
+      "soleMember": "Hanenin tek üyesisin. Ayrılmak yerine haneyi silebilirsin."
+    },
+    "delete": {
+      "action": "Haneyi sil",
+      "adminOnly": "Yalnızca yönetici",
+      "title": "{{name}} silinsin mi?",
+      "message_one": "Tüm kayıtlar {{count}} üye için kalıcı olarak silinir. Bu işlem geri alınamaz. Onaylamak için hane adını ve şifreni yaz.",
+      "message_other": "Tüm kayıtlar {{count}} üye için kalıcı olarak silinir. Bu işlem geri alınamaz. Onaylamak için hane adını ve şifreni yaz.",
+      "nameLabel": "Hane adı",
+      "passwordLabel": "Şifren",
+      "confirm": "Kalıcı olarak sil",
+      "done": "{{name}} silindi"
+    }
+  },
+  "members": {
+    "section": "Üyeler",
+    "you": "sen",
+    "linkedPerson": "Kişi: {{name}}",
+    "noPerson": "Bağlı kişi yok",
+    "actionsHint": "Üye işlemlerini açar",
+    "lastAdminNote": "Hanede her zaman en az bir yönetici kalır.",
+    "roleChanged": "{{name}} artık {{role}}",
+    "personLinked": "{{name}} → {{person}} bağlandı",
+    "personUnlinked": "{{name}} için kişi bağı kaldırıldı",
+    "removed": "{{name}} haneden çıkarıldı",
+    "personTitle": "Bağlı kişi",
+    "personHint": "Üyenin harcama ve bağışlarda görünen kişi kaydı.",
+    "removeTitle": "{{name}} haneden çıkarılsın mı?",
+    "removeMessage": "Girdiği kayıtlar hanede kalır. Geri dönmesi için yeni bir davet gerekir.",
+    "remove": "Haneden çıkar",
+    "changePerson": "Bağlı kişiyi değiştir",
+    "makeMember": "Üye rolüne geçir",
+    "makeAdmin": "Yönetici yap",
+    "lastAdmin": "Hanenin tek yöneticisi. Önce başka bir üyeyi yönetici yap.",
+    "lastAdminSelf": "Hanenin tek yöneticisisin. Önce başka bir üyeyi yönetici yap."
+  },
+  "invitations": {
+    "section": "Bekleyen davetler",
+    "expired": "Süresi doldu",
+    "daysLeft_one": "{{count}} gün geçerli",
+    "daysLeft_other": "{{count}} gün geçerli",
+    "resend": "Yeniden gönder",
+    "resendFor": "{{email}} davetini yeniden gönder",
+    "revoke": "İptal et",
+    "revokeFor": "{{email}} davetini iptal et",
+    "sent": "Davet {{email}} adresine gönderildi",
+    "sentWithoutEmail": "Davet oluşturuldu ama {{email}} adresine e-posta gönderilemedi",
+    "resent": "Davet {{email}} adresine yeniden gönderildi",
+    "revoked": "{{email}} daveti iptal edildi",
+    "sheetTitle": "Haneye davet et",
+    "submit": "Daveti gönder",
+    "role": "Rol",
+    "memberDescription": "Kayıt ekler ve görür. Haneyi yönetemez.",
+    "adminDescription": "Üyeleri davet eder, rolleri ve hane ayarlarını değiştirir.",
+    "validity": "Davet bağlantısı 7 gün geçerlidir.",
+    "open": "Davet gönder",
+    "loadError": "Davetler yüklenemedi.",
+    "revokeTitle": "Davet iptal edilsin mi?",
+    "revokeMessage": "{{email}} adresine giden bağlantı geçersiz olur."
+  },
+  "profileScreen": {
+    "title": "Profil",
+    "saved": "Profilin kaydedildi",
+    "changeEmail": "Değiştir",
+    "changePassword": "Şifre değiştir",
+    "sessions": "Oturumlar",
+    "exportData": "Verilerimi indir",
+    "deleteAccount": "Hesabı sil",
+    "logoutMessage": "Bu cihazdaki oturumun kapatılacak.",
+    "email": {
+      "title": "E-posta değiştir",
+      "current": "Mevcut e-posta",
+      "new": "Yeni e-posta",
+      "password": "Şifren",
+      "info": "Yeni adrese bir doğrulama bağlantısı göndereceğiz. Onaylayana kadar mevcut adresin geçerli kalır.",
+      "submit": "Doğrulama gönder",
+      "sent": "Doğrulama bağlantısı {{email}} adresine gönderildi",
+      "sameAsCurrent": "Yeni e-posta mevcut adresinden farklı olmalı"
+    },
+    "password": {
+      "title": "Şifre değiştir",
+      "method": "Doğrulama yöntemi",
+      "withCurrent": "Mevcut şifreyle",
+      "withCode": "E-posta koduyla",
+      "code": "E-postana gelen kod",
+      "codeSentTo": "Kod {{email}} adresine gönderildi.",
+      "resend": "Yeniden gönder",
+      "resendIn": "Yeniden gönder · {{time}}",
+      "submit": "Şifreyi değiştir",
+      "changed": "Şifren değişti. Diğer cihazlardaki oturumlar kapatıldı.",
+      "ruleMet": "karşılandı",
+      "ruleUnmet": "karşılanmadı",
+      "rules": {
+        "min": "En az 8 karakter",
+        "uppercase": "Büyük harf",
+        "lowercase": "Küçük harf",
+        "digit": "Rakam"
+      }
+    }
+  },
+  "sessionsScreen": {
+    "title": "Oturumlar",
+    "loadError": "Oturumlar yüklenemedi",
+    "emptyTitle": "Açık oturum yok",
+    "emptyMessage": "Hesabının açık olduğu cihazlar burada görünür.",
+    "activeSection_one": "Aktif · {{count}} cihaz",
+    "activeSection_other": "Aktif · {{count}} cihaz",
+    "historySection": "Geçmiş",
+    "thisDevice": "Bu cihaz",
+    "unknownDevice": "Bilinmeyen cihaz",
+    "activeNow": "Şu an aktif",
+    "signedIn": "Giriş {{time}}",
+    "signedInOn": "Giriş {{date}}",
+    "expiredOn": "Süresi doldu · {{date}}",
+    "revoked": "Kapatıldı",
+    "revoke": "Kapat",
+    "revokeFor": "{{device}} oturumunu kapat",
+    "revokeTitle": "Oturum kapatılsın mı?",
+    "revokeMessage": "{{device}} cihazındaki oturum kapatılacak; o cihazda yeniden giriş gerekir.",
+    "revokedToast": "{{device}} oturumu kapatıldı",
+    "revokeOthers": "Diğer tüm oturumları kapat",
+    "revokeOthersMessage_one": "Bu cihaz dışındaki {{count}} oturum kapatılacak.",
+    "revokeOthersMessage_other": "Bu cihaz dışındaki {{count}} oturum kapatılacak.",
+    "revokeOthersConfirm": "Hepsini kapat",
+    "othersRevoked": "Diğer oturumlar kapatıldı",
+    "time": {
+      "justNow": "az önce",
+      "minutes_one": "{{count}} dakika önce",
+      "minutes_other": "{{count}} dakika önce",
+      "hours_one": "{{count}} saat önce",
+      "hours_other": "{{count}} saat önce",
+      "days_one": "{{count}} gün önce",
+      "days_other": "{{count}} gün önce"
+    }
+  },
+  "accountScreen": {
+    "export": {
+      "title": "Verilerimi indir",
+      "intro": "Hesap bilgilerin ve üye olduğun hanelerde girdiğin kayıtlar tek dosyada hazırlanır.",
+      "items": {
+        "profile": "Profil bilgilerin",
+        "expenses": "Harcama ve bağış kayıtların",
+        "debts": "Borç ve ödeme kayıtların",
+        "sessions": "Oturum geçmişin"
+      },
+      "format": "Biçim",
+      "formatValue": "Excel (.xlsx)",
+      "webOnly": "Dosya indirme mobilde henüz yok. Web'den indirilebilir: Profil → Verilerimi indir.",
+      "submit": "Dosyayı hazırla"
+    },
+    "delete": {
+      "title": "Hesabı sil",
+      "loadError": "Silme önizlemesi yüklenemedi",
+      "intro": "Hesabın ve kişisel bilgilerin kalıcı olarak silinir.",
+      "blockedTitle": "Önce bu haneye yönetici ata",
+      "lastAdmin": "Son yöneticisi sensin",
+      "goToMembers": "Üyelere git",
+      "goToMembersFor": "{{name}} üyelerine git",
+      "superAdminTitle": "Son sistem yöneticisisin",
+      "superAdminMessage": "Hesabını silmeden önce başka bir kullanıcıyı sistem yöneticisi yap.",
+      "soleTitle": "Bu hane de silinecek",
+      "soleMessage": "{{names}} hanesinin tek üyesisin; tüm kayıtlarıyla birlikte silinir.",
+      "passwordLabel": "Onay için şifren",
+      "submit": "Hesabımı sil",
+      "blockedHint": "Engeller kalkınca hesabını silebilirsin.",
+      "confirmTitle": "Hesabın silinsin mi?",
+      "confirmMessage": "Bu işlem geri alınamaz. Tüm cihazlardaki oturumların kapanır.",
+      "confirm": "Kalıcı olarak sil",
+      "done": "Hesabın silindi"
+    }
+  },
+  "settingsScreen": {
+    "title": "Ayarlar",
+    "language": "Dil",
+    "theme": "Tema",
+    "themes": {
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem"
+    },
+    "legal": "Yasal",
+    "opensInBrowser": "Tarayıcıda açılır",
+    "legalOpenFailed": "Metin açılamadı",
+    "version": "Abacasa · Sürüm {{version}}"
+  }
+}

@@ -186,127 +186,13 @@
     "rolesRequired": "Select at least one role"
   },
   "auth": {
-    "login": {
-      "title": "Log in",
-      "subtitle": "Continue with your account",
-      "resendVerification": "Resend verification email",
-      "forgotPassword": "Forgot password",
-      "submit": "Log in",
-      "noAccount": "Don't have an account?",
-      "register": "Sign up"
-    },
-    "register": {
-      "title": "Sign up",
-      "subtitle": "Create your account with a few details.",
-      "householdSection": "Household",
-      "householdDescription": "The household that holds your budget. It is created once you verify your email; then you can invite family members.",
-      "householdName": "Household name",
-      "householdPlaceholder": "e.g. Smith Household",
-      "securitySection": "Account security",
-      "passwordConfirm": "Password (again)",
-      "consentsSection": "Consents",
-      "readTerms": "Read the terms of use",
-      "acceptTerms": "I have read and accept the terms of use",
-      "readPrivacy": "Read the privacy notice",
-      "acknowledgePrivacy": "I have read the privacy notice on the processing of my personal data",
-      "submit": "Create account",
-      "haveAccount": "Already have an account?",
-      "login": "Log in"
-    },
-    "verifyEmail": {
-      "title": "Verify your email",
-      "sentTo": "We sent a verification link to {{email}}. Open the link to verify your account, then you can log in.",
-      "sentGeneric": "We sent a verification link to your email address. Open the link to verify your account, then you can log in.",
-      "resent": "Verification email sent again.",
-      "backToLogin": "Back to login",
-      "resend": "Resend email",
-      "resendCountdown": "Resend email ({{seconds}})",
-      "spamHint": "If the email hasn't arrived, check your spam folder."
-    },
-    "forgotPassword": {
-      "title": "Forgot password",
-      "intro": "Enter your email address and we'll send you a code to reset your password.",
-      "codeSent": "If an account is registered to {{email}}, we sent it a 6-digit code.",
-      "sendCode": "Send code",
-      "submit": "Reset password",
-      "differentEmail": "Use a different email",
-      "successTitle": "Password updated",
-      "successMessage": "You can now log in with your new password."
-    },
     "password": {
-      "codeSection": "Verification code",
-      "code": "Code",
-      "newPasswordSection": "Set a new password",
       "newPassword": "New password",
-      "newPasswordConfirm": "New password (again)",
-      "resendCode": "Resend code",
-      "resendCodeCountdown": "Resend code ({{seconds}})"
+      "newPasswordConfirm": "New password (again)"
     },
     "changePassword": {
-      "title": "Change password",
-      "intro": "Changing your password logs you out on your other devices.",
-      "verifySection": "Verify your identity",
-      "currentPassword": "Current password",
-      "forgotCurrent": "I don't remember my current password",
-      "useCurrent": "Change with my current password",
-      "codeSentTo": "We sent a 6-digit code to {{email}}.",
-      "submit": "Change password",
-      "successTitle": "Password changed",
-      "successMessage": "You have been logged out on your other devices."
-    },
-    "forceChangePassword": {
-      "title": "Change your password",
-      "subtitle": "Before continuing, you need to set a new password for your account."
-    },
-    "consents": {
-      "title": "Updated documents",
-      "subtitle": "To continue, please read and accept the documents below.",
-      "read": "Read document",
-      "accept": "I have read and accept",
-      "acknowledge": "I have read it",
-      "continue": "Continue"
+      "currentPassword": "Current password"
     }
-  },
-  "profile": {
-    "accountSection": "Account",
-    "accountInfo": "Account details",
-    "changePassword": "Change password",
-    "sessions": "My sessions",
-    "sessionsSubtitle": "Devices where your account is signed in",
-    "adminSection": "Administration",
-    "users": "Users",
-    "logoutMessage": "You will be logged out on this device.",
-    "appearanceSection": "Appearance and language",
-    "language": "Language",
-    "theme": "Theme",
-    "languages": {
-      "tr": "Türkçe",
-      "en": "English"
-    },
-    "themes": {
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
-    },
-    "themeSystemDescription": "Follows your device's theme.",
-    "title": "Profile and settings"
-  },
-  "account": {
-    "title": "Account details",
-    "emailHint": "The email address can't be changed here."
-  },
-  "sessions": {
-    "title": "My sessions",
-    "signedIn": "Signed in: {{date}}",
-    "thisDevice": "This device",
-    "unknownDevice": "Unknown device",
-    "revoke": "End",
-    "revokeTitle": "End session",
-    "revokeMessage": "The session on {{device}} will be ended.",
-    "logoutAll": "Log out of all devices",
-    "logoutAllMessage": "All your sessions, including this device, will be ended.",
-    "logoutAllConfirm": "Log out of all",
-    "empty": "No active sessions."
   },
   "users": {
     "title": "Users",
@@ -351,9 +237,6 @@
       "rolesLoadError": "Roles couldn't be loaded."
     }
   },
-  "shell": {
-    "placeholderMessage": "This screen is being prepared and will be here soon."
-  },
   "add": {
     "title": "What would you like to add?",
     "mostUsed": "Most used",
@@ -364,26 +247,6 @@
       "debt": "Debt",
       "recurringPayment": "Recurring payment",
       "vehicleOperation": "Vehicle record"
-    }
-  },
-  "more": {
-    "groups": {
-      "records": "Records",
-      "definitions": "Household and settings",
-      "account": "Account"
-    },
-    "items": {
-      "donations": "Donations",
-      "debts": "Debts",
-      "ledger": "Yearly table",
-      "vehicles": "Vehicles",
-      "household": "Household and members",
-      "categories": "Categories",
-      "people": "People",
-      "paymentMethods": "Payment methods",
-      "exchangeRates": "Exchange rates",
-      "profile": "Profile and settings",
-      "users": "Users"
     }
   },
   "household": {
