@@ -5,20 +5,22 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Icon, Text } from '@/components/ui';
 import { FontFamily, makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
+import { ACCOUNT_ENDPOINTS } from '@/features/account/api';
 import { InfoNote, SettingsGroup } from '@/features/account/components/SettingsKit';
+import { useFileDownload } from '@/lib/files/useFileDownload';
 
 const ITEMS = ['profile', 'expenses', 'debts', 'sessions'] as const;
 
 /**
  * Verilerimi indir: hesap bilgileri ve hanelerdeki kayıtlar tek Excel dosyasında (GET /api/Auth/account/export).
- * Dosya Bearer token'la indirilir; kaydetmek/paylaşmak için native dosya modülü (expo-file-system, expo-sharing)
- * kurulu değil — düğme pasif, indirme web uygulamasından yapılır.
+ * Dosya oturum token'ıyla indirilir, önbelleğe yazılır ve sistem paylaşma menüsü açılır (lib/files).
  */
 export default function ExportDataScreen() {
   const { t } = useTranslation();
   const styles = useStyles();
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const download = useFileDownload();
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, Spacing.lg) + Spacing.sm }]}>
@@ -42,9 +44,20 @@ export default function ExportDataScreen() {
           {t('accountScreen.export.formatValue')}
         </Text>
       </View>
-      <InfoNote icon="language">{t('accountScreen.export.webOnly')}</InfoNote>
+      <InfoNote icon="ios-share">{t('accountScreen.export.shareHint')}</InfoNote>
       <View style={styles.spacer} />
-      <Button title={t('accountScreen.export.submit')} icon="download" disabled onPress={() => undefined} />
+      <Button
+        title={t('accountScreen.export.submit')}
+        icon="download"
+        loading={download.isPending}
+        onPress={() =>
+          download.mutate({
+            url: ACCOUNT_ENDPOINTS.EXPORT,
+            fallbackName: 'abacasa-verilerim.xlsx',
+            dialogTitle: t('accountScreen.export.title'),
+          })
+        }
+      />
     </View>
   );
 }

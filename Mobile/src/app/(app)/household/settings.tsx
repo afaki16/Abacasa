@@ -18,6 +18,8 @@ import {
   useUpdateHouseholdModules,
 } from '@/features/household/hooks';
 import { leaveBlockReason } from '@/features/household/memberView';
+import { HOUSEHOLD_ENDPOINTS } from '@/features/household/api';
+import { useFileDownload } from '@/lib/files/useFileDownload';
 import { useAuthStore } from '@/stores/authStore';
 import { toast } from '@/stores/toastStore';
 
@@ -38,6 +40,7 @@ function HouseholdSettings() {
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const canUpdate = useHasPermission(HOUSEHOLD_PERMISSIONS.UPDATE);
+  const download = useFileDownload();
   const canDelete = useHasPermission(HOUSEHOLD_PERMISSIONS.DELETE);
   const donationExtras = useAuthStore((s) => s.user?.activeTenant?.modules.donationExtras ?? false);
   const activeName = useAuthStore((s) => s.user?.activeTenant?.name ?? '');
@@ -107,15 +110,20 @@ function HouseholdSettings() {
 
             <SectionLabel label={t('householdScreen.data.section')} />
             <SettingsGroup>
-              {/* Excel dosyası Bearer token'la indirilir; kaydetmek/paylaşmak için native dosya modülü yok. */}
               <SettingsRow
                 first
                 icon="download"
                 iconTone="primary"
-                disabled
+                disabled={download.isPending}
                 title={t('householdScreen.data.export')}
-                subtitle={t('householdScreen.data.webOnly')}
-                onPress={() => undefined}
+                subtitle={t('householdScreen.data.exportHint')}
+                onPress={() =>
+                  download.mutate({
+                    url: HOUSEHOLD_ENDPOINTS.EXPORT,
+                    fallbackName: 'abacasa-hane.xlsx',
+                    dialogTitle: t('householdScreen.data.export'),
+                  })
+                }
               />
             </SettingsGroup>
           </>

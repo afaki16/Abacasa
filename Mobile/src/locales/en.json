@@ -1,4 +1,9 @@
 {
+  "files": {
+    "downloadFailed": "Couldn't download the file. Try again in a moment.",
+    "offline": "Couldn't reach the server. Check your connection.",
+    "shareUnavailable": "Couldn't open the share menu on this device."
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",

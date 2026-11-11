@@ -4,7 +4,6 @@
 // Hiçbir istekte tenantId gönderilmez; aktif hane access token'dan gelir.
 
 import { apiGet, apiPost, apiPut, apiSend } from '@/lib/api';
-import { env } from '@/lib/config/env';
 
 import type {
   CreateHouseholdInvitationRequest,
@@ -23,6 +22,7 @@ import type {
 
 export const HOUSEHOLD_ENDPOINTS = {
   CURRENT: '/api/Household',
+  /** Excel dışa aktarımı (Household.Update); ikili yanıt, lib/files/useFileDownload ile indirilir. */
   EXPORT: '/api/Household/export',
   MODULES: '/api/Household/modules',
   MEMBERS: '/api/Household/members',
@@ -53,14 +53,6 @@ export const householdApi = {
 
   updateModules(modules: HouseholdModules): Promise<HouseholdModules> {
     return apiPut<HouseholdModules>(HOUSEHOLD_ENDPOINTS.MODULES, modules);
-  },
-
-  /**
-   * Excel dışa aktarımının tam adresi (Household.Update). Yanıt ikili dosyadır (xlsx), Result zarfı yoktur;
-   * indirme `Authorization: Bearer <accessToken>` ve `X-Client: mobile` başlıklarıyla yapılmalıdır.
-   */
-  exportUrl(): string {
-    return `${env.apiBaseUrl}${HOUSEHOLD_ENDPOINTS.EXPORT}`;
   },
 
   /** Ayrılma; son üye ya da son yönetici ayrılamaz (400). */

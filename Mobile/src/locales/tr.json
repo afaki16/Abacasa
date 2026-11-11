@@ -1,4 +1,9 @@
 {
+  "files": {
+    "downloadFailed": "Dosya indirilemedi. Biraz sonra tekrar dene.",
+    "offline": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",
+    "shareUnavailable": "Bu cihazda paylaşma menüsü açılamadı."
+  },
   "common": {
     "save": "Kaydet",
     "cancel": "İptal",

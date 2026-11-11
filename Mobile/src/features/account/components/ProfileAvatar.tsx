@@ -16,8 +16,7 @@ export interface ProfileAvatarProps {
 }
 
 /**
- * Profil fotoğrafı; yoksa (ya da yüklenemezse) baş harfler. Fotoğraf yükleme için görsel seçici
- * (expo-image-picker) kurulu değil; tasarımdaki kamera düğmesi bu yüzden yok.
+ * Profil fotoğrafı; yoksa (ya da yüklenemezse) baş harfler. Düzenleme düğmesi ProfilePhotoEditor'da.
  */
 export function ProfileAvatar({ firstName, lastName, profileImageUrl, size = 88 }: ProfileAvatarProps) {
   const styles = useStyles();

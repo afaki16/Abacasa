@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { Button, ConfirmDialog, FormError, FormField, next, Screen } from '@/components/ui';
 import { makeStyles, Spacing } from '@/constants/theme';
-import { ProfileAvatar } from '@/features/account/components/ProfileAvatar';
+import { ProfilePhotoEditor } from '@/features/account/components/ProfilePhotoEditor';
 import { ReadOnlyActionField } from '@/features/account/components/ReadOnlyActionField';
 import { HeaderTextAction, SettingsGroup, SettingsRow } from '@/features/account/components/SettingsKit';
 import { accountRoutes } from '@/features/account/routes';
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
       />
 
       <View style={styles.avatar}>
-        <ProfileAvatar firstName={user?.firstName} lastName={user?.lastName} profileImageUrl={user?.profileImageUrl} />
+        <ProfilePhotoEditor firstName={user?.firstName} lastName={user?.lastName} profileImageUrl={user?.profileImageUrl} />
       </View>
 
       <FormError messages={formErrors} />

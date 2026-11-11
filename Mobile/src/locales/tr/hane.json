@@ -24,7 +24,7 @@
     "data": {
       "section": "Veri",
       "export": "Hane verisini Excel olarak indir",
-      "webOnly": "Mobilde indirilemiyor. Web'den indirilebilir."
+      "exportHint": "Dosya hazırlanınca paylaşma menüsü açılır."
     },
     "danger": {
       "section": "Tehlikeli bölge"
@@ -98,6 +98,16 @@
   },
   "profileScreen": {
     "title": "Profil",
+    "photo": {
+      "title": "Profil fotoğrafı",
+      "change": "Profil fotoğrafını değiştir",
+      "choose": "Galeriden seç",
+      "remove": "Fotoğrafı kaldır",
+      "saved": "Profil fotoğrafın güncellendi",
+      "removed": "Profil fotoğrafın kaldırıldı",
+      "tooLarge": "Fotoğraf en fazla 10 MB olabilir.",
+      "unsupported": "Yalnızca JPEG, PNG ya da WEBP yüklenebilir."
+    },
     "saved": "Profilin kaydedildi",
     "changeEmail": "Değiştir",
     "changePassword": "Şifre değiştir",
@@ -183,7 +193,7 @@
       },
       "format": "Biçim",
       "formatValue": "Excel (.xlsx)",
-      "webOnly": "Dosya indirme mobilde henüz yok. Web'den indirilebilir: Profil → Verilerimi indir.",
+      "shareHint": "Dosya hazırlanınca paylaşma menüsü açılır; Dosyalar'a kaydedebilir ya da bir uygulamayla paylaşabilirsin.",
       "submit": "Dosyayı hazırla"
     },
     "delete": {

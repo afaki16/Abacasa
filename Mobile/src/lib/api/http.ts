@@ -6,7 +6,7 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { apiClient } from './client';
 import { ApiError, toApiError, type ApiEnvelope } from './errors';
 
-type RequestOptions = Pick<AxiosRequestConfig, 'timeout' | 'signal' | '_skipAuth'>;
+type RequestOptions = Pick<AxiosRequestConfig, 'timeout' | 'signal' | '_skipAuth' | 'headers'>;
 type Params = Record<string, string | number | boolean | undefined | null>;
 
 function unwrap<T>(response: AxiosResponse<ApiEnvelope<T>>): ApiEnvelope<T> {

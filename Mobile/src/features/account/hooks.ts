@@ -10,6 +10,7 @@ import type { ApiError } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 
 import { accountApi } from './api';
+import type { PhotoPart } from './photo';
 import { buildSessionOverview, type SessionOverview } from './sessionsView';
 import type { AccountDeletionPreview, DeleteAccountRequest, RequestEmailChangeRequest } from './types';
 
@@ -33,6 +34,25 @@ export function useDeleteAccount() {
     mutationFn: async (request) => {
       await accountApi.deleteAccount(request);
       await useAuthStore.getState().clearAuth();
+    },
+  });
+}
+
+/** Fotoğraf yükleme/kaldırma sonrası kullanıcı /me ile tazelenir (profileImageUrl). */
+export function useUploadPhoto() {
+  return useMutation<void, ApiError, PhotoPart>({
+    mutationFn: async (part) => {
+      await accountApi.uploadPhoto(part);
+      await useAuthStore.getState().setUser(await authApi.me());
+    },
+  });
+}
+
+export function useRemovePhoto() {
+  return useMutation<void, ApiError, void>({
+    mutationFn: async () => {
+      await accountApi.removePhoto();
+      await useAuthStore.getState().setUser(await authApi.me());
     },
   });
 }

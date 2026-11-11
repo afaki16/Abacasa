@@ -74,6 +74,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     // configureAndroidBackup (varsayılan true): şifreli değerler Android yedeğine girmez.
     'expo-secure-store',
+    'expo-sharing',
+    // Yalnızca galeri (sistem seçicisi); kamera ve mikrofon izni istenmez.
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Profil fotoğrafı seçmek için fotoğraflarına erişim gerekir.',
+        cameraPermission: false,
+        microphonePermission: false,
+      },
+    ],
     // Windows'ta uzun C++ yolları için yeni CMake/ninja (LongPathsEnabled=1 gerekir).
     './plugins/withAndroidCmakeVersion',
     [

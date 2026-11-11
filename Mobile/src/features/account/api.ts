@@ -1,19 +1,38 @@
 // Hesap uçları (AuthController): silme önizlemesi, hesap silme, e-posta değişikliği, kişisel veri dışa aktarımı.
 // Profil, oturum ve şifre uçları features/auth/api.ts'te.
 
-import { apiGet, apiSend } from '@/lib/api';
-import { env } from '@/lib/config/env';
+import { apiGet, apiPost, apiSend } from '@/lib/api';
+
+import type { PhotoPart } from './photo';
 
 import type { AccountDeletionPreview, DeleteAccountRequest, RequestEmailChangeRequest } from './types';
 
 export const ACCOUNT_ENDPOINTS = {
   DELETION_PREVIEW: '/api/Auth/account/deletion-preview',
   ACCOUNT: '/api/Auth/account',
+  /** Kişisel veri dosyası (xlsx); lib/files/useFileDownload ile indirilir. */
   EXPORT: '/api/Auth/account/export',
   CHANGE_EMAIL: '/api/Auth/profile/email',
+  PHOTO: '/api/Auth/profile/photo',
 } as const;
 
 export const accountApi = {
+  /** Profil fotoğrafını yükler ya da değiştirir (multipart "file"). */
+  uploadPhoto(part: PhotoPart): Promise<unknown> {
+    const form = new FormData();
+    // React Native FormData dosya parçası: { uri, name, type }
+    form.append('file', part as unknown as Blob);
+    // Örnek başlık application/json; FormData JSON'a çevrilmesin, sınır (boundary) ağ katmanınca eklenir
+    return apiPost(ACCOUNT_ENDPOINTS.PHOTO, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60_000,
+    });
+  },
+
+  removePhoto(): Promise<string | undefined> {
+    return apiSend('delete', ACCOUNT_ENDPOINTS.PHOTO);
+  },
+
   deletionPreview(): Promise<AccountDeletionPreview> {
     return apiGet<AccountDeletionPreview>(ACCOUNT_ENDPOINTS.DELETION_PREVIEW);
   },
@@ -29,13 +48,5 @@ export const accountApi = {
       ...request,
       newEmail: request.newEmail.trim().toLowerCase(),
     });
-  },
-
-  /**
-   * Kişisel veri dosyasının (xlsx) tam adresi. Bearer token gerektirir; dosyayı kaydetmek için native dosya
-   * modülü (expo-file-system / expo-sharing) gerekir — şimdilik mobilde kullanılmıyor (web'den indirilir).
-   */
-  exportUrl(): string {
-    return `${env.apiBaseUrl}${ACCOUNT_ENDPOINTS.EXPORT}`;
   },
 };
