@@ -60,6 +60,7 @@ public class PersonRepository : RepositoryBase<Person, int>, IPersonRepository
             || await _context.Set<Debt>().AnyAsync(d => d.CreditorPersonId == personId || d.DebtorPersonId == personId)
             || await _context.Set<LedgerItem>().AnyAsync(li => li.OwnerPersonId == personId)
             || await _context.Set<DonationTarget>().AnyAsync(t => t.OwnerPersonId == personId)
+            || await _context.Set<Budget>().AnyAsync(b => b.OwnerPersonId == personId)
             || await _context.Set<DonationFund>().AnyAsync(f => f.FromPersonId == personId)
             || await _context.Set<Vehicle>().AnyAsync(v => v.OwnerPersonId == personId);
     }

@@ -6,6 +6,8 @@ import { Card, ListItem, type IconName } from '@/components/ui';
 import { makeStyles } from '@/constants/theme';
 import { getPermissionNames } from '@/features/auth/permissions';
 import { SectionLabel } from '@/features/categories/components/DefinitionKit';
+import { BUDGET_PERMISSIONS } from '@/features/budgets/constants';
+import { budgetRoutes } from '@/features/budgets/routes';
 import { CATEGORY_PERMISSIONS } from '@/features/categories/constants';
 import { categoryRoutes } from '@/features/categories/routes';
 import { DEBT_PERMISSIONS } from '@/features/debts/constants';
@@ -46,6 +48,12 @@ const GROUPS: MenuGroup[] = [
   {
     key: 'records',
     items: [
+      {
+        key: 'budgets',
+        icon: 'savings',
+        href: budgetRoutes.index,
+        permission: BUDGET_PERMISSIONS.READ,
+      },
       {
         key: 'donations',
         icon: 'volunteer-activism',

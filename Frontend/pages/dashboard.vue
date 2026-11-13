@@ -82,6 +82,9 @@
       </div>
     </div>
 
+    <!-- Dönemin adlandırıldığı ayın bütçesi -->
+    <BudgetOverview v-if="budgetReport" :report="budgetReport" link class="mb-4" />
+
     <!-- Ödeme aracına ve kişiye göre -->
     <div class="ui-row !mb-2">
       <div class="ui-col ui-col-12 ui-col-md-6">
@@ -203,9 +206,10 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import type { Dashboard, PaymentMethod } from "~/types";
+import type { BudgetReport, Dashboard, PaymentMethod } from "~/types";
 import PeriodSelector from "~/components/Budget/PeriodSelector.vue";
 import CreateHouseholdDialog from "~/components/Household/CreateHouseholdDialog.vue";
+import BudgetOverview from "~/components/Budgets/BudgetOverview.vue";
 import { formatDisplayDate, monthRange, todayIso, type Period } from "~/utils/period";
 import { useAuthStore } from "~/stores/auth";
 
@@ -229,6 +233,7 @@ const { getTypeLabel, getPaymentMethods } = usePaymentMethods();
 const { getKindLabel } = useRecurringPayments();
 const { getTypeLabel: getObligationTypeLabel } = useVehicles();
 const { getDashboard } = useDashboard();
+const { getBudgetReport } = useBudgets();
 //#endregion
 
 const hasHousehold = computed(() => !!authStore.user?.activeTenant);
@@ -243,13 +248,26 @@ const today = todayIso();
 const [todayYear, todayMonth] = today.split("-").map(Number);
 const period = ref<Period>(monthRange(todayYear, todayMonth));
 const data = ref<Dashboard | null>(null);
+const budgetReport = ref<BudgetReport | null>(null);
+
+// Bütçe takvim ayıyla çalışır; kart döneminde dönemin adlandırıldığı ay
+const loadBudget = async () => {
+  if (!hasPermission("Budgets.Read")) return;
+  try {
+    budgetReport.value = await getBudgetReport(period.value.year, period.value.month, today);
+  } catch {
+    budgetReport.value = null;
+  }
+};
 
 const load = async () => {
+  const budget = loadBudget();
   try {
     data.value = await getDashboard(period.value.start, period.value.end, today);
   } catch {
     data.value = null;
   }
+  await budget;
 };
 
 let ready = false;

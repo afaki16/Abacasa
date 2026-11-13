@@ -12,6 +12,7 @@ using Abacasa.Application.Features.Debts.Common;
 using Abacasa.Application.Features.Debts.Dtos;
 using Abacasa.Application.Features.ExchangeRates.Dtos;
 using Abacasa.Application.Features.Ledger.Dtos;
+using Abacasa.Application.Features.Budgets.Dtos;
 using Abacasa.Application.Features.DonationTargets.Dtos;
 using Abacasa.Application.Features.DonationFunds.Dtos;
 using Abacasa.Application.Features.Vehicles.Dtos;
@@ -258,6 +259,11 @@ namespace Abacasa.Application.Features.Mappings;
 
         // DonationTarget mappings
         CreateMap<DonationTarget, DonationTargetDto>()
+            .ForMember(dest => dest.OwnerName,
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+
+        // Budget mappings
+        CreateMap<Budget, BudgetDto>()
             .ForMember(dest => dest.OwnerName,
                 opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
 

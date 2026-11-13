@@ -30,6 +30,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ILedgerItemRepository LedgerItems { get; }
     IMonthlyAmountRepository MonthlyAmounts { get; }
     IDonationTargetRepository DonationTargets { get; }
+    IBudgetRepository Budgets { get; }
     IDonationFundRepository DonationFunds { get; }
     IFundMovementRepository FundMovements { get; }
     IVehicleRepository Vehicles { get; }

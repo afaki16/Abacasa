@@ -53,6 +53,8 @@ public class DataExportService : IDataExportService
         var rates = await _context.ExchangeRates.AsNoTracking().OrderBy(r => r.Date).ThenBy(r => r.Id).ToListAsync(cancellationToken);
         var targets = await _context.DonationTargets.AsNoTracking().Include(t => t.OwnerPerson)
             .OrderBy(t => t.Year).ThenBy(t => t.Id).ToListAsync(cancellationToken);
+        var budgets = await _context.Budgets.AsNoTracking().Include(b => b.OwnerPerson)
+            .OrderBy(b => b.StartYear).ThenBy(b => b.StartMonth).ThenBy(b => b.Id).ToListAsync(cancellationToken);
         var movements = await _context.FundMovements.AsNoTracking().Include(m => m.Fund).ThenInclude(f => f.FromPerson)
             .OrderBy(m => m.Date).ThenBy(m => m.Id).ToListAsync(cancellationToken);
         var ledgerItems = await _context.LedgerItems.AsNoTracking().Include(i => i.OwnerPerson)
@@ -138,6 +140,13 @@ public class DataExportService : IDataExportService
             new Column<DonationTarget>("Tür", t => DonationKindLabel(t.Kind)),
             new Column<DonationTarget>("Tutar", t => t.Amount, MoneyFormat),
             new Column<DonationTarget>("Not", t => t.Note));
+
+        AddSheet(workbook, "Bütçeler", budgets,
+            new Column<Budget>("Kişi", b => b.OwnerPerson?.Name ?? "Hane"),
+            new Column<Budget>("Başlangıç yılı", b => b.StartYear),
+            new Column<Budget>("Başlangıç ayı", b => b.StartMonth),
+            new Column<Budget>("Tutar", b => b.Amount, MoneyFormat),
+            new Column<Budget>("Not", b => b.Note));
 
         AddSheet(workbook, "Emanetler", funds,
             new Column<DonationFund>("Tarih", f => f.Date, DateFormat),

@@ -17,6 +17,11 @@ jest.mock('@/features/dashboard/links', () => ({
   go: (path: string) => mockGo(path),
 }));
 
+// Bütçe kartı izin listesinde Budgets.Read olmadığı sürece görünmez; sorgu ağ çağrısı yapmaz.
+jest.mock('@/features/budgets/hooks', () => ({
+  useBudgetReport: () => ({ data: undefined, isPending: false, isError: false }),
+}));
+
 let mockDashboard: Dashboard;
 jest.mock('@/features/dashboard/hooks', () => ({
   useDashboard: () => ({

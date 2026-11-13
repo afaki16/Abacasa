@@ -92,6 +92,15 @@ namespace Abacasa.Domain.Constants
         public const string Delete = "DonationTargets.Delete";
     }
 
+    // Budget permissions (aylık harcama bütçesi)
+    public static class Budgets
+    {
+        public const string Read = "Budgets.Read";
+        public const string Create = "Budgets.Create";
+        public const string Update = "Budgets.Update";
+        public const string Delete = "Budgets.Delete";
+    }
+
     // Donation fund (emanet) permissions; hareket ekleme/düzenleme/silme DonationFunds.Update ister
     public static class DonationFunds
     {

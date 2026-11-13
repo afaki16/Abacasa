@@ -6,6 +6,7 @@
       "account": "Hesap"
     },
     "items": {
+      "budgets": "Aylık bütçe",
       "donations": "Bağışlar",
       "donationTargets": "Bağış hedefleri",
       "donationFunds": "Emanetler",

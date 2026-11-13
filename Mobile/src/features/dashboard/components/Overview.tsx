@@ -4,6 +4,9 @@ import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { EmptyState, ErrorState, Icon, ListItem, StatCard, SummaryCard, Text } from '@/components/ui';
 import { FontFamily, makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
 import { useHasPermission } from '@/features/auth/permissions';
+import { BudgetCard } from '@/features/budgets/components/BudgetCard';
+import { BUDGET_PERMISSIONS } from '@/features/budgets/constants';
+import { useBudgetReport } from '@/features/budgets/hooks';
 import { DEBT_PERMISSIONS } from '@/features/debts/constants';
 import { EXCHANGE_RATE_PERMISSIONS } from '@/features/exchangeRates/constants';
 import { EXPENSE_PERMISSIONS } from '@/features/expenses/constants';
@@ -97,6 +100,9 @@ function OverviewBody({ data, today, period }: { data: Dashboard; today: string;
   const canOpenRecurring = useHasPermission(RECURRING_PAYMENT_PERMISSIONS.READ);
   const canOpenDebts = useHasPermission(DEBT_PERMISSIONS.READ);
   const canOpenRates = useHasPermission(EXCHANGE_RATE_PERMISSIONS.READ);
+  const canReadBudget = useHasPermission(BUDGET_PERMISSIONS.READ);
+  // Bütçe takvim ayıyla çalışır; kart döneminde dönemin adlandırıldığı ay
+  const budget = useBudgetReport(period.year, period.month, today, canReadBudget);
   const { recurring, vehicles } = splitUpcoming(data.upcoming);
 
   const { debts } = data;
@@ -121,6 +127,8 @@ function OverviewBody({ data, today, period }: { data: Dashboard; today: string;
           { label: t('summary.card.pending'), value: formatMoney(data.pending.total) },
         ]}
       />
+
+      {budget.data ? <BudgetCard report={budget.data} onPress={() => go(ROUTES.budgets)} /> : null}
 
       <View style={styles.pair}>
         <Pressable

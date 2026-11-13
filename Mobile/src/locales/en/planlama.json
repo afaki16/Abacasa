@@ -154,6 +154,59 @@
       "deleted": "Donation deleted"
     }
   },
+  "budgets": {
+    "title": "Monthly budget",
+    "cardTitle": "{{month}} {{year}} budget",
+    "intro": "Expenses and unpaid recurring payments count against the budget; meal cards and donations don't. Unspent money doesn't roll over.",
+    "canSpend": "You can still spend this month",
+    "overBy": "Over budget by",
+    "daily": "~{{amount}} a day",
+    "daysLeft_one": "{{count}} day left",
+    "daysLeft_other": "{{count}} days left",
+    "breakdown": "Budget {{budget}} · Spent {{spent}} · Set aside for recurring {{pending}}",
+    "rowBreakdown": "{{used}} / {{budget}} · {{percent}}%",
+    "left": "{{amount}} left",
+    "over": "{{amount}} over",
+    "shared": "Shared",
+    "noBudget": "No budget for this month. Add a household or personal budget to see how much you can spend.",
+    "exceedsHousehold": "Personal budgets add up to more than the household budget; the shared budget is counted as 0.",
+    "unknownAmounts_one": "{{count}} due payment without a known amount isn't counted",
+    "unknownAmounts_other": "{{count}} due payments without a known amount aren't counted",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "records": "Budget records",
+    "add": "Add budget",
+    "from": "From {{month}}",
+    "ended": "Removed",
+    "emptyTitle": "No budget yet",
+    "emptyMessage": "Set a monthly budget for the household, and separate ones for people if you like.",
+    "newTitle": "Add budget",
+    "editTitle": "Edit budget",
+    "formIntro": "The budget applies every month from the month you choose until a newer record is added for the same person.",
+    "amountHint": "Enter 0 to remove the budget from this month on.",
+    "delete": "Delete budget",
+    "deleteTitle": "Delete this budget?",
+    "deleteMessage": "This record is deleted; the person's previous budget applies to those months again.",
+    "fields": {
+      "owner": "Whose budget",
+      "startMonth": "Start month",
+      "startYear": "Start year",
+      "amount": "Monthly budget"
+    },
+    "suggestion": {
+      "title": "Suggestion from the yearly table",
+      "income": "This month's income: {{amount}}",
+      "incomeAverage": "Average monthly income: {{amount}}",
+      "fixed": "Recurring payments: {{amount}} (set aside from the budget)",
+      "variable": "Left for variable spending: {{amount}}",
+      "use": "Use {{amount}}"
+    },
+    "toast": {
+      "created": "Budget added",
+      "updated": "Budget saved",
+      "deleted": "Budget deleted"
+    }
+  },
   "donationTargets": {
     "title": "Donation goals",
     "newTitle": "Add goal",

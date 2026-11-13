@@ -50,6 +50,12 @@
       icon: 'mdi-wallet',
       children: [
         {
+          title: 'sidebar.menu.budgets',
+          icon: 'mdi-wallet-outline',
+          to: '/budgets',
+          permission: 'Budgets.Read'
+        },
+        {
           title: 'sidebar.menu.expenses',
           icon: 'mdi-cash-minus',
           to: '/expenses',

@@ -150,6 +150,11 @@
     "directionLocked": "The direction of an item with amounts cannot be changed",
     "hasAmounts": "An item with amounts cannot be deleted; deactivate it instead."
   },
+  "budgets": {
+    "notFound": "Budget not found",
+    "ownerNotFound": "Person not found",
+    "alreadyExists": "A budget starting this month already exists for this person"
+  },
   "donationTargets": {
     "notFound": "Donation target not found",
     "ownerNotFound": "Person not found",
@@ -306,6 +311,7 @@
       "fundId": "Fund",
       "fromPerson": "From",
       "fundMovementType": "Movement type",
+      "budgetId": "Budget ID",
       "targetId": "Target ID",
       "vehicleId": "Vehicle ID",
       "vehicleName": "Vehicle name",

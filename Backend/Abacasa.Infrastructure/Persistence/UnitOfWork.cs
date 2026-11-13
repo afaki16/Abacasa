@@ -36,6 +36,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     private readonly Lazy<ILedgerItemRepository> _ledgerItems;
     private readonly Lazy<IMonthlyAmountRepository> _monthlyAmounts;
     private readonly Lazy<IDonationTargetRepository> _donationTargets;
+    private readonly Lazy<IBudgetRepository> _budgets;
     private readonly Lazy<IDonationFundRepository> _donationFunds;
     private readonly Lazy<IFundMovementRepository> _fundMovements;
     private readonly Lazy<IVehicleRepository> _vehicles;
@@ -71,6 +72,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
         _ledgerItems = new Lazy<ILedgerItemRepository>(() => _serviceProvider.GetRequiredService<ILedgerItemRepository>());
         _monthlyAmounts = new Lazy<IMonthlyAmountRepository>(() => _serviceProvider.GetRequiredService<IMonthlyAmountRepository>());
         _donationTargets = new Lazy<IDonationTargetRepository>(() => _serviceProvider.GetRequiredService<IDonationTargetRepository>());
+        _budgets = new Lazy<IBudgetRepository>(() => _serviceProvider.GetRequiredService<IBudgetRepository>());
         _donationFunds = new Lazy<IDonationFundRepository>(() => _serviceProvider.GetRequiredService<IDonationFundRepository>());
         _fundMovements = new Lazy<IFundMovementRepository>(() => _serviceProvider.GetRequiredService<IFundMovementRepository>());
         _vehicles = new Lazy<IVehicleRepository>(() => _serviceProvider.GetRequiredService<IVehicleRepository>());
@@ -103,6 +105,7 @@ public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public ILedgerItemRepository LedgerItems => _ledgerItems.Value;
     public IMonthlyAmountRepository MonthlyAmounts => _monthlyAmounts.Value;
     public IDonationTargetRepository DonationTargets => _donationTargets.Value;
+    public IBudgetRepository Budgets => _budgets.Value;
     public IDonationFundRepository DonationFunds => _donationFunds.Value;
     public IFundMovementRepository FundMovements => _fundMovements.Value;
     public IVehicleRepository Vehicles => _vehicles.Value;

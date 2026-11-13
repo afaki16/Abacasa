@@ -104,6 +104,15 @@ export type {
 
 export { DonationKind } from './donation'
 
+// Budget Types
+export type {
+  Budget,
+  CreateBudgetRequest,
+  UpdateBudgetRequest,
+  BudgetRow,
+  BudgetReport
+} from './budget'
+
 // Donation Target Types
 export type {
   DonationTarget,

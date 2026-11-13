@@ -57,6 +57,7 @@ namespace Abacasa.Infrastructure.Persistence
         public DbSet<LedgerItem> LedgerItems { get; set; }
         public DbSet<MonthlyAmount> MonthlyAmounts { get; set; }
         public DbSet<DonationTarget> DonationTargets { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
         public DbSet<DonationFund> DonationFunds { get; set; }
         public DbSet<FundMovement> FundMovements { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }

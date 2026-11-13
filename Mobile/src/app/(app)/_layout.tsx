@@ -30,6 +30,8 @@ export default function AppLayout() {
       <Stack.Screen name="recurring/[id]" options={MODAL} />
       <Stack.Screen name="donations/new" options={MODAL} />
       <Stack.Screen name="donations/[id]" options={MODAL} />
+      <Stack.Screen name="budgets/new" options={MODAL} />
+      <Stack.Screen name="budgets/[id]" options={MODAL} />
       <Stack.Screen name="donation-targets/new" options={MODAL} />
       <Stack.Screen name="donation-targets/[id]" options={MODAL} />
       <Stack.Screen name="donation-funds/new" options={MODAL} />

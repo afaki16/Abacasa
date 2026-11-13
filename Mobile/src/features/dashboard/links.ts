@@ -5,6 +5,7 @@ import { router, type Href } from 'expo-router';
 
 export const ROUTES = {
   recurring: '/recurring',
+  budgets: '/budgets',
   debts: '/debts',
   vehicles: '/vehicles',
   exchangeRates: '/exchange-rates',

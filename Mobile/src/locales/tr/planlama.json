@@ -154,6 +154,59 @@
       "deleted": "Bağış silindi"
     }
   },
+  "budgets": {
+    "title": "Aylık bütçe",
+    "cardTitle": "{{month}} {{year}} bütçesi",
+    "intro": "Harcamalar ve henüz ödenmemiş sabit ödemeler bütçeden düşer; yemek kartı ve bağışlar düşmez. Ay sonunda kalan devretmez.",
+    "canSpend": "Bu ay harcayabileceğin",
+    "overBy": "Bütçe aşıldı",
+    "daily": "Günde ~{{amount}}",
+    "daysLeft_one": "{{count}} gün kaldı",
+    "daysLeft_other": "{{count}} gün kaldı",
+    "breakdown": "Bütçe {{budget}} · Harcanan {{spent}} · Sabit ödemelere ayrılan {{pending}}",
+    "rowBreakdown": "{{used}} / {{budget}} · %{{percent}}",
+    "left": "{{amount}} kaldı",
+    "over": "{{amount}} aşıldı",
+    "shared": "Ortak",
+    "noBudget": "Bu ay için bütçe yok. Hane ya da kişi bütçesi ekle; ne kadar harcayabileceğin burada görünür.",
+    "exceedsHousehold": "Kişi bütçelerinin toplamı hane bütçesini aşıyor; Ortak bütçe 0 sayıldı.",
+    "unknownAmounts_one": "Tutarı belli olmayan {{count}} vade hesaba katılmadı",
+    "unknownAmounts_other": "Tutarı belli olmayan {{count}} vade hesaba katılmadı",
+    "previousMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "records": "Bütçe kayıtları",
+    "add": "Bütçe ekle",
+    "from": "{{month}} ayından itibaren",
+    "ended": "Kaldırıldı",
+    "emptyTitle": "Henüz bütçe yok",
+    "emptyMessage": "Hane için aylık bir bütçe gir; istersen kişilere de ayrı bütçe ver.",
+    "newTitle": "Bütçe ekle",
+    "editTitle": "Bütçeyi düzenle",
+    "formIntro": "Bütçe seçtiğin aydan itibaren, aynı kişi için yeni bir kayıt girilene kadar her ay geçerlidir.",
+    "amountHint": "0 girersen bu aydan itibaren bütçe kaldırılır.",
+    "delete": "Bütçeyi sil",
+    "deleteTitle": "Bütçe silinsin mi?",
+    "deleteMessage": "Bu kayıt silinir; o aylarda aynı kişinin bir önceki bütçesi geçerli olur.",
+    "fields": {
+      "owner": "Kimin bütçesi",
+      "startMonth": "Başlangıç ayı",
+      "startYear": "Başlangıç yılı",
+      "amount": "Aylık bütçe"
+    },
+    "suggestion": {
+      "title": "Yıllık tablodan öneri",
+      "income": "Bu ayın geliri: {{amount}}",
+      "incomeAverage": "Aylık gelir ortalaması: {{amount}}",
+      "fixed": "Sabit ödemeler: {{amount}} (bütçeden ayrılır)",
+      "variable": "Değişken harcamaya kalan: {{amount}}",
+      "use": "{{amount}} kullan"
+    },
+    "toast": {
+      "created": "Bütçe eklendi",
+      "updated": "Bütçe kaydedildi",
+      "deleted": "Bütçe silindi"
+    }
+  },
   "donationTargets": {
     "title": "Bağış hedefleri",
     "newTitle": "Hedef ekle",

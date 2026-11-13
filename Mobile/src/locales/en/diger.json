@@ -6,6 +6,7 @@
       "account": "Account"
     },
     "items": {
+      "budgets": "Monthly budget",
       "donations": "Donations",
       "donationTargets": "Donation targets",
       "donationFunds": "Entrusted funds",

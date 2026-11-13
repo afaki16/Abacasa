@@ -18,5 +18,6 @@ namespace Abacasa.Application.Common.Pagination
         public const int MaxDonationTargetsPageSize = 1000;
         public const int MaxDonationFundsPageSize = 1000;
         public const int MaxVehiclesPageSize = 1000;
+        public const int MaxBudgetsPageSize = 1000;
     }
 }

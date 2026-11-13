@@ -150,6 +150,11 @@
     "directionLocked": "Tutarı olan kalemin yönü değiştirilemez",
     "hasAmounts": "Tutarı olan kalem silinemez, pasife alın."
   },
+  "budgets": {
+    "notFound": "Bütçe bulunamadı",
+    "ownerNotFound": "Kişi bulunamadı",
+    "alreadyExists": "Bu kişi için bu aydan başlayan bir bütçe zaten var"
+  },
   "donationTargets": {
     "notFound": "Bağış hedefi bulunamadı",
     "ownerNotFound": "Kişi bulunamadı",
@@ -306,6 +311,7 @@
       "fundId": "Emanet",
       "fromPerson": "Kimden",
       "fundMovementType": "Hareket türü",
+      "budgetId": "Bütçe kimliği",
       "targetId": "Hedef kimliği",
       "vehicleId": "Araç kimliği",
       "vehicleName": "Araç adı",

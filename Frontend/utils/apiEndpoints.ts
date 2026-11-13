@@ -151,6 +151,15 @@ export const API_ENDPOINTS = {
     PAYMENT: (id: string, paymentId: string) => `/api/debts/${id}/payments/${paymentId}`,
   },
 
+  // Budget endpoints (aylık harcama bütçesi)
+  BUDGETS: {
+    LIST: '/api/budgets',
+    REPORT: (year: number, month: number) => `/api/budgets/month/${year}/${month}`,
+    CREATE: '/api/budgets',
+    UPDATE: (id: string) => `/api/budgets/${id}`,
+    DELETE: (id: string) => `/api/budgets/${id}`,
+  },
+
   // Donation target endpoints
   DONATION_TARGETS: {
     LIST: '/api/donationtargets',

@@ -22,6 +22,7 @@ public static class HouseholdDataTables
         typeof(Debt),                // → People
         typeof(DonationFund),        // → People
         typeof(DonationTarget),      // → People
+        typeof(Budget),              // → People
         typeof(LedgerItem),          // → People
         typeof(Vehicle),             // → People
         typeof(ExchangeRate),

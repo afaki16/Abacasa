@@ -22,6 +22,60 @@ namespace Abacasa.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Abacasa.Domain.Entities.Budget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("OwnerPersonId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StartMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerPersonId");
+
+                    b.HasIndex("TenantId", "StartYear", "StartMonth");
+
+                    b.ToTable("Budgets", (string)null);
+                });
+
             modelBuilder.Entity("Abacasa.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -1791,6 +1845,22 @@ namespace Abacasa.Infrastructure.Migrations
                     b.HasIndex("VehicleId", "Type");
 
                     b.ToTable("VehicleObligations", (string)null);
+                });
+
+            modelBuilder.Entity("Abacasa.Domain.Entities.Budget", b =>
+                {
+                    b.HasOne("Abacasa.Domain.Entities.Person", "OwnerPerson")
+                        .WithMany()
+                        .HasForeignKey("OwnerPersonId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Abacasa.Domain.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OwnerPerson");
                 });
 
             modelBuilder.Entity("Abacasa.Domain.Entities.Category", b =>

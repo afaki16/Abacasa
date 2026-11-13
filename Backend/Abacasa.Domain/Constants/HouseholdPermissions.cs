@@ -17,7 +17,7 @@ namespace Abacasa.Domain.Constants
         {
             "Categories", "People", "PaymentMethods", "Expenses", "Donations", "DonationTargets", "DonationFunds",
             "RecurringPayments", "RecurringPaymentPayments", "Debts", "DebtPayments", "ExchangeRates", "Ledger",
-            "Vehicles", "Dashboard", "Household", "HouseholdMembers"
+            "Vehicles", "Budgets", "Dashboard", "Household", "HouseholdMembers"
         };
 
         /// "Resource.Action" izninin kaynağı hane kaynağı mı
