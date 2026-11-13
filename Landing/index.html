@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="meta.title">Abacasa · Hanenin bütçesi tek yerde</title>
+  <meta name="description" data-i18n-attr="content:meta.description"
+        content="Harcamalar, sabit ödemeler, borçlar ve bağışlar; ailenle birlikte, tek uygulamada. Abacasa ile hanenin bütçesini birlikte yönetin.">
+  <meta name="theme-color" content="#0A5BE8">
+  <link rel="canonical" href="https://abacasa.com/">
+  <link rel="alternate" hreflang="tr" href="https://abacasa.com/">
+  <link rel="alternate" hreflang="en" href="https://abacasa.com/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://abacasa.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Abacasa">
+  <meta property="og:title" data-i18n-attr="content:meta.title" content="Abacasa · Hanenin bütçesi tek yerde">
+  <meta property="og:description" data-i18n-attr="content:meta.description"
+        content="Harcamalar, sabit ödemeler, borçlar ve bağışlar; ailenle birlikte, tek uygulamada.">
+  <meta property="og:image" content="https://abacasa.com/assets/logo-wordmark.png">
+  <link rel="icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/Inter_800ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">İçeriğe geç</a>
+
+  <header class="nav" id="top">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Abacasa">
+        <img src="assets/app-icon.png" alt="" width="36" height="36">
+        <span>Abacasa</span>
+      </a>
+      <nav class="nav-links" aria-label="Ana menü" data-i18n-attr="aria-label:nav.label">
+        <a href="#features" data-i18n="nav.features">Özellikler</a>
+        <a href="#how" data-i18n="nav.how">Nasıl çalışır</a>
+        <a href="#privacy" data-i18n="nav.privacy">Gizlilik</a>
+        <a href="#faq" data-i18n="nav.faq">SSS</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang" role="group" aria-label="Dil" data-i18n-attr="aria-label:nav.language">
+          <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <!-- Web uygulamasının adresi: APP_URL (main.js) ile değiştirilir -->
+        <a class="btn btn-ghost hide-sm" data-app="/" href="https://app.abacasa.com/" data-i18n="nav.login">Giriş yap</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="hero.eyebrow">Aile bütçesi, birlikte</p>
+          <h1 data-i18n="hero.title">Hanenin bütçesi tek yerde.</h1>
+          <p class="lead" data-i18n="hero.lead">
+            Harcamaları, faturaları, taksitleri, borçları ve bağışları ailenle birlikte takip et.
+            Ay sonunda ne kadar harcadığını ve ne kadarının yolda olduğunu tek bakışta gör.
+          </p>
+          <div class="cta">
+            <a class="btn btn-primary" data-app="/auth/register" href="https://app.abacasa.com/auth/register" data-i18n="hero.primary">Hesap oluştur</a>
+            <a class="btn btn-ghost" data-app="/" href="https://app.abacasa.com/" data-i18n="hero.secondary">Giriş yap</a>
+          </div>
+          <ul class="stores" aria-label="Mobil uygulama" data-i18n-attr="aria-label:hero.mobile">
+            <li><span class="store-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>
+            </span><span><small data-i18n="hero.soon">Yakında</small>App Store</span></li>
+            <li><span class="store-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7L3.6 2.3zm10.9 11.1 2.6 2.6-11.9 6.8 9.3-9.4zm0-2.8L5.2 1.2 17.1 8l-2.6 2.6zm3.9-1.9 2.9 1.7c.8.5.8 1.7 0 2.2l-2.9 1.7-2.8-2.8 2.8-2.8z"/></svg>
+            </span><span><small data-i18n="hero.soon">Yakında</small>Google Play</span></li>
+          </ul>
+        </div>
+
+        <!-- Uygulamanın Özet ekranını andıran temsili görünüm (örnek veriler) -->
+        <div class="hero-visual" aria-hidden="true">
+          <div class="phone">
+            <div class="screen">
+              <div class="ph-top">
+                <img src="assets/app-icon.png" alt="" width="22" height="22">
+                <b data-i18n="mock.household">Yılmaz Ailesi</b>
+                <span class="pill" data-i18n="mock.admin">Yönetici</span>
+              </div>
+              <div class="ph-month"><span>‹</span><b data-i18n="mock.month">Kasım 2026</b><span>›</span></div>
+              <div class="ph-total">
+                <small data-i18n="mock.total">Dönem toplamı</small>
+                <strong data-i18n="mock.totalValue">₺48.250,40</strong>
+                <div class="ph-split">
+                  <div><small data-i18n="mock.spent">Harcama</small><b data-i18n="mock.spentValue">₺31.420,40</b></div>
+                  <div><small data-i18n="mock.donation">Bağış</small><b data-i18n="mock.donationValue">₺2.500,00</b></div>
+                  <div><small data-i18n="mock.pending">Bekleyen</small><b data-i18n="mock.pendingValue">₺14.330,00</b></div>
+                </div>
+              </div>
+              <div class="ph-cards">
+                <div class="ph-card">
+                  <small data-i18n="mock.recurring">Sabit ödemeler</small>
+                  <div class="bar"><i style="width:58%"></i></div>
+                  <span data-i18n="mock.paidOf">7 / 12 ödendi</span>
+                </div>
+                <div class="ph-card">
+                  <small data-i18n="mock.debt">Açık borç</small>
+                  <b data-i18n="mock.debtValue">₺86.400,00</b>
+                  <span data-i18n="mock.debtNote">TL karşılığı · 4 borç</span>
+                </div>
+              </div>
+              <div class="ph-list">
+                <small class="ph-h" data-i18n="mock.upcoming">Yaklaşan ödemeler</small>
+                <div class="ph-row"><i class="dot warn"></i><span data-i18n="mock.row1">Elektrik faturası</span><b data-i18n="mock.row1Value">₺1.240,00</b></div>
+                <div class="ph-row"><i class="dot"></i><span data-i18n="mock.row2">Kredi kartı taksiti</span><b data-i18n="mock.row2Value">₺3.500,00</b></div>
+                <div class="ph-row"><i class="dot ok"></i><span data-i18n="mock.row3">Aile arabası · Muayene</span><b data-i18n="mock.row3Value">12 gün</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="float float-a">
+            <span class="f-ico">✓</span>
+            <div><b data-i18n="mock.floatA">Kira ödendi</b><small data-i18n="mock.floatASub">Ayşe · 2 dk önce</small></div>
+          </div>
+          <div class="float float-b">
+            <span class="f-ico gold">◎</span>
+            <div><b data-i18n="mock.floatB">USD · EUR · Çeyrek altın</b><small data-i18n="mock.floatBSub">Güncel kurla TL karşılığı</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Öne çıkanlar -->
+    <section class="strip" aria-label="Öne çıkanlar" data-i18n-attr="aria-label:strip.label">
+      <div class="wrap strip-inner">
+        <div><b data-i18n="strip.a">Birden fazla hane</b><span data-i18n="strip.aSub">Ev, yazlık, anne-baba evi</span></div>
+        <div><b data-i18n="strip.b">4 para birimi</b><span data-i18n="strip.bSub">TL, USD, EUR, çeyrek altın</span></div>
+        <div><b data-i18n="strip.c">Web + mobil</b><span data-i18n="strip.cSub">Aynı hesap, her cihazda</span></div>
+        <div><b data-i18n="strip.d">Türkçe ve İngilizce</b><span data-i18n="strip.dSub">Açık ve koyu tema</span></div>
+      </div>
+    </section>
+
+    <!-- Özellikler -->
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow" data-i18n="features.eyebrow">Özellikler</p>
+          <h2 data-i18n="features.title">Bir ailenin parayla ilgili her işi</h2>
+          <p class="sub" data-i18n="features.sub">Excel tablolarına, not defterlerine ve mesaj gruplarına dağılmış bilgiyi tek yerde toplar.</p>
+        </div>
+        <div class="grid">
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM5.2 4l.9 2H20a1 1 0 0 1 .9 1.4l-3.2 6A2 2 0 0 1 16 14.5H8.1l-1 1.8h12v2H7a2 2 0 0 1-1.8-3l1.4-2.4L3 4H1V2h3.3z"/></svg></span>
+            <h3 data-i18n="f1.t">Harcamalar</h3>
+            <p data-i18n="f1.d">Kategori, ödeme aracı ve kişiyle kaydet. Kart, nakit ve banka hesabı ayrı ayrı; yemek kartı toplamı şişirmez.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-2H5V10h14v2h2V6a2 2 0 0 0-2-2zm-1 10a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm1.6 5.6-2.3-1.3V15h1.2v2.6l1.7 1z"/></svg></span>
+            <h3 data-i18n="f2.t">Sabit ödemeler ve taksitler</h3>
+            <p data-i18n="f2.d">Faturalar, abonelikler, kira ve taksit planları. Ödediğinde kaydı oluşur; hangi ayın ödendiği kendiliğinden görünür.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 7h-1V5a2 2 0 0 0-2-2H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM5 5h13v2H5a1 1 0 0 1 0-2zm15 14H5a1 1 0 0 1-1-1V8.8c.3.1.6.2 1 .2h15v3h-4a2 2 0 0 0 0 4h4v3"/></svg></span>
+            <h3 data-i18n="f3.t">Borçlar</h3>
+            <p data-i18n="f3.d">Kimden aldın, ne kadar ödedin, ne kaldı. Döviz ve çeyrek altın borçlar güncel kurla TL karşılığıyla görünür.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 2.5c-1.6 0-3 .9-3.5 2.1C12 3.4 10.6 2.5 9 2.5 6.8 2.5 5 4.3 5 6.5c0 3.4 4.4 6 7.5 8.5 3.1-2.5 7.5-5.1 7.5-8.5 0-2.2-1.8-4-4-4zM2 15h3v7H2zm5 0h4.5l3 1.5h4a2 2 0 0 1 0 4H9.5L7 19.5z"/></svg></span>
+            <h3 data-i18n="f4.t">Bağışlar, hedefler, emanetler</h3>
+            <p data-i18n="f4.d">Zekât, sadaka, burs… Yıllık hedef koy, ne kadarını verdiğini gör. Başkasının sana bıraktığı parayı ayrı takip et.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18.9 6a1.5 1.5 0 0 0-1.4-1h-11a1.5 1.5 0 0 0-1.4 1L3 12v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h12v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-8zM6.5 16A1.5 1.5 0 1 1 8 14.5 1.5 1.5 0 0 1 6.5 16zm11 0a1.5 1.5 0 1 1 1.5-1.5 1.5 1.5 0 0 1-1.5 1.5zM5 11l1.5-4.5h11L19 11z"/></svg></span>
+            <h3 data-i18n="f5.t">Araçlar</h3>
+            <p data-i18n="f5.d">Muayene, trafik sigortası, kasko, MTV ve bakım tarihleri. Süresi yaklaşan işlem Özet'te seni uyarır.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm2 2v4h4V5zm6 0v4h8V5zm-6 6v8h4v-8zm6 0v8h8v-8z"/></svg></span>
+            <h3 data-i18n="f6.t">Yıllık tablo</h3>
+            <p data-i18n="f6.d">Gelirlerini aylara gir; giderler kayıtlardan kendiliğinden dolar. Yılın her ayında ne kaldığını gör.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13zm8 0h-1.1A4.2 4.2 0 0 1 17 16.5V19h6v-2.5c0-2.3-4.7-3.5-7-3.5z"/></svg></span>
+            <h3 data-i18n="f7.t">Aileyle birlikte</h3>
+            <p data-i18n="f7.d">Eşini, çocuklarını ya da kardeşini davet et. Yönetici ve üye rolleriyle kimin neyi görüp değiştirebileceği belli.</p>
+          </article>
+          <article class="feature">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15.9V19h-2v-1.1A4 4 0 0 1 8 14h2a2 2 0 1 0 2-2 4 4 0 0 1-1-7.9V3h2v1.1A4 4 0 0 1 16 8h-2a2 2 0 1 0-2 2 4 4 0 0 1 1 7.9z"/></svg></span>
+            <h3 data-i18n="f8.t">Güncel kurlar</h3>
+            <p data-i18n="f8.d">USD ve EUR kuru her gün TCMB'den otomatik gelir; istersen kendi kurunu girersin. Çeyrek altın fiyatını sen belirlersin.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nasıl çalışır -->
+    <section class="section section-alt" id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow" data-i18n="how.eyebrow">Nasıl çalışır</p>
+          <h2 data-i18n="how.title">Üç adımda başla</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="num">1</span>
+            <h3 data-i18n="how.s1t">Haneni oluştur</h3>
+            <p data-i18n="how.s1d">Hesap açarken haneni adlandır. Kategoriler ve temel tanımlar hazır gelir.</p>
+          </li>
+          <li>
+            <span class="num">2</span>
+            <h3 data-i18n="how.s2t">Aileni davet et</h3>
+            <p data-i18n="how.s2d">E-postayla davet gönder. Davet 7 gün geçerlidir; kabul eden kişi doğrudan hanene katılır.</p>
+          </li>
+          <li>
+            <span class="num">3</span>
+            <h3 data-i18n="how.s3t">Kaydet, Özet'te gör</h3>
+            <p data-i18n="how.s3d">Harcamayı girdiğin an dönem toplamı, bekleyen ödemeler ve borç durumu güncellenir.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Gizlilik -->
+    <section class="section" id="privacy">
+      <div class="wrap privacy">
+        <div class="section-head left">
+          <p class="eyebrow" data-i18n="privacy.eyebrow">Gizlilik</p>
+          <h2 data-i18n="privacy.title">Verin senin; hanen de sadece sizin.</h2>
+          <p class="sub" data-i18n="privacy.sub">Abacasa reklam göstermez ve verini satmaz. KVKK'ya uygun aydınlatma metni ve açık onay akışıyla çalışır.</p>
+        </div>
+        <ul class="checks">
+          <li data-i18n="privacy.c1">Her hanenin kayıtları birbirinden tamamen ayrı tutulur.</li>
+          <li data-i18n="privacy.c2">Tüm verini istediğin an Excel dosyası olarak indirebilirsin.</li>
+          <li data-i18n="privacy.c3">Hesabını sildiğinde kişisel bilgilerin anonimleştirilir.</li>
+          <li data-i18n="privacy.c4">Oturumlarını görür, tanımadığın cihazı tek dokunuşla kapatırsın.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SSS -->
+    <section class="section section-alt" id="faq">
+      <div class="wrap narrow">
+        <div class="section-head">
+          <p class="eyebrow" data-i18n="faq.eyebrow">SSS</p>
+          <h2 data-i18n="faq.title">Sık sorulan sorular</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary data-i18n="faq.q1">Birden fazla haneyi yönetebilir miyim?</summary>
+            <p data-i18n="faq.a1">Evet. Kendi evin, yazlık ya da anne-babanın evi için ayrı haneler açabilir, aralarında tek dokunuşla geçebilirsin. Her hanenin üyeleri ve kayıtları ayrıdır.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q2">Hangi para birimlerini destekliyor?</summary>
+            <p data-i18n="faq.a2">Türk lirası, ABD doları, euro ve çeyrek altın. Döviz ve altın kayıtları güncel kurla TL karşılığına çevrilerek toplamlara katılır.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q3">Kurlar nereden geliyor?</summary>
+            <p data-i18n="faq.a3">USD ve EUR için TCMB döviz satış kuru her gün otomatik alınır. Hanen kendi kurunu da girebilir; tarihi yeni olan kullanılır. Çeyrek altın fiyatı elle girilir.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q4">Mobil uygulama ne zaman çıkıyor?</summary>
+            <p data-i18n="faq.a4">iOS ve Android uygulamaları yakında mağazalarda. O zamana kadar web uygulamasını telefonunun tarayıcısından da rahatça kullanabilirsin.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q5">Verilerimi başka bir yere taşıyabilir miyim?</summary>
+            <p data-i18n="faq.a5">Evet. Profil sayfasından kişisel verilerini, hane ayarlarından da hanenin tüm kayıtlarını Excel olarak indirebilirsin.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Son çağrı -->
+    <section class="final">
+      <div class="wrap final-inner">
+        <img src="assets/app-icon.png" alt="" width="64" height="64">
+        <h2 data-i18n="final.title">Bu ayın bütçesine bugün başla.</h2>
+        <p data-i18n="final.sub">Birkaç dakikada haneni kur, aileni davet et.</p>
+        <a class="btn btn-light" data-app="/auth/register" href="https://app.abacasa.com/auth/register" data-i18n="final.cta">Hesap oluştur</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="brand small">
+        <img src="assets/app-icon.png" alt="" width="28" height="28">
+        <span>Abacasa</span>
+      </div>
+      <nav class="footer-links" aria-label="Yasal" data-i18n-attr="aria-label:footer.label">
+        <a data-app="/legal/terms" href="https://app.abacasa.com/legal/terms" data-i18n="footer.terms">Kullanım koşulları</a>
+        <a data-app="/legal/privacy" href="https://app.abacasa.com/legal/privacy" data-i18n="footer.privacy">Aydınlatma metni</a>
+        <a href="mailto:info@factech.app" data-i18n="footer.contact">İletişim</a>
+      </nav>
+      <p class="copy">© <span id="year">2026</span> Abacasa</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
