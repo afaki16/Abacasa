@@ -53,7 +53,7 @@ public class DataExportService : IDataExportService
         var rates = await _context.ExchangeRates.AsNoTracking().OrderBy(r => r.Date).ThenBy(r => r.Id).ToListAsync(cancellationToken);
         var targets = await _context.DonationTargets.AsNoTracking().Include(t => t.OwnerPerson)
             .OrderBy(t => t.Year).ThenBy(t => t.Id).ToListAsync(cancellationToken);
-        var budgets = await _context.Budgets.AsNoTracking().Include(b => b.OwnerPerson)
+        var budgets = await _context.Budgets.AsNoTracking().Include(b => b.OwnerPerson).Include(b => b.Category)
             .OrderBy(b => b.StartYear).ThenBy(b => b.StartMonth).ThenBy(b => b.Id).ToListAsync(cancellationToken);
         var movements = await _context.FundMovements.AsNoTracking().Include(m => m.Fund).ThenInclude(f => f.FromPerson)
             .OrderBy(m => m.Date).ThenBy(m => m.Id).ToListAsync(cancellationToken);
@@ -88,7 +88,10 @@ public class DataExportService : IDataExportService
 
         AddSheet(workbook, "Bağışlar", donations,
             new Column<Donation>("Tarih", d => d.Date, DateFormat),
-            new Column<Donation>("Tutar", d => d.Amount, MoneyFormat),
+            new Column<Donation>("Tutar (TL)", d => d.Amount, MoneyFormat),
+            new Column<Donation>("Para birimi", d => CurrencyLabel(d.Currency)),
+            new Column<Donation>("Döviz tutarı", d => d.ForeignAmount, MoneyFormat),
+            new Column<Donation>("Kur", d => d.ExchangeRate, RateFormat),
             new Column<Donation>("Tür", d => DonationKindLabel(d.Kind)),
             new Column<Donation>("Alıcı", d => d.Recipient),
             new Column<Donation>("Veren", d => d.GiverPerson?.Name),
@@ -143,6 +146,7 @@ public class DataExportService : IDataExportService
 
         AddSheet(workbook, "Bütçeler", budgets,
             new Column<Budget>("Kişi", b => b.OwnerPerson?.Name ?? "Hane"),
+            new Column<Budget>("Kategori", b => b.Category?.Name),
             new Column<Budget>("Başlangıç yılı", b => b.StartYear),
             new Column<Budget>("Başlangıç ayı", b => b.StartMonth),
             new Column<Budget>("Tutar", b => b.Amount, MoneyFormat),
@@ -177,6 +181,7 @@ public class DataExportService : IDataExportService
         AddSheet(workbook, "Araçlar", vehicles,
             new Column<Vehicle>("Ad", v => v.Name),
             new Column<Vehicle>("Plaka", v => v.Plate),
+            new Column<Vehicle>("Tür", v => VehicleTypeLabel(v.Type)),
             new Column<Vehicle>("Sahibi", v => v.OwnerPerson?.Name),
             new Column<Vehicle>("Aktif", v => v.IsActive),
             new Column<Vehicle>("Not", v => v.Note));
@@ -376,6 +381,16 @@ public class DataExportService : IDataExportService
         PaymentMethodType.BankAccount => "Banka hesabı",
         PaymentMethodType.CreditCard => "Kredi kartı",
         PaymentMethodType.MealCard => "Yemek kartı",
+        _ => type.ToString()
+    };
+
+    private static string VehicleTypeLabel(VehicleType type) => type switch
+    {
+        VehicleType.Car => "Otomobil",
+        VehicleType.Motorcycle => "Motosiklet",
+        VehicleType.LightCommercial => "Hafif ticari",
+        VehicleType.Truck => "Kamyon",
+        VehicleType.Other => "Diğer",
         _ => type.ToString()
     };
 

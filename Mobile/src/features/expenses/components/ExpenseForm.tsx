@@ -84,7 +84,7 @@ export function ExpenseForm({ variant, expense, onSave, onSaved }: ExpenseFormPr
   const categoryOptions: SelectOption<number>[] = (categories.data ?? []).map((c) => ({
     value: c.id,
     label: c.name,
-    icon: categoryIcon(c.name),
+    icon: categoryIcon(c.name, c.icon),
   }));
   const paymentMethodOptions: SelectOption<number>[] = (paymentMethods.data ?? [])
     .filter((m) => m.isActive || m.id === expense?.paymentMethodId)

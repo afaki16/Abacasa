@@ -49,6 +49,7 @@ public class CreateVehicleCommandHandler : IRequestHandler<CreateVehicleCommand,
         {
             Name = request.Name.Trim(),
             Plate = plate,
+            Type = request.Type,
             OwnerPersonId = owner?.Id,
             OwnerPerson = owner,
             Note = string.IsNullOrWhiteSpace(request.Note) ? null : request.Note.Trim()

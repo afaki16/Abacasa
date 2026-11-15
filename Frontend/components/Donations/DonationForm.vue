@@ -16,6 +16,24 @@
           />
         </div>
         <div class="ui-col ui-col-12 ui-col-sm-6">
+          <!-- Emanetten dağıtım yalnızca TL -->
+          <UiSelect
+            v-model="formData.currency"
+            :items="currencyOptions"
+            item-title="title"
+            item-value="value"
+            :label="t('donations.form.currency')"
+            :disabled="loading || !!formData.fundId"
+            prepend-inner-icon="mdi-cash-multiple"
+            density="comfortable"
+            hide-details="auto"
+            class="modern-input"
+          />
+        </div>
+      </div>
+
+      <div class="ui-row">
+        <div class="ui-col ui-col-12 ui-col-sm-6" v-if="!isForeign">
           <UiTextField
             v-model.number="formData.amount"
             :label="t('budget.amount')"
@@ -30,10 +48,48 @@
             class="modern-input"
           />
         </div>
+        <template v-else>
+          <div class="ui-col ui-col-12 ui-col-sm-6">
+            <UiTextField
+              v-model.number="formData.foreignAmount"
+              :label="isGold ? t('donations.form.quantity') : t('donations.form.foreignAmount', { currency: currencyLabel(formData.currency) })"
+              type="number"
+              min="0"
+              :step="isGold ? 1 : 0.01"
+              :disabled="loading"
+              prepend-inner-icon="mdi-cash"
+              density="comfortable"
+              hide-details="auto"
+              :rules="[rules.required, amountRule, wholeRule]"
+              class="modern-input"
+            />
+          </div>
+          <div class="ui-col ui-col-12 ui-col-sm-6">
+            <!-- Bağış günündeki kur önerilir (elle değiştirilebilir) -->
+            <UiTextField
+              v-model.number="formData.exchangeRate"
+              :label="isGold ? t('exchangeRates.goldPrice') : t('exchangeRates.rate')"
+              type="number"
+              min="0"
+              step="0.0001"
+              :disabled="loading"
+              prepend-inner-icon="mdi-swap-horizontal"
+              density="comfortable"
+              hide-details="auto"
+              :rules="[rules.required, amountRule]"
+              :hint="rateHint"
+              :persistent-hint="!!rateHint"
+              class="modern-input"
+            />
+          </div>
+          <div class="ui-col ui-col-12 text-[0.875rem] text-black/70 dark:text-white/70">
+            {{ t('donations.form.amountInTry', { amount: formatMoney(amountInTry) }) }}
+          </div>
+        </template>
       </div>
 
       <!-- İsteğe bağlı: emanetten dağıtım. Seçilince tür emanetin türüne ayarlanır ve kilitlenir -->
-      <div class="ui-row" v-if="showFund !== false && (fundOptions.length || formData.fundId)">
+      <div class="ui-row" v-if="showFund !== false && !isForeign && (fundOptions.length || formData.fundId)">
         <div class="ui-col ui-col-12">
           <UiSelect
             v-model="formData.fundId"
@@ -154,10 +210,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Donation, DonationFund, PaymentMethod, CreateDonationRequest, UpdateDonationRequest } from '~/types'
-import { DonationKind } from '~/types'
+import type { CurrentRate, Donation, DonationFund, PaymentMethod, CreateDonationRequest, UpdateDonationRequest } from '~/types'
+import { Currency, DonationKind } from '~/types'
 import { ref, reactive, watch, computed } from 'vue'
-import { todayIso } from '~/utils/period'
+import { formatDisplayDate, todayIso } from '~/utils/period'
 
 // Veren seçiminde "Hane" seçeneğinin değeri; gönderirken giverPersonId boş bırakılır
 const HOUSEHOLD = 0
@@ -182,13 +238,18 @@ const emit = defineEmits<{
 
 const { validationRules: rules } = useValidators()
 const { kindOptions, getKindLabel } = useDonations()
-const { formatMoney } = useMoney()
+const { formatMoney, currencyLabel } = useMoney()
+const { currencyOptions, getRatesAsOf } = useDebts()
+const { hasPermission } = useAuth()
 const { t } = useI18n()
 
 const formRef = ref()
 const formData = reactive({
   date: todayIso(),
   amount: null as number | null,
+  currency: Currency.TRY as Currency,
+  foreignAmount: null as number | null,
+  exchangeRate: null as number | null,
   kind: DonationKind.Donation as DonationKind,
   recipient: '',
   giverPersonId: HOUSEHOLD as number,
@@ -216,6 +277,43 @@ watch(selectedFund, (fund) => {
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
+// Döviz: TL karşılığı backend ile aynı hesaplanır (tutar × kur, 2 haneye yuvarlanır)
+const isForeign = computed(() => formData.currency !== Currency.TRY)
+const isGold = computed(() => formData.currency === Currency.QuarterGold)
+const wholeRule = (v: number | null) => !isGold.value || v === null || Number.isInteger(Number(v)) || t('debts.form.goldWhole')
+const amountInTry = computed(() =>
+  Math.round((Number(formData.foreignAmount) || 0) * (Number(formData.exchangeRate) || 0) * 100) / 100
+)
+
+// Bağış günündeki kur önerisi: tarih ya da birim değişince getirilir; kullanıcı kuru değiştirdiyse dokunulmaz
+const suggestedRate = ref<CurrentRate | null>(null)
+const rateHint = computed(() =>
+  suggestedRate.value
+    ? t('debts.payments.rateOnDate', {
+        date: formatDisplayDate(suggestedRate.value.date),
+        source: suggestedRate.value.source === 'TCMB' ? 'TCMB' : t('debts.payments.rateManual'),
+      })
+    : ''
+)
+let rateRequest = 0
+let autoRate: number | null = null
+watch(
+  () => [formData.date, formData.currency] as const,
+  async ([date, currency], old) => {
+    suggestedRate.value = null
+    const request = ++rateRequest
+    // Düzenleme açılışında kayıtlı kur korunur; yalnızca tarih/birim değişince öneri gelir
+    if (!old || currency === Currency.TRY || !date || !hasPermission('ExchangeRates.Read')) return
+    const before = formData.exchangeRate
+    const rate = (await getRatesAsOf(date)).find((r) => r.currency === currency) ?? null
+    if (request !== rateRequest || !rate) return
+    if (formData.exchangeRate !== before && formData.exchangeRate !== autoRate) return
+    formData.exchangeRate = rate.rate
+    autoRate = rate.rate
+    suggestedRate.value = rate
+  }
+)
+
 const amountRule = (v: number | null) => (v !== null && Number(v) > 0) || t('budget.amountPositive')
 const recipientRule = (v: string) => !!v?.trim() || t('budget.recipientRequired')
 
@@ -235,6 +333,9 @@ watch(
     Object.assign(formData, {
       date: newVal?.date || todayIso(),
       amount: newVal?.amount ?? null,
+      currency: newVal?.currency ?? Currency.TRY,
+      foreignAmount: newVal?.foreignAmount ?? null,
+      exchangeRate: newVal?.exchangeRate ?? null,
       kind: newVal?.kind ?? DonationKind.Donation,
       recipient: newVal?.recipient || '',
       giverPersonId: newVal?.giverPersonId ?? HOUSEHOLD,
@@ -259,14 +360,17 @@ const handleSubmit = async () => {
 
   const submitData = {
     date: formData.date,
-    amount: Number(formData.amount),
+    amount: isForeign.value ? amountInTry.value : Number(formData.amount),
+    currency: formData.currency,
+    foreignAmount: isForeign.value ? Number(formData.foreignAmount) : undefined,
+    exchangeRate: isForeign.value ? Number(formData.exchangeRate) : undefined,
     kind: formData.kind,
     recipient: formData.recipient.trim(),
     giverPersonId: formData.giverPersonId === HOUSEHOLD ? undefined : formData.giverPersonId,
     paymentMethodId: formData.paymentMethodId as number,
     note: formData.note?.trim() || undefined,
     // Alan gizliyken (modül kapalı) düzenlenen kaydın mevcut emaneti değişmeden gönderilir
-    fundId: (props.showFund === false ? props.donation?.fundId : formData.fundId) ?? undefined,
+    fundId: isForeign.value ? undefined : (props.showFund === false ? props.donation?.fundId : formData.fundId) ?? undefined,
   }
 
   if (props.donation) {

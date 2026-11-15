@@ -1,4 +1,4 @@
-// Liste ikonları. Kategorilerin backend'de ikonu yok: addaki anahtar kelimeye göre tahmin edilir,
+// Liste ikonları. Kategoride kullanıcının seçtiği ikon varsa o; yoksa addaki anahtar kelimeye göre tahmin edilir,
 // bulunamazsa genel kategori ikonu. Saf; testlidir.
 
 import type { IconName } from '@/components/ui';
@@ -25,7 +25,16 @@ const CATEGORY_ICONS: [string[], IconName][] = [
   [['spor', 'sport', 'gym'], 'fitness-center'],
 ];
 
-export function categoryIcon(name: string | null | undefined): IconName {
+/** Seçilebilen kategori ikonları (backend CategoryIcons ile aynı liste). */
+export const CATEGORY_ICON_KEYS: IconName[] = [
+  'category', 'shopping-cart', 'shopping-bag', 'restaurant', 'local-cafe', 'home', 'receipt', 'bolt',
+  'water-drop', 'wifi', 'smartphone', 'local-gas-station', 'directions-car', 'directions-bus', 'flight',
+  'school', 'medical-services', 'checkroom', 'child-care', 'pets', 'fitness-center', 'celebration', 'movie',
+  'card-giftcard', 'volunteer-activism', 'build', 'savings', 'spa',
+];
+
+export function categoryIcon(name: string | null | undefined, icon?: string | null): IconName {
+  if (icon && (CATEGORY_ICON_KEYS as string[]).includes(icon)) return icon as IconName;
   const lower = ` ${(name ?? '').toLocaleLowerCase('tr-TR')} `;
   for (const [words, icon] of CATEGORY_ICONS) {
     if (words.some((w) => lower.includes(w))) return icon;

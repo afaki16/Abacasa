@@ -119,6 +119,9 @@ public class DonationsController : BaseController
             GiverPersonId = dto.GiverPersonId,
             PaymentMethodId = dto.PaymentMethodId,
             Note = dto.Note,
+            Currency = dto.Currency,
+            ForeignAmount = dto.ForeignAmount,
+            ExchangeRate = dto.ExchangeRate,
             FundId = dto.FundId
         });
 
@@ -153,6 +156,9 @@ public class DonationsController : BaseController
             GiverPersonId = dto.GiverPersonId,
             PaymentMethodId = dto.PaymentMethodId,
             Note = dto.Note,
+            Currency = dto.Currency,
+            ForeignAmount = dto.ForeignAmount,
+            ExchangeRate = dto.ExchangeRate,
             FundId = dto.FundId
         });
         return HandleResult(result);

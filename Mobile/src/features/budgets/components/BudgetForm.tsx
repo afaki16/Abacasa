@@ -5,7 +5,9 @@ import { View } from 'react-native';
 
 import { AmountField, Button, Card, FormError, FormField, Text } from '@/components/ui';
 import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
+import { useCategoryOptions } from '@/features/categories/hooks';
 import { yearOptions } from '@/features/donations/summary';
+import { categoryIcon } from '@/features/expenses/icons';
 import { usePersonOptions } from '@/features/people/hooks';
 import { Labeled } from '@/features/recurringPayments/components/form/Bits';
 import { SelectField, useServerFieldErrors } from '@/features/recurringPayments/components/form/Fields';
@@ -17,7 +19,7 @@ import { monthName } from '@/lib/format/period';
 import { budgetFormSchema, budgetFormToRequest, budgetToForm, type BudgetFormValues } from '../form';
 import type { Budget, BudgetReport, CreateBudgetRequest } from '../types';
 
-const SERVER_FIELDS = ['ownerPersonId', 'startYear', 'startMonth', 'amount', 'note'] as const;
+const SERVER_FIELDS = ['ownerPersonId', 'categoryId', 'startYear', 'startMonth', 'amount', 'note'] as const;
 
 export interface BudgetFormProps {
   budget?: Budget;
@@ -36,18 +38,23 @@ export function BudgetForm({ budget, defaultYear, defaultMonth, suggestion, pend
   const styles = useStyles();
   const colors = useColors();
   const people = usePersonOptions();
+  const categories = useCategoryOptions();
   const { control, handleSubmit, setError, setValue } = useForm<BudgetFormValues>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: budgetToForm(budget, defaultYear, defaultMonth),
   });
   const restErrors = useServerFieldErrors(error, setError, SERVER_FIELDS);
-  const owner = useWatch({ control, name: 'ownerPersonId' });
+  const [owner, category] = useWatch({ control, name: ['ownerPersonId', 'categoryId'] });
   const years = yearOptions(new Date().getFullYear());
   if (budget && !years.includes(budget.startYear)) years.push(budget.startYear);
 
   const personOptions = [
     { value: 0, label: t('donations.household') },
     ...(people.data ?? []).map((p) => ({ value: p.id, label: p.name, description: p.relation ?? undefined })),
+  ];
+  const categoryOptions = [
+    { value: 0, label: t('budgets.general'), icon: 'savings' as const },
+    ...(categories.data ?? []).map((c) => ({ value: c.id, label: c.name, icon: categoryIcon(c.name, c.icon) })),
   ];
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: monthName(i + 1) }));
   const submit = () => handleSubmit((v) => onSubmit(budgetFormToRequest(v)))();
@@ -62,17 +69,40 @@ export function BudgetForm({ budget, defaultYear, defaultMonth, suggestion, pend
       <Card>
         <Controller
           control={control}
-          name="ownerPersonId"
+          name="categoryId"
           render={({ field, fieldState }) => (
             <SelectField<number>
-              label={t('budgets.fields.owner')}
-              options={personOptions}
+              label={t('budgets.fields.category')}
+              options={categoryOptions}
               value={field.value ?? 0}
-              onChange={(v) => field.onChange(v === 0 ? null : v)}
+              onChange={(v) => {
+                field.onChange(v === 0 ? null : v);
+                // Kategori bütçesi hane genelidir
+                if (v !== 0) setValue('ownerPersonId', null);
+              }}
               error={fieldState.error?.message}
             />
           )}
         />
+        {category == null ? (
+          <Controller
+            control={control}
+            name="ownerPersonId"
+            render={({ field, fieldState }) => (
+              <SelectField<number>
+                label={t('budgets.fields.owner')}
+                options={personOptions}
+                value={field.value ?? 0}
+                onChange={(v) => field.onChange(v === 0 ? null : v)}
+                error={fieldState.error?.message}
+              />
+            )}
+          />
+        ) : (
+          <Text variant="caption" muted>
+            {t('budgets.categoryHint')}
+          </Text>
+        )}
         <Controller
           control={control}
           name="startMonth"
@@ -128,7 +158,7 @@ export function BudgetForm({ budget, defaultYear, defaultMonth, suggestion, pend
         />
       </Card>
 
-      {owner == null && suggestion && income !== null ? (
+      {owner == null && category == null && suggestion && income !== null ? (
         <View style={[styles.suggestion, { backgroundColor: colors.primarySoft }]}>
           <Text variant="bodyStrong" color={colors.primarySoftText}>
             {t('budgets.suggestion.title')}

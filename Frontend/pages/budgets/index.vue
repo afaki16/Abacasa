@@ -30,6 +30,7 @@
       <thead>
         <tr>
           <th>{{ t('budget.person') }}</th>
+          <th>{{ t('budgets.form.category') }}</th>
           <th>{{ t('budgets.validFrom') }}</th>
           <th class="!text-right">{{ t('budgets.monthlyAmount') }}</th>
           <th>{{ t('budget.note') }}</th>
@@ -39,6 +40,13 @@
       <tbody>
         <tr v-for="b in budgets" :key="b.id">
           <td>{{ b.ownerName ?? t('budget.household') }}</td>
+          <td>
+            <span v-if="b.categoryId" class="inline-flex items-center gap-1">
+              <UiIcon :icon="categoryMdiIcon(b.categoryIcon, b.categoryName)" :size="16" color="primary" />
+              {{ b.categoryName }}
+            </span>
+            <span v-else class="text-black/60 dark:text-white/70">{{ t('budgets.form.general') }}</span>
+          </td>
           <td class="capitalize">{{ formatMonth(b.startYear, b.startMonth) }}</td>
           <td class="!text-right">
             <span v-if="b.amount > 0">{{ formatMoney(b.amount) }}</span>
@@ -51,7 +59,7 @@
           </td>
         </tr>
         <tr v-if="!budgets.length">
-          <td :colspan="canUpdate || canDelete ? 5 : 4" class="text-black/60 dark:text-white/70">{{ t('budgets.noRecords') }}</td>
+          <td :colspan="canUpdate || canDelete ? 6 : 5" class="text-black/60 dark:text-white/70">{{ t('budgets.noRecords') }}</td>
         </tr>
       </tbody>
     </table></div>
@@ -71,6 +79,7 @@
       :year="year"
       :month="month"
       :people="people"
+      :categories="categories"
       :suggestion="report?.suggestion"
       :loading="isSaving"
       @submit="submitBudget"
@@ -82,7 +91,7 @@
   <ConfirmDialog
     :model-value="!!budgetToDelete"
     :title="t('budgets.deleteTitle')"
-    :message="t('budgets.deleteMessage', { owner: budgetToDelete?.ownerName ?? t('budget.household'), month: budgetToDelete ? formatMonth(budgetToDelete.startYear, budgetToDelete.startMonth) : '' })"
+    :message="t('budgets.deleteMessage', { owner: budgetToDelete?.categoryName ?? budgetToDelete?.ownerName ?? t('budget.household'), month: budgetToDelete ? formatMonth(budgetToDelete.startYear, budgetToDelete.startMonth) : '' })"
     type="error"
     :confirm-text="t('common.delete')"
     :loading="isSaving"
@@ -100,6 +109,7 @@ import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
 import { addMonths, todayIso } from "~/utils/period";
 import { useToastStore } from "~/stores/toast";
+import { categoryMdiIcon } from "~/utils/categoryIcons";
 
 //#region Page Metadata
 definePageMeta({
@@ -120,6 +130,7 @@ useHead({
 const { formatMoney } = useMoney();
 const { hasPermission } = useAuth();
 const { getPeople } = usePeople();
+const { getCategories } = useCategories();
 const { getBudgetReport, getBudgets, createBudget, updateBudget, deleteBudget, formatMonth } = useBudgets();
 const toastStore = useToastStore();
 //#endregion
@@ -170,6 +181,7 @@ const shift = async (direction: number) => {
 
 //#region Form ve silme
 const people = ref<{ id: number; name: string }[]>([]);
+const categories = ref<{ id: number; name: string; icon?: string | null }[]>([]);
 const formDialog = ref(false);
 const editingBudget = ref<Budget | null>(null);
 const budgetToDelete = ref<Budget | null>(null);
@@ -226,6 +238,10 @@ onMounted(async () => {
   if (hasPermission("People.Read")) {
     const peopleRes = await getPeople(1, 1000, "");
     people.value = peopleRes?.data?.items || [];
+  }
+  if (hasPermission("Categories.Read")) {
+    const categoriesRes = await getCategories(1, 1000, "");
+    categories.value = categoriesRes?.data?.items || [];
   }
   await load();
 });

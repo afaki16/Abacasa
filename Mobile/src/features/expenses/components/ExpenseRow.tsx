@@ -38,7 +38,7 @@ export function ExpenseRow({ expense, onEdit, onDelete }: ExpenseRowProps) {
   const content = (
     <View style={[styles.row, styles.divider]}>
       <View style={styles.tile}>
-        <Icon name={categoryIcon(expense.categoryName)} size={22} color={colors.iconTileText} />
+        <Icon name={categoryIcon(expense.categoryName, expense.categoryIcon)} size={22} color={colors.iconTileText} />
       </View>
       <View style={styles.texts}>
         <Text variant="bodyStrong" numberOfLines={1}>

@@ -83,6 +83,7 @@ public class BudgetsController : BaseController
         var result = await _mediator.Send(new CreateBudgetCommand
         {
             OwnerPersonId = dto.OwnerPersonId,
+            CategoryId = dto.CategoryId,
             StartYear = dto.StartYear,
             StartMonth = dto.StartMonth,
             Amount = dto.Amount,
@@ -115,6 +116,7 @@ public class BudgetsController : BaseController
         {
             Id = id,
             OwnerPersonId = dto.OwnerPersonId,
+            CategoryId = dto.CategoryId,
             StartYear = dto.StartYear,
             StartMonth = dto.StartMonth,
             Amount = dto.Amount,

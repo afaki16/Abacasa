@@ -7,6 +7,8 @@ public class CreateBudgetDto
 {
     /// Boşsa hane
     public int? OwnerPersonId { get; set; }
+    /// Doluysa kategori bütçesi (yalnızca hane geneli; kişi boş olmalı)
+    public int? CategoryId { get; set; }
     public int StartYear { get; set; }
     public int StartMonth { get; set; }
     /// 0: bu aydan itibaren bütçe yok
@@ -17,6 +19,8 @@ public class CreateBudgetDto
 public class UpdateBudgetDto
 {
     public int? OwnerPersonId { get; set; }
+    /// Doluysa kategori bütçesi (yalnızca hane geneli; kişi boş olmalı)
+    public int? CategoryId { get; set; }
     public int StartYear { get; set; }
     public int StartMonth { get; set; }
     public decimal Amount { get; set; }
@@ -28,6 +32,9 @@ public class BudgetDto
     public int Id { get; set; }
     public int? OwnerPersonId { get; set; }
     public string? OwnerName { get; set; }       // Boşsa hane
+    public int? CategoryId { get; set; }
+    public string? CategoryName { get; set; }
+    public string? CategoryIcon { get; set; }
     public int StartYear { get; set; }
     public int StartMonth { get; set; }
     public decimal Amount { get; set; }
@@ -48,6 +55,8 @@ public class BudgetReportDto
     public BudgetRowDto? Household { get; set; }
     /// Kişi bütçeleri (ada göre), sonra hane bütçesi varsa Ortak satırı
     public List<BudgetRowDto> Rows { get; set; } = new();
+    /// Kategori bütçeleri (kategori adına göre); kullanılan = kategorinin ay harcamaları + bekleyen vadeleri (bütün kişiler)
+    public List<BudgetRowDto> Categories { get; set; } = new();
     /// Kişi bütçelerinin toplamı hane bütçesini aşıyor; Ortak bütçe 0 sayılır
     public bool PersonBudgetsExceedHousehold { get; set; }
     /// Tutarı belli olmayan bekleyen vadeler kullanılana girmez
@@ -62,6 +71,9 @@ public class BudgetRowDto
     /// Boşsa hane ya da Ortak
     public int? PersonId { get; set; }
     public string? Name { get; set; }
+    /// Kategori satırında dolu
+    public int? CategoryId { get; set; }
+    public string? CategoryIcon { get; set; }
     /// Hane bütçesinden kişi bütçeleri çıkınca kalan; kişisiz kayıtlar ve bütçesi olmayan kişilerin harcamaları buraya düşer
     public bool IsShared { get; set; }
     public decimal Budget { get; set; }

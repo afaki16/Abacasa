@@ -29,6 +29,7 @@ export function usageShare(usedPercent: number): number {
 export const budgetFormSchema = z
   .object({
     ownerPersonId: z.number().nullable(),
+    categoryId: z.number().nullable(),
     startYear: z.number(),
     startMonth: z.number(),
     amount: z.string(),
@@ -56,6 +57,7 @@ export type BudgetFormValues = z.infer<typeof budgetFormSchema>;
 export function budgetToForm(budget: Budget | undefined, year: number, month: number): BudgetFormValues {
   return {
     ownerPersonId: budget?.ownerPersonId ?? null,
+    categoryId: budget?.categoryId ?? null,
     startYear: budget?.startYear ?? year,
     startMonth: budget?.startMonth ?? month,
     amount: amountToInput(budget?.amount, 'TRY'),
@@ -65,7 +67,9 @@ export function budgetToForm(budget: Budget | undefined, year: number, month: nu
 
 export function budgetFormToRequest(v: BudgetFormValues): CreateBudgetRequest {
   return {
-    ownerPersonId: v.ownerPersonId,
+    // Kategori bütçesi hane genelidir
+    ownerPersonId: v.categoryId != null ? null : v.ownerPersonId,
+    categoryId: v.categoryId,
     startYear: v.startYear,
     startMonth: v.startMonth,
     amount: parseAmountInput(v.amount) ?? 0,

@@ -173,7 +173,7 @@ export type {
   VehicleReminder
 } from './vehicle'
 
-export { VehicleObligationType } from './vehicle'
+export { VehicleObligationType, VehicleType, VEHICLE_TYPE_ICONS } from './vehicle'
 
 // Dashboard Types
 export type { Dashboard } from './dashboard'

@@ -35,6 +35,15 @@ export const VehicleObligationType = {
 } as const;
 export type VehicleObligationType = (typeof VehicleObligationType)[keyof typeof VehicleObligationType];
 
+export const VehicleType = {
+  Car: 'Car',
+  Motorcycle: 'Motorcycle',
+  LightCommercial: 'LightCommercial',
+  Truck: 'Truck',
+  Other: 'Other',
+} as const;
+export type VehicleType = (typeof VehicleType)[keyof typeof VehicleType];
+
 export const LedgerDirection = { Income: 'Income', Expense: 'Expense' } as const;
 export type LedgerDirection = (typeof LedgerDirection)[keyof typeof LedgerDirection];
 
@@ -48,6 +57,7 @@ export type EnumGroup =
   | 'donationKind'
   | 'fundMovementType'
   | 'vehicleObligationType'
+  | 'vehicleType'
   | 'ledgerDirection'
   | 'householdRole';
 

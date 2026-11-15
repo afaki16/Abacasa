@@ -6,17 +6,27 @@ using Abacasa.Domain.Entities;
 using Abacasa.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Globalization;
+using System.Net;
 using System.Xml.Linq;
 
 namespace Abacasa.Infrastructure.Services;
 
 // TCMB today.xml: kök elemanın Tarih özniteliği (dd.MM.yyyy) listenin tarihidir; hafta sonu ve tatilde son iş günü.
 // USD ve EUR için ForexSelling (döviz satış) okunur; Unit 1'den farklıysa kur = değer / Unit.
+// Geçmiş tarih listeleri arşivden (ArchiveUrlFormat) okunur; yayım olmayan günde arşiv 404 döner.
 public class TcmbRateFetcher : IMarketRateFetcher
 {
     private static readonly HttpClient Http = new();
     private static readonly Currency[] Currencies = { Currency.USD, Currency.EUR };
+
+    // Arşivde geriye bakılan gün (uzun bayram tatilleri dahil)
+    private const int ArchiveLookbackDays = 6;
+
+    // Başarısız geçmiş tarih denemesinin tekrarlanmadığı süre (TCMB'yi her istekte yormamak için)
+    private static readonly TimeSpan FailedRetryAfter = TimeSpan.FromMinutes(10);
+    private static readonly ConcurrentDictionary<DateOnly, DateTime> FailedAttempts = new();
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly TcmbRatesSettings _settings;
@@ -35,6 +45,54 @@ public class TcmbRateFetcher : IMarketRateFetcher
         timeout.CancelAfter(TimeSpan.FromSeconds(_settings.TimeoutSeconds));
 
         var xml = await Http.GetStringAsync(_settings.Url, timeout.Token);
+        return await WriteListAsync(xml);
+    }
+
+    public async Task<IReadOnlyList<MarketRateDto>> FetchForDateAsync(DateOnly date, CancellationToken cancellationToken = default)
+    {
+        if (FailedAttempts.TryGetValue(date, out var failedAt) && DateTime.UtcNow - failedAt < FailedRetryAfter)
+            return Array.Empty<MarketRateDto>();
+
+        try
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromSeconds(_settings.TimeoutSeconds));
+
+            for (var day = date; day >= date.AddDays(-ArchiveLookbackDays); day = day.AddDays(-1))
+            {
+                if (day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+                    continue;
+
+                var url = string.Format(CultureInfo.InvariantCulture, _settings.ArchiveUrlFormat, day.ToDateTime(TimeOnly.MinValue));
+                using var response = await Http.GetAsync(url, timeout.Token);
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    continue; // Tatil ya da henüz yayımlanmamış
+                response.EnsureSuccessStatusCode();
+
+                var written = await WriteListAsync(await response.Content.ReadAsStringAsync(timeout.Token));
+                FailedAttempts.TryRemove(date, out _);
+                return written;
+            }
+
+            _logger.LogWarning("TCMB arsivinde {Date} ve oncesi {Days} gun icin liste yok", date, ArchiveLookbackDays);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or FormatException or System.Xml.XmlException
+            or Microsoft.EntityFrameworkCore.DbUpdateException)
+        {
+            _logger.LogWarning(ex, "TCMB arsivinden {Date} kurlari alinamadi", date);
+        }
+
+        FailedAttempts[date] = DateTime.UtcNow;
+        return Array.Empty<MarketRateDto>();
+    }
+
+    // Listeyi okur, (birim, liste tarihi) kaydını ekler ya da günceller
+    private async Task<IReadOnlyList<MarketRateDto>> WriteListAsync(string xml)
+    {
         var root = XDocument.Parse(xml).Root ?? throw new FormatException("TCMB XML kök elemanı yok");
 
         var dateText = root.Attribute("Tarih")?.Value ?? throw new FormatException("TCMB XML tarihi yok");

@@ -23,6 +23,17 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
         builder.Property(x => x.Kind)
             .IsRequired();
 
+        // Mevcut bağışlar TL sayılır
+        builder.Property(x => x.Currency)
+            .IsRequired()
+            .HasDefaultValue(Abacasa.Domain.Common.Enums.Currency.TRY);
+
+        builder.Property(x => x.ForeignAmount)
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(x => x.ExchangeRate)
+            .HasColumnType("numeric(18,4)");
+
         builder.Property(x => x.Recipient)
             .IsRequired()
             .HasMaxLength(100);

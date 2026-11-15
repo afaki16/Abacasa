@@ -37,6 +37,8 @@
           density="compact"
           hide-details="auto"
           :rules="[rules.required, positiveRule]"
+          :hint="rateHint"
+          :persistent-hint="!!rateHint"
         />
       </div>
       <div class="ui-col ui-col-12 ui-col-sm-6" :class="isForeign ? 'ui-col-md-3' : 'ui-col-md-4'">
@@ -65,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import type { DebtPayment, SaveDebtPaymentRequest } from '~/types'
+import type { CurrentRate, DebtPayment, SaveDebtPaymentRequest } from '~/types'
 import { Currency } from '~/types'
 import { ref, reactive, watch, computed } from 'vue'
-import { todayIso } from '~/utils/period'
+import { formatDisplayDate, todayIso } from '~/utils/period'
 
 const props = defineProps<{
   currency: Currency
@@ -89,6 +91,8 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney } = useMoney()
+const { hasPermission } = useAuth()
+const { getRatesAsOf } = useDebts()
 
 const formRef = ref()
 const formData = reactive({
@@ -127,6 +131,34 @@ const reset = () => {
 }
 
 watch(() => [props.payment, props.remaining, props.currentRate, props.currency], reset, { immediate: true })
+
+// Tarihin kuru: yeni ödemede tarih değişince o gün geçerli kur getirilir; kullanıcı kuru değiştirdiyse dokunulmaz
+const suggestedRate = ref<CurrentRate | null>(null)
+const rateHint = computed(() =>
+  suggestedRate.value
+    ? t('debts.payments.rateOnDate', {
+        date: formatDisplayDate(suggestedRate.value.date),
+        source: suggestedRate.value.source === 'TCMB' ? 'TCMB' : t('debts.payments.rateManual'),
+      })
+    : ''
+)
+let rateRequest = 0
+watch(
+  () => [formData.date, props.currency, props.payment] as const,
+  async ([date]) => {
+    suggestedRate.value = null
+    if (props.payment || !isForeign.value || !date || !hasPermission('ExchangeRates.Read')) return
+    const request = ++rateRequest
+    const previous = formData.exchangeRate
+    const rate = (await getRatesAsOf(date)).find((r) => r.currency === props.currency) ?? null
+    if (request !== rateRequest || !rate) return
+    // Kullanıcı bu arada kuru elle değiştirdiyse öneri yalnızca ipucu olarak kalmaz, kur da değişmez
+    if (formData.exchangeRate !== previous) return
+    formData.exchangeRate = rate.rate
+    suggestedRate.value = rate
+  },
+  { immediate: true }
+)
 
 const handleSubmit = async () => {
   if (props.loading) return

@@ -96,6 +96,7 @@ public class VehiclesController : BaseController
         {
             Name = dto.Name,
             Plate = dto.Plate,
+            Type = dto.Type,
             OwnerPersonId = dto.OwnerPersonId,
             Note = dto.Note
         });
@@ -127,6 +128,7 @@ public class VehiclesController : BaseController
             Id = id,
             Name = dto.Name,
             Plate = dto.Plate,
+            Type = dto.Type,
             OwnerPersonId = dto.OwnerPersonId,
             IsActive = dto.IsActive,
             Note = dto.Note

@@ -23,6 +23,19 @@ public class MarketRateRepository : RepositoryBase<MarketRate, int>, IMarketRate
             .FirstOrDefaultAsync();
     }
 
+    public async Task<MarketRate?> GetLatestOnOrBeforeAsync(Currency currency, DateOnly date, DateOnly? notBefore = null)
+    {
+        var query = _context.Set<MarketRate>()
+            .AsNoTracking()
+            .Where(r => r.Currency == currency && r.Date <= date);
+        if (notBefore.HasValue)
+            query = query.Where(r => r.Date >= notBefore.Value);
+        return await query
+            .OrderByDescending(r => r.Date)
+            .ThenByDescending(r => r.Id)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<MarketRate?> GetByDateAsync(Currency currency, DateOnly date)
     {
         return await _context.Set<MarketRate>()

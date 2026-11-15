@@ -7,8 +7,8 @@ namespace Abacasa.Domain.Common.Interfaces.Repositories;
 public interface IBudgetRepository : IRepository<Budget, int>
 {
     // Tenant filtresi ApplicationDbContext'te uygulanır; burada sadece kullanıcının hanesi görünür.
-    // Aynı (kişi, başlangıç ayı) kontrolü; kişi boşken (hane) de çalışır
-    Task<bool> ExistsAsync(int? ownerPersonId, int startYear, int startMonth, int? excludeId = null);
+    // Aynı (kişi, kategori, başlangıç ayı) kontrolü; kişi ya da kategori boşken de çalışır
+    Task<bool> ExistsAsync(int? ownerPersonId, int? categoryId, int startYear, int startMonth, int? excludeId = null);
 
     Task<(IEnumerable<Budget> Budgets, int TotalCount)> GetBudgetsPagedAsync(int page, int pageSize);
 

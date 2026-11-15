@@ -1,6 +1,6 @@
 // Döviz kurları ekranı için saf yardımcılar: birim kartları ve kur girişi.
 // Güncel kur = TCMB (USD, EUR; günlük otomatik) ile hanenin elle girdiği kurdan tarihi yeni olan; eşitse elle.
-// Ayrı "güncel kur" ucu yoktur; dönem özeti / borç özeti içindeki rates kullanılır.
+// Ekran seçilen tarihte geçerli kurları /api/ExchangeRates/as-of ile okur (bugün = güncel kur).
 
 import { FOREIGN_CURRENCIES, type Currency } from '@/lib/domain/enums';
 import { formatNumber } from '@/lib/format/money';
@@ -48,6 +48,13 @@ export function buildRateCards(
       manualId,
     };
   });
+}
+
+/** 'YYYY-MM-DD' tarihine gün ekler (UTC; saat dilimi kaymaz). */
+export function shiftIsoDate(iso: string, days: number): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d + days));
+  return date.toISOString().slice(0, 10);
 }
 
 /** Kur gösterimi: döviz 4 ondalık ("₺41,8520"), çeyrek fiyatı 2 ondalık ("₺4.250,00"). */

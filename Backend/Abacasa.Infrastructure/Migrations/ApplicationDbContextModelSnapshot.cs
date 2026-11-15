@@ -33,6 +33,9 @@ namespace Abacasa.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("integer");
 
@@ -69,6 +72,8 @@ namespace Abacasa.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("OwnerPersonId");
 
                     b.HasIndex("TenantId", "StartYear", "StartMonth");
@@ -92,6 +97,10 @@ namespace Abacasa.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -290,11 +299,22 @@ namespace Abacasa.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Currency")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("ExchangeRate")
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal?>("ForeignAmount")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int?>("FundId")
                         .HasColumnType("integer");
@@ -1770,6 +1790,11 @@ namespace Abacasa.Infrastructure.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("integer");
 
@@ -1849,6 +1874,11 @@ namespace Abacasa.Infrastructure.Migrations
 
             modelBuilder.Entity("Abacasa.Domain.Entities.Budget", b =>
                 {
+                    b.HasOne("Abacasa.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Abacasa.Domain.Entities.Person", "OwnerPerson")
                         .WithMany()
                         .HasForeignKey("OwnerPersonId")
@@ -1859,6 +1889,8 @@ namespace Abacasa.Infrastructure.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("OwnerPerson");
                 });

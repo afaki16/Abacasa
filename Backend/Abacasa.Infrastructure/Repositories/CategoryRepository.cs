@@ -54,7 +54,8 @@ public class CategoryRepository : RepositoryBase<Category, int>, ICategoryReposi
     public async Task<bool> IsInUseAsync(int categoryId)
     {
         return await _context.Set<Expense>().AnyAsync(e => e.CategoryId == categoryId)
-            || await _context.Set<RecurringPayment>().AnyAsync(rp => rp.CategoryId == categoryId);
+            || await _context.Set<RecurringPayment>().AnyAsync(rp => rp.CategoryId == categoryId)
+            || await _context.Set<Budget>().AnyAsync(b => b.CategoryId == categoryId);
     }
 
     public async Task<Dictionary<int, int>> GetUsageCountsAsync(IEnumerable<int> categoryIds)

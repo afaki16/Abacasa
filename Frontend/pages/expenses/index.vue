@@ -54,6 +54,7 @@
         <div class="ui-card-title !text-[1rem] !leading-[1.75rem] !tracking-[0.009375em] !font-normal">{{ t('expenses.byCategory') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="row in summary?.byCategory ?? []" :key="row.categoryId">
+            <span class="ui-list-item__prepend"><UiIcon :icon="categoryMdiIcon(row.categoryIcon, row.categoryName)" :size="20" color="primary" /></span>
             <div class="ui-list-item__content">
               <div class="ui-list-title">{{ row.categoryName }}</div>
             </div>
@@ -213,6 +214,7 @@ import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
 import PeriodSelector from "~/components/Budget/PeriodSelector.vue";
 import { formatDisplayDate, monthRange, todayIso, type Period } from "~/utils/period";
+import { categoryMdiIcon } from "~/utils/categoryIcons";
 
 //#region Page Metadata
 definePageMeta({

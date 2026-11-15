@@ -1,3 +1,4 @@
+using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 
 namespace Abacasa.Domain.Entities;
@@ -10,6 +11,8 @@ public class Vehicle : BaseAuditableEntity, ITenantScoped
     // Trim ve büyük harfle saklanır; hanede benzersiz
     public string Plate { get; set; }
 
+    public VehicleType Type { get; set; }
+
     // Boşsa araç hanenindir
     public int? OwnerPersonId { get; set; }
     public Person? OwnerPerson { get; set; }
@@ -20,5 +23,6 @@ public class Vehicle : BaseAuditableEntity, ITenantScoped
     public Vehicle()
     {
         IsActive = true;
+        Type = VehicleType.Car;
     }
 }

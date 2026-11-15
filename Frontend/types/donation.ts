@@ -1,4 +1,5 @@
 import type { PaymentMethodType } from './paymentMethod'
+import type { Currency } from './debt'
 
 export enum DonationKind {
   Donation = 'Donation',
@@ -10,7 +11,12 @@ export interface Donation {
   id: number
   /** 'YYYY-MM-DD' */
   date: string
+  /** Her zaman TL (dövizde foreignAmount × exchangeRate) */
   amount: number
+  currency: Currency
+  /** TRY dışında: birim cinsinden tutar (çeyrekte adet) ve bağış günündeki kur */
+  foreignAmount?: number | null
+  exchangeRate?: number | null
   kind: DonationKind
   recipient: string
   /** Boşsa bağışı hane vermiştir */
@@ -29,7 +35,12 @@ export interface Donation {
 
 export interface CreateDonationRequest {
   date: string
+  /** TL bağışta zorunlu; dövizde sunucu foreignAmount × exchangeRate ile hesaplar */
   amount: number
+  /** Verilmezse TRY */
+  currency?: Currency
+  foreignAmount?: number
+  exchangeRate?: number
   kind: DonationKind
   recipient: string
   giverPersonId?: number

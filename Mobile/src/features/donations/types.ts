@@ -1,7 +1,7 @@
 // Backend: Abacasa.Application/Features/Donations/Dtos (DonationListDto, DonationDto, Create/UpdateDonationDto,
 // DonationSummaryDto).
 
-import type { DonationKind, PaymentMethodType } from '@/lib/domain/enums';
+import type { Currency, DonationKind, PaymentMethodType } from '@/lib/domain/enums';
 import type { Period } from '@/lib/format/period';
 
 /** GET /api/Donations (liste öğesi). Bağışlar harcama özetine girmez. */
@@ -9,7 +9,12 @@ export interface DonationListItem {
   id: number;
   /** 'YYYY-MM-DD' */
   date: string;
+  /** Her zaman TL (dövizde foreignAmount × exchangeRate). */
   amount: number;
+  currency: Currency;
+  /** TRY dışında: birim cinsinden tutar (çeyrekte adet) ve bağış günündeki kur. */
+  foreignAmount: number | null;
+  exchangeRate: number | null;
   kind: DonationKind;
   recipient: string;
   /** Boşsa bağışı hane vermiştir. */
@@ -44,7 +49,12 @@ export interface DonationListParams {
 
 export interface CreateDonationRequest {
   date: string;
+  /** TL bağışta zorunlu; dövizde backend foreignAmount × exchangeRate ile hesaplar. */
   amount: number;
+  /** Verilmezse TRY. */
+  currency?: Currency;
+  foreignAmount?: number | null;
+  exchangeRate?: number | null;
   /** Emanetten dağıtımda emanetle aynı tür olmalı. */
   kind: DonationKind;
   recipient: string;

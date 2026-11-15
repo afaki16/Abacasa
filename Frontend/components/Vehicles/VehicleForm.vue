@@ -35,6 +35,20 @@
       <div class="ui-row">
         <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiSelect
+            v-model="formData.type"
+            :items="typeOptions"
+            item-title="name"
+            item-value="id"
+            :label="t('vehicles.columns.type')"
+            :disabled="loading"
+            :prepend-inner-icon="VEHICLE_TYPE_ICONS[formData.type]"
+            density="comfortable"
+            hide-details="auto"
+            class="modern-input"
+          />
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
@@ -47,7 +61,10 @@
             class="modern-input"
           />
         </div>
-        <div class="ui-col ui-col-12 ui-col-sm-6">
+      </div>
+
+      <div class="ui-row">
+        <div class="ui-col ui-col-12">
           <UiTextField
             v-model="formData.note"
             :label="t('vehicles.form.note')"
@@ -95,6 +112,7 @@
 
 <script setup lang="ts">
 import type { Vehicle, CreateVehicleRequest, UpdateVehicleRequest } from '~/types'
+import { VehicleType, VEHICLE_TYPE_ICONS } from '~/types'
 import { ref, reactive, watch, computed } from 'vue'
 
 // Sahip seçiminde "Hane" seçeneğinin değeri; gönderirken ownerPersonId boş bırakılır
@@ -118,6 +136,7 @@ const formRef = ref()
 const formData = reactive({
   name: '',
   plate: '',
+  type: VehicleType.Car as VehicleType,
   ownerPersonId: HOUSEHOLD as number,
   note: '',
   isActive: true,
@@ -127,6 +146,10 @@ const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
 const nameRule = (v: string) => !!v?.trim() || t('vehicles.form.nameRequired')
 const plateRule = (v: string) => !!v?.trim() || t('vehicles.form.plateRequired')
+
+const typeOptions = computed(() =>
+  Object.values(VehicleType).map((type) => ({ id: type, name: t(`vehicles.types.${type}`) })),
+)
 
 const ownerOptions = computed(() => [
   { id: HOUSEHOLD, name: t('vehicles.household') },
@@ -139,6 +162,7 @@ watch(
     Object.assign(formData, {
       name: newVal?.name || '',
       plate: newVal?.plate || '',
+      type: newVal?.type ?? VehicleType.Car,
       ownerPersonId: newVal?.ownerPersonId ?? HOUSEHOLD,
       note: newVal?.note || '',
       isActive: newVal?.isActive ?? true,
@@ -154,6 +178,7 @@ const handleSubmit = async () => {
   const submitData = {
     name: formData.name.trim(),
     plate: formData.plate.trim().toUpperCase(),
+    type: formData.type,
     ownerPersonId: formData.ownerPersonId === HOUSEHOLD ? undefined : formData.ownerPersonId,
     note: formData.note?.trim() || undefined,
   }

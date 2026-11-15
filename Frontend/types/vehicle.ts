@@ -6,11 +6,28 @@ export enum VehicleObligationType {
   Maintenance = 'Maintenance'
 }
 
+export enum VehicleType {
+  Car = 'Car',
+  Motorcycle = 'Motorcycle',
+  LightCommercial = 'LightCommercial',
+  Truck = 'Truck',
+  Other = 'Other'
+}
+
+export const VEHICLE_TYPE_ICONS: Record<VehicleType, string> = {
+  [VehicleType.Car]: 'mdi-car',
+  [VehicleType.Motorcycle]: 'mdi-motorbike',
+  [VehicleType.LightCommercial]: 'mdi-van-utility',
+  [VehicleType.Truck]: 'mdi-truck',
+  [VehicleType.Other]: 'mdi-car-select',
+}
+
 export interface Vehicle {
   id: number
   name: string
   /** Büyük harfle saklanır */
   plate: string
+  type: VehicleType
   /** Boşsa araç hanenindir */
   ownerPersonId?: number | null
   ownerName?: string | null
@@ -24,6 +41,7 @@ export interface Vehicle {
 export interface CreateVehicleRequest {
   name: string
   plate: string
+  type: VehicleType
   ownerPersonId?: number
   note?: string
 }

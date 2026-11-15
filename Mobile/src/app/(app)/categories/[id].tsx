@@ -47,11 +47,12 @@ function EditCategory() {
       {canUpdate ? (
         <CategoryForm
           name={c.name}
+          icon={c.icon}
           pending={update.isPending}
           error={update.error}
-          onSubmit={(name) =>
+          onSubmit={(values) =>
             update.mutate(
-              { id, name },
+              { id, ...values },
               {
                 onSuccess: () => {
                   toast.success(t('categories.saved'));

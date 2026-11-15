@@ -1,5 +1,6 @@
 using FluentValidation;
 using Abacasa.Application.Common.Localization;
+using Abacasa.Application.Features.Donations.Common;
 
 namespace Abacasa.Application.Features.Donations.Commands.UpdateDonation;
 
@@ -13,8 +14,7 @@ public class UpdateDonationCommandValidator : AbstractValidator<UpdateDonationCo
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage(localizer["validation.required", localizer["validation.fields.donationDate"]]);
 
-        RuleFor(x => x.Amount)
-            .GreaterThan(0).WithMessage(localizer["validation.greaterThan", localizer["validation.fields.amount"], 0]);
+        this.AddCurrencyRules(localizer);
 
         RuleFor(x => x.Kind)
             .IsInEnum().WithMessage(localizer["validation.invalidEnum", localizer["validation.fields.donationKind"]]);

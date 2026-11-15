@@ -20,6 +20,11 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
             .IsRequired()
             .HasMaxLength(20);
 
+        // Mevcut araçlar otomobil sayılır
+        builder.Property(x => x.Type)
+            .IsRequired()
+            .HasDefaultValue(Abacasa.Domain.Common.Enums.VehicleType.Car);
+
         builder.Property(x => x.IsActive)
             .IsRequired();
 

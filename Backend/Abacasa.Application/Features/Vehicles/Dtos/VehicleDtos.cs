@@ -8,6 +8,7 @@ public class CreateVehicleDto
 {
     public string Name { get; set; }
     public string Plate { get; set; }
+    public VehicleType Type { get; set; } = VehicleType.Car;
     public int? OwnerPersonId { get; set; }
     public string? Note { get; set; }
 }
@@ -16,6 +17,7 @@ public class UpdateVehicleDto
 {
     public string Name { get; set; }
     public string Plate { get; set; }
+    public VehicleType Type { get; set; } = VehicleType.Car;
     public int? OwnerPersonId { get; set; }
     public bool IsActive { get; set; }
     public string? Note { get; set; }
@@ -26,6 +28,7 @@ public class VehicleDto
     public int Id { get; set; }
     public string Name { get; set; }
     public string Plate { get; set; }
+    public VehicleType Type { get; set; }
     public int? OwnerPersonId { get; set; }
     public string? OwnerName { get; set; }       // Boşsa araç hanenindir
     public bool IsActive { get; set; }

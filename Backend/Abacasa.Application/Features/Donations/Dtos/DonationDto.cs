@@ -7,7 +7,10 @@ public class DonationDto
 {
     public int Id { get; set; }
     public DateOnly Date { get; set; }
-    public decimal Amount { get; set; }
+    public decimal Amount { get; set; }        // TL (dövizde ForeignAmount × ExchangeRate)
+    public Currency Currency { get; set; }
+    public decimal? ForeignAmount { get; set; }
+    public decimal? ExchangeRate { get; set; }
     public DonationKind Kind { get; set; }
     public string Recipient { get; set; }
     public int? GiverPersonId { get; set; }

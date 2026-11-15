@@ -11,6 +11,7 @@ import { BudgetCard } from '@/features/budgets/components/BudgetCard';
 import { BUDGET_PERMISSIONS } from '@/features/budgets/constants';
 import { useBudgetReport, useBudgets } from '@/features/budgets/hooks';
 import { budgetRoutes } from '@/features/budgets/routes';
+import { categoryIcon } from '@/features/expenses/icons';
 import { SectionHeader } from '@/features/recurringPayments/components/form/Bits';
 import { formatMoney } from '@/lib/format/money';
 import { addMonths, monthName, todayIso } from '@/lib/format/period';
@@ -128,7 +129,7 @@ function Budgets() {
         <View style={styles.card}>
           {list.data.map((b, i) => {
             const openable = canUpdate || canDelete;
-            const owner = b.ownerName ?? household;
+            const owner = b.categoryName ?? b.ownerName ?? household;
             const from = t('budgets.from', { month: `${monthName(b.startMonth)} ${b.startYear}` });
             const amount = b.amount > 0 ? formatMoney(b.amount) : t('budgets.ended');
             return (
@@ -140,6 +141,9 @@ function Budgets() {
                 onPress={() => router.push(budgetRoutes.edit(b.id))}
                 style={({ pressed }) => [styles.row, i > 0 && styles.divider, pressed && styles.pressed]}
               >
+                {b.categoryId != null ? (
+                  <Icon name={categoryIcon(b.categoryName, b.categoryIcon)} size={20} color={colors.primary} />
+                ) : null}
                 <View style={styles.flex}>
                   <Text variant="bodyStrong">{owner}</Text>
                   <Text variant="caption" muted>

@@ -6,12 +6,15 @@ import { type QueryClient, useMutation, useQuery, useQueryClient } from '@tansta
 import type { ApiError } from '@/lib/api';
 
 import { exchangeRatesApi } from './api';
-import type { ExchangeRate, ExchangeRateListParams, SaveExchangeRateRequest } from './types';
+import { todayIso } from '@/lib/format/period';
+
+import type { CurrentRate, ExchangeRate, ExchangeRateListParams, SaveExchangeRateRequest } from './types';
 
 export const exchangeRateKeys = {
   all: ['exchangeRates'] as const,
   lists: () => [...exchangeRateKeys.all, 'list'] as const,
   list: (params: ExchangeRateListParams) => [...exchangeRateKeys.lists(), params] as const,
+  asOf: (date: string) => [...exchangeRateKeys.all, 'asOf', date] as const,
 };
 
 /**
@@ -32,6 +35,15 @@ export function useExchangeRates(params: ExchangeRateListParams = {}) {
   return useQuery<ExchangeRate[], ApiError>({
     queryKey: exchangeRateKeys.list(params),
     queryFn: () => exchangeRatesApi.list(params),
+  });
+}
+
+/** Tarihte geçerli kurlar (ExchangeRates.Read). Elle kur değişince exchangeRateKeys.all ile yenilenir. */
+export function useRatesAsOf(date: string, enabled = true) {
+  return useQuery<CurrentRate[], ApiError>({
+    queryKey: exchangeRateKeys.asOf(date),
+    queryFn: () => exchangeRatesApi.asOf(date, todayIso()),
+    enabled,
   });
 }
 

@@ -1,4 +1,5 @@
 using Abacasa.Application.Common.Results;
+using Abacasa.Application.Features.Donations.Common;
 using Abacasa.Application.Features.Donations.Dtos;
 using Abacasa.Domain.Common.Enums;
 using MediatR;
@@ -6,10 +7,14 @@ using System;
 
 namespace Abacasa.Application.Features.Donations.Commands.CreateDonation;
 
-public class CreateDonationCommand : IRequest<Result<DonationListDto>>
+public class CreateDonationCommand : IRequest<Result<DonationListDto>>, IDonationCurrencyFields
 {
     public DateOnly Date { get; set; }
     public decimal Amount { get; set; }
+    /// TRY dışında: ForeignAmount (birim cinsinden; çeyrekte adet) ve ExchangeRate zorunlu, Amount sunucuda hesaplanır
+    public Currency Currency { get; set; } = Currency.TRY;
+    public decimal? ForeignAmount { get; set; }
+    public decimal? ExchangeRate { get; set; }
     public DonationKind Kind { get; set; }
     public string Recipient { get; set; }
     public int? GiverPersonId { get; set; }

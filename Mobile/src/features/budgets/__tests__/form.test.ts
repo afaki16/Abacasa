@@ -19,6 +19,7 @@ describe('bütçe', () => {
   it('yeni kayıt seçili aydan başlar, hane varsayılan', () => {
     expect(budgetToForm(undefined, 2026, 11)).toEqual({
       ownerPersonId: null,
+      categoryId: null,
       startYear: 2026,
       startMonth: 11,
       amount: '',
@@ -35,7 +36,13 @@ describe('bütçe', () => {
 
   it('isteğe çevirme: not kırpılır, boş not null', () => {
     expect(
-      budgetFormToRequest({ ownerPersonId: 3, startYear: 2026, startMonth: 11, amount: '15000', note: '  ' }),
-    ).toEqual({ ownerPersonId: 3, startYear: 2026, startMonth: 11, amount: 15000, note: null });
+      budgetFormToRequest({ ownerPersonId: 3, categoryId: null, startYear: 2026, startMonth: 11, amount: '15000', note: '  ' }),
+    ).toEqual({ ownerPersonId: 3, categoryId: null, startYear: 2026, startMonth: 11, amount: 15000, note: null });
+  });
+
+  it('kategori bütçesi hane genelidir: kişi gönderilmez', () => {
+    expect(
+      budgetFormToRequest({ ownerPersonId: 3, categoryId: 7, startYear: 2026, startMonth: 11, amount: '8000', note: '' }),
+    ).toEqual({ ownerPersonId: null, categoryId: 7, startYear: 2026, startMonth: 11, amount: 8000, note: null });
   });
 });

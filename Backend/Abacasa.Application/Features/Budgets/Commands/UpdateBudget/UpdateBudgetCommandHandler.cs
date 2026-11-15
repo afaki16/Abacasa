@@ -43,13 +43,26 @@ public class UpdateBudgetCommandHandler : IRequestHandler<UpdateBudgetCommand, R
                     _localizer["budgets.ownerNotFound"]));
         }
 
-        if (await _unitOfWork.Budgets.ExistsAsync(owner?.Id, request.StartYear, request.StartMonth, budget.Id))
+        // Kategori repository ile yüklenir (tenant filtresi uygulanır); başka hanenin kategorisi bulunamaz
+        Category? category = null;
+        if (request.CategoryId.HasValue)
+        {
+            category = await _unitOfWork.Categories.GetByIdAsync(request.CategoryId.Value);
+            if (category == null)
+                return Result<BudgetDto>.Failure(Error.Failure(
+                    ErrorCode.ValidationFailed,
+                    _localizer["budgets.categoryNotFound"]));
+        }
+
+        if (await _unitOfWork.Budgets.ExistsAsync(owner?.Id, category?.Id, request.StartYear, request.StartMonth, budget.Id))
             return Result<BudgetDto>.Failure(Error.Failure(
                 ErrorCode.AlreadyExists,
                 _localizer["budgets.alreadyExists"]));
 
         budget.OwnerPersonId = owner?.Id;
         budget.OwnerPerson = owner;
+        budget.CategoryId = category?.Id;
+        budget.Category = category;
         budget.StartYear = request.StartYear;
         budget.StartMonth = request.StartMonth;
         budget.Amount = request.Amount;

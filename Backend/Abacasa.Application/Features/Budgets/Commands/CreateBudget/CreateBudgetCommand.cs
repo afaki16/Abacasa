@@ -7,6 +7,7 @@ namespace Abacasa.Application.Features.Budgets.Commands.CreateBudget;
 public class CreateBudgetCommand : IRequest<Result<BudgetDto>>
 {
     public int? OwnerPersonId { get; set; }
+    public int? CategoryId { get; set; }
     public int StartYear { get; set; }
     public int StartMonth { get; set; }
     public decimal Amount { get; set; }

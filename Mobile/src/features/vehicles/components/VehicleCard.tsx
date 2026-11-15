@@ -8,6 +8,7 @@ import { enumLabel } from '@/lib/domain/enums';
 import { plural, t as translate } from '@/lib/i18n';
 import { formatDisplayDate } from '@/lib/format/period';
 
+import { vehicleTypeIcon } from '../constants';
 import { vehicleBadge, type DueTone } from '../reminders';
 import type { Vehicle } from '../types';
 
@@ -75,7 +76,7 @@ export function VehicleCard({
         pressed && styles.pressed,
       ]}
     >
-      <IconTile icon="directions-car" size={44} />
+      <IconTile icon={vehicleTypeIcon(vehicle.type)} size={44} />
       <View style={styles.texts}>
         <Text variant="bodyStrong" numberOfLines={1}>
           {vehicle.name}

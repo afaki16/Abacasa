@@ -138,6 +138,9 @@ describe('ikonlar', () => {
     expect(categoryIcon('Kredi kartı aidatı')).toBe('home');
     expect(categoryIcon('Zzz')).toBe('category');
     expect(categoryIcon(null)).toBe('category');
+    // Seçilen ikon addan önce gelir; listede olmayan ikon yok sayılır
+    expect(categoryIcon('Market', 'pets')).toBe('pets');
+    expect(categoryIcon('Market', 'yok-boyle')).toBe('shopping-cart');
   });
 
   it('ödeme aracı türüne göre ikon', () => {

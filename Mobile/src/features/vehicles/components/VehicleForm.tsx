@@ -8,10 +8,12 @@ import { z } from 'zod';
 import { Button, FormError, FormField, next, SelectSheet, SwitchCard } from '@/components/ui';
 
 import { toNullable, vmsg } from '@/features/auth/validation';
+import { enumLabel, VehicleType } from '@/lib/domain/enums';
 import { PickerField } from '@/features/categories/components/DefinitionKit';
 import { usePersonOptions } from '@/features/people/hooks';
 import type { ApiError } from '@/lib/api';
 
+import { VEHICLE_TYPE_ICONS, vehicleTypeIcon } from '../constants';
 import type { Vehicle } from '../types';
 
 const schema = z.object({
@@ -25,6 +27,7 @@ const schema = z.object({
     .trim()
     .min(1, 'validation.required')
     .max(20, vmsg('validation.maxLength', { max: 20 })),
+  type: z.nativeEnum(VehicleType),
   ownerPersonId: z.number().nullable(),
   note: z.string().max(200, vmsg('validation.maxLength', { max: 200 })),
   isActive: z.boolean(),
@@ -35,6 +38,7 @@ type FormValues = z.infer<typeof schema>;
 export interface VehicleFormSubmit {
   name: string;
   plate: string;
+  type: VehicleType;
   ownerPersonId: number | null;
   note: string | null;
   isActive: boolean;
@@ -55,17 +59,19 @@ export function VehicleForm({
   const { t } = useTranslation();
   const people = usePersonOptions();
   const [ownerOpen, setOwnerOpen] = useState(false);
+  const [typeOpen, setTypeOpen] = useState(false);
   const { control, handleSubmit, setFocus, setValue } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: vehicle?.name ?? '',
       plate: vehicle?.plate ?? '',
+      type: vehicle?.type ?? VehicleType.Car,
       ownerPersonId: vehicle?.ownerPersonId ?? null,
       note: vehicle?.note ?? '',
       isActive: vehicle?.isActive ?? true,
     },
   });
-  const ownerPersonId = useWatch({ control, name: 'ownerPersonId' });
+  const [ownerPersonId, type] = useWatch({ control, name: ['ownerPersonId', 'type'] });
   const ownerName =
     ownerPersonId === null
       ? t('vehicles.household')
@@ -77,6 +83,7 @@ export function VehicleForm({
         name: v.name.trim(),
         // Backend büyük harfle saklar; formda da öyle gönderilir.
         plate: v.plate.trim().toLocaleUpperCase('tr-TR'),
+        type: v.type,
         ownerPersonId: v.ownerPersonId,
         note: toNullable(v.note),
         isActive: v.isActive,
@@ -101,6 +108,11 @@ export function VehicleForm({
         autoCorrect={false}
         maxLength={20}
         {...next(() => setFocus('note'))}
+      />
+      <PickerField
+        label={t('vehicles.form.vehicleType')}
+        value={enumLabel('vehicleType', type)}
+        onPress={() => setTypeOpen(true)}
       />
       <PickerField
         label={t('vehicles.form.owner')}
@@ -131,6 +143,18 @@ export function VehicleForm({
         />
       ) : null}
       <Button title={t('common.save')} loading={pending} onPress={submit} />
+      <SelectSheet<VehicleType>
+        visible={typeOpen}
+        onClose={() => setTypeOpen(false)}
+        title={t('vehicles.form.vehicleType')}
+        value={type}
+        options={(Object.keys(VEHICLE_TYPE_ICONS) as VehicleType[]).map((v) => ({
+          value: v,
+          label: enumLabel('vehicleType', v),
+          icon: vehicleTypeIcon(v),
+        }))}
+        onSelect={(v) => setValue('type', v, { shouldDirty: true })}
+      />
       <SelectSheet<number>
         visible={ownerOpen}
         onClose={() => setOwnerOpen(false)}

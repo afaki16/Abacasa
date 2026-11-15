@@ -4,6 +4,8 @@
 export interface Category {
   id: number;
   name: string;
+  /** Seçilen ikon (CATEGORY_ICON_KEYS); boşsa addan tahmin edilir. */
+  icon?: string | null;
   createdDate: string;
   /** Bağlı harcama + sabit ödeme sayısı; yalnızca listede gelir. */
   usageCount?: number;
@@ -22,6 +24,7 @@ export interface CategoryListParams {
 
 export interface CreateCategoryRequest {
   name: string;
+  icon?: string | null;
 }
 
 /** id yalnızca route için; gövdede backend yok sayar. */

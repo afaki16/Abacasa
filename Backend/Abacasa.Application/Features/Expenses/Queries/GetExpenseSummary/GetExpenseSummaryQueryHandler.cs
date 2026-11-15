@@ -43,6 +43,7 @@ public class GetExpenseSummaryQueryHandler : IRequestHandler<GetExpenseSummaryQu
                 {
                     CategoryId = x.CategoryId,
                     CategoryName = x.CategoryName,
+                    CategoryIcon = x.CategoryIcon,
                     Total = x.Total
                 })
                 .ToList(),

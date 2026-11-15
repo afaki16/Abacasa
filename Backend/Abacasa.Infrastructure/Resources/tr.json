@@ -70,7 +70,8 @@
   "categories": {
     "notFound": "Kategori bulunamadı",
     "nameExists": "Bu adla bir kategori zaten var",
-    "inUse": "Bu kategori kullanımda"
+    "inUse": "Bu kategori kullanımda",
+    "invalidIcon": "Geçersiz kategori ikonu"
   },
   "people": {
     "notFound": "Kişi bulunamadı",
@@ -98,7 +99,9 @@
     "giverNotFound": "Veren kişi bulunamadı",
     "fundNotFound": "Emanet bulunamadı",
     "fundKindMismatch": "Bağışın türü emanetin türüyle aynı olmalıdır",
-    "fundOnHandInsufficient": "Emanette elde bu kadar tutar yok, önce kullanılan tutarı yerine koyun"
+    "fundOnHandInsufficient": "Emanette elde bu kadar tutar yok, önce kullanılan tutarı yerine koyun",
+    "fundRequiresTry": "Emanetten dağıtılan bağış TL olmalıdır",
+    "quarterGoldWhole": "Çeyrek altın adedi tam sayı olmalıdır"
   },
   "recurringPayments": {
     "notFound": "Sabit ödeme bulunamadı",
@@ -137,6 +140,7 @@
   "exchangeRates": {
     "foreignOnly": "Kur yalnızca Dolar, Euro ve Çeyrek altın için girilebilir",
     "marketFetchFailed": "TCMB kurları alınamadı",
+    "dateOutOfRange": "Tarih 01.01.2000 ile bugün arasında olmalıdır",
     "notFound": "Kur kaydı bulunamadı"
   },
   "dashboard": {
@@ -153,7 +157,9 @@
   "budgets": {
     "notFound": "Bütçe bulunamadı",
     "ownerNotFound": "Kişi bulunamadı",
-    "alreadyExists": "Bu kişi için bu aydan başlayan bir bütçe zaten var"
+    "alreadyExists": "Bu kişi ya da kategori için bu aydan başlayan bir bütçe zaten var",
+    "categoryNotFound": "Kategori bulunamadı",
+    "categoryHouseholdOnly": "Kategori bütçesi hane geneli olur; kişi seçilemez"
   },
   "donationTargets": {
     "notFound": "Bağış hedefi bulunamadı",
@@ -316,6 +322,7 @@
       "vehicleId": "Araç kimliği",
       "vehicleName": "Araç adı",
       "plate": "Plaka",
+      "vehicleType": "Araç türü",
       "obligationType": "İşlem türü"
     },
     "required": "{0} alanı zorunludur",

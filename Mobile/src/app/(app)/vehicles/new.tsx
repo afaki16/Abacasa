@@ -29,7 +29,7 @@ function NewVehicle() {
         error={create.error}
         onSubmit={(v) =>
           create.mutate(
-            { name: v.name, plate: v.plate, ownerPersonId: v.ownerPersonId, note: v.note },
+            { name: v.name, plate: v.plate, type: v.type, ownerPersonId: v.ownerPersonId, note: v.note },
             {
               onSuccess: (vehicle) => {
                 toast.success(t('vehicles.created'));

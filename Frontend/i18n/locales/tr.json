@@ -622,10 +622,11 @@
   },
   "budgets": {
     "title": "Aylık bütçe",
-    "subtitle": "Hane ve kişi için aylık harcama bütçesi girin; bu ay ne kadar harcayabileceğinizi görün. Harcamalar ve henüz ödenmemiş sabit ödemeler bütçeden düşer; yemek kartı ve bağışlar düşmez. Ay sonunda kalan tutar devretmez.",
+    "subtitle": "Hane, kişi ya da kategori için aylık harcama bütçesi girin; bu ay ne kadar harcayabileceğinizi görün. Harcamalar ve henüz ödenmemiş sabit ödemeler bütçeden düşer; yemek kartı ve bağışlar düşmez. Ay sonunda kalan tutar devretmez.",
     "overviewTitle": "{month} bütçesi",
     "goToBudgets": "Bütçeye git",
-    "noBudget": "Bu ay için bütçe yok. Bütçe sayfasından hane ya da kişi bütçesi ekleyin.",
+    "noBudget": "Bu ay için bütçe yok. Bütçe sayfasından hane, kişi ya da kategori bütçesi ekleyin.",
+    "categoriesTitle": "Kategori bütçeleri",
     "canSpend": "Bu ay harcayabileceğin",
     "overBy": "Bütçe aşıldı",
     "daily": "Günde ~{amount}",
@@ -659,7 +660,9 @@
       "amount": "Aylık bütçe",
       "amountHint": "0 girersen bu aydan itibaren bütçe kaldırılır",
       "amountMin": "Tutar 0 ya da daha büyük olmalıdır",
-      "yearRange": "Yıl 2000 ile 2100 arasında olmalıdır"
+      "yearRange": "Yıl 2000 ile 2100 arasında olmalıdır",
+      "category": "Kategori",
+      "general": "Genel (kategorisiz)"
     },
     "suggestion": {
       "income": "Yıllık tablodaki bu ayın geliri: {amount}",
@@ -710,7 +713,11 @@
     "deleteMessage": "{date} tarihli {amount} tutarındaki bağışı silmek istediğinizden emin misiniz?",
     "form": {
       "fromFund": "Emanetten",
-      "fundOption": "{from} · {kind} · elde {amount}"
+      "fundOption": "{from} · {kind} · elde {amount}",
+      "currency": "Para birimi",
+      "foreignAmount": "Tutar ({currency})",
+      "quantity": "Adet (çeyrek)",
+      "amountInTry": "TL karşılığı: {amount}"
     }
   },
   "donationTargets": {
@@ -873,7 +880,11 @@
       "name": "Kategori Adı"
     },
     "itemName": "kategori",
-    "namePlaceholder": "Örn. Market"
+    "namePlaceholder": "Örn. Market",
+    "icon": "İkon",
+    "iconAuto": "Otomatik (addan tahmin edilir)",
+    "iconAutoShort": "Oto",
+    "iconHint": "Otomatik seçilirse ikon kategori adından tahmin edilir."
   },
   "debts": {
     "title": "Borçlar",
@@ -935,6 +946,8 @@
       "buttonAria": "Ödemeler ({count})",
       "title": "Ödemeler · {creditor}",
       "rate": "Kur",
+      "rateOnDate": "{date} kuru ({source})",
+      "rateManual": "elle girilen",
       "amountInTry": "TL karşılığı",
       "amountInTryLine": "TL karşılığı: {amount}",
       "empty": "Ödeme yok",
@@ -963,7 +976,11 @@
     "deleteConfirm": "{date} tarihli kuru silmek istediğinizden emin misiniz?",
     "positive": "Kur 0'dan büyük olmalıdır",
     "saved": "Kur kaydedildi",
-    "deleted": "Kur silindi"
+    "deleted": "Kur silindi",
+    "asOfTitle": "{date} tarihinde geçerli kurlar",
+    "asOfEmpty": "Bu tarih için kur yok",
+    "manual": "Elle",
+    "useRate": "Kullan"
   },
   "ledger": {
     "title": "Yıllık tablo",
@@ -1088,7 +1105,15 @@
     "columns": {
       "name": "Ad",
       "plate": "Plaka",
-      "owner": "Sahip"
+      "owner": "Sahip",
+      "type": "Tür"
+    },
+    "types": {
+      "Car": "Otomobil",
+      "Motorcycle": "Motosiklet",
+      "LightCommercial": "Hafif ticari",
+      "Truck": "Kamyon",
+      "Other": "Diğer"
     },
     "upcoming": {
       "title": "Yaklaşan ve geciken",

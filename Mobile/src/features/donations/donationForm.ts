@@ -1,11 +1,14 @@
 // Bağış formu: şema ve form ↔ istek dönüşümü (saf). Backend CreateDonationCommandValidator aynası:
 // tutar > 0, tarih, tür, alıcı (≤100), ödeme aracı zorunlu; not ≤200.
 // Emanetten verilen bağış emanetle aynı türde olur (tür emanetten gelir, değiştirilemez).
+// Dövizli bağış (USD, EUR, çeyrek): tutar birim cinsinden (çeyrekte adet), kur zorunlu (bağış günündeki kur
+// önerilir); TL karşılığı = tutar × kur. Emanetten dağıtım yalnızca TL.
 
 import { z } from 'zod';
 
 import { vmsg } from '@/features/auth/validation';
-import type { DonationKind } from '@/lib/domain/enums';
+import { rateToInput } from '@/features/debts/debtForm';
+import type { Currency, DonationKind } from '@/lib/domain/enums';
 import { amountToInput, parseAmountInput } from '@/lib/format/amountInput';
 
 import type { CreateDonationRequest, DonationListItem } from './types';
@@ -16,6 +19,8 @@ export const NOTE_MAX = 200;
 export const donationFormSchema = z
   .object({
     amount: z.string(),
+    currency: z.enum(['TRY', 'USD', 'EUR', 'QuarterGold']),
+    rate: z.string(),
     date: z.string().min(1, 'validation.required'),
     kind: z.enum(['Donation', 'Zakat', 'Scholarship']).nullable(),
     recipient: z.string(),
@@ -31,6 +36,11 @@ export const donationFormSchema = z
     const amount = parseAmountInput(v.amount);
     if (amount === null) issue('amount', 'validation.required');
     else if (amount <= 0) issue('amount', 'validation.positive');
+    if (v.currency !== 'TRY') {
+      const rate = parseAmountInput(v.rate);
+      if (rate === null) issue('rate', 'validation.required');
+      else if (rate <= 0) issue('rate', 'validation.positive');
+    }
     if (v.kind == null) issue('kind', 'validation.required');
     const recipient = v.recipient.trim();
     if (!recipient) issue('recipient', 'validation.required');
@@ -48,6 +58,8 @@ export function emptyDonationForm(
 ): DonationFormValues {
   return {
     amount: '',
+    currency: 'TRY',
+    rate: '',
     date: today,
     kind: fund?.kind ?? null,
     recipient: '',
@@ -60,8 +72,12 @@ export function emptyDonationForm(
 }
 
 export function donationToForm(d: DonationListItem): DonationFormValues {
+  const currency: Currency = d.currency ?? 'TRY';
+  const foreign = currency !== 'TRY';
   return {
-    amount: amountToInput(d.amount, 'TRY'),
+    amount: foreign ? amountToInput(d.foreignAmount, currency) : amountToInput(d.amount, 'TRY'),
+    currency,
+    rate: foreign ? rateToInput(d.exchangeRate) : '',
     date: d.date.slice(0, 10),
     kind: d.kind,
     recipient: d.recipient,
@@ -73,15 +89,29 @@ export function donationToForm(d: DonationListItem): DonationFormValues {
   };
 }
 
+/** Dövizli bağışın TL karşılığı (tutar × kur, kuruşa yuvarlı); hesaplanamıyorsa null. */
+export function donationInTry(amountRaw: string, rateRaw: string): number | null {
+  const a = parseAmountInput(amountRaw);
+  const r = parseAmountInput(rateRaw);
+  if (a === null || r === null) return null;
+  return Math.round(a * r * 100) / 100;
+}
+
 export function donationFormToRequest(v: DonationFormValues): CreateDonationRequest {
+  const foreign = v.currency !== 'TRY';
+  const amount = parseAmountInput(v.amount) ?? 0;
   return {
     date: v.date,
-    amount: parseAmountInput(v.amount) ?? 0,
+    amount: foreign ? (donationInTry(v.amount, v.rate) ?? 0) : amount,
+    currency: v.currency,
+    foreignAmount: foreign ? amount : null,
+    exchangeRate: foreign ? parseAmountInput(v.rate) : null,
     kind: v.kind as DonationKind,
     recipient: v.recipient.trim(),
     giverPersonId: v.giverPersonId,
     paymentMethodId: v.paymentMethodId ?? 0,
     note: v.note.trim() || null,
-    fundId: v.useFund ? v.fundId : null,
+    // Emanetten dağıtım yalnızca TL
+    fundId: v.useFund && !foreign ? v.fundId : null,
   };
 }

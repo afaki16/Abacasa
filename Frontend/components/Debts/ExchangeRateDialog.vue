@@ -56,6 +56,35 @@
           </div>
         </UiForm>
 
+        <!-- Seçilen tarihte geçerli kurlar (geçmiş tarihte TCMB listesi arşivden gelir) -->
+        <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mt-4 mb-1">
+          {{ t('exchangeRates.asOfTitle', { date: formatDisplayDate(formData.date) }) }}
+        </div>
+        <ul class="ui-list ui-list--compact">
+          <li class="ui-list-item" v-for="r in asOfRates" :key="r.currency">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title">{{ currencyLabel(r.currency) }}</div>
+              <div class="ui-list-subtitle">{{ r.source === 'TCMB' ? 'TCMB' : t('exchangeRates.manual') }} · {{ formatDisplayDate(r.date) }}</div>
+            </div>
+            <span class="ui-list-item__append">
+              <span class="mr-2">{{ formatMoney(r.rate) }}</span>
+              <UiBtn
+                v-if="r.currency === formData.currency"
+                size="x-small"
+                variant="text"
+                color="primary"
+                :disabled="isBusy"
+                @click="formData.rate = r.rate"
+              >{{ t('exchangeRates.useRate') }}</UiBtn>
+            </span>
+          </li>
+          <li class="ui-list-item" v-if="!asOfRates.length">
+            <div class="ui-list-item__content">
+              <div class="ui-list-title"><span class="text-black/60 dark:text-white/70">{{ asOfLoading ? t('common.loading') : t('exchangeRates.asOfEmpty') }}</span></div>
+            </div>
+          </li>
+        </ul>
+
         <div class="text-[0.875rem] leading-[1.375rem] tracking-[0.0071428571em] font-medium mt-4 mb-1">{{ t('exchangeRates.recent') }}</div>
         <ul class="ui-list ui-list--compact">
           <li class="ui-list-item" v-for="r in rates" :key="r.id">
@@ -97,7 +126,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
-import type { ExchangeRate } from '~/types'
+import type { CurrentRate, ExchangeRate } from '~/types'
 import { Currency } from '~/types'
 import ConfirmDialog from '~/components/UI/ConfirmDialog.vue'
 import { formatDisplayDate, todayIso } from '~/utils/period'
@@ -117,7 +146,7 @@ const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 const { formatMoney, currencyLabel } = useMoney()
 const { hasPermission } = useAuth()
-const { rateCurrencyOptions, getExchangeRates, saveExchangeRate, deleteExchangeRate } = useDebts()
+const { rateCurrencyOptions, getExchangeRates, saveExchangeRate, deleteExchangeRate, getRatesAsOf } = useDebts()
 const toastStore = useToastStore()
 
 const formRef = ref()
@@ -130,9 +159,29 @@ const isFormValid = computed(() => formRef.value?.isValid ?? false)
 const canDelete = computed(() => hasPermission('ExchangeRates.Delete'))
 const positiveRule = (v: number | null) => (v !== null && Number(v) > 0) || t('exchangeRates.positive')
 
+// Formdaki tarihte geçerli kurlar
+const asOfRates = ref<CurrentRate[]>([])
+const asOfLoading = ref(false)
+let asOfRequest = 0
+const loadAsOf = async () => {
+  const date = formData.date
+  const request = ++asOfRequest
+  if (!date || date > todayIso()) {
+    asOfRates.value = []
+    return
+  }
+  asOfLoading.value = true
+  const result = await getRatesAsOf(date)
+  if (request !== asOfRequest) return
+  asOfRates.value = result
+  asOfLoading.value = false
+}
+watch(() => formData.date, () => { if (props.modelValue) void loadAsOf() })
+
 const load = async () => {
   // Bütün birimlerin elle girilen kurları (geçmiş listesinde birim sütunu)
   rates.value = (await getExchangeRates()) ?? []
+  await loadAsOf()
 }
 
 watch(

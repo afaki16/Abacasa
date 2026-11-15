@@ -14,6 +14,9 @@ public interface IExchangeRateRepository : IRepository<ExchangeRate, int>
     // Tracking'li; aynı gün kaydı varsa güncellemek için
     Task<ExchangeRate?> GetByDateAsync(Currency currency, DateOnly date);
 
+    // Tarihi date ve öncesi olan en yeni kayıt (eşitlikte en büyük Id)
+    Task<ExchangeRate?> GetLatestOnOrBeforeAsync(Currency currency, DateOnly date);
+
     // Tarihe göre azalan
     Task<List<ExchangeRate>> GetRecentAsync(Currency? currency, int count);
 }

@@ -38,11 +38,17 @@ public class GetBudgetReportQueryHandler : IRequestHandler<GetBudgetReportQuery,
         var daysInMonth = end.Day;
         var daysLeft = today < start ? daysInMonth : today > end ? 0 : end.Day - today.Day + 1;
 
-        // Geçerli bütçeler: sahip başına en yeni başlangıç
-        var effective = (await _unitOfWork.Budgets.GetStartedByReadOnlyAsync(year, month))
-            .GroupBy(b => b.OwnerPersonId)
+        // Geçerli bütçeler: (sahip, kategori) başına en yeni başlangıç; genel ve kategori bütçeleri ayrılır
+        var started = await _unitOfWork.Budgets.GetStartedByReadOnlyAsync(year, month);
+        var effectiveAll = started
+            .GroupBy(b => new { b.OwnerPersonId, b.CategoryId })
             .Select(g => g.OrderByDescending(b => b.StartYear).ThenByDescending(b => b.StartMonth).First())
             .Where(b => b.Amount > 0)
+            .ToList();
+        var effective = effectiveAll.Where(b => b.CategoryId == null).ToList();
+        var categoryBudgets = effectiveAll
+            .Where(b => b.CategoryId != null)
+            .OrderBy(b => b.Category?.Name, NameComparer)
             .ToList();
         var household = effective.FirstOrDefault(b => b.OwnerPersonId == null);
         var personBudgets = effective
@@ -69,27 +75,30 @@ public class GetBudgetReportQueryHandler : IRequestHandler<GetBudgetReportQuery,
             .GroupBy(i => period.Plans[i.RecurringPaymentId].OwnerPersonId)
             .ToDictionary(g => g.Key ?? 0, g => g.Sum(i => i.Amount ?? 0m));
 
+        // Kullanılan, kalan, günlük ve yüzde Spent ve Pending'den hesaplanır
+        void FillTotals(BudgetRowDto row)
+        {
+            row.Used = row.Spent + row.Pending;
+            row.Remaining = row.Budget - row.Used;
+            row.DailyAllowance = daysLeft > 0 ? Math.Round(Math.Max(row.Remaining, 0m) / daysLeft, 2, MidpointRounding.ToZero) : null;
+            row.UsedPercent = row.Budget > 0 ? Math.Round(row.Used / row.Budget * 100m, 1) : 0m;
+        }
+
         BudgetRowDto Row(int? budgetId, int? personId, string? name, bool isShared, decimal amount, IEnumerable<int> owners)
         {
             var ownerList = owners.ToList();
-            var spent = ownerList.Sum(o => spentByPerson.GetValueOrDefault(o));
-            var pending = ownerList.Sum(o => pendingByPerson.GetValueOrDefault(o));
-            var used = spent + pending;
-            var remaining = amount - used;
-            return new BudgetRowDto
+            var row = new BudgetRowDto
             {
                 BudgetId = budgetId,
                 PersonId = personId,
                 Name = name,
                 IsShared = isShared,
                 Budget = amount,
-                Spent = spent,
-                Pending = pending,
-                Used = used,
-                Remaining = remaining,
-                DailyAllowance = daysLeft > 0 ? Math.Round(Math.Max(remaining, 0m) / daysLeft, 2, MidpointRounding.ToZero) : null,
-                UsedPercent = amount > 0 ? Math.Round(used / amount * 100m, 1) : 0m
+                Spent = ownerList.Sum(o => spentByPerson.GetValueOrDefault(o)),
+                Pending = ownerList.Sum(o => pendingByPerson.GetValueOrDefault(o))
             };
+            FillTotals(row);
+            return row;
         }
 
         // Sahip anahtarı: kişi Id'si, hane (kişisiz) 0
@@ -114,6 +123,31 @@ public class GetBudgetReportQueryHandler : IRequestHandler<GetBudgetReportQuery,
                     allOwners.Where(o => !budgetedPeople.Contains(o))));
         }
 
+        // Kategori bütçeleri: kategorinin ay harcamaları (yemek kartı hariç) + planı o kategoride olan bekleyen vadeler
+        var categoryRows = new List<BudgetRowDto>();
+        if (categoryBudgets.Count > 0)
+        {
+            var spentByCategory = (await _unitOfWork.Expenses.GetTotalsByCategoryAsync(
+                    new ExpenseFilter { StartDate = start, EndDate = end }))
+                .ToDictionary(r => r.CategoryId, r => r.Total);
+            var pendingByCategory = pendingItems
+                .Where(i => period.Plans[i.RecurringPaymentId].CategoryId != null)
+                .GroupBy(i => period.Plans[i.RecurringPaymentId].CategoryId!.Value)
+                .ToDictionary(g => g.Key, g => g.Sum(i => i.Amount ?? 0m));
+
+            foreach (var b in categoryBudgets)
+            {
+                var categoryId = b.CategoryId!.Value;
+                var row = Row(b.Id, null, b.Category?.Name, false, b.Amount, Array.Empty<int>());
+                row.CategoryId = categoryId;
+                row.CategoryIcon = b.Category?.Icon;
+                row.Spent = spentByCategory.GetValueOrDefault(categoryId);
+                row.Pending = pendingByCategory.GetValueOrDefault(categoryId);
+                FillTotals(row);
+                categoryRows.Add(row);
+            }
+        }
+
         return Result<BudgetReportDto>.Success(new BudgetReportDto
         {
             Year = year,
@@ -122,6 +156,7 @@ public class GetBudgetReportQueryHandler : IRequestHandler<GetBudgetReportQuery,
             DaysLeft = daysLeft,
             Household = householdRow,
             Rows = rows,
+            Categories = categoryRows,
             PersonBudgetsExceedHousehold = exceeds,
             PendingUnknownCount = pendingItems.Count(i => !i.Amount.HasValue),
             Suggestion = await SuggestAsync(year, month, budgetItems.Sum(i => i.Amount ?? 0m))

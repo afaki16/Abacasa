@@ -7,4 +7,9 @@ namespace Abacasa.Application.Interfaces;
 public interface IMarketRateFetcher
 {
     Task<IReadOnlyList<MarketRateDto>> RefreshAsync(CancellationToken cancellationToken = default);
+
+    // Geçmiş tarih: TCMB arşivinden date ve en çok 6 gün öncesinin ilk yayımlanmış listesini (hafta sonu ve tatil
+    // atlanır) çekip yazar. Liste bulunamazsa ya da TCMB'ye ulaşılamazsa boş döner (istisna atmaz); aynı tarih için
+    // başarısız deneme kısa süre tekrarlanmaz.
+    Task<IReadOnlyList<MarketRateDto>> FetchForDateAsync(DateOnly date, CancellationToken cancellationToken = default);
 }

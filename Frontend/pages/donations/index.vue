@@ -156,8 +156,11 @@
       {{ value || t('budget.household') }}
     </template>
 
-    <template #cell-amount="{ value }">
+    <template #cell-amount="{ value, item }">
       <span class="font-medium">{{ formatMoney(value) }}</span>
+      <div v-if="item.currency && item.currency !== 'TRY'" class="text-[0.75rem] text-black/60 dark:text-white/60">
+        {{ formatAmount(item.foreignAmount, item.currency) }} × {{ formatRate(item.exchangeRate) }}
+      </div>
     </template>
   </BaseDataTable>
 
@@ -213,7 +216,11 @@ definePageMeta({
   permissions: ["Donations.Read"],
 });
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+// Dövizli bağışın kuru: 2–4 ondalık, TL işaretiyle
+const formatRate = (rate: number | null | undefined) =>
+  rate == null ? "" : "₺" + new Intl.NumberFormat(locale.value === "en" ? "en-US" : "tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(rate);
 
 useHead({
   title: computed(() => t("donations.title")),
@@ -233,7 +240,7 @@ const tableColumns = computed(() => [
 //#endregion
 
 //#region Composables
-const { formatMoney } = useMoney();
+const { formatMoney, formatAmount } = useMoney();
 const { getPaymentMethods } = usePaymentMethods();
 const { getPeople } = usePeople();
 const { hasPermission } = useAuth();

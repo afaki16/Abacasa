@@ -11,10 +11,13 @@ namespace Abacasa.Application.Features.Households.Common;
 // Kategori adları ve "Kendisi" yakınlığı isteğin diline göre yazılır (sonradan değişmez, kullanıcı verisidir).
 public static class HouseholdSetup
 {
-    private static readonly string[] DefaultCategoryKeys =
+    // Varsayılan kategori anahtarı ve ikonu (CategoryIcons)
+    private static readonly (string Key, string Icon)[] DefaultCategories =
     {
-        "market", "food", "transport", "fuel", "bills", "subscriptions", "housing", "health", "education",
-        "clothing", "personalCare", "homeGoods", "vehicle", "entertainment", "other"
+        ("market", "shopping-cart"), ("food", "restaurant"), ("transport", "directions-bus"), ("fuel", "local-gas-station"),
+        ("bills", "receipt"), ("subscriptions", "smartphone"), ("housing", "home"), ("health", "medical-services"),
+        ("education", "school"), ("clothing", "checkroom"), ("personalCare", "spa"), ("homeGoods", "build"),
+        ("vehicle", "directions-car"), ("entertainment", "celebration"), ("other", "category")
     };
 
     public static async Task<Tenant> CreateAsync(IUnitOfWork unitOfWork, IJsonStringLocalizer localizer, User user, string name)
@@ -44,8 +47,8 @@ public static class HouseholdSetup
             membership.AssignPerson(person);
             await unitOfWork.TenantMemberships.AddAsync(membership);
 
-            foreach (var key in DefaultCategoryKeys)
-                await unitOfWork.Categories.AddAsync(new Category { TenantId = tenant.Id, Name = localizer[$"household.defaults.categories.{key}"] });
+            foreach (var (key, icon) in DefaultCategories)
+                await unitOfWork.Categories.AddAsync(new Category { TenantId = tenant.Id, Name = localizer[$"household.defaults.categories.{key}"], Icon = icon });
 
             await unitOfWork.SaveChangesAsync();
         }

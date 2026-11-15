@@ -71,7 +71,7 @@ public class CategoriesController : BaseController
     [ProducesResponseType(403)]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto)
     {
-        var result = await _mediator.Send(new CreateCategoryCommand { Name = dto.Name });
+        var result = await _mediator.Send(new CreateCategoryCommand { Name = dto.Name, Icon = dto.Icon });
 
         if (result.IsSuccess)
             return CreatedAtAction(
@@ -94,7 +94,7 @@ public class CategoriesController : BaseController
     [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDto dto)
     {
-        var result = await _mediator.Send(new UpdateCategoryCommand { Id = id, Name = dto.Name });
+        var result = await _mediator.Send(new UpdateCategoryCommand { Id = id, Name = dto.Name, Icon = dto.Icon });
         return HandleResult(result);
     }
 

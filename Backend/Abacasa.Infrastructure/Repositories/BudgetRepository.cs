@@ -12,7 +12,7 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
 {
     public BudgetRepository(ApplicationDbContext context) : base(context) { }
 
-    public async Task<bool> ExistsAsync(int? ownerPersonId, int startYear, int startMonth, int? excludeId = null)
+    public async Task<bool> ExistsAsync(int? ownerPersonId, int? categoryId, int startYear, int startMonth, int? excludeId = null)
     {
         // Kişi boşsa (hane) IS NULL ile karşılaştırılır; veritabanı index'i NULL'ları farklı sayardı
         var query = _context.Set<Budget>()
@@ -21,6 +21,10 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
         query = ownerPersonId.HasValue
             ? query.Where(b => b.OwnerPersonId == ownerPersonId.Value)
             : query.Where(b => b.OwnerPersonId == null);
+
+        query = categoryId.HasValue
+            ? query.Where(b => b.CategoryId == categoryId.Value)
+            : query.Where(b => b.CategoryId == null);
 
         if (excludeId.HasValue)
             query = query.Where(b => b.Id != excludeId.Value);
@@ -34,10 +38,14 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
 
         var totalCount = await query.CountAsync();
 
-        // Hane önce, sonra kişi adı; her sahipte en yeni başlangıç önce
+        // Genel bütçeler önce (hane, sonra kişi adı), sonra kategori adına göre kategori bütçeleri; her birinde en yeni başlangıç önce
         var budgets = await query
             .Include(b => b.OwnerPerson)
-            .OrderBy(b => b.OwnerPerson != null)
+            .Include(b => b.Category)
+            .OrderBy(b => b.CategoryId != null)
+            .ThenBy(b => b.Category!.Name)
+            .ThenBy(b => b.CategoryId)
+            .ThenBy(b => b.OwnerPerson != null)
             .ThenBy(b => b.OwnerPerson!.Name)
             .ThenBy(b => b.OwnerPersonId)
             .ThenByDescending(b => b.StartYear)
@@ -53,6 +61,7 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
     {
         return await _context.Set<Budget>()
             .Include(b => b.OwnerPerson)
+            .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
@@ -61,6 +70,7 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
         return await _context.Set<Budget>()
             .AsNoTracking()
             .Include(b => b.OwnerPerson)
+            .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
@@ -69,6 +79,7 @@ public class BudgetRepository : RepositoryBase<Budget, int>, IBudgetRepository
         return await _context.Set<Budget>()
             .AsNoTracking()
             .Include(b => b.OwnerPerson)
+            .Include(b => b.Category)
             .Where(b => b.StartYear < year || (b.StartYear == year && b.StartMonth <= month))
             .ToListAsync();
     }

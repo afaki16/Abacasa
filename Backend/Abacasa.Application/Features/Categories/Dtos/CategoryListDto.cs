@@ -6,6 +6,7 @@ public class CategoryListDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public string? Icon { get; set; }
     public DateTime CreatedDate { get; set; }
 
     /// Bu kategoriye bağlı harcama ve sabit ödeme sayısı (saklanmaz, hesaplanır). Yalnızca listede dolar.

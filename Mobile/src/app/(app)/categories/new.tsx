@@ -25,9 +25,9 @@ function NewCategory() {
       <CategoryForm
         pending={create.isPending}
         error={create.error}
-        onSubmit={(name) =>
+        onSubmit={(values) =>
           create.mutate(
-            { name },
+            values,
             {
               onSuccess: () => {
                 toast.success(t('categories.created'));

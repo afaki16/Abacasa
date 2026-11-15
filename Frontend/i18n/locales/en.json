@@ -622,10 +622,11 @@
   },
   "budgets": {
     "title": "Monthly budget",
-    "subtitle": "Set a monthly spending budget for the household and each person, and see how much you can still spend this month. Expenses and unpaid recurring payments count against the budget; meal cards and donations don't. Unspent money doesn't roll over.",
+    "subtitle": "Set a monthly spending budget for the household, each person or a category, and see how much you can still spend this month. Expenses and unpaid recurring payments count against the budget; meal cards and donations don't. Unspent money doesn't roll over.",
     "overviewTitle": "{month} budget",
     "goToBudgets": "Go to budget",
-    "noBudget": "No budget for this month. Add a household or personal budget on the Budget page.",
+    "noBudget": "No budget for this month. Add a household, personal or category budget on the Budget page.",
+    "categoriesTitle": "Category budgets",
     "canSpend": "You can still spend this month",
     "overBy": "Over budget by",
     "daily": "~{amount} a day",
@@ -659,7 +660,9 @@
       "amount": "Monthly budget",
       "amountHint": "Enter 0 to remove the budget from this month on",
       "amountMin": "Amount must be 0 or more",
-      "yearRange": "Year must be between 2000 and 2100"
+      "yearRange": "Year must be between 2000 and 2100",
+      "category": "Category",
+      "general": "General (no category)"
     },
     "suggestion": {
       "income": "This month's income in the yearly table: {amount}",
@@ -710,7 +713,11 @@
     "deleteMessage": "Are you sure you want to delete the {amount} donation dated {date}?",
     "form": {
       "fromFund": "From fund",
-      "fundOption": "{from} · {kind} · on hand {amount}"
+      "fundOption": "{from} · {kind} · on hand {amount}",
+      "currency": "Currency",
+      "foreignAmount": "Amount ({currency})",
+      "quantity": "Quantity (quarter gold)",
+      "amountInTry": "In TRY: {amount}"
     }
   },
   "donationTargets": {
@@ -873,7 +880,11 @@
       "name": "Category Name"
     },
     "itemName": "category",
-    "namePlaceholder": "e.g. Groceries"
+    "namePlaceholder": "e.g. Groceries",
+    "icon": "Icon",
+    "iconAuto": "Automatic (guessed from the name)",
+    "iconAutoShort": "Auto",
+    "iconHint": "With automatic, the icon is guessed from the category name."
   },
   "debts": {
     "title": "Debts",
@@ -935,6 +946,8 @@
       "buttonAria": "Payments ({count})",
       "title": "Payments · {creditor}",
       "rate": "Exchange rate",
+      "rateOnDate": "Rate on {date} ({source})",
+      "rateManual": "manual",
       "amountInTry": "TRY equivalent",
       "amountInTryLine": "TRY equivalent: {amount}",
       "empty": "No payments",
@@ -963,7 +976,11 @@
     "deleteConfirm": "Are you sure you want to delete the exchange rate dated {date}?",
     "positive": "Exchange rate must be greater than 0",
     "saved": "Exchange rate saved",
-    "deleted": "Exchange rate deleted"
+    "deleted": "Exchange rate deleted",
+    "asOfTitle": "Rates effective on {date}",
+    "asOfEmpty": "No rate for this date",
+    "manual": "Manual",
+    "useRate": "Use"
   },
   "ledger": {
     "title": "Annual table",
@@ -1088,7 +1105,15 @@
     "columns": {
       "name": "Name",
       "plate": "Plate",
-      "owner": "Owner"
+      "owner": "Owner",
+      "type": "Type"
+    },
+    "types": {
+      "Car": "Car",
+      "Motorcycle": "Motorcycle",
+      "LightCommercial": "Light commercial",
+      "Truck": "Truck",
+      "Other": "Other"
     },
     "upcoming": {
       "title": "Upcoming and overdue",

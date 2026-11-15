@@ -54,7 +54,7 @@ function Categories() {
         onAdd={canCreate ? add : undefined}
         renderRow={(item) => (
           <DefinitionRow
-            leading={<IconTile icon={categoryIcon(item.name)} />}
+            leading={<IconTile icon={categoryIcon(item.name, item.icon)} />}
             title={item.name}
             subtitle={item.usageCount !== undefined ? plural('categories.usage', item.usageCount) : null}
             onPress={

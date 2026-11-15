@@ -175,6 +175,8 @@ namespace Abacasa.Application.Features.Mappings;
         CreateMap<Expense, ExpenseListDto>()
             .ForMember(dest => dest.CategoryName,
                 opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.CategoryIcon,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Icon : null))
             .ForMember(dest => dest.PaymentMethodName,
                 opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
             .ForMember(dest => dest.PaymentMethodType,
@@ -184,6 +186,8 @@ namespace Abacasa.Application.Features.Mappings;
         CreateMap<Expense, ExpenseDto>()
             .ForMember(dest => dest.CategoryName,
                 opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.CategoryIcon,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Icon : null))
             .ForMember(dest => dest.PaymentMethodName,
                 opt => opt.MapFrom(src => src.PaymentMethod != null ? src.PaymentMethod.Name : null))
             .ForMember(dest => dest.PaymentMethodType,
@@ -265,7 +269,11 @@ namespace Abacasa.Application.Features.Mappings;
         // Budget mappings
         CreateMap<Budget, BudgetDto>()
             .ForMember(dest => dest.OwnerName,
-                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null));
+                opt => opt.MapFrom(src => src.OwnerPerson != null ? src.OwnerPerson.Name : null))
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.CategoryIcon,
+                opt => opt.MapFrom(src => src.Category != null ? src.Category.Icon : null));
 
         // DonationFund mappings (dağıtılan/kullanımda/kalan/elde FundBalance.Fill ile handler'da doldurulur)
         CreateMap<DonationFund, DonationFundDto>()

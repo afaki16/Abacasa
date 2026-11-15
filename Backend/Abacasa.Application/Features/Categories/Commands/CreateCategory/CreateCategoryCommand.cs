@@ -7,4 +7,5 @@ namespace Abacasa.Application.Features.Categories.Commands.CreateCategory;
 public class CreateCategoryCommand : IRequest<Result<CategoryListDto>>
 {
     public string Name { get; set; }
+    public string? Icon { get; set; }
 }

@@ -1,7 +1,7 @@
 // Backend: Abacasa.Application/Features/Vehicles/Dtos (VehicleDto, Create/UpdateVehicleDto, VehicleObligationDto,
 // SaveVehicleObligationDto, VehicleReminderDto).
 
-import type { VehicleObligationType } from '@/lib/domain/enums';
+import type { VehicleObligationType, VehicleType } from '@/lib/domain/enums';
 
 /** Her tür için aracın güncel kaydı. */
 export interface VehicleCurrent {
@@ -16,6 +16,7 @@ export interface Vehicle {
   name: string;
   /** Büyük harfle saklanır; hanede benzersiz (409). */
   plate: string;
+  type: VehicleType;
   /** Boşsa araç hanenindir. */
   ownerPersonId: number | null;
   ownerName: string | null;
@@ -33,6 +34,7 @@ export interface VehicleListParams {
 export interface CreateVehicleRequest {
   name: string;
   plate: string;
+  type: VehicleType;
   ownerPersonId?: number | null;
   note?: string | null;
 }

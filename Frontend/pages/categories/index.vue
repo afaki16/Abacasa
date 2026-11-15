@@ -38,12 +38,12 @@
     @search="handleSearch"
     @refresh="refreshData"
   >
-    <template #cell-name="{ value }">
+    <template #cell-name="{ value, item }">
       <UiChip
         color="primary"
         variant="tonal"
         size="default"
-        prepend-icon="mdi-shape"
+        :prepend-icon="categoryMdiIcon(item.icon, value)"
       >
         {{ value }}
       </UiChip>
@@ -86,6 +86,7 @@ import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import CategoryForm from "~/components/Categories/CategoryForm.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";
+import { categoryMdiIcon } from "~/utils/categoryIcons";
 
 //#region Page Metadata
 definePageMeta({

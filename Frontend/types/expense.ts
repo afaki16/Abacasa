@@ -8,6 +8,7 @@ export interface Expense {
   description?: string
   categoryId: number
   categoryName: string
+  categoryIcon?: string | null
   paymentMethodId: number
   paymentMethodName: string
   paymentMethodType: PaymentMethodType
@@ -43,6 +44,6 @@ export interface ExpenseSummary {
   total: number
   mealCardTotal: number
   count: number
-  byCategory: { categoryId: number; categoryName: string; total: number }[]
+  byCategory: { categoryId: number; categoryName: string; categoryIcon?: string | null; total: number }[]
   byPaymentMethod: { paymentMethodId: number; paymentMethodName: string; type: PaymentMethodType; total: number }[]
 }

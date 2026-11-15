@@ -7,12 +7,14 @@ import type {
   DebtPayment,
   SaveDebtPaymentRequest,
   ExchangeRate,
-  SaveExchangeRateRequest
+  SaveExchangeRateRequest,
+  CurrentRate
 } from '~/types'
 import { Currency } from '~/types'
 import { translateCurrency } from './useMoney'
 import { API_ENDPOINTS, getPaginatedEndpoint } from '~/utils/apiEndpoints'
 import { useApi } from './useApi'
+import { todayIso } from '~/utils/period'
 
 // Boş olmayan filtreleri query string'e ekler
 const appendFilters = (endpoint: string, filters: Record<string, unknown> = {}) => {
@@ -170,6 +172,16 @@ export const useDebts = () => {
     }
   }
 
+  // Tarihte geçerli kurlar (elle ya da TCMB; TCMB listesi yoksa backend arşivden çeker). Hata sessizdir: öneri içindir.
+  const getRatesAsOf = async (date: string): Promise<CurrentRate[]> => {
+    try {
+      const response = await api.get<CurrentRate[]>(API_ENDPOINTS.EXCHANGE_RATES.AS_OF(date, todayIso()), { silent: true })
+      return response.data ?? []
+    } catch {
+      return []
+    }
+  }
+
   const deleteExchangeRate = async (id: number) => {
     try {
       await api.delete(API_ENDPOINTS.EXCHANGE_RATES.DELETE(String(id)))
@@ -195,6 +207,7 @@ export const useDebts = () => {
     deleteDebtPayment,
     getExchangeRates,
     saveExchangeRate,
+    getRatesAsOf,
     deleteExchangeRate
   }
 }

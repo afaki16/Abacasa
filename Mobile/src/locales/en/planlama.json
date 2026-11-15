@@ -136,9 +136,15 @@
       "giver": "Given by",
       "paymentMethod": "Payment method",
       "note": "Note",
-      "fund": "Fund"
+      "fund": "Fund",
+      "currency": "Currency",
+      "rate": "Rate (₺)",
+      "goldPrice": "Price of 1 quarter gold (₺)"
     },
     "form": {
+      "rateOnDate": "Rate on {{date}} · {{source}}",
+      "rateHint": "Enter the rate on the donation date.",
+      "inTry": "In TRY: {{amount}}",
       "pick": "Select",
       "optional": "Optional",
       "recipientPlaceholder": "Who received it",
@@ -168,7 +174,10 @@
     "left": "{{amount}} left",
     "over": "{{amount}} over",
     "shared": "Shared",
-    "noBudget": "No budget for this month. Add a household or personal budget to see how much you can spend.",
+    "noBudget": "No budget for this month. Add a household, personal or category budget to see how much you can spend.",
+    "categoriesTitle": "Category budgets",
+    "general": "General (no category)",
+    "categoryHint": "A category budget is for the whole household; all spending in that category counts.",
     "exceedsHousehold": "Personal budgets add up to more than the household budget; the shared budget is counted as 0.",
     "unknownAmounts_one": "{{count}} due payment without a known amount isn't counted",
     "unknownAmounts_other": "{{count}} due payments without a known amount aren't counted",
@@ -189,6 +198,7 @@
     "deleteMessage": "This record is deleted; the person's previous budget applies to those months again.",
     "fields": {
       "owner": "Whose budget",
+      "category": "Category",
       "startMonth": "Start month",
       "startYear": "Start year",
       "amount": "Monthly budget"

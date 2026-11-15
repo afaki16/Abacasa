@@ -34,7 +34,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
                 _localizer["categories.nameExists"]));
 
         // TenantId ApplicationDbContext tarafından atanır
-        var category = new Category { Name = name };
+        var category = new Category { Name = name, Icon = CategoryIcons.Normalize(request.Icon) };
 
         await _unitOfWork.Categories.AddAsync(category);
         await _unitOfWork.SaveChangesAsync();

@@ -63,6 +63,9 @@ public class UpdateDonationCommandHandler : IRequestHandler<UpdateDonationComman
                     _localizer["donations.giverNotFound"]));
         }
 
+        var foreign = request.Currency != Currency.TRY;
+        var amount = DonationCurrency.AmountInTry(request.Currency, request.Amount, request.ForeignAmount, request.ExchangeRate);
+
         // Emanetten dağıtım: yeni emanet ve (değişiyorsa) eski emanet ayrı ayrı kontrol edilir; ikisinde de elde ≥ 0
         DonationFund? fund = null;
         if (request.FundId.HasValue)
@@ -91,7 +94,10 @@ public class UpdateDonationCommandHandler : IRequestHandler<UpdateDonationComman
         }
 
         donation.Date = request.Date;
-        donation.Amount = request.Amount;
+        donation.Amount = amount;
+        donation.Currency = request.Currency;
+        donation.ForeignAmount = foreign ? request.ForeignAmount : null;
+        donation.ExchangeRate = foreign ? request.ExchangeRate : null;
         donation.Kind = request.Kind;
         donation.Recipient = request.Recipient.Trim();
         donation.GiverPersonId = giver?.Id;

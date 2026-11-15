@@ -13,6 +13,7 @@ export interface Expense {
   description: string | null;
   categoryId: number;
   categoryName: string;
+  categoryIcon?: string | null;
   paymentMethodId: number;
   paymentMethodName: string;
   paymentMethodType: PaymentMethodType;
@@ -42,6 +43,7 @@ export interface ExpenseFilters {
 export interface ExpenseCategoryTotal {
   categoryId: number;
   categoryName: string;
+  categoryIcon?: string | null;
   total: number;
 }
 

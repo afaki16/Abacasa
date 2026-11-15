@@ -13,5 +13,8 @@ public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCo
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage(localizer["validation.required", localizer["validation.fields.categoryName"]])
             .MaximumLength(100).WithMessage(localizer["validation.maxLength", localizer["validation.fields.categoryName"], 100]);
+
+        RuleFor(x => x.Icon)
+            .Must(CategoryIcons.IsValid).WithMessage(localizer["categories.invalidIcon"]);
     }
 }

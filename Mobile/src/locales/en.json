@@ -70,6 +70,13 @@
       "Mtv": "Motor vehicle tax",
       "Maintenance": "Maintenance"
     },
+    "vehicleType": {
+      "Car": "Car",
+      "Motorcycle": "Motorcycle",
+      "LightCommercial": "Light commercial",
+      "Truck": "Truck",
+      "Other": "Other"
+    },
     "ledgerDirection": {
       "Income": "Income",
       "Expense": "Expense"

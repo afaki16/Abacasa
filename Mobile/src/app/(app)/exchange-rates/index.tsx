@@ -1,95 +1,61 @@
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 
-import { Card, ConfirmDialog, ErrorState, Icon, ListItem, Skeleton, Text } from '@/components/ui';
+import {
+  Card,
+  ConfirmDialog,
+  DatePickerSheet,
+  ErrorState,
+  Icon,
+  ListItem,
+  Skeleton,
+  Text,
+} from '@/components/ui';
 import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
 import { RequirePermission } from '@/features/auth/components/RequirePermission';
 import { useHasPermission } from '@/features/auth/permissions';
 import { SectionLabel } from '@/features/categories/components/DefinitionKit';
-import { DASHBOARD_PERMISSIONS } from '@/features/dashboard/constants';
-import { useDashboard } from '@/features/dashboard/hooks';
-import { DEBT_PERMISSIONS } from '@/features/debts/constants';
-import { useDebtSummary } from '@/features/debts/hooks';
 import { RateCard } from '@/features/exchangeRates/components/RateCard';
 import { RateEntrySheet } from '@/features/exchangeRates/components/RateEntrySheet';
 import { EXCHANGE_RATE_PERMISSIONS } from '@/features/exchangeRates/constants';
-import { buildRateCards, formatRate } from '@/features/exchangeRates/current';
-import { useDeleteExchangeRate, useExchangeRates } from '@/features/exchangeRates/hooks';
-import type { CurrentRate, ExchangeRate } from '@/features/exchangeRates/types';
+import { buildRateCards, formatRate, shiftIsoDate } from '@/features/exchangeRates/current';
+import { useDeleteExchangeRate, useExchangeRates, useRatesAsOf } from '@/features/exchangeRates/hooks';
+import type { ExchangeRate } from '@/features/exchangeRates/types';
 import { enumLabel, type Currency } from '@/lib/domain/enums';
-import { formatDisplayDate, monthRange, todayIso } from '@/lib/format/period';
+import { formatDisplayDate, todayIso } from '@/lib/format/period';
 import { toast } from '@/stores/toastStore';
 
 /**
- * Döviz kurları: USD, EUR ve çeyrek altının güncel kuru (kaynak TCMB / Elle), elle giriş, merkez bankasına
- * dönüş (elle kaydı silmek) ve elle girilen son kurlar. Güncel kurlar dönem özetinden (yoksa borç özetinden)
- * okunur; ikisine de izin yoksa elle girilen son kur gösterilir.
+ * Döviz kurları: USD, EUR ve çeyrek altının seçilen tarihte geçerli kuru (kaynak TCMB / Elle; varsayılan bugün,
+ * tarih gezgini ile geçmiş günler), elle giriş, merkez bankasına dönüş (elle kaydı silmek) ve elle girilen son kurlar.
  */
 export default function ExchangeRatesScreen() {
   return (
     <RequirePermission permission={EXCHANGE_RATE_PERMISSIONS.READ}>
-      <ExchangeRatesSource />
+      <ExchangeRatesOnDate />
     </RequirePermission>
   );
 }
 
-/** Hook'lar koşullu çağrılamaz; güncel kurların kaynağı izne göre ayrı bileşende okunur. */
-function ExchangeRatesSource() {
-  const canDashboard = useHasPermission(DASHBOARD_PERMISSIONS.READ);
-  const canDebts = useHasPermission(DEBT_PERMISSIONS.READ);
-  if (canDashboard) return <FromDashboard />;
-  if (canDebts) return <FromDebts />;
-  return (
-    <ExchangeRates current={undefined} currentPending={false} onRefreshCurrent={() => undefined} />
-  );
-}
-
-function FromDashboard() {
-  const today = todayIso();
-  const query = useDashboard(
-    monthRange(Number(today.slice(0, 4)), Number(today.slice(5, 7))),
-    today,
-  );
-  return (
-    <ExchangeRates
-      current={query.data?.debts.rates}
-      currentPending={query.isPending}
-      onRefreshCurrent={() => void query.refetch()}
-    />
-  );
-}
-
-function FromDebts() {
-  const query = useDebtSummary();
-  return (
-    <ExchangeRates
-      current={query.data?.rates}
-      currentPending={query.isPending}
-      onRefreshCurrent={() => void query.refetch()}
-    />
-  );
-}
-
-function ExchangeRates({
-  current,
-  currentPending,
-  onRefreshCurrent,
-}: {
-  current: CurrentRate[] | undefined;
-  currentPending: boolean;
-  onRefreshCurrent: () => void;
-}) {
+function ExchangeRatesOnDate() {
   const { t } = useTranslation();
   const styles = useStyles();
   const colors = useColors();
+  const today = todayIso();
+  const [date, setDate] = useState(today);
+  const [dateOpen, setDateOpen] = useState(false);
+  const asOf = useRatesAsOf(date);
   const manual = useExchangeRates();
   const remove = useDeleteExchangeRate();
   const canCreate = useHasPermission(EXCHANGE_RATE_PERMISSIONS.CREATE);
   const canDelete = useHasPermission(EXCHANGE_RATE_PERMISSIONS.DELETE);
   const [entry, setEntry] = useState<Currency | null>(null);
   const [toDelete, setToDelete] = useState<{ record: ExchangeRate; revert: boolean } | null>(null);
+  const isToday = date >= today;
+  const current = asOf.data;
+  const currentPending = asOf.isPending;
 
   const cards = buildRateCards(current, manual.data ?? []);
   const history = manual.data ?? [];
@@ -121,26 +87,59 @@ function ExchangeRates({
             progressBackgroundColor={colors.background}
             onRefresh={() => {
               void manual.refetch();
-              onRefreshCurrent();
+              void asOf.refetch();
             }}
           />
         }
       >
+        {/* Tarih gezgini: ‹ tarih › (bugünden ileri gidilemez); tarihe dokununca takvim */}
         <View style={styles.today}>
-          <Icon name="today" size={20} color={colors.textMuted} />
-          <Text variant="bodyStrong">
-            {t('exchangeRates.currentTitle', { date: formatDisplayDate(todayIso()) })}
-          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('exchangeRates.previousDay')}
+            hitSlop={8}
+            onPress={() => setDate(shiftIsoDate(date, -1))}
+            style={styles.stepper}
+          >
+            <Icon name="chevron-left" size={24} color={colors.primary} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityHint={t('exchangeRates.pickDate')}
+            onPress={() => setDateOpen(true)}
+            style={styles.dateButton}
+          >
+            <Icon name="today" size={20} color={colors.textMuted} />
+            <Text variant="bodyStrong">
+              {isToday
+                ? t('exchangeRates.currentTitle', { date: formatDisplayDate(today) })
+                : t('exchangeRates.asOfTitle', { date: formatDisplayDate(date) })}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('exchangeRates.nextDay')}
+            accessibilityState={{ disabled: isToday }}
+            disabled={isToday}
+            hitSlop={8}
+            onPress={() => setDate(shiftIsoDate(date, 1))}
+            style={styles.stepper}
+          >
+            <Icon name="chevron-right" size={24} color={isToday ? colors.textDisabled : colors.primary} />
+          </Pressable>
         </View>
 
         {manual.isPending || currentPending ? (
           [0, 1, 2].map((i) => <Skeleton key={i} height={112} radius={Radius.lg} />)
-        ) : manual.isError ? (
+        ) : manual.isError || asOf.isError ? (
           <ErrorState
             title={t('common.error')}
-            message={manual.error.message}
+            message={(manual.error ?? asOf.error)?.message}
             actionLabel={t('common.retry')}
-            onAction={() => void manual.refetch()}
+            onAction={() => {
+              void manual.refetch();
+              void asOf.refetch();
+            }}
           />
         ) : (
           <>
@@ -197,7 +196,16 @@ function ExchangeRates({
         )}
       </ScrollView>
 
-      <RateEntrySheet currency={entry} onClose={() => setEntry(null)} />
+      <RateEntrySheet currency={entry} initialDate={date} onClose={() => setEntry(null)} />
+      <DatePickerSheet
+        visible={dateOpen}
+        onClose={() => setDateOpen(false)}
+        value={date}
+        maxDate={today}
+        minDate="2000-01-01"
+        title={t('exchangeRates.pickDate')}
+        onSelect={setDate}
+      />
       <ConfirmDialog
         visible={!!toDelete}
         title={toDelete?.revert ? t('exchangeRates.revertTitle') : t('exchangeRates.deleteTitle')}
@@ -237,6 +245,16 @@ const useStyles = makeStyles((c) => ({
     borderColor: c.border,
     borderRadius: Radius.lg,
     minHeight: 56,
+    paddingHorizontal: Spacing.sm,
+  },
+  stepper: { padding: Spacing.xs },
+  dateButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    minHeight: 48,
   },
   note: { paddingHorizontal: Spacing.xs, fontSize: 13, lineHeight: 20 },
   group: { gap: 6 },

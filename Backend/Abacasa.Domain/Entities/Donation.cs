@@ -8,7 +8,13 @@ public class Donation : BaseAuditableEntity, ITenantScoped
 {
     public int TenantId { get; set; }
     public DateOnly Date { get; set; }
+    // Her zaman TL (dövizli bağışta ForeignAmount × ExchangeRate); toplamlar bununla hesaplanır
     public decimal Amount { get; set; }
+
+    // TRY değilse bağışın kendi birimindeki tutarı (çeyrekte adet) ve bağış günündeki kur (elle girilir)
+    public Currency Currency { get; set; } = Currency.TRY;
+    public decimal? ForeignAmount { get; set; }
+    public decimal? ExchangeRate { get; set; }
     public DonationKind Kind { get; set; }
     public string Recipient { get; set; }
 

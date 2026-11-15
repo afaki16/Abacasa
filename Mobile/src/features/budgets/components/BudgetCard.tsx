@@ -3,9 +3,10 @@ import { Pressable, View } from 'react-native';
 
 import { Icon, Text } from '@/components/ui';
 import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
+import { categoryIcon } from '@/features/expenses/icons';
 import { formatMoney } from '@/lib/format/money';
 import { monthName } from '@/lib/format/period';
-import { plural } from '@/lib/i18n';
+import { currentLocale, plural } from '@/lib/i18n';
 
 import { usageShare, usageTone, type UsageTone } from '../form';
 import type { BudgetReport, BudgetRow } from '../types';
@@ -25,6 +26,7 @@ export function BudgetCard({ report, onPress }: BudgetCardProps) {
   const styles = useStyles();
   const colors = useColors();
   const { household, rows } = report;
+  const categoryRows = report.categories ?? [];
   const title = t('budgets.cardTitle', { month: monthName(report.month), year: report.year });
 
   const headline = household ? (
@@ -82,7 +84,7 @@ export function BudgetCard({ report, onPress }: BudgetCardProps) {
         {onPress ? <Icon name="chevron-right" size={20} color={colors.textMuted} /> : null}
       </View>
 
-      {!household && rows.length === 0 ? (
+      {!household && rows.length === 0 && categoryRows.length === 0 ? (
         <Text variant="label" muted>
           {t('budgets.noBudget')}
         </Text>
@@ -92,6 +94,15 @@ export function BudgetCard({ report, onPress }: BudgetCardProps) {
 
       {rows.map((row) => (
         <PersonRow key={row.isShared ? 'shared' : String(row.personId)} row={row} />
+      ))}
+
+      {categoryRows.length > 0 ? (
+        <Text variant="caption" muted style={styles.sectionLabel}>
+          {t('budgets.categoriesTitle').toLocaleUpperCase(currentLocale() === 'tr' ? 'tr-TR' : 'en-US')}
+        </Text>
+      ) : null}
+      {categoryRows.map((row) => (
+        <PersonRow key={`c-${row.categoryId}`} row={row} />
       ))}
 
       {report.personBudgetsExceedHousehold ? (
@@ -119,6 +130,9 @@ function PersonRow({ row }: { row: BudgetRow }) {
   return (
     <View style={styles.row}>
       <View style={styles.line}>
+        {row.categoryId != null ? (
+          <Icon name={categoryIcon(row.name, row.categoryIcon)} size={16} color={colors.primary} />
+        ) : null}
         <Text variant="label" style={styles.flex} numberOfLines={1}>
           {name}
         </Text>
@@ -171,6 +185,7 @@ const useStyles = makeStyles((c) => ({
   pressed: { opacity: 0.85 },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   flex: { flex: 1 },
+  sectionLabel: { marginTop: Spacing.xs },
   row: { gap: 6, paddingTop: Spacing.sm, borderTopWidth: 1, borderTopColor: c.border },
   line: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   note: {

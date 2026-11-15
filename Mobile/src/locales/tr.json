@@ -70,6 +70,13 @@
       "Mtv": "MTV",
       "Maintenance": "Bakım"
     },
+    "vehicleType": {
+      "Car": "Otomobil",
+      "Motorcycle": "Motosiklet",
+      "LightCommercial": "Hafif ticari",
+      "Truck": "Kamyon",
+      "Other": "Diğer"
+    },
     "ledgerDirection": {
       "Income": "Gelir",
       "Expense": "Gider"

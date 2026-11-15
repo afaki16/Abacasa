@@ -4,7 +4,7 @@ import { Pressable, View } from 'react-native';
 import { Icon, Text } from '@/components/ui';
 import { makeStyles, Radius, Spacing, useColors } from '@/constants/theme';
 import { enumLabel } from '@/lib/domain/enums';
-import { formatMoney } from '@/lib/format/money';
+import { formatAmount, formatMoney } from '@/lib/format/money';
 
 import { donationMeta } from '../summary';
 import type { DonationListItem } from '../types';
@@ -25,11 +25,16 @@ export function DonationRow({
   const meta = donationMeta(donation, t('donations.household'));
   const title = enumLabel('donationKind', donation.kind);
   const amount = formatMoney(donation.amount);
+  // Dövizli bağışta TL karşılığının altında birim tutarı
+  const foreign =
+    donation.currency && donation.currency !== 'TRY' && donation.foreignAmount != null
+      ? formatAmount(donation.foreignAmount, donation.currency)
+      : null;
 
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
-      accessibilityLabel={`${title}, ${meta}, ${amount}`}
+      accessibilityLabel={[title, meta, amount, foreign].filter(Boolean).join(', ')}
       disabled={!onPress}
       onPress={onPress}
       style={({ pressed }) => [styles.row, !last && styles.divider, pressed && styles.pressed]}
@@ -45,9 +50,16 @@ export function DonationRow({
           {meta}
         </Text>
       </View>
-      <Text variant="bodyStrong" tabular style={styles.amount}>
-        {amount}
-      </Text>
+      <View style={styles.amountBox}>
+        <Text variant="bodyStrong" tabular style={styles.amount}>
+          {amount}
+        </Text>
+        {foreign ? (
+          <Text variant="caption" muted tabular style={styles.amount}>
+            {foreign}
+          </Text>
+        ) : null}
+      </View>
     </Pressable>
   );
 }
@@ -72,5 +84,6 @@ const useStyles = makeStyles((c) => ({
     justifyContent: 'center',
   },
   texts: { flex: 1, gap: 3 },
+  amountBox: { alignItems: 'flex-end', gap: 2 },
   amount: { textAlign: 'right' },
 }));

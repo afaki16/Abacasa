@@ -204,6 +204,7 @@ export const API_ENDPOINTS = {
     LIST: '/api/exchangerates',
     SAVE: '/api/exchangerates',
     DELETE: (id: string) => `/api/exchangerates/${id}`,
+    AS_OF: (date: string, today: string) => `/api/exchangerates/as-of?date=${date}&today=${today}`,
   },
 
   // Role management endpoints

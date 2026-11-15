@@ -54,6 +54,7 @@ public class UpdateVehicleCommandHandler : IRequestHandler<UpdateVehicleCommand,
 
         vehicle.Name = request.Name.Trim();
         vehicle.Plate = plate;
+        vehicle.Type = request.Type;
         vehicle.OwnerPersonId = owner?.Id;
         vehicle.OwnerPerson = owner;
         vehicle.IsActive = request.IsActive;

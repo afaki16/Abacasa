@@ -95,16 +95,16 @@ public class ExpenseRepository : RepositoryBase<Expense, int>, IExpenseRepositor
         return totals == null ? (0m, 0m, 0) : (totals.Total, totals.MealCardTotal, totals.Count);
     }
 
-    public async Task<List<(int CategoryId, string CategoryName, decimal Total)>> GetTotalsByCategoryAsync(ExpenseFilter filter)
+    public async Task<List<(int CategoryId, string CategoryName, string? CategoryIcon, decimal Total)>> GetTotalsByCategoryAsync(ExpenseFilter filter)
     {
         var rows = await BuildFilteredQuery(filter)
             .Where(e => e.PaymentMethod.Type != PaymentMethodType.MealCard)
-            .GroupBy(e => new { e.CategoryId, e.Category.Name })
-            .Select(g => new { g.Key.CategoryId, g.Key.Name, Total = g.Sum(e => e.Amount) })
+            .GroupBy(e => new { e.CategoryId, e.Category.Name, e.Category.Icon })
+            .Select(g => new { g.Key.CategoryId, g.Key.Name, g.Key.Icon, Total = g.Sum(e => e.Amount) })
             .OrderByDescending(x => x.Total)
             .ToListAsync();
 
-        return rows.Select(r => (r.CategoryId, r.Name, r.Total)).ToList();
+        return rows.Select(r => (r.CategoryId, r.Name, r.Icon, r.Total)).ToList();
     }
 
     public async Task<List<(int PaymentMethodId, string PaymentMethodName, PaymentMethodType Type, decimal Total)>> GetTotalsByPaymentMethodAsync(ExpenseFilter filter)

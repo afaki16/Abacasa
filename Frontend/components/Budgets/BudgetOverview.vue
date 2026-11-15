@@ -11,7 +11,7 @@
     </div>
     <div class="ui-card-text">
       <!-- Bütçe yok -->
-      <div v-if="!report.household && !report.rows.length" class="text-black/60 dark:text-white/70">
+      <div v-if="!report.household && !report.rows.length && !report.categories?.length" class="text-black/60 dark:text-white/70">
         {{ t('budgets.noBudget') }}
       </div>
 
@@ -63,6 +63,27 @@
         </div>
       </div>
 
+      <!-- Kategori bütçeleri -->
+      <template v-if="report.categories?.length">
+        <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-medium text-black/60 dark:text-white/70 mt-4 mb-2">
+          {{ t('budgets.categoriesTitle').toLocaleUpperCase(locale === 'en' ? 'en-US' : 'tr-TR') }}
+        </div>
+        <div v-for="row in report.categories" :key="'c' + row.categoryId" class="mb-3">
+          <div class="flex items-center gap-2">
+            <UiIcon :icon="categoryMdiIcon(row.categoryIcon, row.name)" :size="18" color="primary" />
+            <span class="font-medium">{{ row.name }}</span>
+            <div class="flex-1" />
+            <span :class="row.remaining < 0 ? 'text-[rgb(var(--color-error))]' : ''" class="font-medium">
+              {{ row.remaining >= 0 ? t('budgets.left', { amount: formatMoney(row.remaining) }) : t('budgets.over', { amount: formatMoney(-row.remaining) }) }}
+            </span>
+          </div>
+          <UiProgressLinear :model-value="row.usedPercent" :color="usageColor(row.usedPercent)" :height="6" rounded class="my-1" />
+          <div class="text-[0.75rem] leading-[1.667] tracking-[0.0333333333em] font-normal text-black/60 dark:text-white/70">
+            {{ t('budgets.rowBreakdown', { used: formatMoney(row.used), budget: formatMoney(row.budget), percent: formatPercent(row.usedPercent) }) }}
+          </div>
+        </div>
+      </template>
+
       <UiAlert v-if="report.personBudgetsExceedHousehold" type="warning" variant="tonal" density="compact" class="mt-2">
         {{ t('budgets.exceedsHousehold') }}
       </UiAlert>
@@ -75,6 +96,7 @@
 
 <script setup lang="ts">
 import type { BudgetReport } from '~/types'
+import { categoryMdiIcon } from '~/utils/categoryIcons'
 
 // Ayın bütçe özeti: hane kalanı, günlük limit, kişi ve Ortak satırları. Özet sayfası ve Bütçe sayfası ortak kullanır.
 defineProps<{

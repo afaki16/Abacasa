@@ -16,6 +16,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(x => x.Icon)
+            .HasMaxLength(50);
+
         builder.Property(x => x.IsDeleted)
             .IsRequired()
             .HasDefaultValue(false);

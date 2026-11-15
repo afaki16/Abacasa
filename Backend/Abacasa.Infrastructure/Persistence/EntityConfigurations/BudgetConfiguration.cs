@@ -34,6 +34,7 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         // (kişi, başlangıç ayı) tekliği uygulamada kontrol edilir; NULL kişi (hane) index'te farklı sayılırdı
         builder.HasIndex(x => new { x.TenantId, x.StartYear, x.StartMonth });
         builder.HasIndex(x => x.OwnerPersonId);
+        builder.HasIndex(x => x.CategoryId);
 
         // Tenant navigation property yok; sadece FK
         builder.HasOne<Tenant>()
@@ -44,6 +45,11 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         builder.HasOne(x => x.OwnerPerson)
             .WithMany()
             .HasForeignKey(x => x.OwnerPersonId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Category)
+            .WithMany()
+            .HasForeignKey(x => x.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

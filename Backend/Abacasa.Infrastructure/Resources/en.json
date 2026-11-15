@@ -70,7 +70,8 @@
   "categories": {
     "notFound": "Category not found",
     "nameExists": "A category with this name already exists",
-    "inUse": "This category is in use"
+    "inUse": "This category is in use",
+    "invalidIcon": "Invalid category icon"
   },
   "people": {
     "notFound": "Person not found",
@@ -98,7 +99,9 @@
     "giverNotFound": "Giver not found",
     "fundNotFound": "Fund not found",
     "fundKindMismatch": "The donation kind must match the fund kind",
-    "fundOnHandInsufficient": "The fund does not have this much on hand; return the used amount first"
+    "fundOnHandInsufficient": "The fund does not have this much on hand; return the used amount first",
+    "fundRequiresTry": "A donation distributed from a fund must be in TRY",
+    "quarterGoldWhole": "The number of quarter gold coins must be a whole number"
   },
   "recurringPayments": {
     "notFound": "Recurring payment not found",
@@ -136,6 +139,7 @@
   },
   "exchangeRates": {
     "foreignOnly": "Rates can only be entered for Dollar, Euro and Quarter gold",
+    "dateOutOfRange": "The date must be between 01.01.2000 and today",
     "marketFetchFailed": "TCMB rates could not be fetched",
     "notFound": "Exchange rate not found"
   },
@@ -153,7 +157,9 @@
   "budgets": {
     "notFound": "Budget not found",
     "ownerNotFound": "Person not found",
-    "alreadyExists": "A budget starting this month already exists for this person"
+    "alreadyExists": "A budget starting this month already exists for this person or category",
+    "categoryNotFound": "Category not found",
+    "categoryHouseholdOnly": "A category budget is for the whole household; a person cannot be selected"
   },
   "donationTargets": {
     "notFound": "Donation target not found",
@@ -316,6 +322,7 @@
       "vehicleId": "Vehicle ID",
       "vehicleName": "Vehicle name",
       "plate": "Plate",
+      "vehicleType": "Vehicle type",
       "obligationType": "Record type"
     },
     "required": "{0} field is required",

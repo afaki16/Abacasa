@@ -126,6 +126,7 @@
     "form": {
       "name": "Ad",
       "plate": "Plaka",
+      "vehicleType": "Araç türü",
       "owner": "Sahip kişi",
       "note": "Not",
       "optional": "İsteğe bağlı",
@@ -155,7 +156,11 @@
     "emptyTitle": "Henüz kategori yok",
     "emptyMessage": "Harcamalarını gruplamak için kategori ekle.",
     "form": {
-      "name": "Ad"
+      "name": "Ad",
+      "icon": "İkon",
+      "iconAuto": "Otomatik",
+      "iconAutoShort": "Oto",
+      "iconHint": "Otomatik seçilirse ikon kategori adından tahmin edilir."
     },
     "created": "Kategori eklendi",
     "saved": "Kategori kaydedildi",
@@ -231,6 +236,10 @@
   "exchangeRates": {
     "title": "Döviz kurları",
     "currentTitle": "Güncel kurlar · {{date}}",
+    "asOfTitle": "{{date}} kurları",
+    "previousDay": "Önceki gün",
+    "nextDay": "Sonraki gün",
+    "pickDate": "Tarih seç",
     "unit": {
       "TRY": "1 TL",
       "USD": "1 USD",

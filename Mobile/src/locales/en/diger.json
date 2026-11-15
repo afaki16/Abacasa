@@ -126,6 +126,7 @@
     "form": {
       "name": "Name",
       "plate": "Plate",
+      "vehicleType": "Vehicle type",
       "owner": "Owner",
       "note": "Note",
       "optional": "Optional",
@@ -155,7 +156,11 @@
     "emptyTitle": "No categories yet",
     "emptyMessage": "Add categories to group your spending.",
     "form": {
-      "name": "Name"
+      "name": "Name",
+      "icon": "Icon",
+      "iconAuto": "Automatic",
+      "iconAutoShort": "Auto",
+      "iconHint": "With automatic, the icon is guessed from the category name."
     },
     "created": "Category added",
     "saved": "Category saved",
@@ -231,6 +236,10 @@
   "exchangeRates": {
     "title": "Exchange rates",
     "currentTitle": "Current rates · {{date}}",
+    "asOfTitle": "Rates on {{date}}",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "pickDate": "Pick a date",
     "unit": {
       "TRY": "1 TRY",
       "USD": "1 USD",

@@ -2,6 +2,7 @@ using Abacasa.Application.Features.ExchangeRates.Dtos;
 using Abacasa.Domain.Common.Enums;
 using Abacasa.Domain.Common.Interfaces;
 using Abacasa.Domain.Entities;
+using System;
 
 namespace Abacasa.Application.Features.ExchangeRates.Common;
 
@@ -14,7 +15,30 @@ public static class CurrentRates
     // TL dışındaki birimler (TL karşılığı kurla hesaplanır)
     public static readonly Currency[] ForeignCurrencies = { Currency.USD, Currency.EUR, Currency.QuarterGold };
 
+    // TCMB'nin yayımladığı birimler
+    public static readonly Currency[] MarketCurrencies = { Currency.USD, Currency.EUR };
+
+    // Geçmiş tarihte TCMB kuru bu kadar gün içinde kayıtlı değilse arşivden çekilir (hafta sonu + uzun tatil)
+    public const int MarketWindowDays = 9;
+
     public static bool IsForeign(Currency currency) => currency != Currency.TRY;
+
+    // Bir tarihte geçerli kur: o tarih ve öncesindeki en son elle girilen kur ile en son TCMB kuru arasından
+    // tarihi yeni olan; eşitse elle girilen (güncel kurla aynı kural, tarih sınırıyla)
+    public static async Task<CurrentRateDto?> GetAsOfAsync(IUnitOfWork unitOfWork, Currency currency, DateOnly date)
+    {
+        if (!IsForeign(currency)) return null;
+
+        var manual = await unitOfWork.ExchangeRates.GetLatestOnOrBeforeAsync(currency, date);
+        var market = currency == Currency.QuarterGold ? null : await unitOfWork.MarketRates.GetLatestOnOrBeforeAsync(currency, date);
+
+        if (manual != null && (market == null || manual.Date >= market.Date))
+            return new CurrentRateDto { Currency = currency, Rate = manual.Rate, Date = manual.Date, Source = ManualSource };
+
+        return market == null
+            ? null
+            : new CurrentRateDto { Currency = currency, Rate = market.Rate, Date = market.Date, Source = MarketRate.TcmbSource };
+    }
 
     public static async Task<CurrentRateDto?> GetAsync(IUnitOfWork unitOfWork, Currency currency)
     {

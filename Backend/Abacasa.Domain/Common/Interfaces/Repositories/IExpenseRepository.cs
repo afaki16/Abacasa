@@ -20,7 +20,7 @@ public interface IExpenseRepository : IRepository<Expense, int>
     Task<(decimal Total, decimal MealCardTotal, int Count)> GetTotalsAsync(ExpenseFilter filter);
 
     // Yemek kartı hariç
-    Task<List<(int CategoryId, string CategoryName, decimal Total)>> GetTotalsByCategoryAsync(ExpenseFilter filter);
+    Task<List<(int CategoryId, string CategoryName, string? CategoryIcon, decimal Total)>> GetTotalsByCategoryAsync(ExpenseFilter filter);
 
     // Yemek kartı dahil
     Task<List<(int PaymentMethodId, string PaymentMethodName, PaymentMethodType Type, decimal Total)>> GetTotalsByPaymentMethodAsync(ExpenseFilter filter);

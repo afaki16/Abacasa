@@ -1,11 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Control, Controller, useForm, type UseFormSetValue, useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 
-import { AmountField, Button, Card, FormError, FormField, SwitchCard } from '@/components/ui';
-import { makeStyles, Spacing } from '@/constants/theme';
-import { hasPermission } from '@/features/auth/permissions';
+import {
+  AmountField,
+  Button,
+  Card,
+  FormError,
+  FormField,
+  SegmentedControl,
+  SwitchCard,
+  Text,
+  TextField,
+} from '@/components/ui';
+import { makeStyles, Spacing, useColors } from '@/constants/theme';
+import { hasPermission, useHasPermission } from '@/features/auth/permissions';
+import { rateToInput, sanitizeRateInput } from '@/features/debts/debtForm';
+import { EXCHANGE_RATE_PERMISSIONS } from '@/features/exchangeRates/constants';
+import { useRatesAsOf } from '@/features/exchangeRates/hooks';
 import { DONATION_FUND_PERMISSIONS } from '@/features/donationFunds/constants';
 import { useDonationFundsInfinite } from '@/features/donationFunds/hooks';
 import { usePaymentMethodOptions } from '@/features/paymentMethods/hooks';
@@ -16,19 +30,22 @@ import {
   useServerFieldErrors,
 } from '@/features/recurringPayments/components/form/Fields';
 import { flattenPages, type ApiError } from '@/lib/api';
-import { DonationKind, enumLabel, enumOptions } from '@/lib/domain/enums';
+import { type Currency, DonationKind, enumLabel, enumOptions } from '@/lib/domain/enums';
 import { formatMoney } from '@/lib/format/money';
-import { todayIso } from '@/lib/format/period';
+import { formatDisplayDate, todayIso } from '@/lib/format/period';
 import { useAuthStore } from '@/stores/authStore';
 
 import {
   donationFormSchema,
   donationFormToRequest,
+  donationInTry,
   donationToForm,
   emptyDonationForm,
   type DonationFormValues,
 } from '../donationForm';
 import type { CreateDonationRequest, DonationListItem } from '../types';
+
+const CURRENCIES: Currency[] = ['TRY', 'USD', 'EUR', 'QuarterGold'];
 
 const SERVER_FIELDS = [
   'amount',
@@ -39,6 +56,8 @@ const SERVER_FIELDS = [
   'paymentMethodId',
   'note',
   'fundId',
+  'currency',
+  'rate',
 ] as const;
 
 export interface DonationFormProps {
@@ -60,6 +79,7 @@ export function DonationForm({
 }: DonationFormProps) {
   const { t } = useTranslation();
   const styles = useStyles();
+  const colors = useColors();
   const methods = usePaymentMethodOptions();
   const people = usePersonOptions();
   const fundsEnabled = useAuthStore(
@@ -72,9 +92,39 @@ export function DonationForm({
     resolver: zodResolver(donationFormSchema),
     defaultValues: donation ? donationToForm(donation) : emptyDonationForm(todayIso(), initialFund),
   });
-  const restErrors = useServerFieldErrors(error, setError, SERVER_FIELDS);
+  const restErrors = useServerFieldErrors(error, setError, SERVER_FIELDS, {
+    foreignAmount: 'amount',
+    exchangeRate: 'rate',
+  });
   const fromFund = useWatch({ control, name: 'useFund' });
   const fundId = useWatch({ control, name: 'fundId' });
+  const [currency, date, amountRaw, rateRaw] = useWatch({
+    control,
+    name: ['currency', 'date', 'amount', 'rate'],
+  });
+  const foreign = currency !== 'TRY';
+
+  // Bağış günündeki kur önerisi (elle ya da TCMB); kullanıcı kuru kendisi değiştirdiyse dokunulmaz.
+  // Düzenleme açılışında kayıtlı kur korunur.
+  const canReadRates = useHasPermission(EXCHANGE_RATE_PERMISSIONS.READ);
+  const ratesOnDate = useRatesAsOf(date, foreign && canReadRates && !!date);
+  const suggested = foreign
+    ? (ratesOnDate.data?.find((r) => r.currency === currency) ?? null)
+    : null;
+  const autoRate = useRef<string | null>(null);
+  const initialKey = useRef(donation ? `${donation.date.slice(0, 10)}|${donation.currency}` : null);
+  useEffect(() => {
+    if (!suggested) return;
+    if (initialKey.current === `${date}|${currency}`) return;
+    initialKey.current = null;
+    const next = rateToInput(suggested.rate);
+    if (rateRaw === '' || rateRaw === autoRate.current) {
+      autoRate.current = next;
+      if (rateRaw !== next) setValue('rate', next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- yalnızca öneri değişince
+  }, [suggested?.rate, suggested?.currency, date, currency]);
+  const inTry = foreign ? donationInTry(amountRaw, rateRaw) : null;
 
   const methodOptions = (methods.data ?? [])
     .filter((m) => m.isActive || m.id === donation?.paymentMethodId)
@@ -93,7 +143,8 @@ export function DonationForm({
       description: p.relation ?? undefined,
     })),
   ];
-  const showFund = fundsEnabled || fromFund;
+  // Emanetten dağıtım yalnızca TL
+  const showFund = (fundsEnabled || fromFund) && !foreign;
 
   const submit = () => handleSubmit((v) => onSubmit(donationFormToRequest(v)))();
 
@@ -101,11 +152,30 @@ export function DonationForm({
     <View style={styles.container}>
       <Controller
         control={control}
+        name="currency"
+        render={({ field }) => (
+          <SegmentedControl<Currency>
+            accessibilityLabel={t('donations.fields.currency')}
+            disabled={fromFund}
+            segments={CURRENCIES.map((c) => ({ value: c, label: t(`debts.currency.${c}`) }))}
+            value={field.value}
+            onChange={(c) => {
+              field.onChange(c);
+              // Çeyrek tam sayıdır; birim değişince tutar ve kur temizlenir.
+              setValue('amount', '');
+              setValue('rate', '');
+              autoRate.current = null;
+            }}
+          />
+        )}
+      />
+      <Controller
+        control={control}
         name="amount"
         render={({ field, fieldState }) => (
           <AmountField
             variant="hero"
-            currency="TRY"
+            currency={currency}
             value={field.value}
             onChangeValue={field.onChange}
             error={fieldState.error?.message}
@@ -113,6 +183,41 @@ export function DonationForm({
           />
         )}
       />
+      {foreign ? (
+        <Card>
+          <Controller
+            control={control}
+            name="rate"
+            render={({ field, fieldState }) => (
+              <TextField
+                label={
+                  currency === 'QuarterGold'
+                    ? t('donations.fields.goldPrice')
+                    : t('donations.fields.rate')
+                }
+                value={field.value ? `₺${field.value}` : ''}
+                onChangeText={(text) => field.onChange(sanitizeRateInput(text))}
+                keyboardType="decimal-pad"
+                placeholder="₺0,0000"
+                error={fieldState.error?.message}
+                hint={
+                  suggested
+                    ? t('donations.form.rateOnDate', {
+                        date: formatDisplayDate(suggested.date),
+                        source: t(`debts.rateSource.${suggested.source}`),
+                      })
+                    : t('donations.form.rateHint')
+                }
+              />
+            )}
+          />
+          {inTry !== null ? (
+            <Text variant="label" tabular color={colors.textMuted}>
+              {t('donations.form.inTry', { amount: formatMoney(inTry) })}
+            </Text>
+          ) : null}
+        </Card>
+      ) : null}
       <FormError messages={restErrors.length ? restErrors : undefined} />
 
       <Card>

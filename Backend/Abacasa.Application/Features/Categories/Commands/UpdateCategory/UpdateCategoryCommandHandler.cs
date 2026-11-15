@@ -40,6 +40,7 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
                 _localizer["categories.nameExists"]));
 
         category.Name = name;
+        category.Icon = CategoryIcons.Normalize(request.Icon);
 
         _unitOfWork.Categories.Update(category);
         await _unitOfWork.SaveChangesAsync();

@@ -15,6 +15,29 @@
             class="modern-input"
           />
         </div>
+        <div class="ui-col ui-col-12">
+          <div class="text-[0.875rem] font-medium mb-2">{{ t('categories.icon') }}</div>
+          <div class="flex flex-wrap gap-2" role="radiogroup" :aria-label="t('categories.icon')">
+            <button
+              v-for="key in iconOptions"
+              :key="key ?? 'auto'"
+              type="button"
+              role="radio"
+              :aria-checked="formData.icon === key"
+              :title="key ? key : t('categories.iconAuto')"
+              :disabled="loading"
+              class="w-10 h-10 rounded-lg border flex items-center justify-center transition-colors"
+              :class="formData.icon === key
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5'"
+              @click="formData.icon = key"
+            >
+              <UiIcon v-if="key" :icon="CATEGORY_ICON_MDI[key]" :size="22" />
+              <span v-else class="text-[0.7rem] font-semibold">{{ t('categories.iconAutoShort') }}</span>
+            </button>
+          </div>
+          <div class="text-[0.75rem] text-black/60 dark:text-white/60 mt-1">{{ t('categories.iconHint') }}</div>
+        </div>
       </div>
     </div>
 
@@ -45,6 +68,7 @@
 <script setup lang="ts">
 import type { Category, CreateCategoryRequest, UpdateCategoryRequest } from '~/types'
 import { ref, reactive, watch, computed } from 'vue'
+import { CATEGORY_ICON_KEYS, CATEGORY_ICON_MDI } from '~/utils/categoryIcons'
 
 const props = defineProps<{
   category?: Category | null
@@ -60,9 +84,13 @@ const { t } = useI18n()
 const { validationRules: rules } = useValidators()
 
 const formRef = ref()
-const formData = reactive<CreateCategoryRequest>({
+const formData = reactive<{ name: string; icon: string | null }>({
   name: '',
+  icon: null,
 })
+
+// İlk seçenek "otomatik" (ikon addan tahmin edilir)
+const iconOptions: (string | null)[] = [null, ...CATEGORY_ICON_KEYS]
 
 const isFormValid = computed(() => formRef.value?.isValid ?? false)
 
@@ -71,6 +99,7 @@ watch(
   (newVal) => {
     Object.assign(formData, {
       name: newVal?.name || '',
+      icon: newVal?.icon ?? null,
     })
   },
   { immediate: true }
@@ -82,6 +111,7 @@ const handleSubmit = async () => {
 
   const submitData = {
     name: formData.name.trim(),
+    icon: formData.icon,
   }
 
   if (props.category) {

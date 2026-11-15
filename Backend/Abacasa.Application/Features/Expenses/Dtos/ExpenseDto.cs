@@ -11,6 +11,7 @@ public class ExpenseDto
     public string? Description { get; set; }
     public int CategoryId { get; set; }
     public string CategoryName { get; set; }
+    public string? CategoryIcon { get; set; }
     public int PaymentMethodId { get; set; }
     public string PaymentMethodName { get; set; }
     public PaymentMethodType PaymentMethodType { get; set; }

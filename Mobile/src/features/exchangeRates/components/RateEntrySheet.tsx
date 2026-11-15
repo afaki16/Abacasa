@@ -18,9 +18,12 @@ import { useSaveExchangeRate } from '../hooks';
  */
 export function RateEntrySheet({
   currency,
+  initialDate,
   onClose,
 }: {
   currency: Currency | null;
+  /** Açılıştaki tarih; verilmezse bugün. */
+  initialDate?: string;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
@@ -34,7 +37,7 @@ export function RateEntrySheet({
   if (currency !== openFor) {
     setOpenFor(currency);
     setRaw('');
-    setDate(todayIso());
+    setDate(initialDate ?? todayIso());
     setError(undefined);
   }
 

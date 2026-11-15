@@ -27,6 +27,15 @@ public class UpdateBudgetCommandValidator : AbstractValidator<UpdateBudgetComman
             .GreaterThan(0).WithMessage(localizer["validation.required", localizer["validation.fields.personId"]])
             .When(x => x.OwnerPersonId.HasValue);
 
+        RuleFor(x => x.CategoryId)
+            .GreaterThan(0).WithMessage(localizer["validation.required", localizer["validation.fields.categoryId"]])
+            .When(x => x.CategoryId.HasValue);
+
+        // Kategori bütçesi hane genelidir
+        RuleFor(x => x.OwnerPersonId)
+            .Null().WithMessage(localizer["budgets.categoryHouseholdOnly"])
+            .When(x => x.CategoryId.HasValue);
+
         RuleFor(x => x.Note)
             .MaximumLength(200).WithMessage(localizer["validation.maxLength", localizer["validation.fields.note"], 200])
             .When(x => !string.IsNullOrEmpty(x.Note));

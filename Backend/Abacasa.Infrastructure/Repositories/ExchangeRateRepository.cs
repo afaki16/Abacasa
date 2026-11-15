@@ -24,6 +24,16 @@ public class ExchangeRateRepository : RepositoryBase<ExchangeRate, int>, IExchan
             .FirstOrDefaultAsync();
     }
 
+    public async Task<ExchangeRate?> GetLatestOnOrBeforeAsync(Currency currency, DateOnly date)
+    {
+        return await _context.Set<ExchangeRate>()
+            .AsNoTracking()
+            .Where(r => r.Currency == currency && r.Date <= date)
+            .OrderByDescending(r => r.Date)
+            .ThenByDescending(r => r.Id)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<ExchangeRate?> GetByDateAsync(Currency currency, DateOnly date)
     {
         return await _context.Set<ExchangeRate>()

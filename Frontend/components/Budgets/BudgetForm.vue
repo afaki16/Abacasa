@@ -2,14 +2,29 @@
   <UiForm ref="formRef" @submit="handleSubmit">
     <div class="ui-container">
       <div class="ui-row">
-        <div class="ui-col ui-col-12">
+        <div class="ui-col ui-col-12 ui-col-sm-6">
+          <!-- Kategori seçilirse bütçe hane genelidir; kişi seçilemez -->
+          <UiSelect
+            v-model="formData.categoryId"
+            :items="categoryOptions"
+            item-title="name"
+            item-value="id"
+            :label="t('budgets.form.category')"
+            :disabled="loading"
+            :prepend-inner-icon="formData.categoryId === GENERAL ? 'mdi-wallet-outline' : categoryMdiIcon(selectedCategory?.icon, selectedCategory?.name)"
+            density="comfortable"
+            hide-details="auto"
+            class="modern-input"
+          />
+        </div>
+        <div class="ui-col ui-col-12 ui-col-sm-6">
           <UiSelect
             v-model="formData.ownerPersonId"
             :items="ownerOptions"
             item-title="name"
             item-value="id"
             :label="t('budget.person')"
-            :disabled="loading"
+            :disabled="loading || formData.categoryId !== GENERAL"
             prepend-inner-icon="mdi-account"
             density="comfortable"
             hide-details="auto"
@@ -72,7 +87,7 @@
       </div>
 
       <!-- Yıllık tablodan öneri (yalnızca hane bütçesinde) -->
-      <div v-if="formData.ownerPersonId === HOUSEHOLD && suggestion?.income != null" class="ui-row">
+      <div v-if="formData.ownerPersonId === HOUSEHOLD && formData.categoryId === GENERAL && suggestion?.income != null" class="ui-row">
         <div class="ui-col ui-col-12">
           <UiAlert type="info" variant="tonal" density="compact">
             <div>
@@ -130,9 +145,12 @@
 <script setup lang="ts">
 import type { Budget, BudgetReport, CreateBudgetRequest, UpdateBudgetRequest } from '~/types'
 import { ref, reactive, watch, computed } from 'vue'
+import { categoryMdiIcon } from '~/utils/categoryIcons'
 
 // Kişi seçiminde "Hane" seçeneğinin değeri; gönderirken ownerPersonId boş bırakılır
 const HOUSEHOLD = 0
+// Kategori seçiminde "Genel" (kategorisiz) seçeneğinin değeri
+const GENERAL = 0
 
 const props = defineProps<{
   budget?: Budget | null
@@ -140,6 +158,7 @@ const props = defineProps<{
   year: number
   month: number
   people: { id: number; name: string }[]
+  categories: { id: number; name: string; icon?: string | null }[]
   suggestion?: BudgetReport['suggestion'] | null
   loading?: boolean
 }>()
@@ -156,6 +175,7 @@ const { t, locale } = useI18n()
 const formRef = ref()
 const formData = reactive({
   ownerPersonId: HOUSEHOLD as number,
+  categoryId: GENERAL as number,
   startYear: props.year,
   startMonth: props.month,
   amount: null as number | null,
@@ -173,6 +193,17 @@ const ownerOptions = computed(() => [
   ...props.people,
 ])
 
+const categoryOptions = computed(() => [
+  { id: GENERAL, name: t('budgets.form.general') },
+  ...props.categories,
+])
+const selectedCategory = computed(() => props.categories.find((c) => c.id === formData.categoryId) ?? null)
+
+// Kategori bütçesi hane genelidir
+watch(() => formData.categoryId, (id) => {
+  if (id !== GENERAL) formData.ownerPersonId = HOUSEHOLD
+})
+
 const monthOptions = computed(() => {
   const fmt = new Intl.DateTimeFormat(locale.value === 'en' ? 'en-US' : 'tr-TR', { month: 'long', timeZone: 'UTC' })
   return Array.from({ length: 12 }, (_, i) => ({ value: i + 1, title: fmt.format(new Date(Date.UTC(2000, i, 1))) }))
@@ -183,6 +214,7 @@ watch(
   () => {
     Object.assign(formData, {
       ownerPersonId: props.budget?.ownerPersonId ?? HOUSEHOLD,
+      categoryId: props.budget?.categoryId ?? GENERAL,
       startYear: props.budget?.startYear ?? props.year,
       startMonth: props.budget?.startMonth ?? props.month,
       amount: props.budget?.amount ?? null,
@@ -197,7 +229,8 @@ const handleSubmit = async () => {
   if (!valid) return
 
   const submitData = {
-    ownerPersonId: formData.ownerPersonId === HOUSEHOLD ? undefined : formData.ownerPersonId,
+    ownerPersonId: formData.ownerPersonId === HOUSEHOLD || formData.categoryId !== GENERAL ? undefined : formData.ownerPersonId,
+    categoryId: formData.categoryId === GENERAL ? undefined : formData.categoryId,
     startYear: Number(formData.startYear),
     startMonth: Number(formData.startMonth),
     amount: Number(formData.amount),

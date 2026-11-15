@@ -6,6 +6,10 @@ export interface Budget {
   /** Boşsa hanenin bütçesidir. */
   ownerPersonId: number | null;
   ownerName: string | null;
+  /** Doluysa kategori bütçesi (hane geneli). */
+  categoryId: number | null;
+  categoryName: string | null;
+  categoryIcon: string | null;
   startYear: number;
   startMonth: number;
   amount: number;
@@ -15,6 +19,8 @@ export interface Budget {
 
 export interface CreateBudgetRequest {
   ownerPersonId?: number | null;
+  /** Kategori bütçesinde kişi boş olmalı. */
+  categoryId?: number | null;
   startYear: number;
   startMonth: number;
   amount: number;
@@ -31,6 +37,9 @@ export interface BudgetRow {
   /** Boşsa hane ya da Ortak. */
   personId: number | null;
   name: string | null;
+  /** Kategori satırında dolu. */
+  categoryId?: number | null;
+  categoryIcon?: string | null;
   /** Hane bütçesinden kişi bütçeleri çıkınca kalan; kişisiz kayıtlar ve bütçesi olmayan kişiler. */
   isShared: boolean;
   budget: number;
@@ -57,6 +66,8 @@ export interface BudgetReport {
   daysLeft: number;
   household: BudgetRow | null;
   rows: BudgetRow[];
+  /** Kategori bütçeleri (hane geneli; kategorinin bütün harcamaları). */
+  categories: BudgetRow[];
   personBudgetsExceedHousehold: boolean;
   pendingUnknownCount: number;
   suggestion: {

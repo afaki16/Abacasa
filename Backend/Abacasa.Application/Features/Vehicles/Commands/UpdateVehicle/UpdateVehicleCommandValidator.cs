@@ -18,6 +18,9 @@ public class UpdateVehicleCommandValidator : AbstractValidator<UpdateVehicleComm
             .Must(p => !string.IsNullOrWhiteSpace(p)).WithMessage(localizer["validation.required", localizer["validation.fields.plate"]])
             .MaximumLength(20).WithMessage(localizer["validation.maxLength", localizer["validation.fields.plate"], 20]);
 
+        RuleFor(x => x.Type)
+            .IsInEnum().WithMessage(localizer["validation.invalidEnum", localizer["validation.fields.vehicleType"]]);
+
         RuleFor(x => x.OwnerPersonId)
             .GreaterThan(0).WithMessage(localizer["validation.required", localizer["validation.fields.personId"]])
             .When(x => x.OwnerPersonId.HasValue);

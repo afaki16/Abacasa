@@ -73,6 +73,13 @@
     @page-size-change="handlePageSizeChange"
     @refresh="refreshData"
   >
+    <template #cell-name="{ value, item }">
+      <span class="inline-flex items-center gap-2">
+        <UiIcon :icon="VEHICLE_TYPE_ICONS[item.type] ?? 'mdi-car'" :size="20" color="primary" :title="t(`vehicles.types.${item.type}`)" />
+        {{ value }}
+      </span>
+    </template>
+
     <template #cell-ownerName="{ value }">
       {{ value || t("vehicles.household") }}
     </template>
@@ -138,7 +145,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import type { PaymentMethod, Vehicle, VehicleReminder } from "~/types";
-import { VehicleObligationType } from "~/types";
+import { VehicleObligationType, VEHICLE_TYPE_ICONS } from "~/types";
 import BaseDataTable from "~/components/UI/BaseDataTable.vue";
 import ResizableDrawer from "~/components/UI/ResizableDrawer.vue";
 import ConfirmDialog from "~/components/UI/ConfirmDialog.vue";

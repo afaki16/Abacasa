@@ -2,6 +2,7 @@ using Abacasa.Application.Features.ExchangeRates.Commands.DeleteExchangeRate;
 using Abacasa.Application.Features.ExchangeRates.Commands.SaveExchangeRate;
 using Abacasa.Application.Features.ExchangeRates.Dtos;
 using Abacasa.Application.Features.ExchangeRates.Queries.GetExchangeRates;
+using Abacasa.Application.Features.ExchangeRates.Queries.GetRatesAsOf;
 using Abacasa.Domain.Common.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +32,22 @@ public class ExchangeRatesController : BaseController
     public async Task<IActionResult> GetExchangeRates([FromQuery] Currency? currency = null)
     {
         var result = await _mediator.Send(new GetExchangeRatesQuery { Currency = currency });
+        return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Rates effective on a date for each foreign currency (latest manual or TCMB rate on or before the date; newer wins,
+    /// manual on a tie). A missing TCMB list is fetched from the TCMB archive once. today = the client's today.
+    /// </summary>
+    [HttpGet("as-of")]
+    [Authorize(Policy = "exchangerates.read")]
+    [ProducesResponseType(typeof(IEnumerable<CurrentRateDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> GetRatesAsOf([FromQuery] DateOnly date, [FromQuery] DateOnly today)
+    {
+        var result = await _mediator.Send(new GetRatesAsOfQuery { Date = date, Today = today });
         return HandleResult(result);
     }
 

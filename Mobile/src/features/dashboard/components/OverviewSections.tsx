@@ -255,7 +255,10 @@ export function CategoryBreakdown({ period, limit = BREAKDOWN_LIMIT }: { period:
   }
   const rows = toBreakdownRows(
     summary.data.byCategory.map((c) => ({ key: `c-${c.categoryId}`, label: c.categoryName, amount: c.total })),
-  ).map((row) => ({ ...row, icon: categoryIcon(row.label) }));
+  ).map((row) => ({
+    ...row,
+    icon: categoryIcon(row.label, summary.data.byCategory.find((c) => `c-${c.categoryId}` === row.key)?.categoryIcon),
+  }));
   return <BreakdownList rows={rows.slice(0, limit)} emptyText={t('summary.breakdown.empty')} />;
 }
 

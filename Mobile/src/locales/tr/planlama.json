@@ -136,9 +136,15 @@
       "giver": "Veren kişi",
       "paymentMethod": "Ödeme aracı",
       "note": "Not",
-      "fund": "Emanet"
+      "fund": "Emanet",
+      "currency": "Para birimi",
+      "rate": "Kur (₺)",
+      "goldPrice": "1 çeyreğin fiyatı (₺)"
     },
     "form": {
+      "rateOnDate": "{{date}} kuru · {{source}}",
+      "rateHint": "Bağış günündeki kuru gir.",
+      "inTry": "TL karşılığı: {{amount}}",
       "pick": "Seç",
       "optional": "İsteğe bağlı",
       "recipientPlaceholder": "Kime verildi",
@@ -168,7 +174,10 @@
     "left": "{{amount}} kaldı",
     "over": "{{amount}} aşıldı",
     "shared": "Ortak",
-    "noBudget": "Bu ay için bütçe yok. Hane ya da kişi bütçesi ekle; ne kadar harcayabileceğin burada görünür.",
+    "noBudget": "Bu ay için bütçe yok. Hane, kişi ya da kategori bütçesi ekle; ne kadar harcayabileceğin burada görünür.",
+    "categoriesTitle": "Kategori bütçeleri",
+    "general": "Genel (kategorisiz)",
+    "categoryHint": "Kategori bütçesi hane geneli olur; o kategorideki bütün harcamalar düşer.",
     "exceedsHousehold": "Kişi bütçelerinin toplamı hane bütçesini aşıyor; Ortak bütçe 0 sayıldı.",
     "unknownAmounts_one": "Tutarı belli olmayan {{count}} vade hesaba katılmadı",
     "unknownAmounts_other": "Tutarı belli olmayan {{count}} vade hesaba katılmadı",
@@ -189,6 +198,7 @@
     "deleteMessage": "Bu kayıt silinir; o aylarda aynı kişinin bir önceki bütçesi geçerli olur.",
     "fields": {
       "owner": "Kimin bütçesi",
+      "category": "Kategori",
       "startMonth": "Başlangıç ayı",
       "startYear": "Başlangıç yılı",
       "amount": "Aylık bütçe"
