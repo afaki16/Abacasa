@@ -17,6 +17,7 @@ import {
   useColors,
 } from '@/constants/theme';
 import { translateMessage } from '@/features/auth/validation';
+import { currentLocale } from '@/lib/i18n';
 
 /** Seçim alanı: etiket üstte, değer + açılır ok (dokununca SelectSheet / DatePickerSheet açılır). */
 export function PickerField({
@@ -164,7 +165,8 @@ export function SectionLabel({ children }: { children: string }) {
   const styles = useKitStyles();
   return (
     <Text accessibilityRole="header" muted style={styles.sectionLabel}>
-      {children}
+      {/* textTransform Türkçe "i"yi "I" yapar; dile göre büyüt */}
+      {children.toLocaleUpperCase(currentLocale() === 'tr' ? 'tr-TR' : 'en-US')}
     </Text>
   );
 }
@@ -321,7 +323,6 @@ const useKitStyles = makeStyles((c) => ({
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.5,
-    textTransform: 'uppercase',
     paddingTop: Spacing.sm - 2,
     paddingHorizontal: Spacing.xs,
   },

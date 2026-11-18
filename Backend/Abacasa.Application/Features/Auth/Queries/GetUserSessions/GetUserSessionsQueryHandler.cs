@@ -54,7 +54,8 @@ namespace Abacasa.Application.Features.Auth.Queries.GetUserSessions
                     DeviceType = token.DeviceType ?? "Unknown",
                     Location = token.Location ?? "Unknown",
                     RemainingTime = token.GetRemainingTime(),
-                    IsCurrentSession = false // TODO: Implement current session detection
+                    // Sunucu isteğin hangi refresh token'a ait olduğunu bilmez; istemci kendi deviceId'siyle işaretler (web ve mobil)
+                    IsCurrentSession = false
                 });
 
             return Result<IEnumerable<SessionDto>>.Success(sessions);

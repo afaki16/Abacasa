@@ -243,7 +243,13 @@ export const useAuth = () => {
       const response = await api.get<Session[]>(API_ENDPOINTS.AUTH.SESSIONS);
       const list =
         (response as any)?.data ?? (response as any)?.value ?? response ?? [];
-      return Array.isArray(list) ? list : [];
+      if (!Array.isArray(list)) return [];
+      // Bu cihazın oturumu: girişte gönderilen device_id ile eşleşen aktif oturum (mobildeki gibi)
+      const deviceId = import.meta.client ? useCookie<string | null>("device_id").value : null;
+      return list.map((s: Session) => ({
+        ...s,
+        isCurrentSession: s.isCurrentSession || (!!deviceId && s.isActive && s.deviceId === deviceId),
+      }));
     } catch {
       return [];
     }
